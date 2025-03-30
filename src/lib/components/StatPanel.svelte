@@ -1,4 +1,6 @@
 <script lang="ts">
+	// Imports
+	import { validateValue, FLOAT_PERCENT, INTEGER } from '$lib/scripts/helpers';
 	// Types
 	type AttributeItem = {
 		name: string;
@@ -33,26 +35,28 @@
 	const SIZE_FACTOR = 1.25;
 
 	// State
+	let editValue: string = '';
 	let editingIndex: number | null = null;
 	let grid: AttributeItem[][] = [];
 
-	function handleDoubleClick(index: number) {
+	function startEditCell(index: number) {
 		editingIndex = index;
+
+		const user_value = attributes[index].value;
+		editValue = user_value !== undefined ? user_value : '';
 
 		// Automatically select all content when starting to edit the cell
 		setTimeout(() => {
-			const input = document.getElementsByClassName('stat-value');
+			const input = document.getElementsByClassName('stat-value')[0] as HTMLInputElement;
 			if (input) {
-				input[0].select();
+				input.select();
 			}
 		}, 0);
 	}
 
-	function handleInputChange(event, index: number) {
-		const newValue = event.target.value;
-
+	function saveEditCell(index: number) {
 		// Update the source attributes array
-		attributes[index].value = newValue;
+		attributes[index].value = editValue;
 
 		// Update grid
 		const flatIndex = index;
@@ -60,16 +64,19 @@
 		const row = flatIndex % n_rows;
 
 		if (grid[row] && grid[row][col]) {
-			grid[row][col].value = newValue;
+			if (attributes[index].name === 'Crit Rate' || attributes[index].name === 'Crit Damage') {
+				grid[row][col].value = validateValue(FLOAT_PERCENT, editValue);
+			} else {
+				grid[row][col].value = validateValue(INTEGER, editValue);
+			}
 		}
-	}
 
-	function handleBlur() {
 		editingIndex = null;
+		editValue = '';
 	}
 
-	function handleKeyDown(event) {
-		if (event.key === 'Enter') {
+	function handleKeyDown(e: any) {
+		if (e.key === 'Enter') {
 			editingIndex = null;
 		}
 	}
@@ -106,11 +113,11 @@
 	calculateGrid();
 
 	// Recalculate grid when props change
-	$: {
-		if (n_rows && n_columns && attributes) {
-			calculateGrid();
-		}
-	}
+	// $: {
+	// 	if (n_rows && n_columns && attributes) {
+	// 		calculateGrid();
+	// 	}
+	// }
 </script>
 
 <div class="stat-panel">
@@ -135,12 +142,12 @@
 								<div class="stat-value-container">
 									{#if editingIndex === cell.index}
 										<input
+											id="a"
 											type="text"
 											class="stat-value"
 											style="font-size: {14 * SIZE_FACTOR}px"
-											value={cell.value}
-											on:input={(e) => handleInputChange(e, cell.index)}
-											on:blur={handleBlur}
+											bind:value={editValue}
+											on:blur={() => saveEditCell(cell.index)}
 											on:keydown={handleKeyDown}
 											autofocus
 										/>
@@ -148,7 +155,7 @@
 										<div
 											class="stat-value-text"
 											style="font-size: {14 * SIZE_FACTOR}px"
-											on:dblclick={() => handleDoubleClick(cell.index)}
+											on:dblclick={() => startEditCell(cell.index)}
 										>
 											{cell.value}
 										</div>
