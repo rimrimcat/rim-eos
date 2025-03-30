@@ -20,6 +20,26 @@
 		{ name: 'Altered Resistance', icon: './stat/altres.webp', value: '4892' }
 	];
 
+	// Track currently editing attribute index
+	let editingIndex = null;
+
+	// Function to handle double-click on value
+	function handleDoubleClick(index) {
+		editingIndex = index;
+	}
+
+	// Function to handle blur event of input (stop editing when focus is lost)
+	function handleBlur() {
+		editingIndex = null;
+	}
+
+	// Function to handle enter key press
+	function handleKeyDown(event) {
+		if (event.key === 'Enter') {
+			editingIndex = null;
+		}
+	}
+
 	// Calculate the grid layout
 	let grid = [];
 
@@ -40,7 +60,10 @@
 		for (let c = 0; c < n_columns; c++) {
 			for (let r = 0; r < n_rows; r++) {
 				if (attributeIndex < attributes.length) {
-					grid[r][c] = attributes[attributeIndex];
+					grid[r][c] = {
+						...attributes[attributeIndex],
+						index: attributeIndex
+					};
 					attributeIndex++;
 				}
 			}
@@ -73,7 +96,22 @@
 							</div>
 							<div class="stat-info">
 								<div class="stat-name">{cell.name}</div>
-								<input type="text" class="stat-value" value={cell.value} />
+								<div class="stat-value-container">
+									{#if editingIndex === cell.index}
+										<input
+											type="text"
+											class="stat-value"
+											value={cell.value}
+											on:blur={handleBlur}
+											on:keydown={handleKeyDown}
+											autofocus
+										/>
+									{:else}
+										<div class="stat-value-text" on:dblclick={() => handleDoubleClick(cell.index)}>
+											{cell.value}
+										</div>
+									{/if}
+								</div>
 							</div>
 						</div>
 					</div>
@@ -90,7 +128,7 @@
 
 <style>
 	.stat-panel {
-		background-color: rgba(0, 0, 0, 0.5);
+		/* background-color: rgba(255, 255, 255, 0.5); */
 		border-radius: 8px;
 		padding: 16px;
 		color: #a8b5c5;
@@ -135,7 +173,12 @@
 
 	.stat-name {
 		font-size: 12px;
-		color: #a8b5c5;
+		padding-left: 5px;
+		color: #000000;
+	}
+
+	.stat-value-container {
+		width: 40%;
 	}
 
 	.stat-value {
@@ -145,7 +188,14 @@
 		color: white;
 		padding: 2px 6px;
 		font-size: 14px;
-		width: 40%;
+		width: 100%;
+	}
+
+	.stat-value-text {
+		padding: 2px 6px;
+		font-size: 14px;
+		color: black;
+		cursor: pointer;
 	}
 
 	.empty {
