@@ -34,9 +34,34 @@
 
 	// State
 	let editingIndex: number | null = null;
+	let grid: AttributeItem[][] = [];
 
 	function handleDoubleClick(index: number) {
 		editingIndex = index;
+
+		// Automatically select all content when starting to edit the cell
+		setTimeout(() => {
+			const input = document.getElementsByClassName('stat-value');
+			if (input) {
+				input[0].select();
+			}
+		}, 0);
+	}
+
+	function handleInputChange(event, index: number) {
+		const newValue = event.target.value;
+
+		// Update the source attributes array
+		attributes[index].value = newValue;
+
+		// Update grid
+		const flatIndex = index;
+		const col = Math.floor(flatIndex / n_rows);
+		const row = flatIndex % n_rows;
+
+		if (grid[row] && grid[row][col]) {
+			grid[row][col].value = newValue;
+		}
 	}
 
 	function handleBlur() {
@@ -50,8 +75,6 @@
 	}
 
 	// Calculate the grid layout
-	let grid: AttributeItem[][] = [];
-
 	function calculateGrid() {
 		grid = [];
 
@@ -88,8 +111,6 @@
 			calculateGrid();
 		}
 	}
-
-	console.error(grid);
 </script>
 
 <div class="stat-panel">
@@ -118,6 +139,7 @@
 											class="stat-value"
 											style="font-size: {14 * SIZE_FACTOR}px"
 											value={cell.value}
+											on:input={(e) => handleInputChange(e, cell.index)}
 											on:blur={handleBlur}
 											on:keydown={handleKeyDown}
 											autofocus
@@ -148,7 +170,6 @@
 
 <style>
 	.stat-panel {
-		/* background-color: rgba(255, 255, 255, 0.5); */
 		border-radius: 8px;
 		padding: 16px;
 		color: #a8b5c5;
@@ -192,7 +213,6 @@
 	}
 
 	.stat-name {
-		/* font-size: 12px; */
 		font-weight: bold;
 		padding-left: 5px;
 		color: #000000;
@@ -208,13 +228,11 @@
 		border-radius: 4px;
 		color: white;
 		padding: 2px 6px;
-		/* font-size: 14px; */
 		width: 100%;
 	}
 
 	.stat-value-text {
 		padding: 2px 6px;
-		/* font-size: 14px; */
 		color: black;
 		cursor: pointer;
 	}
