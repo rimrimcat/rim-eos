@@ -2,22 +2,22 @@
 	export let n_rows = 8;
 	export let n_columns = 2;
 	export let attributes = [
-		{ name: 'HP', icon: './stat/hp.png', value: '989317' },
-		{ name: 'Crit', icon: './stat/crit.png', value: '11318' },
-		{ name: 'Crit Rate', icon: './stat/crit.png', value: '1.372%' },
-		{ name: 'Physical Attack', icon: './stat/physatk.png', value: '15544' },
-		{ name: 'Flame Attack', icon: './stat/flameatk.png', value: '16976' },
-		{ name: 'Frost Attack', icon: './stat/frostatk.png', value: '14452' },
-		{ name: 'Volt Attack', icon: './stat/voltatk.png', value: '17489' },
-		{ name: 'Altered Attack', icon: './stat/altatk.png', value: '18793' },
-		{ name: 'Endurance', icon: './stat/endurance.png', value: '1300' },
-		{ name: 'Endurance Regen Speed', icon: './stat/enduregen.png', value: '0.000%' },
-		{ name: 'Crit Damage', icon: './stat/critdmg.png', value: '64.000%' },
-		{ name: 'Physical Resistance', icon: './stat/physres.png', value: '8621' },
-		{ name: 'Flame Resistance', icon: './stat/flameres.png', value: '14666' },
-		{ name: 'Frost Resistance', icon: './stat/frostres.png', value: '14013' },
-		{ name: 'Volt Resistance', icon: './stat/voltres.png', value: '10518' },
-		{ name: 'Altered Resistance', icon: './stat/altres.png', value: '4892' }
+		{ name: 'HP', icon: './stat/hp.webp', value: '989317' },
+		{ name: 'Crit', icon: './stat/crit.webp', value: '11318' },
+		{ name: 'Crit Rate', icon: './stat/crit.webp', value: '1.372%' },
+		{ name: 'Physical Attack', icon: './stat/physatk.webp', value: '15544' },
+		{ name: 'Flame Attack', icon: './stat/flameatk.webp', value: '16976' },
+		{ name: 'Frost Attack', icon: './stat/frostatk.webp', value: '14452' },
+		{ name: 'Volt Attack', icon: './stat/voltatk.webp', value: '17489' },
+		{ name: 'Altered Attack', icon: './stat/altatk.webp', value: '18793' },
+		{ name: 'Endurance', icon: './stat/endurance.webp', value: '1300' },
+		{ name: 'Endurance Regen Speed', icon: './stat/enduregen.webp', value: '0.000%' },
+		{ name: 'Crit Damage', icon: './stat/critdmg.webp', value: '64.000%' },
+		{ name: 'Physical Resistance', icon: './stat/physres.webp', value: '8621' },
+		{ name: 'Flame Resistance', icon: './stat/flameres.webp', value: '14666' },
+		{ name: 'Frost Resistance', icon: './stat/frostres.webp', value: '14013' },
+		{ name: 'Volt Resistance', icon: './stat/voltres.webp', value: '10518' },
+		{ name: 'Altered Resistance', icon: './stat/altres.webp', value: '4892' }
 	];
 
 	// Calculate the grid layout
