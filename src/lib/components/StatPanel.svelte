@@ -18,15 +18,15 @@
 		{ name: 'Flame Attack', icon: './stat/flameatk.webp', value: '16976' },
 		{ name: 'Frost Attack', icon: './stat/frostatk.webp', value: '14452' },
 		{ name: 'Volt Attack', icon: './stat/voltatk.webp', value: '17489' },
-		{ name: 'Altered Attack', icon: './stat/altatk.webp', value: '18793' },
-		{ name: 'Endurance', icon: './stat/endurance.webp', value: '1300' },
-		{ name: 'Endurance Regen Speed', icon: './stat/enduregen.webp', value: '0.000%' },
-		{ name: 'Crit Damage', icon: './stat/critdmg.webp', value: '64.000%' },
+		{ name: 'Altered Attack', icon: './stat/placeholder.webp', value: '18793' },
+		{ name: 'Endurance', icon: './stat/placeholder.webp', value: '1300' },
+		{ name: 'Endurance Regen Speed', icon: './stat/placeholder.webp', value: '0.000%' },
+		{ name: 'Crit Damage', icon: './stat/placeholder.webp', value: '64.000%' },
 		{ name: 'Physical Resistance', icon: './stat/physres.webp', value: '8621' },
 		{ name: 'Flame Resistance', icon: './stat/flameres.webp', value: '14666' },
 		{ name: 'Frost Resistance', icon: './stat/frostres.webp', value: '14013' },
 		{ name: 'Volt Resistance', icon: './stat/voltres.webp', value: '10518' },
-		{ name: 'Altered Resistance', icon: './stat/altres.webp', value: '4892' }
+		{ name: 'Altered Resistance', icon: './stat/placeholder.webp', value: '4892' }
 	];
 
 	// Constants
