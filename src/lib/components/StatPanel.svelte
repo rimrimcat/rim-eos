@@ -20,20 +20,20 @@
 		{ name: 'Altered Resistance', icon: './stat/altres.webp', value: '4892' }
 	];
 
+	// For resizing
+	const SIZE_FACTOR = 1.25;
+
 	// Track currently editing attribute index
 	let editingIndex = null;
 
-	// Function to handle double-click on value
 	function handleDoubleClick(index) {
 		editingIndex = index;
 	}
 
-	// Function to handle blur event of input (stop editing when focus is lost)
 	function handleBlur() {
 		editingIndex = null;
 	}
 
-	// Function to handle enter key press
 	function handleKeyDown(event) {
 		if (event.key === 'Enter') {
 			editingIndex = null;
@@ -92,22 +92,31 @@
 					<div class="stat-cell" style="grid-row: {rowIndex + 1}; grid-column: {colIndex + 1};">
 						<div class="stat-content">
 							<div class="stat-icon">
-								<img src={cell.icon} alt={cell.name + ' icon'} />
+								<img
+									src={cell.icon}
+									alt={cell.name + ' icon'}
+									style="width: {24 * SIZE_FACTOR}px; height: {24 * SIZE_FACTOR}px"
+								/>
 							</div>
 							<div class="stat-info">
-								<div class="stat-name">{cell.name}</div>
+								<div class="stat-name" style="font-size: {12 * SIZE_FACTOR}px">{cell.name}</div>
 								<div class="stat-value-container">
 									{#if editingIndex === cell.index}
 										<input
 											type="text"
 											class="stat-value"
+											style="font-size: {14 * SIZE_FACTOR}px"
 											value={cell.value}
 											on:blur={handleBlur}
 											on:keydown={handleKeyDown}
 											autofocus
 										/>
 									{:else}
-										<div class="stat-value-text" on:dblclick={() => handleDoubleClick(cell.index)}>
+										<div
+											class="stat-value-text"
+											style="font-size: {14 * SIZE_FACTOR}px"
+											on:dblclick={() => handleDoubleClick(cell.index)}
+										>
 											{cell.value}
 										</div>
 									{/if}
@@ -172,7 +181,8 @@
 	}
 
 	.stat-name {
-		font-size: 12px;
+		/* font-size: 12px; */
+		font-weight: bold;
 		padding-left: 5px;
 		color: #000000;
 	}
@@ -187,13 +197,13 @@
 		border-radius: 4px;
 		color: white;
 		padding: 2px 6px;
-		font-size: 14px;
+		/* font-size: 14px; */
 		width: 100%;
 	}
 
 	.stat-value-text {
 		padding: 2px 6px;
-		font-size: 14px;
+		/* font-size: 14px; */
 		color: black;
 		cursor: pointer;
 	}
