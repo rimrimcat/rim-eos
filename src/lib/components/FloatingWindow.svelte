@@ -28,6 +28,7 @@
 	let minimized = startMinimized;
 	let previousState = null;
 	let minimizedState = null;
+	let preventTextSelection = false;
 
 	// Element references
 	let container;
@@ -37,9 +38,11 @@
 			isDragging = true;
 			dragOffsetX = event.clientX - x;
 			dragOffsetY = event.clientY - y;
+			preventTextSelection = true;
 		} else if (action === 'resize') {
 			isResizing = true;
 			resizeDirection = direction;
+			preventTextSelection = true;
 		}
 	}
 
@@ -86,6 +89,7 @@
 
 		isDragging = false;
 		isResizing = false;
+		preventTextSelection = false;
 	}
 
 	function toggleMinimize() {
@@ -169,7 +173,7 @@
 
 <div
 	bind:this={container}
-	class="container"
+	class="container {preventTextSelection ? 'no-select' : ''}"
 	style="left: {x}px; top: {y}px; width: {width}px; height: {height}px;"
 >
 	<div class="header" on:mousedown={(e) => handleMouseDown(e, 'drag')}>
@@ -358,5 +362,9 @@
 		top: 0;
 		left: 0;
 		bottom: 0;
+	}
+
+	.no-select {
+		user-select: none;
 	}
 </style>
