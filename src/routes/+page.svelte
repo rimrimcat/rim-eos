@@ -1,5 +1,6 @@
 <script>
-	import DraggableTableDv from '$lib/components/DraggableTableDV.svelte';
+	import GearTable from '$lib/components/GearTable.svelte';
+	import DraggableWindow from '$lib/components/DraggableWindow.svelte';
 
 	let columns = [
 		{ id: 'id', label: 'ID', hidden: true, editable: false },
@@ -32,33 +33,6 @@
 		{ id: 'crit_percent', label: 'Crit %', hidden: true }
 	];
 
-	// let columns = [
-	// 	{ id: 'id', label: 'ID', hidden: true, editable: false },
-	// 	{ id: 'part', label: 'Part', editable: false },
-	// 	{ id: 'atk', label: 'Atk' },
-	// 	{ id: 'flame_atk', label: 'Flame Atk', hidden: true },
-	// 	{ id: 'flame_atk_percent', label: 'Flame Atk %' },
-	// 	{ id: 'flame_dmg_percent', label: 'Flame Dmg %' },
-	// 	{ id: 'frost_atk', label: 'Frost Atk', hidden: true },
-	// 	{ id: 'frost_atk_percent', label: 'Frost Atk %' },
-	// 	{ id: 'frost_dmg_percent', label: 'Frost Dmg %' },
-	// 	{ id: 'volt_atk', label: 'Volt Atk', hidden: true },
-	// 	{ id: 'volt_atk_percent', label: 'Volt Atk %' },
-	// 	{ id: 'volt_dmg_percent', label: 'Volt Dmg %' },
-	// 	{ id: 'phys_atk', label: 'Phys Atk', hidden: true },
-	// 	{ id: 'phys_atk_percent', label: 'Phys Atk %' },
-	// 	{ id: 'phys_dmg_percent', label: 'Phys Dmg %' },
-	// 	{ id: 'alt_atk', label: 'Alt Atk', hidden: true },
-	// 	{ id: 'alt_atk_percent', label: 'Alt Atk %' },
-	// 	{ id: 'alt_dmg_percent', label: 'Alt Dmg %' },
-	// 	{ id: 'ele_atk', label: 'Ele Atk' },
-	// 	{ id: 'total_atk', label: 'Total Atk', hidden: true },
-	// 	{ id: 'ele_atk_percent', label: 'Ele Atk %' },
-	// 	{ id: 'ele_dmg_percent', label: 'Ele Dmg %', hidden: true },
-	// 	{ id: 'crit', label: 'Crit' },
-	// 	{ id: 'crit_percent', label: 'Crit %', hidden: true }
-	// ];
-
 	// Define your data
 	let data = [
 		{ id: 'main_helmet', part: 'Helmet' },
@@ -76,7 +50,11 @@
 	];
 </script>
 
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
-<DraggableTableDv {data} {columns} fixed_row={true} />
+<!-- <h1>Welcome to SvelteKit</h1>
+<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p> -->
+
+<DraggableWindow title="Main Gear" initialX={150} initialY={100} startMinimized={true}>
+	<GearTable {data} {columns} fixed_row={true} />
+</DraggableWindow>
+
 <!-- <SyncedTables/> -->

@@ -85,6 +85,8 @@
 	const _float_percent = 'float_percent' as 'float_percent';
 	const _header = 'header' as 'header';
 
+	const _invalid = '???' as '???';
+
 	const validation = {
 		part: _part,
 		atk: _integer,
@@ -186,7 +188,7 @@
 		window.removeEventListener('mouseup', handleMouseUp);
 	}
 
-	function validateValue(col_id: string, ediValue: string): number | string {
+	function validateValue(col_id: string, inputValue: string): number | string {
 		// TODO: Validation for
 
 		const validation_type = validation[col_id];
@@ -198,29 +200,29 @@
 			try {
 				switch (validation_type) {
 					case _integer:
-						if (!editValue.trim()) {
+						if (!inputValue.trim()) {
 							return '0';
 						}
 
-						const intValue = parseInt(editValue, 10);
+						const intValue = parseInt(inputValue, 10);
 
 						if (isNaN(intValue)) {
-							return '???';
+							return _invalid;
 						}
-						return intValue;
+						return String(intValue);
 
 					case _float_percent:
-						if (!editValue.trim()) {
+						if (!inputValue.trim()) {
 							return '0 %';
 						}
 
-						if (isNaN(Number(editValue))) {
-							return '???';
+						if (isNaN(Number(inputValue))) {
+							return _invalid;
 						}
-						return String(Number(editValue)) + ' %';
+						return String(Number(inputValue)) + ' %';
 
 					case _part:
-						if (!editValue.trim()) {
+						if (!inputValue.trim()) {
 							return 'Helmet';
 						}
 
@@ -230,15 +232,15 @@
 							distance: 100
 						});
 
-						const result_part = fuse_part.search(editValue.trim().toLowerCase());
+						const result_part = fuse_part.search(inputValue.trim().toLowerCase());
 						if (result_part.length > 0) {
 							return part_map[result_part[0].item];
 						}
-						return '???';
+						return _invalid;
 
 					case _header:
-						if (!editValue.trim()) {
-							return 'no match';
+						if (!inputValue.trim()) {
+							return _invalid;
 						}
 
 						const fuse_hdr = new Fuse(Object.keys(header_map), {
@@ -247,26 +249,25 @@
 							distance: 100
 						});
 
-						const result_hdr = fuse_hdr.search(editValue.trim().toLowerCase());
+						const result_hdr = fuse_hdr.search(inputValue.trim().toLowerCase());
 						if (result_hdr.length > 0) {
 							return header_map[result_hdr[0].item];
 						}
 
-						return 'no match';
+						return _invalid;
 
 					default:
 						// ???
 						console.error('Default path');
-						return editValue;
+						return inputValue;
 				}
 			} catch (e) {
-				console.error(e);
-				return '???';
+				return _invalid;
 			}
 		}
 
 		console.error('Not validated.');
-		return editValue;
+		return inputValue;
 	}
 
 	// Function to start editing a cell
