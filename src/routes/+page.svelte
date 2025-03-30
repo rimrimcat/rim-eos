@@ -53,7 +53,14 @@
 <!-- <h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p> -->
 
-<FloatingWindow title="Main Gear" initialX={150} initialY={100} startMinimized={true}>
+<FloatingWindow
+	title="Main Gear"
+	initialX={150}
+	initialY={100}
+	initialWidth={780}
+	initialHeight={810}
+	startMinimized={true}
+>
 	<GearTable {data} {columns} fixed_row={true} />
 </FloatingWindow>
 

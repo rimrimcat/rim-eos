@@ -846,9 +846,7 @@
 		cursor: pointer;
 		opacity: 0.6;
 		padding: 0;
-		/* margin-right: 6px; */
 		font-size: 16px;
-		/* vertical-align: middle; */
 	}
 
 	.hide-column-btn:hover {

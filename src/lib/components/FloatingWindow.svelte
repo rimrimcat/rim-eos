@@ -159,11 +159,6 @@
 				height: initialHeight
 			};
 
-			// Set to minimized dimensions and position
-			// const windowWidth = window.innerWidth;
-			// const minX = windowWidth / 2 - 125;
-			// const minY = window.innerHeight - 40;
-
 			// Set initial minimized state
 			minimizedState = { x: initialMinimizedX, y: initialMinimizedY };
 
