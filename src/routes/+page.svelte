@@ -1,6 +1,6 @@
 <script>
 	import GearTable from '$lib/components/GearTable.svelte';
-	import DraggableWindow from '$lib/components/DraggableWindow.svelte';
+	import FloatingWindow from '$lib/components/FloatingWindow.svelte';
 
 	let columns = [
 		{ id: 'id', label: 'ID', hidden: true, editable: false },
@@ -53,8 +53,8 @@
 <!-- <h1>Welcome to SvelteKit</h1>
 <p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p> -->
 
-<DraggableWindow title="Main Gear" initialX={150} initialY={100} startMinimized={true}>
+<FloatingWindow title="Main Gear" initialX={150} initialY={100} startMinimized={true}>
 	<GearTable {data} {columns} fixed_row={true} />
-</DraggableWindow>
+</FloatingWindow>
 
 <!-- <SyncedTables/> -->
