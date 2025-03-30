@@ -1,6 +1,18 @@
-<script>
+<script lang="ts">
 	import { onMount } from 'svelte';
 	import { Minimize2, Maximize2 } from '@lucide/svelte';
+
+	type PositionXY = {
+		x: number;
+		y: number;
+	};
+
+	type Rectangle = {
+		x: number;
+		y: number;
+		width: number;
+		height: number;
+	};
 
 	// Props
 	export let title = 'Draggable Component';
@@ -11,9 +23,16 @@
 	export let minWidth = 200;
 	export let minHeight = 100;
 	export let startMinimized = false;
+	export let initialMinimizedX = 50;
+	export let initialMinimizedY = 50;
 
-	let iconSize = 20;
-	let iconColor = '#444';
+	// Constants
+	const ICON_SIZE = 20;
+	const ICON_COLOR = '#444';
+
+	// Constant Alias
+	const ACTION_DRAG = 'drag' as 'drag';
+	const ACTION_RESIZE = 'resize' as 'resize';
 
 	// State variables
 	let x = initialX;
@@ -26,8 +45,8 @@
 	let dragOffsetY = 0;
 	let resizeDirection = { x: 0, y: 0 };
 	let minimized = startMinimized;
-	let previousState = null;
-	let minimizedState = null;
+	let previousState: Rectangle | null = null;
+	let minimizedState: PositionXY | null = null;
 	let preventTextSelection = false;
 
 	// Element references
@@ -113,8 +132,8 @@
 			} else {
 				// Default minimized position (centered at bottom)
 				const windowWidth = window.innerWidth;
-				x = windowWidth / 2 - 125;
-				y = window.innerHeight - 40;
+				x = initialMinimizedX;
+				y = initialMinimizedY;
 				minimizedState = { x, y };
 			}
 
@@ -137,16 +156,16 @@
 			};
 
 			// Set to minimized dimensions and position
-			const windowWidth = window.innerWidth;
-			const minX = windowWidth / 2 - 125;
-			const minY = window.innerHeight - 40;
+			// const windowWidth = window.innerWidth;
+			// const minX = windowWidth / 2 - 125;
+			// const minY = window.innerHeight - 40;
 
 			// Set initial minimized state
-			minimizedState = { x: minX, y: minY };
+			minimizedState = { x: initialMinimizedX, y: initialMinimizedY };
 
 			// Apply minimized dimensions
-			x = minX;
-			y = minY;
+			x = initialMinimizedX;
+			y = initialMinimizedY;
 			width = 250;
 			height = 30;
 		}
@@ -176,7 +195,7 @@
 	class="container {preventTextSelection ? 'no-select' : ''}"
 	style="left: {x}px; top: {y}px; width: {width}px; height: {height}px;"
 >
-	<div class="header" on:mousedown={(e) => handleMouseDown(e, 'drag')}>
+	<div class="header" on:mousedown={(e) => handleMouseDown(e, ACTION_DRAG)}>
 		<span class="title">{title}</span>
 		<div class="controls">
 			<button
@@ -185,9 +204,9 @@
 				aria-label={minimized ? 'Maximize' : 'Minimize'}
 			>
 				{#if minimized}
-					<Maximize2 size={iconSize} color={iconColor} />
+					<Maximize2 size={ICON_SIZE} color={ICON_COLOR} />
 				{:else}
-					<Minimize2 size={iconSize} color={iconColor} />
+					<Minimize2 size={ICON_SIZE} color={ICON_COLOR} />
 				{/if}
 			</button>
 		</div>
@@ -201,35 +220,35 @@
 		<!-- Resize handles -->
 		<div
 			class="resize-handle resize-e"
-			on:mousedown={(e) => handleMouseDown(e, 'resize', { x: 1, y: 0 })}
+			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: 1, y: 0 })}
 		></div>
 		<div
 			class="resize-handle resize-s"
-			on:mousedown={(e) => handleMouseDown(e, 'resize', { x: 0, y: 1 })}
+			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: 0, y: 1 })}
 		></div>
 		<div
 			class="resize-handle resize-se"
-			on:mousedown={(e) => handleMouseDown(e, 'resize', { x: 1, y: 1 })}
+			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: 1, y: 1 })}
 		></div>
 		<div
 			class="resize-handle resize-sw"
-			on:mousedown={(e) => handleMouseDown(e, 'resize', { x: -1, y: 1 })}
+			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: -1, y: 1 })}
 		></div>
 		<div
 			class="resize-handle resize-ne"
-			on:mousedown={(e) => handleMouseDown(e, 'resize', { x: 1, y: -1 })}
+			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: 1, y: -1 })}
 		></div>
 		<div
 			class="resize-handle resize-nw"
-			on:mousedown={(e) => handleMouseDown(e, 'resize', { x: -1, y: -1 })}
+			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: -1, y: -1 })}
 		></div>
 		<div
 			class="resize-handle resize-n"
-			on:mousedown={(e) => handleMouseDown(e, 'resize', { x: 0, y: -1 })}
+			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: 0, y: -1 })}
 		></div>
 		<div
 			class="resize-handle resize-w"
-			on:mousedown={(e) => handleMouseDown(e, 'resize', { x: -1, y: 0 })}
+			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: -1, y: 0 })}
 		></div>
 	{/if}
 </div>
