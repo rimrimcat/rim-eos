@@ -17,7 +17,7 @@
 	};
 
 	// Properties
-	export let title = 'Draggable Component';
+	export let title = 'Unnamed Component';
 	export let initialX = 100;
 	export let initialY = 100;
 	export let initialWidth = 300;
@@ -27,6 +27,8 @@
 	export let startMinimized = false;
 	export let initialMinimizedX = 50;
 	export let initialMinimizedY = 50;
+	export let minimizedWidth = 250;
+	export let minimizedHeight = 35;
 
 	// Constants
 	const ICON_SIZE = 20;
@@ -140,8 +142,8 @@
 			}
 
 			// Set minimized dimensions
-			width = 250;
-			height = 30;
+			width = minimizedWidth;
+			height = minimizedHeight;
 			minimized = true;
 		}
 	}
@@ -168,8 +170,8 @@
 			// Apply minimized dimensions
 			x = initialMinimizedX;
 			y = initialMinimizedY;
-			width = 250;
-			height = 30;
+			width = minimizedWidth;
+			height = minimizedHeight;
 		}
 
 		const handleGlobalMouseMove = (event) => {
