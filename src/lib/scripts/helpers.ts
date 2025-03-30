@@ -2,11 +2,11 @@
 import Fuse from 'fuse.js';
 
 // Constants
-const PART = 'part' as const;
-const INTEGER = 'integer' as const;
-const FLOAT_PERCENT = 'float_percent' as const;
-const HEADER = 'header' as const;
-const INVALID = '???' as const;
+export const PART = 'part' as const;
+export const INTEGER = 'integer' as const;
+export const FLOAT_PERCENT = 'float_percent' as const;
+export const HEADER = 'header' as const;
+export const INVALID = '???' as const;
 
 // Maps
 const part_map = {
@@ -58,6 +58,7 @@ const header_map = {
 	critpercent: 'Crit %'
 } as const;
 
+// Used by GearTable
 const validation = {
 	part: PART,
 	atk: INTEGER,
@@ -70,8 +71,8 @@ const validation = {
 	header: HEADER
 } as const;
 
-export function validateValue(inputName: string, inputValue: string): number | string {
-	const validation_type = validation[inputName];
+export function validateValue(inputName: string, inputValue: string): string {
+	const validation_type = validation[inputName] || inputName;
 
 	if (validation_type) {
 		try {
