@@ -1,7 +1,7 @@
 <script lang="ts">
 	// Imports
 	import { CircleX, CirclePlus } from '@lucide/svelte';
-	import { validateValue } from '../scripts/helpers';
+	import { validateValue } from '$lib/scripts/helpers';
 
 	// Types
 	type ColumnItem = {
@@ -61,12 +61,12 @@
 		draggedColumn = column;
 	}
 
-	function handleDragOver(e, column: ColumnItem) {
+	function handleDragOver(e: any, column: ColumnItem) {
 		e.preventDefault();
 		dragOverColumn = column;
 	}
 
-	function handleDrop(e) {
+	function handleDrop(e: any) {
 		e.preventDefault();
 
 		if (draggedColumn && dragOverColumn && draggedColumn !== dragOverColumn) {
@@ -94,7 +94,7 @@
 		dragOverColumn = null;
 	}
 
-	function startResize(e, column: ColumnItem) {
+	function startResize(e: any, column: ColumnItem) {
 		e.preventDefault();
 		e.stopPropagation();
 		resizingColumn = column;
@@ -106,7 +106,7 @@
 		window.addEventListener('mouseup', handleMouseUp);
 	}
 
-	function handleMouseMove(e) {
+	function handleMouseMove(e: any) {
 		if (resizingColumn) {
 			const newWidth = Math.max(50, startWidth + (e.clientX - startX));
 			resizingColumn.width = newWidth;
@@ -233,7 +233,7 @@
 		}
 	}
 
-	function handleKeyPress(e) {
+	function handleKeyPress(e: any) {
 		if (e.key === 'Enter') {
 			e.preventDefault();
 			if (isAddingNewColumn && newColumnTempItem) {
