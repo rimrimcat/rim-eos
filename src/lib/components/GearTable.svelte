@@ -1,6 +1,8 @@
 <script lang="ts">
+	// Imports
 	import Fuse from 'fuse.js';
 
+	// Types
 	type ColumnItem = {
 		id: string;
 		label: string;
@@ -29,8 +31,28 @@
 		isHeader?: boolean | null;
 	};
 
-	// Validation
+	// Properties
+	export let data: RowItem[] = []; // actual data visible
+	export let columns: ColumnItem[] = [];
+	export let fixed_row: boolean = false;
 
+	let user_data = JSON.parse(JSON.stringify(data)); // deepcopy, data being edited
+
+	// State
+	let hiddenColumns: string[] = [];
+	let draggedColumn: ColumnItem | null = null;
+	let dragOverColumn: ColumnItem | null = null;
+	let editingCell: CellObj | null = null; // Track which cell is being edited
+	let editValue: string = ''; // Current value being edited
+	let resizingColumn: ColumnItem | null = null; // Column being resized
+	let startX = 0; // Starting X position for resize
+	let startWidth = 0; // Starting width for resize
+	let columnCount = 0; // Counter for generating unique IDs for new columns
+	let rowCount = data.length; // Counter for generating row IDs
+	let isAddingNewColumn = false; // Track if we're in "add new column" mode
+	let newColumnTempItem: ColumnItem | null = null; // Temporary column for adding
+
+	// Constants
 	const part_map = {
 		helmet: 'Helmet',
 		spaulders: 'Spaulders',
@@ -80,58 +102,33 @@
 		critpercent: 'Crit %'
 	} as const;
 
-	const _part = 'part' as 'part';
-	const _integer = 'integer' as 'integer';
-	const _float_percent = 'float_percent' as 'float_percent';
-	const _header = 'header' as 'header';
-
-	const _invalid = '???' as '???';
+	const PART = 'part' as 'part';
+	const INTEGER = 'integer' as 'integer';
+	const FLOAT_PERCENT = 'float_percent' as 'float_percent';
+	const HEADER = 'header' as 'header';
+	const INVALID = '???' as '???';
 
 	const validation = {
-		part: _part,
-		atk: _integer,
-		ele_atk: _integer,
-		total_atk: _integer,
-		ele_atk_percent: _float_percent,
-		ele_dmg_percent: _float_percent,
-		crit: _integer,
-		crit_percent: _float_percent,
-		header: _header
-	};
+		part: PART,
+		atk: INTEGER,
+		ele_atk: INTEGER,
+		total_atk: INTEGER,
+		ele_atk_percent: FLOAT_PERCENT,
+		ele_dmg_percent: FLOAT_PERCENT,
+		crit: INTEGER,
+		crit_percent: FLOAT_PERCENT,
+		header: HEADER
+	} as const;
 
-	// Props for the table data and columns
-	export let data: RowItem[] = []; // actual data visible
-	export let columns: ColumnItem[] = [];
-	export let fixed_row: boolean = false;
-
-	let user_data = JSON.parse(JSON.stringify(data)); // deepcopy, data being edited
-	let hiddenColumns: string[] = [];
-
-	// State for tracking operations
-	let draggedColumn: ColumnItem | null = null;
-	let dragOverColumn: ColumnItem | null = null;
-	let editingCell: CellObj | null = null; // Track which cell is being edited
-	let editValue: string = ''; // Current value being edited
-	let resizingColumn: ColumnItem | null = null; // Column being resized
-	let startX = 0; // Starting X position for resize
-	let startWidth = 0; // Starting width for resize
-	let columnCount = 0; // Counter for generating unique IDs for new columns
-	let rowCount = data.length; // Counter for generating row IDs
-	let isAddingNewColumn = false; // Track if we're in "add new column" mode
-	let newColumnTempItem: ColumnItem | null = null; // Temporary column for adding
-
-	// Function to handle the start of dragging
 	function handleDragStart(column: ColumnItem) {
 		draggedColumn = column;
 	}
 
-	// Function to handle dragging over another column
 	function handleDragOver(e, column: ColumnItem) {
 		e.preventDefault();
 		dragOverColumn = column;
 	}
 
-	// Function to handle dropping a column
 	function handleDrop(e) {
 		e.preventDefault();
 
@@ -155,13 +152,11 @@
 		dragOverColumn = null;
 	}
 
-	// Function to handle drag end
 	function handleDragEnd() {
 		draggedColumn = null;
 		dragOverColumn = null;
 	}
 
-	// Functions for column resizing
 	function startResize(e, column: ColumnItem) {
 		e.preventDefault();
 		e.stopPropagation();
@@ -189,8 +184,6 @@
 	}
 
 	function validateValue(col_id: string, inputValue: string): number | string {
-		// TODO: Validation for
-
 		const validation_type = validation[col_id];
 		console.error('Trying to validate: ' + col_id);
 		console.error('Got validation type');
@@ -199,7 +192,7 @@
 		if (validation_type) {
 			try {
 				switch (validation_type) {
-					case _integer:
+					case INTEGER:
 						if (!inputValue.trim()) {
 							return '0';
 						}
@@ -207,21 +200,21 @@
 						const intValue = parseInt(inputValue, 10);
 
 						if (isNaN(intValue)) {
-							return _invalid;
+							return INVALID;
 						}
 						return String(intValue);
 
-					case _float_percent:
+					case FLOAT_PERCENT:
 						if (!inputValue.trim()) {
 							return '0 %';
 						}
 
 						if (isNaN(Number(inputValue))) {
-							return _invalid;
+							return INVALID;
 						}
 						return String(Number(inputValue)) + ' %';
 
-					case _part:
+					case PART:
 						if (!inputValue.trim()) {
 							return 'Helmet';
 						}
@@ -236,11 +229,11 @@
 						if (result_part.length > 0) {
 							return part_map[result_part[0].item];
 						}
-						return _invalid;
+						return INVALID;
 
-					case _header:
+					case HEADER:
 						if (!inputValue.trim()) {
-							return _invalid;
+							return INVALID;
 						}
 
 						const fuse_hdr = new Fuse(Object.keys(header_map), {
@@ -254,7 +247,7 @@
 							return header_map[result_hdr[0].item];
 						}
 
-						return _invalid;
+						return INVALID;
 
 					default:
 						// ???
@@ -262,7 +255,7 @@
 						return inputValue;
 				}
 			} catch (e) {
-				return _invalid;
+				return INVALID;
 			}
 		}
 
@@ -270,7 +263,6 @@
 		return inputValue;
 	}
 
-	// Function to start editing a cell
 	function startEditCell(row: RowItem, column: ColumnItem) {
 		if (!(column.editable !== false)) {
 			return;
@@ -295,7 +287,6 @@
 		}, 0);
 	}
 
-	// Function to save the edited cell value
 	function saveEditCell() {
 		if (editingCell) {
 			// Update the data
@@ -329,13 +320,11 @@
 		}
 	}
 
-	// Function to check if a row has any validation errors
 	function hasRowValidationError(row: RowItem): boolean {
 		if (!row.validationErrors) return false;
 		return Object.values(row.validationErrors).some((hasError) => hasError);
 	}
 
-	// Function to get cell classes based on validation state
 	function getCellClasses(row: RowItem, column: ColumnItem): string {
 		const classes = [];
 
@@ -351,7 +340,7 @@
 		return classes.join(' ');
 	}
 
-	// Function to start editing a column header
+	// UNUSED: header editing disabled now
 	function startEditHeader(column: ColumnItem) {
 		editingCell = { column, isHeader: true };
 		editValue = column.label;
@@ -365,7 +354,6 @@
 		}, 0);
 	}
 
-	// Function to save the edited header value
 	function saveEditHeader() {
 		if (editingCell && editingCell.isHeader) {
 			// Update the column label
@@ -388,7 +376,6 @@
 		}
 	}
 
-	// Function to handle keypress events in editable cells
 	function handleKeyPress(e) {
 		if (e.key === 'Enter') {
 			e.preventDefault();
@@ -409,7 +396,6 @@
 		}
 	}
 
-	// Function to start adding a new column with prompt
 	function addNewColumn() {
 		// Create a temporary column for prompting
 		columnCount++;
@@ -433,7 +419,6 @@
 		}, 0);
 	}
 
-	// Function to process the new column after user enters a label
 	function processNewColumn() {
 		if (!newColumnTempItem || !editValue.trim()) {
 			resetAddNewColumn();
@@ -474,7 +459,6 @@
 		editValue = '';
 	}
 
-	// Function to add a new row
 	function addNewRow() {
 		rowCount++;
 		const newRow = { id: rowCount };
@@ -492,7 +476,6 @@
 		data = [...data, newRow];
 	}
 
-	// Ensure each column has a width defined
 	function ensureColumnWidths() {
 		columns = columns.map((col) => {
 			if (!col.width) {
@@ -530,6 +513,7 @@
 		hiddenColumns = hiddenColumns.filter((id) => id !== columnId);
 	}
 
+	// UNUSED
 	function toggleColumnVisibility(column: ColumnItem) {
 		if (column.hidden) {
 			showColumn(column.id);

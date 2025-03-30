@@ -1,7 +1,9 @@
 <script lang="ts">
+	// Imports
 	import { onMount } from 'svelte';
 	import { Minimize2, Maximize2 } from '@lucide/svelte';
 
+	// Types
 	type PositionXY = {
 		x: number;
 		y: number;
@@ -14,7 +16,7 @@
 		height: number;
 	};
 
-	// Props
+	// Properties
 	export let title = 'Draggable Component';
 	export let initialX = 100;
 	export let initialY = 100;
@@ -34,7 +36,7 @@
 	const ACTION_DRAG = 'drag' as 'drag';
 	const ACTION_RESIZE = 'resize' as 'resize';
 
-	// State variables
+	// State
 	let x = initialX;
 	let y = initialY;
 	let width = initialWidth;
