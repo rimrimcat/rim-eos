@@ -1,6 +1,7 @@
 <script>
 	import GearTable from '$lib/components/GearTable.svelte';
 	import FloatingWindow from '$lib/components/FloatingWindow.svelte';
+	import StatPanel from '$lib/components/StatPanel.svelte';
 
 	let columns = [
 		{ id: 'id', label: 'ID', hidden: true, editable: false },
@@ -59,9 +60,22 @@
 	initialY={100}
 	initialWidth={780}
 	initialHeight={810}
+	initialMinimizedX={50}
+	initialMinimizedY={50}
 	startMinimized={true}
 >
 	<GearTable {data} {columns} fixed_row={true} />
 </FloatingWindow>
 
-<!-- <SyncedTables/> -->
+<FloatingWindow
+	title="Character Stats"
+	initialX={150}
+	initialY={150}
+	initialWidth={700}
+	initialHeight={525}
+	initialMinimizedX={50}
+	initialMinimizedY={100}
+	startMinimized={true}
+>
+	<StatPanel />
+</FloatingWindow>
