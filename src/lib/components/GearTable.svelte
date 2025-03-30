@@ -1,6 +1,7 @@
 <script lang="ts">
 	// Imports
 	import Fuse from 'fuse.js';
+	import { CircleX, CirclePlus } from '@lucide/svelte';
 
 	// Types
 	type ColumnItem = {
@@ -53,6 +54,9 @@
 	let newColumnTempItem: ColumnItem | null = null; // Temporary column for adding
 
 	// Constants
+	const ICON_SIZE = 20;
+	const ICON_COLOR = '#444';
+
 	const part_map = {
 		helmet: 'Helmet',
 		spaulders: 'Spaulders',
@@ -588,7 +592,7 @@
 										class="hide-column-btn"
 										title="Hide column"
 									>
-										✕
+										<CircleX display={'block'} size={ICON_SIZE} color={ICON_COLOR} />
 									</button>
 								{/if}
 								<!-- <span class="drag-handle">⋮⋮</span> -->
@@ -612,7 +616,9 @@
 							/>
 						</div>
 					{:else}
-						<button on:click={addNewColumn} class="add-column-btn">+</button>
+						<button on:click={addNewColumn} class="add-column-btn">
+							<CirclePlus display={'block'} size={ICON_SIZE} color={ICON_COLOR} />
+						</button>
 					{/if}
 				</th>
 			</tr>
@@ -699,12 +705,13 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding-right: 15px; /* Make room for resize handle */
+		padding-right: 6px; /* Make room for resize handle */
 	}
 
 	.th-actions {
 		display: flex;
 		align-items: center;
+		vertical-align: middle;
 	}
 
 	.drag-handle {
@@ -761,7 +768,6 @@
 
 	.add-column-btn,
 	.add-row-btn {
-		background-color: #4caf50;
 		color: white;
 		border: none;
 		border-radius: 50%;
@@ -773,6 +779,12 @@
 		align-items: center;
 		justify-content: center;
 		padding: 0;
+		opacity: 0.6;
+	}
+
+	.add-column-btn:hover,
+	.add-row-btn:hover {
+		opacity: 1;
 	}
 
 	.empty-cell {
@@ -834,8 +846,9 @@
 		cursor: pointer;
 		opacity: 0.6;
 		padding: 0;
-		margin-right: 6px;
+		/* margin-right: 6px; */
 		font-size: 16px;
+		/* vertical-align: middle; */
 	}
 
 	.hide-column-btn:hover {
