@@ -1,7 +1,16 @@
-<script>
+<script lang="ts">
+	// Types
+	type AttributeItem = {
+		name: string;
+		icon: string;
+		value: string;
+		index?: number;
+	};
+
+	// Properties
 	export let n_rows = 8;
 	export let n_columns = 2;
-	export let attributes = [
+	export let attributes: AttributeItem[] = [
 		{ name: 'HP', icon: './stat/hp.webp', value: '989317' },
 		{ name: 'Crit', icon: './stat/crit.webp', value: '11318' },
 		{ name: 'Crit Rate', icon: './stat/crit.webp', value: '1.372%' },
@@ -20,13 +29,13 @@
 		{ name: 'Altered Resistance', icon: './stat/altres.webp', value: '4892' }
 	];
 
-	// For resizing
+	// Constants
 	const SIZE_FACTOR = 1.25;
 
-	// Track currently editing attribute index
-	let editingIndex = null;
+	// State
+	let editingIndex: number | null = null;
 
-	function handleDoubleClick(index) {
+	function handleDoubleClick(index: number) {
 		editingIndex = index;
 	}
 
@@ -41,7 +50,7 @@
 	}
 
 	// Calculate the grid layout
-	let grid = [];
+	let grid: AttributeItem[][] = [];
 
 	function calculateGrid() {
 		grid = [];
@@ -79,6 +88,8 @@
 			calculateGrid();
 		}
 	}
+
+	console.error(grid);
 </script>
 
 <div class="stat-panel">
