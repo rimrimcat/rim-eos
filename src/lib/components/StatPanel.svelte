@@ -145,7 +145,7 @@
 		color: white;
 		padding: 2px 6px;
 		font-size: 14px;
-		width: 100%;
+		width: 40%;
 	}
 
 	.empty {
