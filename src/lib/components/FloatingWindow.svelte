@@ -336,32 +336,32 @@
 
 	.resize-se {
 		cursor: se-resize;
-		width: 12px;
-		height: 12px;
+		width: 24px;
+		height: 24px;
 		right: 0;
 		bottom: 0;
 	}
 
 	.resize-sw {
 		cursor: sw-resize;
-		width: 12px;
-		height: 12px;
+		width: 24px;
+		height: 24px;
 		left: 0;
 		bottom: 0;
 	}
 
 	.resize-ne {
 		cursor: ne-resize;
-		width: 12px;
-		height: 12px;
+		width: 24px;
+		height: 24px;
 		right: 0;
 		top: 0;
 	}
 
 	.resize-nw {
 		cursor: nw-resize;
-		width: 12px;
-		height: 12px;
+		width: 24px;
+		height: 24px;
 		left: 0;
 		top: 0;
 	}
