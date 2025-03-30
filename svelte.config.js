@@ -15,6 +15,9 @@ const config = {
 		adapter: adapter({
 			fallback: 'app.html'
 		})
+	},
+	paths: {
+		base: process.argv.includes('dev') ? '' : process.env.BASE_PATH
 	}
 };
 
