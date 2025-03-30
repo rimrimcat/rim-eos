@@ -194,7 +194,11 @@
 	class="container {preventTextSelection ? 'no-select' : ''}"
 	style="left: {x}px; top: {y}px; width: {width}px; height: {height}px;"
 >
-	<div class="header" on:mousedown={(e) => handleMouseDown(e, ACTION_DRAG)}>
+	<div
+		class="header"
+		on:mousedown={(e) => handleMouseDown(e, ACTION_DRAG)}
+		on:dblclick={toggleMinimize}
+	>
 		<span class="title">{title}</span>
 		<div class="controls">
 			<button
