@@ -1,7 +1,7 @@
 <script lang="ts">
 	// Imports
 	import { CircleX, CirclePlus } from '@lucide/svelte';
-	import { validateValue } from '$lib/scripts/helpers';
+	import { validateValue } from '$lib/scripts/validation.ts';
 
 	// Types
 	type ColumnItem = {
@@ -146,8 +146,6 @@
 
 	function saveEditCell() {
 		if (editingCell) {
-			// Update the data
-
 			if (!editingCell.row) {
 				console.error('No row found.');
 				return;

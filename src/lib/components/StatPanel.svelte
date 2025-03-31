@@ -1,8 +1,8 @@
 <script lang="ts">
 	// Imports
-	import { validateValue, FLOAT_PERCENT_3D, INTEGER } from '$lib/scripts/validation';
-	import { LOCAL_STATS_MAIN, loadObject, saveObject } from '$lib/scripts/loader';
-	import { type AttributeItem } from '$lib/scripts/loader';
+	import { validateValue, FLOAT_PERCENT_3D, INTEGER } from '$lib/scripts/validation.ts';
+	import { LOCAL_STATS_MAIN, loadObject, saveObject } from '$lib/scripts/loader.ts';
+	import { type AttributeItem } from '$lib/scripts/loader.ts';
 
 	// Properties
 	const n_rows = 8;
