@@ -1,6 +1,5 @@
 // Imports
 import Fuse from 'fuse.js';
-import { onMount } from 'svelte';
 
 // Constants by validateValue
 export const PART = 'part' as const;
@@ -151,47 +150,4 @@ export function validateValue(inputName: string, inputValue: string): string {
 
 	console.error('Not validated.');
 	return inputValue;
-}
-
-// Constants by loadObject and saveObject
-export const LOCAL_STATS_MAIN = 'stats_main' as const;
-
-// Maps
-
-const defaults_map = {
-	stats_main: [
-		'989317',
-		'11318',
-		'1.372',
-		'15544',
-		'16976',
-		'14452',
-		'17489',
-		'18793',
-		'1300',
-		'0',
-		'64',
-		'8621',
-		'14666',
-		'14013',
-		'10518',
-		'4892'
-	]
-} as const;
-
-export function loadObject(key: typeof LOCAL_STATS_MAIN): string[];
-export function loadObject(key: string): string[] {
-	onMount(() => {
-		const savedObject = localStorage.getItem(key);
-		if (savedObject) {
-			console.error('got saved object');
-			return JSON.parse(savedObject);
-		}
-	});
-	return defaults_map[key];
-}
-
-export function saveObject(key: typeof LOCAL_STATS_MAIN, value: string[]): void;
-export function saveObject(key: string, value: object): void {
-	localStorage.setItem(key, JSON.stringify(value));
 }

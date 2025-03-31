@@ -1,52 +1,13 @@
 <script lang="ts">
 	// Imports
-	import {
-		validateValue,
-		FLOAT_PERCENT,
-		INTEGER,
-		LOCAL_STATS_MAIN,
-		loadObject,
-		saveObject
-	} from '$lib/scripts/helpers';
-
-	// Types
-	type AttributeItem = {
-		name: string;
-		icon: string;
-		value: string;
-		index?: number;
-	};
-
-	// Loaded
-	const user_attributes_template = [
-		{ name: 'HP', icon: './stat/hp.webp' },
-		{ name: 'Crit', icon: './stat/crit.webp' },
-		{ name: 'Crit Rate', icon: './stat/crit.webp' },
-		{ name: 'Physical Attack', icon: './stat/physatk.webp' },
-		{ name: 'Flame Attack', icon: './stat/flameatk.webp' },
-		{ name: 'Frost Attack', icon: './stat/frostatk.webp' },
-		{ name: 'Volt Attack', icon: './stat/voltatk.webp' },
-		{ name: 'Altered Attack', icon: './stat/placeholder.webp' },
-		{ name: 'Endurance', icon: './stat/placeholder.webp' },
-		{ name: 'Endurance Regen Speed', icon: './stat/placeholder.webp' },
-		{ name: 'Crit Damage', icon: './stat/placeholder.webp' },
-		{ name: 'Physical Resistance', icon: './stat/physres.webp' },
-		{ name: 'Flame Resistance', icon: './stat/flameres.webp' },
-		{ name: 'Frost Resistance', icon: './stat/frostres.webp' },
-		{ name: 'Volt Resistance', icon: './stat/voltres.webp' },
-		{ name: 'Altered Resistance', icon: './stat/placeholder.webp' }
-	];
-	const stats_main = loadObject(LOCAL_STATS_MAIN);
+	import { validateValue, FLOAT_PERCENT, INTEGER } from '$lib/scripts/validation';
+	import { LOCAL_STATS_MAIN, loadObject, saveObject } from '$lib/scripts/loader';
+	import { type AttributeItem } from '$lib/scripts/loader';
 
 	// Properties
 	const n_rows = 8;
 	const n_columns = 2;
-	let user_attributes: AttributeItem[] = user_attributes_template.map((attr, index) => {
-		return {
-			...attr,
-			value: stats_main[index]
-		};
-	});
+	let user_attributes: AttributeItem[] = loadObject(LOCAL_STATS_MAIN);
 
 	// Constants
 	const SIZE_FACTOR = 1.25;
@@ -75,6 +36,10 @@
 		// Update the source attributes array
 		user_attributes[index].value = editValue;
 
+		saveObject(LOCAL_STATS_MAIN, user_attributes).then(() => {
+			console.log('Saved key: ' + LOCAL_STATS_MAIN);
+		});
+
 		// Update grid
 		const flatIndex = index;
 		const col = Math.floor(flatIndex / n_rows);
@@ -95,9 +60,9 @@
 		editValue = '';
 	}
 
-	function handleKeyDown(e: any) {
+	function handleKeyDown(e: any, index: number) {
 		if (e.key === 'Enter') {
-			editingIndex = null;
+			saveEditCell(index);
 		}
 	}
 
@@ -168,7 +133,7 @@
 											style="font-size: {14 * SIZE_FACTOR}px"
 											bind:value={editValue}
 											on:blur={() => saveEditCell(cell.index)}
-											on:keydown={handleKeyDown}
+											on:keydown={(e) => handleKeyDown(e, cell.index)}
 											autofocus
 										/>
 									{:else}
