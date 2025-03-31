@@ -55,13 +55,16 @@ const DEFAULT_STATS_MAIN = [
 export function loadObject(key: typeof LOCAL_STATS_MAIN): AttributeItem[];
 export function loadObject(key: string): string[] | AttributeItem[] {
 	let loadedObject: string[] | null = null;
-	onMount(() => {
-		const savedObject = localStorage.getItem(key);
-		if (savedObject) {
-			console.error('got saved object');
-			loadedObject = JSON.parse(savedObject);
-		}
-	});
+
+	const savedObject = localStorage.getItem(key);
+	console.error('Got saved object');
+	console.error(savedObject);
+	if (savedObject) {
+		loadedObject = JSON.parse(savedObject);
+	}
+
+	console.error('Got loaded object');
+	console.error(loadedObject);
 
 	switch (key) {
 		case LOCAL_STATS_MAIN: {
