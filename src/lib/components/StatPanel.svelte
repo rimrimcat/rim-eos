@@ -92,13 +92,10 @@
 					__use_percent = attributeIndex === 2 || attributeIndex === 10;
 
 					grid[r][c] = {
-						// ...user_attributes[attributeIndex],
-						name: user_attributes[attributeIndex].name,
-						icon: user_attributes[attributeIndex].icon,
+						...user_attributes[attributeIndex],
 						value: __use_percent
 							? validateValue(FLOAT_PERCENT_3D, __val)
-							: validateValue(INTEGER, __val),
-						index: attributeIndex
+							: validateValue(INTEGER, __val)
 					};
 					attributeIndex++;
 				}

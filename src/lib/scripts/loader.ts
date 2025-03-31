@@ -6,7 +6,7 @@ export type AttributeItem = {
 	name: string;
 	icon: string;
 	value: string;
-	index?: number;
+	index: number;
 };
 
 // Constants
@@ -14,22 +14,22 @@ export const LOCAL_STATS_MAIN = 'stats_main' as const;
 
 // Templates
 const TEMPLATE_USER_ATTRIBUTES = [
-	{ name: 'HP', icon: './stat/hp.webp' },
-	{ name: 'Crit', icon: './stat/crit.webp' },
-	{ name: 'Crit Rate', icon: './stat/crit.webp' },
-	{ name: 'Physical Attack', icon: './stat/physatk.webp' },
-	{ name: 'Flame Attack', icon: './stat/flameatk.webp' },
-	{ name: 'Frost Attack', icon: './stat/frostatk.webp' },
-	{ name: 'Volt Attack', icon: './stat/voltatk.webp' },
-	{ name: 'Altered Attack', icon: './stat/placeholder.webp' },
-	{ name: 'Endurance', icon: './stat/placeholder.webp' },
-	{ name: 'Endurance Regen Speed', icon: './stat/placeholder.webp' },
-	{ name: 'Crit Damage', icon: './stat/placeholder.webp' },
-	{ name: 'Physical Resistance', icon: './stat/physres.webp' },
-	{ name: 'Flame Resistance', icon: './stat/flameres.webp' },
-	{ name: 'Frost Resistance', icon: './stat/frostres.webp' },
-	{ name: 'Volt Resistance', icon: './stat/voltres.webp' },
-	{ name: 'Altered Resistance', icon: './stat/placeholder.webp' }
+	{ name: 'HP', icon: './stat/hp.webp', index: 0 },
+	{ name: 'Crit', icon: './stat/crit.webp', index: 1 },
+	{ name: 'Crit Rate', icon: './stat/crit.webp', index: 2 },
+	{ name: 'Physical Attack', icon: './stat/physatk.webp', index: 3 },
+	{ name: 'Flame Attack', icon: './stat/flameatk.webp', index: 4 },
+	{ name: 'Frost Attack', icon: './stat/frostatk.webp', index: 5 },
+	{ name: 'Volt Attack', icon: './stat/voltatk.webp', index: 6 },
+	{ name: 'Altered Attack', icon: './stat/placeholder.webp', index: 7 },
+	{ name: 'Endurance', icon: './stat/placeholder.webp', index: 8 },
+	{ name: 'Endurance Regen Speed', icon: './stat/placeholder.webp', index: 9 },
+	{ name: 'Crit Damage', icon: './stat/placeholder.webp', index: 10 },
+	{ name: 'Physical Resistance', icon: './stat/physres.webp', index: 11 },
+	{ name: 'Flame Resistance', icon: './stat/flameres.webp', index: 12 },
+	{ name: 'Frost Resistance', icon: './stat/frostres.webp', index: 13 },
+	{ name: 'Volt Resistance', icon: './stat/voltres.webp', index: 14 },
+	{ name: 'Altered Resistance', icon: './stat/placeholder.webp', index: 15 }
 ] as const;
 const DEFAULT_STATS_MAIN = [
 	'989317',
