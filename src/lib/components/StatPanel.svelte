@@ -5,17 +5,13 @@
 	import { type AttributeItem } from '$lib/scripts/loader.ts';
 
 	// Properties
-	const n_rows = 8;
-	const n_columns = 2;
-	let user_attributes: AttributeItem[] = loadObject(LOCAL_STATS_MAIN);
-
-	// Constants
-	const SIZE_FACTOR = 1.25;
+	let { n_rows = 8, n_columns = 2, size_factor = 1.25 } = $props();
 
 	// State
-	let editValue: string = '';
-	let editingIndex: number | null = null;
-	let grid: AttributeItem[][] = [];
+	let user_attributes: AttributeItem[] = $state(loadObject(LOCAL_STATS_MAIN));
+	let editValue: string = $state('');
+	let editingIndex: number | null = $state(null);
+	let grid: AttributeItem[][] = $state([]);
 
 	function startEditCell(index: number) {
 		editingIndex = index;
@@ -127,18 +123,18 @@
 								<img
 									src={cell.icon}
 									alt={cell.name + ' icon'}
-									style="width: {24 * SIZE_FACTOR}px; height: {24 * SIZE_FACTOR}px"
+									style="width: {24 * size_factor}px; height: {24 * size_factor}px"
 								/>
 							</div>
 							<div class="stat-info">
-								<div class="stat-name" style="font-size: {12 * SIZE_FACTOR}px">{cell.name}</div>
+								<div class="stat-name" style="font-size: {12 * size_factor}px">{cell.name}</div>
 								<div class="stat-value-container">
 									{#if editingIndex === cell.index}
 										<input
 											id="a"
 											type="text"
 											class="stat-value"
-											style="font-size: {14 * SIZE_FACTOR}px"
+											style="font-size: {14 * size_factor}px"
 											bind:value={editValue}
 											on:blur={() => saveEditCell(cell.index)}
 											on:keydown={(e) => handleKeyDown(e, cell.index)}
@@ -146,7 +142,7 @@
 									{:else}
 										<div
 											class="stat-value-text"
-											style="font-size: {14 * SIZE_FACTOR}px"
+											style="font-size: {14 * size_factor}px"
 											role="textbox"
 											tabindex={10 + cell.index}
 											on:dblclick={() => startEditCell(cell.index)}
