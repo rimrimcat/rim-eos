@@ -16,20 +16,6 @@
 		height: number;
 	};
 
-	// Properties
-	// export let title = 'Unnamed Component';
-	// export let initialX = 100;
-	// export let initialY = 100;
-	// export let initialWidth = 300;
-	// export let initialHeight = 200;
-	// export let minWidth = 200;
-	// export let minHeight = 100;
-	// export let startMinimized = false;
-	// export let initialMinimizedX = 50;
-	// export let initialMinimizedY = 50;
-	// export let minimizedWidth = 250;
-	// export let minimizedHeight = 35;
-
 	let {
 		title = 'Unnamed Component',
 		initialX = 100,

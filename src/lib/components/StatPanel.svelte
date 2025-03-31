@@ -65,15 +65,14 @@
 		}
 	}
 
-	// Calculate the grid layout
-	function calculateGrid() {
+	function createGrid() {
 		grid = [];
 
 		// Initialize the grid with empty cells
 		for (let r = 0; r < n_rows; r++) {
 			const row = [];
 			for (let c = 0; c < n_columns; c++) {
-				row.push(null);
+				row.push({ name: '', icon: '', value: '', index: -1 });
 			}
 			grid.push(row);
 		}
@@ -104,7 +103,7 @@
 	}
 
 	// Calculate initial grid
-	calculateGrid();
+	createGrid();
 
 	// Recalculate grid when props change
 	// $: {
