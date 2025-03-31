@@ -1,6 +1,3 @@
-// Imports
-import { onMount } from 'svelte';
-
 // Types
 export type AttributeItem = {
 	name: string;
