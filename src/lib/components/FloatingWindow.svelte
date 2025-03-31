@@ -2,6 +2,7 @@
 	// Imports
 	import { onMount } from 'svelte';
 	import { Minimize2, Maximize2 } from '@lucide/svelte';
+	import { bringToFront } from '$lib/scripts/zIndexStore';
 
 	// Types
 	type PositionXY = {
@@ -53,11 +54,18 @@
 	let previousState: Rectangle | null = $state(null);
 	let minimizedState: PositionXY | null = $state(null);
 	let preventTextSelection = $state(false);
+	let zIndex = $state(1);
 
 	// Element references
 	let container = $state();
 
+	function bringWindowtoFront() {
+		zIndex = bringToFront();
+	}
+
 	function handleMouseDown(event, action: string, direction = { x: 0, y: 0 }) {
+		bringWindowtoFront();
+
 		if (action === ACTION_DRAG) {
 			isDragging = true;
 			dragOffsetX = event.clientX - x;
@@ -193,7 +201,7 @@
 <div
 	bind:this={container}
 	class="container {preventTextSelection ? 'no-select' : ''}"
-	style="left: {x}px; top: {y}px; width: {width}px; height: {height}px;"
+	style="left: {x}px; top: {y}px; width: {width}px; height: {height}px; z-index: {zIndex}"
 >
 	<div
 		class="header"
@@ -217,7 +225,7 @@
 	</div>
 
 	{#if !minimized}
-		<div class="content">
+		<div class="content" on:mousedown={bringWindowtoFront}>
 			<slot>Place your content here</slot>
 		</div>
 
