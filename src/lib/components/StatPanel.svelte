@@ -146,7 +146,6 @@
 											bind:value={editValue}
 											on:blur={() => saveEditCell(cell.index)}
 											on:keydown={(e) => handleKeyDown(e, cell.index)}
-											autofocus
 										/>
 									{:else}
 										<div
