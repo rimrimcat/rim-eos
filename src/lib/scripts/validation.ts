@@ -5,6 +5,7 @@ import Fuse from 'fuse.js';
 export const PART = 'part' as const;
 export const INTEGER = 'integer' as const;
 export const FLOAT_PERCENT = 'float_percent' as const;
+export const FLOAT_PERCENT_3D = 'float_percent_3d' as const; // stat screen
 export const HEADER = 'header' as const;
 export const INVALID = '???' as const;
 
@@ -92,13 +93,24 @@ export function validateValue(inputName: string, inputValue: string): string {
 
 				case FLOAT_PERCENT: {
 					if (!inputValue.trim()) {
-						return '0 %';
+						return '0%';
 					}
 
 					if (isNaN(Number(inputValue))) {
 						return INVALID;
 					}
-					return String(Number(inputValue)) + ' %';
+					return String(Number(inputValue)) + '%';
+				}
+
+				case FLOAT_PERCENT_3D: {
+					if (!inputValue.trim()) {
+						return '0.000%';
+					}
+
+					if (isNaN(Number(inputValue))) {
+						return INVALID;
+					}
+					return String(Number(inputValue).toFixed(3)) + '%';
 				}
 
 				case PART: {

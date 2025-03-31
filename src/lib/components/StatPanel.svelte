@@ -1,6 +1,6 @@
 <script lang="ts">
 	// Imports
-	import { validateValue, FLOAT_PERCENT, INTEGER } from '$lib/scripts/validation';
+	import { validateValue, FLOAT_PERCENT_3D, INTEGER } from '$lib/scripts/validation';
 	import { LOCAL_STATS_MAIN, loadObject, saveObject } from '$lib/scripts/loader';
 	import { type AttributeItem } from '$lib/scripts/loader';
 
@@ -46,11 +46,10 @@
 		const row = flatIndex % n_rows;
 
 		if (grid[row] && grid[row][col]) {
-			if (
-				user_attributes[index].name === 'Crit Rate' ||
-				user_attributes[index].name === 'Crit Damage'
-			) {
-				grid[row][col].value = validateValue(FLOAT_PERCENT, editValue);
+			//  2 -> crit rate
+			// 10 -> crit dmg
+			if (index === 2 || index === 10) {
+				grid[row][col].value = validateValue(FLOAT_PERCENT_3D, editValue);
 			} else {
 				grid[row][col].value = validateValue(INTEGER, editValue);
 			}
@@ -81,11 +80,24 @@
 
 		// Fill the grid with attributes column-first
 		let attributeIndex = 0;
+		let __val = '';
+		let __use_percent = false;
 		for (let c = 0; c < n_columns; c++) {
 			for (let r = 0; r < n_rows; r++) {
 				if (attributeIndex < user_attributes.length) {
+					// only include if attributeIndex < length
+					// the inverse normally never happens but it is whatever
+
+					__val = user_attributes[attributeIndex].value;
+					__use_percent = attributeIndex === 2 || attributeIndex === 10;
+
 					grid[r][c] = {
-						...user_attributes[attributeIndex],
+						// ...user_attributes[attributeIndex],
+						name: user_attributes[attributeIndex].name,
+						icon: user_attributes[attributeIndex].icon,
+						value: __use_percent
+							? validateValue(FLOAT_PERCENT_3D, __val)
+							: validateValue(INTEGER, __val),
 						index: attributeIndex
 					};
 					attributeIndex++;
