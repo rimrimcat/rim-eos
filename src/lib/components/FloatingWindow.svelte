@@ -205,14 +205,16 @@
 >
 	<div
 		class="header"
-		on:mousedown={(e) => handleMouseDown(e, ACTION_DRAG)}
-		on:dblclick={toggleMinimize}
+		onmousedown={(e) => handleMouseDown(e, ACTION_DRAG)}
+		ondblclick={toggleMinimize}
+		role="menu"
+		tabindex="0"
 	>
 		<span class="title">{title}</span>
 		<div class="controls">
 			<button
 				class="control-button"
-				on:click={toggleMinimize}
+				onclick={toggleMinimize}
 				aria-label={minimized ? 'Maximize' : 'Minimize'}
 			>
 				{#if minimized}
@@ -225,42 +227,42 @@
 	</div>
 
 	{#if !minimized}
-		<div class="content" on:mousedown={bringWindowtoFront}>
+		<div class="content" onmousedown={bringWindowtoFront}>
 			<slot>Place your content here</slot>
 		</div>
 
 		<!-- Resize handles -->
 		<div
 			class="resize-handle resize-e"
-			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: 1, y: 0 })}
+			onmousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: 1, y: 0 })}
 		></div>
 		<div
 			class="resize-handle resize-s"
-			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: 0, y: 1 })}
+			onmousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: 0, y: 1 })}
 		></div>
 		<div
 			class="resize-handle resize-se"
-			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: 1, y: 1 })}
+			onmousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: 1, y: 1 })}
 		></div>
 		<div
 			class="resize-handle resize-sw"
-			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: -1, y: 1 })}
+			onmousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: -1, y: 1 })}
 		></div>
 		<div
 			class="resize-handle resize-ne"
-			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: 1, y: -1 })}
+			onmousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: 1, y: -1 })}
 		></div>
 		<div
 			class="resize-handle resize-nw"
-			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: -1, y: -1 })}
+			onmousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: -1, y: -1 })}
 		></div>
 		<div
 			class="resize-handle resize-n"
-			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: 0, y: -1 })}
+			onmousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: 0, y: -1 })}
 		></div>
 		<div
 			class="resize-handle resize-w"
-			on:mousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: -1, y: 0 })}
+			onmousedown={(e) => handleMouseDown(e, ACTION_RESIZE, { x: -1, y: 0 })}
 		></div>
 	{/if}
 </div>
