@@ -17,18 +17,33 @@
 	};
 
 	// Properties
-	export let title = 'Unnamed Component';
-	export let initialX = 100;
-	export let initialY = 100;
-	export let initialWidth = 300;
-	export let initialHeight = 200;
-	export let minWidth = 200;
-	export let minHeight = 100;
-	export let startMinimized = false;
-	export let initialMinimizedX = 50;
-	export let initialMinimizedY = 50;
-	export let minimizedWidth = 250;
-	export let minimizedHeight = 35;
+	// export let title = 'Unnamed Component';
+	// export let initialX = 100;
+	// export let initialY = 100;
+	// export let initialWidth = 300;
+	// export let initialHeight = 200;
+	// export let minWidth = 200;
+	// export let minHeight = 100;
+	// export let startMinimized = false;
+	// export let initialMinimizedX = 50;
+	// export let initialMinimizedY = 50;
+	// export let minimizedWidth = 250;
+	// export let minimizedHeight = 35;
+
+	let {
+		title = 'Unnamed Component',
+		initialX = 100,
+		initialY = 100,
+		initialWidth = 300,
+		initialHeight = 200,
+		minWidth = 200,
+		minHeight = 100,
+		startMinimized = false,
+		initialMinimizedX = 50,
+		initialMinimizedY = 50,
+		minimizedWidth = 250,
+		minimizedHeight = 35
+	} = $props();
 
 	// Constants
 	const ICON_SIZE = 20;
@@ -39,30 +54,30 @@
 	const ACTION_RESIZE = 'resize' as 'resize';
 
 	// State
-	let x = initialX;
-	let y = initialY;
-	let width = initialWidth;
-	let height = initialHeight;
-	let isDragging = false;
-	let isResizing = false;
-	let dragOffsetX = 0;
-	let dragOffsetY = 0;
-	let resizeDirection = { x: 0, y: 0 };
-	let minimized = startMinimized;
-	let previousState: Rectangle | null = null;
-	let minimizedState: PositionXY | null = null;
-	let preventTextSelection = false;
+	let x = $state(initialX);
+	let y = $state(initialY);
+	let width = $state(initialWidth);
+	let height = $state(initialHeight);
+	let isDragging = $state(false);
+	let isResizing = $state(false);
+	let dragOffsetX = $state(0);
+	let dragOffsetY = $state(0);
+	let resizeDirection = $state({ x: 0, y: 0 });
+	let minimized = $state(startMinimized);
+	let previousState: Rectangle | null = $state(null);
+	let minimizedState: PositionXY | null = $state(null);
+	let preventTextSelection = $state(false);
 
 	// Element references
-	let container;
+	let container = $state();
 
-	function handleMouseDown(event, action, direction = { x: 0, y: 0 }) {
-		if (action === 'drag') {
+	function handleMouseDown(event, action: string, direction = { x: 0, y: 0 }) {
+		if (action === ACTION_DRAG) {
 			isDragging = true;
 			dragOffsetX = event.clientX - x;
 			dragOffsetY = event.clientY - y;
 			preventTextSelection = true;
-		} else if (action === 'resize') {
+		} else if (action === ACTION_RESIZE) {
 			isResizing = true;
 			resizeDirection = direction;
 			preventTextSelection = true;
