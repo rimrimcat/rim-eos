@@ -152,6 +152,8 @@
 										<div
 											class="stat-value-text"
 											style="font-size: {14 * SIZE_FACTOR}px"
+											role="textbox"
+											tabindex={10 + cell.index}
 											on:dblclick={() => startEditCell(cell.index)}
 										>
 											{cell.value}
