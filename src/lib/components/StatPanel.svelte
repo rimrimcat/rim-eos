@@ -1,6 +1,14 @@
 <script lang="ts">
 	// Imports
-	import { validateValue, FLOAT_PERCENT, INTEGER } from '$lib/scripts/helpers';
+	import {
+		validateValue,
+		FLOAT_PERCENT,
+		INTEGER,
+		LOCAL_STATS_MAIN,
+		loadObject,
+		saveObject
+	} from '$lib/scripts/helpers';
+
 	// Types
 	type AttributeItem = {
 		name: string;
@@ -9,27 +17,36 @@
 		index?: number;
 	};
 
-	// Properties
-	export let n_rows = 8;
-	export let n_columns = 2;
-	export let attributes: AttributeItem[] = [
-		{ name: 'HP', icon: './stat/hp.webp', value: '989317' },
-		{ name: 'Crit', icon: './stat/crit.webp', value: '11318' },
-		{ name: 'Crit Rate', icon: './stat/crit.webp', value: '1.372%' },
-		{ name: 'Physical Attack', icon: './stat/physatk.webp', value: '15544' },
-		{ name: 'Flame Attack', icon: './stat/flameatk.webp', value: '16976' },
-		{ name: 'Frost Attack', icon: './stat/frostatk.webp', value: '14452' },
-		{ name: 'Volt Attack', icon: './stat/voltatk.webp', value: '17489' },
-		{ name: 'Altered Attack', icon: './stat/placeholder.webp', value: '18793' },
-		{ name: 'Endurance', icon: './stat/placeholder.webp', value: '1300' },
-		{ name: 'Endurance Regen Speed', icon: './stat/placeholder.webp', value: '0.000%' },
-		{ name: 'Crit Damage', icon: './stat/placeholder.webp', value: '64.000%' },
-		{ name: 'Physical Resistance', icon: './stat/physres.webp', value: '8621' },
-		{ name: 'Flame Resistance', icon: './stat/flameres.webp', value: '14666' },
-		{ name: 'Frost Resistance', icon: './stat/frostres.webp', value: '14013' },
-		{ name: 'Volt Resistance', icon: './stat/voltres.webp', value: '10518' },
-		{ name: 'Altered Resistance', icon: './stat/placeholder.webp', value: '4892' }
+	// Loaded
+	const user_attributes_template = [
+		{ name: 'HP', icon: './stat/hp.webp' },
+		{ name: 'Crit', icon: './stat/crit.webp' },
+		{ name: 'Crit Rate', icon: './stat/crit.webp' },
+		{ name: 'Physical Attack', icon: './stat/physatk.webp' },
+		{ name: 'Flame Attack', icon: './stat/flameatk.webp' },
+		{ name: 'Frost Attack', icon: './stat/frostatk.webp' },
+		{ name: 'Volt Attack', icon: './stat/voltatk.webp' },
+		{ name: 'Altered Attack', icon: './stat/placeholder.webp' },
+		{ name: 'Endurance', icon: './stat/placeholder.webp' },
+		{ name: 'Endurance Regen Speed', icon: './stat/placeholder.webp' },
+		{ name: 'Crit Damage', icon: './stat/placeholder.webp' },
+		{ name: 'Physical Resistance', icon: './stat/physres.webp' },
+		{ name: 'Flame Resistance', icon: './stat/flameres.webp' },
+		{ name: 'Frost Resistance', icon: './stat/frostres.webp' },
+		{ name: 'Volt Resistance', icon: './stat/voltres.webp' },
+		{ name: 'Altered Resistance', icon: './stat/placeholder.webp' }
 	];
+	const stats_main = loadObject(LOCAL_STATS_MAIN);
+
+	// Properties
+	const n_rows = 8;
+	const n_columns = 2;
+	let user_attributes: AttributeItem[] = user_attributes_template.map((attr, index) => {
+		return {
+			...attr,
+			value: stats_main[index]
+		};
+	});
 
 	// Constants
 	const SIZE_FACTOR = 1.25;
@@ -42,7 +59,7 @@
 	function startEditCell(index: number) {
 		editingIndex = index;
 
-		const user_value = attributes[index].value;
+		const user_value = user_attributes[index].value;
 		editValue = user_value !== undefined ? user_value : '';
 
 		// Automatically select all content when starting to edit the cell
@@ -56,7 +73,7 @@
 
 	function saveEditCell(index: number) {
 		// Update the source attributes array
-		attributes[index].value = editValue;
+		user_attributes[index].value = editValue;
 
 		// Update grid
 		const flatIndex = index;
@@ -64,7 +81,10 @@
 		const row = flatIndex % n_rows;
 
 		if (grid[row] && grid[row][col]) {
-			if (attributes[index].name === 'Crit Rate' || attributes[index].name === 'Crit Damage') {
+			if (
+				user_attributes[index].name === 'Crit Rate' ||
+				user_attributes[index].name === 'Crit Damage'
+			) {
 				grid[row][col].value = validateValue(FLOAT_PERCENT, editValue);
 			} else {
 				grid[row][col].value = validateValue(INTEGER, editValue);
@@ -98,9 +118,9 @@
 		let attributeIndex = 0;
 		for (let c = 0; c < n_columns; c++) {
 			for (let r = 0; r < n_rows; r++) {
-				if (attributeIndex < attributes.length) {
+				if (attributeIndex < user_attributes.length) {
 					grid[r][c] = {
-						...attributes[attributeIndex],
+						...user_attributes[attributeIndex],
 						index: attributeIndex
 					};
 					attributeIndex++;
