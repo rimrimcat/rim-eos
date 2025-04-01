@@ -70,7 +70,7 @@ const TEMPLATE_GEAR_ROW_DATA: GearRowData[] = [
 ] as const;
 
 // Defaults
-const DEFAULT_STATS_MAIN = [
+export const DEFAULT_STATS_MAIN = [
 	'989317',
 	'11318',
 	'1.372',
@@ -136,12 +136,15 @@ export const DEFAULT_GEAR_MAIN_DATA: GearRowData[] = [
 ];
 // Maps
 
-export function loadObject(key: typeof LOCAL_STATS_MAIN): AttributeItem[];
-export function loadObject(key: typeof LOCAL_GEAR_MAIN): GearSaveObject;
-export function loadObject(key: string): string[] | AttributeItem[] | GearSaveObject | null {
+export function loadObject(key: typeof LOCAL_STATS_MAIN, force_default?: boolean): AttributeItem[];
+export function loadObject(key: typeof LOCAL_GEAR_MAIN, force_default?: boolean): GearSaveObject;
+export function loadObject(
+	key: string,
+	force_default?: boolean
+): string[] | AttributeItem[] | GearSaveObject | null {
 	let loadedObject: string[] | GearSaveObject | null = null;
 
-	if (typeof localStorage !== 'undefined' && localStorage) {
+	if (typeof localStorage !== 'undefined' && localStorage && !force_default) {
 		const savedObject = localStorage.getItem(key);
 		if (savedObject) {
 			loadedObject = JSON.parse(savedObject);
@@ -205,4 +208,8 @@ export async function saveObject(
 		default:
 			break;
 	}
+}
+
+export function cloneObject(obj: object) {
+	return JSON.parse(JSON.stringify(obj));
 }
