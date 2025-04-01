@@ -159,5 +159,9 @@
 
 	.nav-label {
 		flex: 1;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		transition: opacity 0.3s ease;
 	}
 </style>

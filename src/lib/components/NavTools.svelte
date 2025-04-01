@@ -109,7 +109,7 @@
 		border: none;
 		color: #aaaaaa;
 		cursor: pointer;
-		transition: all 1s ease;
+		transition: all 0.3s ease;
 		border-radius: 4px;
 		text-align: left;
 	}
