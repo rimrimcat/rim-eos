@@ -1,7 +1,6 @@
-import type { Component } from '@lucide/svelte';
 import { writable } from 'svelte/store';
+import type { Component } from 'svelte';
 
-// Define types for better type checking
 export type ComponentTool = {
 	id: string;
 	label: string;

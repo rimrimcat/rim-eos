@@ -14,7 +14,6 @@
 	const metadata = {
 		id,
 		label: 'Stat Panel',
-		icon: 'bar-chart',
 		lucide: ChartNoAxesColumn,
 		showInNav: true,
 		order: 0
