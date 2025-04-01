@@ -3,25 +3,25 @@
 	import ComponentTools from '../ComponentTools.svelte';
 	import { registerComponent } from '$lib/scripts/componentMetadata.svelte.ts';
 
+	// Component ID
+	const id = 'analytics';
+
 	// Define this component's metadata including tools
 	const metadata = {
+		id,
 		label: 'Analytics',
 		icon: 'bar-chart',
+		showInNav: true,
+		order: 1, // After dashboard
 		tools: [
 			{ id: 'download', label: 'Download', icon: 'download' },
 			{ id: 'share', label: 'Share', icon: 'share' }
 		]
 	};
 
-	// Component ID
-	const id = 'analytics';
-
-	// Register on mount
 	onMount(() => {
+		// Register only once on mount
 		registerComponent(id, metadata);
-		return () => {
-			// Cleanup could be added here if needed
-		};
 	});
 </script>
 

@@ -1,14 +1,12 @@
 <script>
-	import { activeComponent } from '$lib/scripts/navigation.ts';
+	import { onMount } from 'svelte';
+	import { activeComponent } from '$lib/scripts/componentMetadata.svelte.ts';
 	import Toolbar from './Toolbar.svelte';
 
 	// Components to display
 	import Dashboard from './nav/Dashboard.svelte';
 	import Analytics from './nav/Analytics.svelte';
 	import Settings from './nav/Settings.svelte';
-
-	// Import all components to ensure they're registered on mount
-	// (even if they're not immediately displayed)
 
 	// Map of component IDs to component definitions
 	const componentMap = {
@@ -25,6 +23,13 @@
 	<Toolbar />
 
 	<div class="content-container">
+		<!-- Mount all components but only show the active one -->
+		<div style="display: none">
+			<Dashboard />
+			<Analytics />
+			<Settings />
+		</div>
+
 		<svelte:component this={currentComponent} />
 	</div>
 </div>

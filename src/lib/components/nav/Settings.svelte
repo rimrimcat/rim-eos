@@ -3,25 +3,25 @@
 	import ComponentTools from '../ComponentTools.svelte';
 	import { registerComponent } from '$lib/scripts/componentMetadata.svelte.ts';
 
+	// Component ID
+	const id = 'settings';
+
 	// Define this component's metadata including tools
 	const metadata = {
+		id,
 		label: 'Settings',
 		icon: 'settings',
+		showInNav: true,
+		order: 2, // After analytics
 		tools: [
 			{ id: 'save', label: 'Save', icon: 'save' },
 			{ id: 'reset', label: 'Reset', icon: 'rotate-ccw' }
 		]
 	};
 
-	// Component ID
-	const id = 'settings';
-
-	// Register on mount
 	onMount(() => {
+		// Register only once on mount
 		registerComponent(id, metadata);
-		return () => {
-			// Cleanup could be added here if needed
-		};
 	});
 
 	// Settings component logic here

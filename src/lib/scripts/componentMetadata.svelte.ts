@@ -1,10 +1,29 @@
 import { writable } from 'svelte/store';
-import { navItems } from './navigation.ts';
 
-// Use writable store for component registry
-export const componentRegistry = writable({});
+// Define types for better type checking
+export type ComponentTool = {
+	id: string;
+	label: string;
+	icon: string;
+};
 
-export function registerComponent(id, metadata) {
+export type ComponentMetadata = {
+	id?: string;
+	label: string;
+	icon: string;
+	showInNav?: boolean;
+	order?: number;
+	tools?: ComponentTool[];
+	[key: string]: any; // Allow additional component-specific metadata
+};
+
+// Initialize stores with proper typing
+export const navItems = writable<ComponentMetadata[]>([]);
+export const activeComponent = writable<string>('dashboard');
+export const isCollapsed = writable<boolean>(false);
+export const componentRegistry = writable<Record<string, ComponentMetadata>>({});
+
+export function registerComponent(id: string, metadata: ComponentMetadata) {
 	// Update the registry store
 	componentRegistry.update((registry) => ({
 		...registry,
@@ -17,34 +36,36 @@ export function registerComponent(id, metadata) {
 		const exists = items.some((item) => item.id === id);
 
 		if (!exists && metadata.showInNav !== false) {
-			return [
-				...items,
-				{
-					id,
-					label: metadata.label,
-					icon: metadata.icon
-				}
-			];
+			const newItem = {
+				id,
+				label: metadata.label,
+				icon: metadata.icon,
+				order: metadata.order ?? items.length
+			};
+
+			// Add new item and sort by order
+			const newItems = [...items, newItem];
+			return newItems.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 		}
 
 		return items;
 	});
 }
 
-export function getComponentMetadata(id) {
+export function getComponentMetadata(id: string): ComponentMetadata | null {
 	let result = null;
 	const unsubscribe = componentRegistry.subscribe((registry) => {
 		result = registry[id] || null;
 	});
-	unsubscribe(); // Clean up subscription
+	unsubscribe();
 	return result;
 }
 
-export function getAllComponents() {
+export function getAllComponents(): Record<string, ComponentMetadata> {
 	let result = {};
 	const unsubscribe = componentRegistry.subscribe((registry) => {
 		result = registry;
 	});
-	unsubscribe(); // Clean up subscription
+	unsubscribe();
 	return result;
 }

@@ -1,6 +1,15 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
-	import { navItems, activeComponent, isCollapsed } from '$lib/scripts/navigation.ts';
+	import {
+		navItems,
+		activeComponent,
+		isCollapsed,
+		componentRegistry
+	} from '$lib/scripts/componentMetadata.svelte.ts';
+
+	// Debug log
+	$: console.log('Nav Items:', $navItems);
+	$: console.log('Component Registry:', $componentRegistry);
 
 	const dispatch = createEventDispatcher();
 

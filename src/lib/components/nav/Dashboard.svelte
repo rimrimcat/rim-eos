@@ -3,25 +3,25 @@
 	import ComponentTools from '../ComponentTools.svelte';
 	import { registerComponent } from '$lib/scripts/componentMetadata.svelte.ts';
 
+	// Component ID
+	const id = 'dashboard';
+
 	// Define this component's metadata including tools
 	const metadata = {
+		id,
 		label: 'Dashboard',
 		icon: 'grid',
+		showInNav: true,
+		order: 0, // First item
 		tools: [
 			{ id: 'refresh', label: 'Refresh', icon: 'refresh-cw' },
 			{ id: 'filter', label: 'Filter', icon: 'filter' }
 		]
 	};
 
-	// Component ID
-	const id = 'dashboard';
-
-	// Register on mount
 	onMount(() => {
+		// Register only once on mount
 		registerComponent(id, metadata);
-		return () => {
-			// Cleanup could be added here if needed
-		};
 	});
 </script>
 
