@@ -197,6 +197,8 @@
 			{/each}
 		{/each}
 	</div>
+
+	<h1 class="Pro">Character Stats</h1>
 </div>
 
 <NavTools tools={metadata.tools} />

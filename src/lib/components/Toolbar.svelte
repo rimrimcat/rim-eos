@@ -137,7 +137,7 @@
 		color: #aaaaaa;
 		cursor: pointer;
 		text-align: left;
-		transition: all 1s ease;
+		transition: all 0.3s ease;
 		font-size: 1rem;
 	}
 

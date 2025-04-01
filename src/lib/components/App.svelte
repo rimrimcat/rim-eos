@@ -4,10 +4,12 @@
 
 	// Components to display
 	import StatPanel from './nav/StatPanel.svelte';
+	import OpenCvTest from './nav/OpenCvTest.svelte';
 
 	// Map of component IDs to component definitions
 	const componentMap = {
-		'stat-panel': StatPanel
+		'stat-panel': StatPanel,
+		'opencv-test': OpenCvTest
 	};
 
 	$: currentComponent = componentMap[$activeComponent] || StatPanel;
@@ -19,6 +21,7 @@
 	<div class="content-container">
 		<div style="display: none">
 			<StatPanel />
+			<OpenCvTest />
 		</div>
 		<!-- style="left: {$isCollapsed ? '3.75em' : '13.75em'}" -->
 
