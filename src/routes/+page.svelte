@@ -1,7 +1,7 @@
 <script lang="ts">
 	import GearTable from '$lib/components/GearTable.svelte';
 	import FloatingWindow from '$lib/components/FloatingWindow.svelte';
-	import StatPanel from '$lib/components/StatPanel.svelte';
+	import StatPanel from '$lib/components/nav/StatPanel.svelte';
 	import App from '$lib/components/App.svelte';
 </script>
 

@@ -1,3 +1,4 @@
+import type { Component } from '@lucide/svelte';
 import { writable } from 'svelte/store';
 
 // Define types for better type checking
@@ -10,7 +11,7 @@ export type ComponentTool = {
 export type ComponentMetadata = {
 	id?: string;
 	label: string;
-	icon: string;
+	lucide?: Component;
 	showInNav?: boolean;
 	order?: number;
 	tools?: ComponentTool[];
@@ -19,7 +20,7 @@ export type ComponentMetadata = {
 
 // Initialize stores with proper typing
 export const navItems = writable<ComponentMetadata[]>([]);
-export const activeComponent = writable<string>('dashboard');
+export const activeComponent = writable<string>('stat-panel');
 export const isCollapsed = writable<boolean>(false);
 export const componentRegistry = writable<Record<string, ComponentMetadata>>({});
 
@@ -39,7 +40,7 @@ export function registerComponent(id: string, metadata: ComponentMetadata) {
 			const newItem = {
 				id,
 				label: metadata.label,
-				icon: metadata.icon,
+				lucide: metadata.lucide ? metadata.lucide : undefined,
 				order: metadata.order ?? items.length
 			};
 

@@ -12,7 +12,7 @@
 		label: 'Analytics',
 		icon: 'bar-chart',
 		showInNav: true,
-		order: 1, // After dashboard
+		order: 1,
 		tools: [
 			{ id: 'download', label: 'Download', icon: 'download' },
 			{ id: 'share', label: 'Share', icon: 'share' }
@@ -20,7 +20,6 @@
 	};
 
 	onMount(() => {
-		// Register only once on mount
 		registerComponent(id, metadata);
 	});
 </script>

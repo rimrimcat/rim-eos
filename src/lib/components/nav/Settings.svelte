@@ -12,7 +12,7 @@
 		label: 'Settings',
 		icon: 'settings',
 		showInNav: true,
-		order: 2, // After analytics
+		order: 2,
 		tools: [
 			{ id: 'save', label: 'Save', icon: 'save' },
 			{ id: 'reset', label: 'Reset', icon: 'rotate-ccw' }
@@ -20,7 +20,6 @@
 	};
 
 	onMount(() => {
-		// Register only once on mount
 		registerComponent(id, metadata);
 	});
 

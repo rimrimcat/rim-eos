@@ -3,7 +3,26 @@
 	import { validateValue, FLOAT_PERCENT_3D, INTEGER } from '$lib/scripts/validation.ts';
 	import { LOCAL_STATS_MAIN, loadObject, saveObject } from '$lib/scripts/loader.ts';
 	import { type AttributeItem } from '$lib/scripts/loader.ts';
+	import { onMount } from 'svelte';
+	import { registerComponent } from '$lib/scripts/componentMetadata.svelte.ts';
+	import { ChartNoAxesColumn } from '@lucide/svelte';
 
+	// Component ID
+	const id = 'stat-panel';
+
+	// Define this component's metadata including tools
+	const metadata = {
+		id,
+		label: 'Stat Panel',
+		icon: 'bar-chart',
+		lucide: ChartNoAxesColumn,
+		showInNav: true,
+		order: 0
+	};
+
+	onMount(() => {
+		registerComponent(id, metadata);
+	});
 	// Properties
 	let { n_rows = 8, n_columns = 2, size_factor = 1.25 } = $props();
 
@@ -64,7 +83,6 @@
 	function createGrid() {
 		grid = [];
 
-		// Initialize the grid with empty cells
 		for (let r = 0; r < n_rows; r++) {
 			const row = [];
 			for (let c = 0; c < n_columns; c++) {
@@ -73,7 +91,6 @@
 			grid.push(row);
 		}
 
-		// Fill the grid with attributes column-first
 		let attributeIndex = 0;
 		let __val = '';
 		let __use_percent = false;
@@ -98,18 +115,12 @@
 		}
 	}
 
-	// Calculate initial grid
+	// initialize grid
 	createGrid();
-
-	// Recalculate grid when props change
-	// $: {
-	// 	if (n_rows && n_columns && attributes) {
-	// 		calculateGrid();
-	// 	}
-	// }
 </script>
 
 <div class="stat-panel">
+	<h1 class="head">Character Stats</h1>
 	<div
 		class="grid"
 		style="grid-template-rows: repeat({n_rows}, auto); grid-template-columns: repeat({n_columns}, 1fr);"
@@ -136,8 +147,8 @@
 											class="stat-value"
 											style="font-size: {14 * size_factor}px"
 											bind:value={editValue}
-											on:blur={() => saveEditCell(cell.index)}
-											on:keydown={(e) => handleKeyDown(e, cell.index)}
+											onblur={() => saveEditCell(cell.index)}
+											onkeydown={(e) => handleKeyDown(e, cell.index)}
 										/>
 									{:else}
 										<div
@@ -145,7 +156,7 @@
 											style="font-size: {14 * size_factor}px"
 											role="textbox"
 											tabindex={10 + cell.index}
-											on:dblclick={() => startEditCell(cell.index)}
+											ondblclick={() => startEditCell(cell.index)}
 										>
 											{cell.value}
 										</div>
@@ -169,8 +180,12 @@
 	.stat-panel {
 		border-radius: 8px;
 		padding: 16px;
-		color: #a8b5c5;
+		color: #000000;
 		font-family: Arial, sans-serif;
+	}
+
+	.head {
+		font-family: Georgia, 'Times New Roman', Times, serif;
 	}
 
 	.grid {

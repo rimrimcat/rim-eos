@@ -7,16 +7,16 @@
 	import Dashboard from './nav/Dashboard.svelte';
 	import Analytics from './nav/Analytics.svelte';
 	import Settings from './nav/Settings.svelte';
+	import StatPanel from './nav/StatPanel.svelte';
 
 	// Map of component IDs to component definitions
 	const componentMap = {
-		dashboard: Dashboard,
-		analytics: Analytics,
-		settings: Settings
+		'stat-panel': StatPanel
 	};
 
 	// Get current component
-	$: currentComponent = componentMap[$activeComponent] || Dashboard;
+	// $: currentComponent = componentMap[$activeComponent] || StatPanel;
+	$: currentComponent = componentMap[$activeComponent] || StatPanel;
 </script>
 
 <div class="app-container">
@@ -25,9 +25,7 @@
 	<div class="content-container">
 		<!-- Mount all components but only show the active one -->
 		<div style="display: none">
-			<Dashboard />
-			<Analytics />
-			<Settings />
+			<StatPanel />
 		</div>
 
 		<svelte:component this={currentComponent} />
