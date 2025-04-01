@@ -1,5 +1,5 @@
 <script>
-	import { activeComponent } from '$lib/scripts/componentMetadata.svelte.ts';
+	import { activeComponent, isCollapsed } from '$lib/scripts/componentMetadata.svelte.ts';
 	import Toolbar from './Toolbar.svelte';
 
 	// Components to display
@@ -10,8 +10,6 @@
 		'stat-panel': StatPanel
 	};
 
-	// Get current component
-	// $: currentComponent = componentMap[$activeComponent] || StatPanel;
 	$: currentComponent = componentMap[$activeComponent] || StatPanel;
 </script>
 
@@ -19,10 +17,10 @@
 	<Toolbar />
 
 	<div class="content-container">
-		<!-- Mount all components but only show the active one -->
 		<div style="display: none">
 			<StatPanel />
 		</div>
+		<!-- style="left: {$isCollapsed ? '3.75em' : '13.75em'}" -->
 
 		<svelte:component this={currentComponent} />
 	</div>
@@ -39,5 +37,6 @@
 		flex: 1;
 		display: flex;
 		overflow: hidden;
+		left: 60px;
 	}
 </style>

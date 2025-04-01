@@ -1,18 +1,10 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
-	import {
-		navItems,
-		activeComponent,
-		isCollapsed,
-		componentRegistry
-	} from '$lib/scripts/componentMetadata.svelte.ts';
+	import { navItems, activeComponent, isCollapsed } from '$lib/scripts/componentMetadata.svelte.ts';
 	import { ArrowLeftToLine, Menu } from '@lucide/svelte';
 
-	// Debug log
-	$: console.log('Nav Items:', $navItems);
-	$: console.log('Component Registry:', $componentRegistry);
-
 	const dispatch = createEventDispatcher();
+	let scrollY = 0;
 
 	function toggleCollapse() {
 		$isCollapsed = !$isCollapsed;
@@ -22,9 +14,12 @@
 	function selectComponent(id) {
 		$activeComponent = id;
 	}
+
+	$: console.error(scrollY);
 </script>
 
-<div class="toolbar" class:collapsed={$isCollapsed}>
+<svelte:window bind:scrollY />
+<div class="toolbar" class:collapsed={$isCollapsed} style="translate: 0px {scrollY}px;">
 	<div class="toolbar-header">
 		<button class="collapse-toggle" on:click={toggleCollapse}>
 			{#if $isCollapsed}
@@ -63,12 +58,16 @@
 
 <style>
 	.toolbar {
+		position: sticky;
+		height: 16em;
+
 		display: flex;
 		flex-direction: column;
 		background-color: #1a1a1a;
 		color: #ffffff;
-		height: 100%;
-		transition: width 0.3s ease;
+		transition:
+			width 0.3s ease,
+			translate 0.5s ease;
 		width: 13.75em;
 		border-radius: 1em;
 	}

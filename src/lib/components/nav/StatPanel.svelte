@@ -188,7 +188,7 @@
 		border-radius: 8px;
 		padding: 16px;
 		color: #000000;
-		font-family: Arial, sans-serif;
+		/* font-family: Arial, sans-serif; */
 	}
 
 	.head {
