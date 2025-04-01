@@ -14,8 +14,6 @@
 	function selectComponent(id) {
 		$activeComponent = id;
 	}
-
-	$: console.error(scrollY);
 </script>
 
 <svelte:window bind:scrollY />
@@ -59,37 +57,40 @@
 <style>
 	.toolbar {
 		position: sticky;
-		height: 16em;
-
+		top: 1rem;
+		height: 16rem;
 		display: flex;
 		flex-direction: column;
 		background-color: #1a1a1a;
 		color: #ffffff;
 		transition:
 			width 0.3s ease,
-			translate 0.5s ease;
-		width: 13.75em;
-		border-radius: 1em;
+			translate 0.2s ease;
+		width: 13.75rem;
+		border-radius: 1rem;
 	}
 
 	.toolbar.collapsed {
-		width: 3.75em;
+		width: 3.75rem;
 	}
 	.toolbar-header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 1em;
-		border-bottom: 0.0625em solid #2a2a2a;
+		padding: 1rem;
+		border-bottom: 0.0625rem solid #2a2a2a;
 	}
 
 	.collapse-toggle {
 		background: none;
 		border: none;
+		display: flex;
 		color: #ffffff;
 		cursor: pointer;
-		width: 2.2em;
-		height: 2.2em;
+		align-items: center;
+		justify-content: center;
+		width: 2.2rem;
+		height: 2.2rem;
 		vertical-align: bottom;
 	}
 
@@ -97,8 +98,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: left;
-		padding: 1em;
-		border-bottom: 0.0625em solid #2a2a2a;
+		padding: 1rem;
+		border-bottom: 0.0625rem solid #2a2a2a;
 	}
 
 	.logo {
@@ -107,7 +108,7 @@
 		justify-content: center;
 		text-align: right;
 		font-weight: bold;
-		font-size: 1.2em;
+		font-size: 1.2rem;
 	}
 
 	.collapse-toggle {
@@ -115,27 +116,26 @@
 		border: none;
 		color: #ffffff;
 		cursor: pointer;
-		padding: 0.25em;
+		padding: 0.25rem;
 	}
 
 	.toolbar-nav {
 		display: flex;
 		flex-direction: column;
-		padding: 1em 0;
+		padding: 1rem 0;
 	}
 
 	.nav-item {
 		display: flex;
 		align-items: center;
-		padding: 0.75em 1em;
+		padding: 0.75rem 1rem;
 		background: none;
 		border: none;
 		color: #aaaaaa;
 		cursor: pointer;
 		text-align: left;
 		transition: all 1s ease;
-		font-size: 1em;
-		/* border-left: 0.1875em solid transparent; */
+		font-size: 1rem;
 	}
 
 	.nav-item:hover {
@@ -146,14 +146,14 @@
 	.nav-item.active {
 		background-color: #2a2a2a;
 		color: #ffffff;
-		border-left: 0.1875em solid #4c9aff;
+		border-left: 0.1875rem solid #4c9aff;
 	}
 
 	.nav-icon {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		margin-right: 0.75em;
+		margin-right: 0.75rem;
 	}
 
 	.nav-label {

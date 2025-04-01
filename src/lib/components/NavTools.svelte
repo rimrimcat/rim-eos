@@ -5,6 +5,7 @@
 	export let tools = [];
 
 	let isCollapsed = false;
+	let scrollY = 0;
 	const dispatch = createEventDispatcher();
 
 	function toggleCollapse() {
@@ -13,7 +14,8 @@
 	}
 </script>
 
-<div class="component-tools" class:collapsed={isCollapsed}>
+<svelte:window bind:scrollY />
+<div class="component-tools" class:collapsed={isCollapsed} style="translate: 0px {scrollY}px;">
 	<div class="tools-header">
 		<div class="header-content">
 			{#if !isCollapsed}
@@ -48,30 +50,43 @@
 
 <style>
 	.component-tools {
-		position: fixed;
-		right: 1vw;
-		top: 0.5vh;
-		width: 13.75em;
+		position: sticky;
+		left: 100vw;
+		top: 1rem;
+		width: 13.75rem;
+		height: 15rem;
 		background-color: #1a1a1a;
 		display: flex;
 		flex-direction: column;
 		color: #ffffff;
-		transition: width 0.3s ease;
-		height: auto;
-		border-radius: 1em;
+		transition:
+			width 0.3s ease,
+			translate 0.2s ease;
+		border-radius: 1rem;
 	}
 
 	.component-tools.collapsed {
-		width: 3.75em;
+		position: sticky;
+		width: 3.75rem;
+		height: 15rem;
+		background-color: #1a1a1a;
+		display: flex;
+		flex-direction: column;
+		color: #ffffff;
+		transition:
+			width 0.3s ease,
+			translate 0.2s ease;
+		border-radius: 1rem;
+		font-size: medium;
 	}
 
 	.tools-header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 0.8em;
+		padding: 0.8rem;
 		border-bottom: 1px solid #2a2a2a;
-		font-size: 1.2em;
+		font-size: 1.2rem;
 	}
 
 	.header-content {
@@ -79,7 +94,7 @@
 		flex: 1;
 		justify-content: center;
 		font-weight: bold;
-		font-size: 1.2em;
+		font-size: 1.2rem;
 	}
 
 	.collapse-toggle {
@@ -90,21 +105,21 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 2.2em;
-		height: 2.2em;
+		width: 2.2rem;
+		height: 2.2rem;
 	}
 
 	.tools-list {
-		padding: 1em 0;
+		padding: 1rem 0;
 		display: flex;
 		flex-direction: column;
-		/* gap: 0.8em; */
+		/* gap: 0.8rem; */
 	}
 
 	.tool-item {
 		display: flex;
 		align-items: center;
-		padding: 0.75em 1em;
+		padding: 0.75rem 1rem;
 		background: none;
 		border: none;
 		color: #aaaaaa;
@@ -121,13 +136,13 @@
 
 	.tool-icon {
 		display: flex;
-		padding-left: 0.5em;
+		padding-left: 0.5rem;
 		align-items: center;
 		justify-content: center;
 	}
 
 	.tool-label {
 		flex: 1;
-		margin-left: 1em;
+		margin-left: 1rem;
 	}
 </style>

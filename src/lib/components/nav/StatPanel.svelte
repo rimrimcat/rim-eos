@@ -179,9 +179,9 @@
 			{/each}
 		{/each}
 	</div>
-
-	<NavTools tools={metadata.tools} />
 </div>
+
+<NavTools tools={metadata.tools} />
 
 <style>
 	.stat-panel {
