@@ -1,10 +1,14 @@
 import { writable } from 'svelte/store';
 import type { Component } from 'svelte';
 
+type NoReturnType = () => void;
+
 export type ComponentTool = {
 	id: string;
 	label: string;
-	icon: string;
+	lucide?: Component;
+	type?: string; // button, slider, toggle
+	action?: NoReturnType;
 };
 
 export type ComponentMetadata = {
@@ -39,7 +43,7 @@ export function registerComponent(id: string, metadata: ComponentMetadata) {
 			const newItem = {
 				id,
 				label: metadata.label,
-				lucide: metadata.lucide ? metadata.lucide : undefined,
+				lucide: metadata.lucide ?? undefined,
 				tools: metadata.tools ?? [],
 				order: metadata.order ?? items.length
 			};

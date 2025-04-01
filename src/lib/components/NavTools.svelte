@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import { ArrowRightToLine, Menu, CircleHelp } from '@lucide/svelte';
 
@@ -15,14 +15,18 @@
 </script>
 
 <svelte:window bind:scrollY />
-<div class="component-tools" class:collapsed={isCollapsed} style="translate: 0px {scrollY}px;">
+<div
+	class="component-tools"
+	class:collapsed={isCollapsed}
+	style="translate: 0px {scrollY}px; height: {5.5 + 3 * tools.length}rem"
+>
 	<div class="tools-header">
 		<div class="header-content">
 			{#if !isCollapsed}
 				<span>Actions</span>
 			{/if}
 		</div>
-		<button class="collapse-toggle" on:click={toggleCollapse}>
+		<button class="collapse-toggle" onclick={toggleCollapse}>
 			{#if isCollapsed}
 				<Menu />
 			{:else}
@@ -32,7 +36,11 @@
 	</div>
 	<div class="tools-list">
 		{#each tools as tool}
-			<button class="tool-item" title={isCollapsed ? tool.label : ''}>
+			<button
+				class="tool-item"
+				title={isCollapsed ? tool.label : 'Unset'}
+				onclick={tool.action ?? (() => {})}
+			>
 				<div class="tool-icon">
 					{#if tool.lucide}
 						<svelte:component this={tool.lucide} />
@@ -54,7 +62,6 @@
 		left: 100vw;
 		top: 1rem;
 		width: 13.75rem;
-		height: 15rem;
 		background-color: #1a1a1a;
 		display: flex;
 		flex-direction: column;
@@ -68,7 +75,6 @@
 	.component-tools.collapsed {
 		position: sticky;
 		width: 3.75rem;
-		height: 15rem;
 		background-color: #1a1a1a;
 		display: flex;
 		flex-direction: column;
@@ -136,7 +142,6 @@
 
 	.tool-icon {
 		display: flex;
-		padding-left: 0.5rem;
 		align-items: center;
 		justify-content: center;
 	}

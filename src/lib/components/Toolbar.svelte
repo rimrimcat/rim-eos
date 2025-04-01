@@ -17,7 +17,11 @@
 </script>
 
 <svelte:window bind:scrollY />
-<div class="toolbar" class:collapsed={$isCollapsed} style="translate: 0px {scrollY}px;">
+<div
+	class="toolbar"
+	class:collapsed={$isCollapsed}
+	style="translate: 0px {scrollY}px; height: {5.5 + 4 * $navItems.length}rem"
+>
 	<div class="toolbar-header">
 		<button class="collapse-toggle" on:click={toggleCollapse}>
 			{#if $isCollapsed}
@@ -58,7 +62,6 @@
 	.toolbar {
 		position: sticky;
 		top: 1rem;
-		height: 16rem;
 		display: flex;
 		flex-direction: column;
 		background-color: #1a1a1a;

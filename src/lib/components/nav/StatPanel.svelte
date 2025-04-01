@@ -1,33 +1,17 @@
 <script lang="ts">
 	// Imports
 	import { validateValue, FLOAT_PERCENT_3D, INTEGER } from '$lib/scripts/validation.ts';
-
 	import { LOCAL_STATS_MAIN, loadObject, saveObject } from '$lib/scripts/loader.ts';
 	import { type AttributeItem } from '$lib/scripts/loader.ts';
-	import { onMount } from 'svelte';
-	import { registerComponent } from '$lib/scripts/componentMetadata.svelte.ts';
-	import { ChartNoAxesColumn } from '@lucide/svelte';
+	import {
+		registerComponent,
+		type ComponentMetadata
+	} from '$lib/scripts/componentMetadata.svelte.ts';
+
+	import { ChartNoAxesColumn, Trash2, Download, FilePlus2, ImagePlus } from '@lucide/svelte';
 	import NavTools from '../NavTools.svelte';
+	import { onMount } from 'svelte';
 
-	// Component ID
-	const id = 'stat-panel';
-
-	// Define this component's metadata including tools
-	const metadata = {
-		id,
-		label: 'Stat Panel',
-		lucide: ChartNoAxesColumn,
-		showInNav: true,
-		order: 0,
-		tools: [
-			{ id: 'download', label: 'Download' },
-			{ id: 'share', label: 'Share' }
-		]
-	};
-
-	onMount(() => {
-		registerComponent(id, metadata);
-	});
 	// Properties
 	let { n_rows = 8, n_columns = 2, size_factor = 1.25 } = $props();
 
@@ -120,12 +104,51 @@
 		}
 	}
 
+	function resetStats() {
+		user_attributes = loadObject(LOCAL_STATS_MAIN, true);
+		saveObject(LOCAL_STATS_MAIN, user_attributes).then(() => {
+			console.log('Cleared key: ' + LOCAL_STATS_MAIN);
+		});
+		createGrid();
+	}
+
+	// register
+	const id = 'stat-panel';
+
+	const metadata: ComponentMetadata = {
+		id,
+		label: 'Stat Panel',
+		lucide: ChartNoAxesColumn,
+		showInNav: true,
+		order: 0,
+		tools: [
+			{ id: 'screenshot', label: 'From Screenshot', lucide: ImagePlus },
+			{ id: 'import', label: 'Import', lucide: FilePlus2 },
+			{ id: 'export', label: 'Export', lucide: Download },
+			{ id: 'reset', label: 'Reset', lucide: Trash2, action: resetStats },
+			{ id: 'share', label: 'Share' }
+		]
+	};
+
+	onMount(() => {
+		registerComponent(id, metadata);
+	});
+
 	// initialize grid
 	createGrid();
+
+	// let __width__ = $state(0);
+	// let __height__ = $state(0);
+	// $inspect('width', __width__, 'rempx', getComputedStyle(document.documentElement).fontSize);
+	// $inspect('height', __height__);
+	//780 px => 48.75 rem for 8x2 height
+	//545 px => 34.0625 rem for 8x2 width
 </script>
 
+<!-- bind:clientWidth={__width__} bind:clientHeight={__height__} -->
 <div class="stat-panel">
 	<h1 class="head">Character Stats</h1>
+
 	<div
 		class="grid"
 		style="grid-template-rows: repeat({n_rows}, auto); grid-template-columns: repeat({n_columns}, 1fr);"
@@ -136,21 +159,16 @@
 					<div class="stat-cell" style="grid-row: {rowIndex + 1}; grid-column: {colIndex + 1};">
 						<div class="stat-content">
 							<div class="stat-icon">
-								<img
-									src={cell.icon}
-									alt={cell.name + ' icon'}
-									style="width: {24 * size_factor}px; height: {24 * size_factor}px"
-								/>
+								<img src={cell.icon} alt={cell.name + ' icon'} />
 							</div>
 							<div class="stat-info">
-								<div class="stat-name" style="font-size: {12 * size_factor}px">{cell.name}</div>
+								<div class="stat-name">{cell.name}</div>
 								<div class="stat-value-container">
 									{#if editingIndex === cell.index}
 										<input
 											id="a"
 											type="text"
 											class="stat-value"
-											style="font-size: {14 * size_factor}px"
 											bind:value={editValue}
 											onblur={() => saveEditCell(cell.index)}
 											onkeydown={(e) => handleKeyDown(e, cell.index)}
@@ -185,10 +203,8 @@
 
 <style>
 	.stat-panel {
-		border-radius: 8px;
-		padding: 16px;
+		padding: 1rem;
 		color: #000000;
-		/* font-family: Arial, sans-serif; */
 	}
 
 	.head {
@@ -197,22 +213,22 @@
 
 	.grid {
 		display: grid;
-		gap: 12px 32px;
+		gap: 0.9rem 1rem;
 	}
 
 	.stat-cell {
-		min-height: 40px;
+		/* min-height: 1rem; */
 	}
 
 	.stat-content {
 		display: flex;
 		align-items: center;
-		gap: 8px;
+		gap: 0.5rem;
 	}
 
 	.stat-icon {
-		width: 24px;
-		height: 24px;
+		width: 2.5rem;
+		height: 2.5rem;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -228,26 +244,30 @@
 		flex-grow: 1;
 		display: flex;
 		flex-direction: column;
-		gap: 2px;
+		gap: 0.1rem;
 	}
 
 	.stat-name {
+		font-size: 1rem;
 		font-weight: bold;
-		padding-left: 5px;
+		padding-left: 0.4rem;
 		color: #000000;
 	}
 
 	.stat-value-container {
+		font-size: 1rem;
 		width: 40%;
+		border-radius: 2rem;
 	}
 
 	.stat-value {
 		background-color: rgba(20, 30, 40, 0.6);
 		border: 1px solid rgba(100, 120, 140, 0.3);
-		border-radius: 4px;
+		border-radius: 0.1rem;
 		color: white;
 		padding: 2px 6px;
 		width: 100%;
+		font-size: 1rem;
 	}
 
 	.stat-value-text {
