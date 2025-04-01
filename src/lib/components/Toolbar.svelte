@@ -26,11 +26,6 @@
 
 <div class="toolbar" class:collapsed={$isCollapsed}>
 	<div class="toolbar-header">
-		<div class="logo">
-			{#if !$isCollapsed}
-				<span class="logo-text">MyApp</span>
-			{/if}
-		</div>
 		<button class="collapse-toggle" on:click={toggleCollapse}>
 			{#if $isCollapsed}
 				<Menu />
@@ -38,6 +33,12 @@
 				<ArrowLeftToLine />
 			{/if}
 		</button>
+
+		<div class="logo">
+			{#if !$isCollapsed}
+				<span class="logo-text">GearComp</span>
+			{/if}
+		</div>
 	</div>
 
 	<nav class="toolbar-nav">
@@ -48,21 +49,9 @@
 				on:click={() => selectComponent(item.id)}
 			>
 				<div class="nav-icon">
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						width="20"
-						height="20"
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						stroke-linecap="round"
-						stroke-linejoin="round"
-					>
-						{#if item.lucide}
-							<svelte:component this={item.lucide} />
-						{/if}
-					</svg>
+					{#if item.lucide}
+						<svelte:component this={item.lucide} />
+					{/if}
 				</div>
 				{#if !$isCollapsed}
 					<span class="nav-label">{item.label}</span>
@@ -80,26 +69,19 @@
 		color: #ffffff;
 		height: 100%;
 		transition: width 0.3s ease;
-		width: 220px;
+		width: 13.75em;
+		border-radius: 1em;
 	}
 
 	.toolbar.collapsed {
-		width: 60px;
+		width: 3.75em;
 	}
-
 	.toolbar-header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 16px;
-		border-bottom: 1px solid #2a2a2a;
-	}
-
-	.logo {
-		display: flex;
-		align-items: center;
-		font-weight: bold;
-		font-size: 18px;
+		padding: 1em;
+		border-bottom: 0.0625em solid #2a2a2a;
 	}
 
 	.collapse-toggle {
@@ -107,26 +89,54 @@
 		border: none;
 		color: #ffffff;
 		cursor: pointer;
-		padding: 4px;
+		width: 2.2em;
+		height: 2.2em;
+		vertical-align: bottom;
+	}
+
+	.toolbar-header {
+		display: flex;
+		align-items: center;
+		justify-content: left;
+		padding: 1em;
+		border-bottom: 0.0625em solid #2a2a2a;
+	}
+
+	.logo {
+		display: flex;
+		flex: 1;
+		justify-content: center;
+		text-align: right;
+		font-weight: bold;
+		font-size: 1.2em;
+	}
+
+	.collapse-toggle {
+		background: none;
+		border: none;
+		color: #ffffff;
+		cursor: pointer;
+		padding: 0.25em;
 	}
 
 	.toolbar-nav {
 		display: flex;
 		flex-direction: column;
-		padding: 16px 0;
+		padding: 1em 0;
 	}
 
 	.nav-item {
 		display: flex;
 		align-items: center;
-		padding: 12px 16px;
+		padding: 0.75em 1em;
 		background: none;
 		border: none;
 		color: #aaaaaa;
 		cursor: pointer;
 		text-align: left;
-		transition: all 0.2s ease;
-		border-left: 3px solid transparent;
+		transition: all 1s ease;
+		font-size: 1em;
+		/* border-left: 0.1875em solid transparent; */
 	}
 
 	.nav-item:hover {
@@ -137,14 +147,14 @@
 	.nav-item.active {
 		background-color: #2a2a2a;
 		color: #ffffff;
-		border-left: 3px solid #4c9aff;
+		border-left: 0.1875em solid #4c9aff;
 	}
 
 	.nav-icon {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		margin-right: 12px;
+		margin-right: 0.75em;
 	}
 
 	.nav-label {

@@ -1,11 +1,13 @@
 <script lang="ts">
 	// Imports
 	import { validateValue, FLOAT_PERCENT_3D, INTEGER } from '$lib/scripts/validation.ts';
+
 	import { LOCAL_STATS_MAIN, loadObject, saveObject } from '$lib/scripts/loader.ts';
 	import { type AttributeItem } from '$lib/scripts/loader.ts';
 	import { onMount } from 'svelte';
 	import { registerComponent } from '$lib/scripts/componentMetadata.svelte.ts';
 	import { ChartNoAxesColumn } from '@lucide/svelte';
+	import NavTools from '../NavTools.svelte';
 
 	// Component ID
 	const id = 'stat-panel';
@@ -16,7 +18,11 @@
 		label: 'Stat Panel',
 		lucide: ChartNoAxesColumn,
 		showInNav: true,
-		order: 0
+		order: 0,
+		tools: [
+			{ id: 'download', label: 'Download' },
+			{ id: 'share', label: 'Share' }
+		]
 	};
 
 	onMount(() => {
@@ -173,6 +179,8 @@
 			{/each}
 		{/each}
 	</div>
+
+	<NavTools tools={metadata.tools} />
 </div>
 
 <style>

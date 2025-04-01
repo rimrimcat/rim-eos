@@ -1,12 +1,8 @@
 <script>
-	import { onMount } from 'svelte';
 	import { activeComponent } from '$lib/scripts/componentMetadata.svelte.ts';
 	import Toolbar from './Toolbar.svelte';
 
 	// Components to display
-	import Dashboard from './nav/Dashboard.svelte';
-	import Analytics from './nav/Analytics.svelte';
-	import Settings from './nav/Settings.svelte';
 	import StatPanel from './nav/StatPanel.svelte';
 
 	// Map of component IDs to component definitions

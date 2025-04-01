@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import ComponentTools from '../ComponentTools.svelte';
+	import ComponentTools from '../NavTools.svelte';
 	import { registerComponent } from '$lib/scripts/componentMetadata.svelte.ts';
 
 	// Component ID

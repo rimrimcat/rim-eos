@@ -40,6 +40,7 @@ export function registerComponent(id: string, metadata: ComponentMetadata) {
 				id,
 				label: metadata.label,
 				lucide: metadata.lucide ? metadata.lucide : undefined,
+				tools: metadata.tools ?? [],
 				order: metadata.order ?? items.length
 			};
 
