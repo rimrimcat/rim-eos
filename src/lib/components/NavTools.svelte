@@ -149,5 +149,9 @@
 	.tool-label {
 		flex: 1;
 		margin-left: 1rem;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		transition: opacity 0.3s ease;
 	}
 </style>
