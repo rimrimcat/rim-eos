@@ -7,6 +7,7 @@
 	import OpenCvTest from './nav/OpenCvTest.svelte';
 
 	// Map of component IDs to component definitions
+
 	const componentMap = {
 		'stat-panel': StatPanel,
 		'opencv-test': OpenCvTest
