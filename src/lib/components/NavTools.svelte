@@ -59,23 +59,24 @@
 		left: 100vw;
 		top: 1rem;
 		width: 13.75rem;
-		background-color: var(--dialog-bg-color);
+		background-color: var(--bg-color);
 		display: flex;
 		flex-direction: column;
-		color: var(--dialog-text-color);
+		color: var(--text-color);
 		transition:
 			width 0.3s ease,
 			translate 0.2s ease;
 		border-radius: 1rem;
+		box-shadow: 0 4px 8px var(--shadow-color);
 	}
 
 	.component-tools.collapsed {
 		position: sticky;
 		width: 3.75rem;
-		background-color: var(--dialog-bg-color);
+		background-color: var(--bg-color);
 		display: flex;
 		flex-direction: column;
-		color: var(--dialog-text-color);
+		color: var(--text-color);
 		transition:
 			width 0.3s ease,
 			translate 0.2s ease;
@@ -88,7 +89,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 0.8rem;
-		border-bottom: 1px solid var(--dialog-border-color);
+		border-bottom: 1px solid var(--border-color);
 		font-size: 1.2rem;
 	}
 
@@ -98,13 +99,13 @@
 		justify-content: center;
 		font-weight: bold;
 		font-size: 1.2rem;
-		color: var(--dialog-title-color);
+		color: var(--title-color);
 	}
 
 	.collapse-toggle {
 		background: none;
 		border: none;
-		color: var(--dialog-text-color);
+		color: var(--text-color);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
@@ -114,7 +115,7 @@
 	}
 
 	.collapse-toggle:hover {
-		background-color: var(--dialog-hover-bg);
+		background-color: var(--hover-bg);
 	}
 
 	.tools-list {
@@ -130,7 +131,7 @@
 		padding: 0.75rem 1rem;
 		background: none;
 		border: none;
-		color: var(--dialog-text-color);
+		color: var(--text-color);
 		cursor: pointer;
 		transition: all 0.3s ease;
 		border-radius: 4px;
@@ -138,8 +139,8 @@
 	}
 
 	.tool-item:hover {
-		background-color: var(--dialog-hover-bg);
-		color: var(--dialog-text-color);
+		background-color: var(--hover-bg);
+		color: var(--text-color);
 	}
 
 	.tool-icon {

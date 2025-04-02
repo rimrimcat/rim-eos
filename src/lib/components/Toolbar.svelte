@@ -47,7 +47,6 @@
 				<div class="nav-icon">
 					{#if item.lucide}
 						<item.lucide />
-						<!-- <svelte:component this={item.lucide} /> -->
 					{/if}
 				</div>
 				{#if !$isCollapsed}
@@ -64,14 +63,14 @@
 		top: 1rem;
 		display: flex;
 		flex-direction: column;
-		background-color: var(--dialog-bg-color);
-		color: var(--dialog-text-color);
+		background-color: var(--bg-color);
+		color: var(--text-color);
 		transition:
 			width 0.3s ease,
 			translate 0.2s ease;
 		width: 13.75rem;
 		border-radius: 1rem;
-		box-shadow: 0 4px 8px var(--dialog-shadow-color);
+		box-shadow: 0 4px 8px var(--shadow-color);
 	}
 
 	.toolbar.collapsed {
@@ -82,14 +81,14 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 1rem;
-		border-bottom: 0.0625rem solid var(--dialog-border-color);
+		border-bottom: 0.0625rem solid var(--border-color);
 	}
 
 	.collapse-toggle {
 		background: none;
 		border: none;
 		display: flex;
-		color: var(--dialog-text-color);
+		color: var(--text-color);
 		cursor: pointer;
 		align-items: center;
 		justify-content: center;
@@ -99,7 +98,7 @@
 	}
 
 	.collapse-toggle:hover {
-		background-color: var(--dialog-hover-bg);
+		background-color: var(--hover-bg);
 		border-radius: 0.25rem;
 	}
 
@@ -108,7 +107,7 @@
 		align-items: center;
 		justify-content: left;
 		padding: 1rem;
-		border-bottom: 0.0625rem solid var(--dialog-border-color);
+		border-bottom: 0.0625rem solid var(--border-color);
 	}
 
 	.logo {
@@ -118,7 +117,7 @@
 		text-align: right;
 		font-weight: bold;
 		font-size: 1.2rem;
-		color: var(--dialog-title-color);
+		color: var(--title-color);
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
@@ -136,7 +135,7 @@
 		padding: 0.75rem 1rem;
 		background: none;
 		border: none;
-		color: var(--dialog-text-color);
+		color: var(--text-color);
 		cursor: pointer;
 		text-align: left;
 		transition: all 0.3s ease;
@@ -145,15 +144,15 @@
 	}
 
 	.nav-item:hover {
-		background-color: var(--dialog-hover-bg);
-		color: var(--dialog-text-color);
+		background-color: var(--hover-bg);
+		color: var(--text-color);
 		opacity: 1;
 	}
 
 	.nav-item.active {
-		background-color: var(--dialog-active-bg);
-		color: var(--dialog-text-color);
-		border-left: 0.1875rem solid var(--dialog-focus-outline);
+		background-color: var(--active-bg);
+		color: var(--text-color);
+		border-left: 0.1875rem solid var(--focus-outline);
 		opacity: 1;
 	}
 

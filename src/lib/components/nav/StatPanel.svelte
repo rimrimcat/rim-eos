@@ -134,16 +134,8 @@
 
 	// initialize grid
 	createGrid();
-
-	// let __width__ = $state(0);
-	// let __height__ = $state(0);
-	// $inspect('width', __width__, 'rempx', getComputedStyle(document.documentElement).fontSize);
-	// $inspect('height', __height__);
-	//780 px => 48.75 rem for 8x2 height
-	//545 px => 34.0625 rem for 8x2 width
 </script>
 
-<!-- bind:clientWidth={__width__} bind:clientHeight={__height__} -->
 <div class="stat-panel">
 	<h1 class="head">Character Stats</h1>
 
@@ -204,11 +196,13 @@
 <style>
 	.stat-panel {
 		padding: 1rem;
-		color: #000000;
+		color: var(--text-color);
+		background-color: var(--bg-color);
 	}
 
 	.head {
 		font-family: Georgia, 'Times New Roman', Times, serif;
+		color: var(--title-color);
 	}
 
 	.grid {
@@ -217,7 +211,8 @@
 	}
 
 	.stat-cell {
-		/* min-height: 1rem; */
+		background-color: var(--bg-color);
+		/* border: 1px solid var(--border-color); */
 	}
 
 	.stat-content {
@@ -238,6 +233,7 @@
 		width: 100%;
 		height: 100%;
 		object-fit: contain;
+		filter: invert(75%);
 	}
 
 	.stat-info {
@@ -251,7 +247,7 @@
 		font-size: 1rem;
 		font-weight: bold;
 		padding-left: 0.4rem;
-		color: #000000;
+		color: var(--text-color);
 	}
 
 	.stat-value-container {
@@ -261,10 +257,10 @@
 	}
 
 	.stat-value {
-		background-color: rgba(20, 30, 40, 0.6);
-		border: 1px solid rgba(100, 120, 140, 0.3);
+		background-color: var(--button-bg);
+		border: 1px solid var(--button-border);
 		border-radius: 0.1rem;
-		color: white;
+		color: var(--button-text);
 		padding: 2px 6px;
 		width: 100%;
 		font-size: 1rem;
@@ -272,7 +268,7 @@
 
 	.stat-value-text {
 		padding: 2px 6px;
-		color: black;
+		color: var(--text-color);
 		cursor: pointer;
 	}
 
