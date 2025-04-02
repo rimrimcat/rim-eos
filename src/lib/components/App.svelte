@@ -1,20 +1,35 @@
-<script>
-	import { activeComponent, isCollapsed } from '$lib/scripts/componentMetadata.svelte.ts';
+<script lang="ts">
+	import { activeComponent } from '$lib/scripts/navMetadata.svelte.ts';
 	import Toolbar from './Toolbar.svelte';
+	import Dialog from './Dialog.svelte';
 
 	// Components to display
 	import StatPanel from './nav/StatPanel.svelte';
 	import OpenCvTest from './nav/OpenCvTest.svelte';
+	import type { Component } from 'svelte';
 
 	// Map of component IDs to component definitions
-
 	const componentMap = {
 		'stat-panel': StatPanel,
 		'opencv-test': OpenCvTest
 	};
 
-	$: currentComponent = componentMap[$activeComponent] || StatPanel;
+	// Other stuff
+	let dialogOpen = $state(true);
+	const CurrentComponent: Component = $derived(componentMap[$activeComponent] || StatPanel);
 </script>
+
+<Dialog
+	bind:open={dialogOpen}
+	title="WARNINGGGGG"
+	blocking={true}
+	blur={true}
+	closable={true}
+	buttons={['OK', 'Cancel']}
+>
+	<h3>Not Important Information</h3>
+	<p>Go on.</p>
+</Dialog>
 
 <div class="app-container">
 	<Toolbar />
@@ -24,9 +39,8 @@
 			<StatPanel />
 			<OpenCvTest />
 		</div>
-		<!-- style="left: {$isCollapsed ? '3.75em' : '13.75em'}" -->
 
-		<svelte:component this={currentComponent} />
+		<CurrentComponent />
 	</div>
 </div>
 
@@ -41,6 +55,6 @@
 		flex: 1;
 		display: flex;
 		overflow: hidden;
-		left: 60px;
+		/* left: 60px; */
 	}
 </style>

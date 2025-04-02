@@ -1,6 +1,6 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
-	import { navItems, activeComponent, isCollapsed } from '$lib/scripts/componentMetadata.svelte.ts';
+	import { navItems, activeComponent, isCollapsed } from '$lib/scripts/navMetadata.svelte.ts';
 	import { ArrowLeftToLine, Menu } from '@lucide/svelte';
 
 	const dispatch = createEventDispatcher();

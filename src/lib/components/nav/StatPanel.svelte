@@ -3,10 +3,7 @@
 	import { validateValue, FLOAT_PERCENT_3D, INTEGER } from '$lib/scripts/validation.ts';
 	import { LOCAL_STATS_MAIN, loadObject, saveObject } from '$lib/scripts/loader.ts';
 	import { type AttributeItem } from '$lib/scripts/loader.ts';
-	import {
-		registerComponent,
-		type ComponentMetadata
-	} from '$lib/scripts/componentMetadata.svelte.ts';
+	import { registerComponent, type ComponentMetadata } from '$lib/scripts/navMetadata.svelte.ts';
 
 	import { ChartNoAxesColumn, Trash2, Download, FilePlus2, ImagePlus } from '@lucide/svelte';
 	import NavTools from '../NavTools.svelte';
