@@ -1,17 +1,16 @@
-<script>
-	import { createEventDispatcher } from 'svelte';
+<script lang="ts">
 	import { navItems, activeComponent, isCollapsed } from '$lib/scripts/navMetadata.svelte.ts';
 	import { ArrowLeftToLine, Menu } from '@lucide/svelte';
 
-	const dispatch = createEventDispatcher();
-	let scrollY = 0;
+	const DEFAULT_ACTIVE_COMPONENT = 'stat-panel' as const;
+
+	let scrollY = $state(0);
 
 	function toggleCollapse() {
 		$isCollapsed = !$isCollapsed;
-		dispatch('toggleCollapse', { isCollapsed: $isCollapsed });
 	}
 
-	function selectComponent(id) {
+	function selectComponent(id: string) {
 		$activeComponent = id;
 	}
 </script>
@@ -23,7 +22,7 @@
 	style="translate: 0px {scrollY}px; height: {5.5 + 4 * $navItems.length}rem"
 >
 	<div class="toolbar-header">
-		<button class="collapse-toggle" on:click={toggleCollapse}>
+		<button class="collapse-toggle" onclick={toggleCollapse}>
 			{#if $isCollapsed}
 				<Menu />
 			{:else}
@@ -43,11 +42,12 @@
 			<button
 				class="nav-item"
 				class:active={$activeComponent === item.id}
-				on:click={() => selectComponent(item.id)}
+				onclick={() => selectComponent(item.id ?? DEFAULT_ACTIVE_COMPONENT)}
 			>
 				<div class="nav-icon">
 					{#if item.lucide}
-						<svelte:component this={item.lucide} />
+						<item.lucide />
+						<!-- <svelte:component this={item.lucide} /> -->
 					{/if}
 				</div>
 				{#if !$isCollapsed}
@@ -64,13 +64,14 @@
 		top: 1rem;
 		display: flex;
 		flex-direction: column;
-		background-color: #1a1a1a;
-		color: #ffffff;
+		background-color: var(--dialog-bg-color);
+		color: var(--dialog-text-color);
 		transition:
 			width 0.3s ease,
 			translate 0.2s ease;
 		width: 13.75rem;
 		border-radius: 1rem;
+		box-shadow: 0 4px 8px var(--dialog-shadow-color);
 	}
 
 	.toolbar.collapsed {
@@ -81,14 +82,14 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 1rem;
-		border-bottom: 0.0625rem solid #2a2a2a;
+		border-bottom: 0.0625rem solid var(--dialog-border-color);
 	}
 
 	.collapse-toggle {
 		background: none;
 		border: none;
 		display: flex;
-		color: #ffffff;
+		color: var(--dialog-text-color);
 		cursor: pointer;
 		align-items: center;
 		justify-content: center;
@@ -97,12 +98,17 @@
 		vertical-align: bottom;
 	}
 
+	.collapse-toggle:hover {
+		background-color: var(--dialog-hover-bg);
+		border-radius: 0.25rem;
+	}
+
 	.toolbar-header {
 		display: flex;
 		align-items: center;
 		justify-content: left;
 		padding: 1rem;
-		border-bottom: 0.0625rem solid #2a2a2a;
+		border-bottom: 0.0625rem solid var(--dialog-border-color);
 	}
 
 	.logo {
@@ -112,14 +118,10 @@
 		text-align: right;
 		font-weight: bold;
 		font-size: 1.2rem;
-	}
-
-	.collapse-toggle {
-		background: none;
-		border: none;
-		color: #ffffff;
-		cursor: pointer;
-		padding: 0.25rem;
+		color: var(--dialog-title-color);
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 
 	.toolbar-nav {
@@ -134,22 +136,25 @@
 		padding: 0.75rem 1rem;
 		background: none;
 		border: none;
-		color: #aaaaaa;
+		color: var(--dialog-text-color);
 		cursor: pointer;
 		text-align: left;
 		transition: all 0.3s ease;
 		font-size: 1rem;
+		opacity: 0.7;
 	}
 
 	.nav-item:hover {
-		background-color: #2a2a2a;
-		color: #ffffff;
+		background-color: var(--dialog-hover-bg);
+		color: var(--dialog-text-color);
+		opacity: 1;
 	}
 
 	.nav-item.active {
-		background-color: #2a2a2a;
-		color: #ffffff;
-		border-left: 0.1875rem solid #4c9aff;
+		background-color: var(--dialog-active-bg);
+		color: var(--dialog-text-color);
+		border-left: 0.1875rem solid var(--dialog-focus-outline);
+		opacity: 1;
 	}
 
 	.nav-icon {

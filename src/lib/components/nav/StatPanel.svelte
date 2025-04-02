@@ -8,6 +8,7 @@
 	import { ChartNoAxesColumn, Trash2, Download, FilePlus2, ImagePlus } from '@lucide/svelte';
 	import NavTools from '../NavTools.svelte';
 	import { onMount } from 'svelte';
+	import Dialog from '../Dialog.svelte';
 
 	// Properties
 	let { n_rows = 8, n_columns = 2, size_factor = 1.25 } = $props();

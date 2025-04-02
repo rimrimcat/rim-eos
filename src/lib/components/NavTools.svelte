@@ -1,16 +1,13 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import { ArrowRightToLine, Menu, CircleHelp } from '@lucide/svelte';
 
-	export let tools = [];
+	let { tools = [] } = $props();
 
-	let isCollapsed = false;
-	let scrollY = 0;
-	const dispatch = createEventDispatcher();
+	let isCollapsed = $state(false);
+	let scrollY = $state(0);
 
 	function toggleCollapse() {
 		isCollapsed = !isCollapsed;
-		dispatch('toggleCollapse', { isCollapsed });
 	}
 </script>
 
@@ -43,7 +40,7 @@
 			>
 				<div class="tool-icon">
 					{#if tool.lucide}
-						<svelte:component this={tool.lucide} />
+						<tool.lucide />
 					{:else}
 						<CircleHelp />
 					{/if}
@@ -62,10 +59,10 @@
 		left: 100vw;
 		top: 1rem;
 		width: 13.75rem;
-		background-color: #1a1a1a;
+		background-color: var(--dialog-bg-color);
 		display: flex;
 		flex-direction: column;
-		color: #ffffff;
+		color: var(--dialog-text-color);
 		transition:
 			width 0.3s ease,
 			translate 0.2s ease;
@@ -75,10 +72,10 @@
 	.component-tools.collapsed {
 		position: sticky;
 		width: 3.75rem;
-		background-color: #1a1a1a;
+		background-color: var(--dialog-bg-color);
 		display: flex;
 		flex-direction: column;
-		color: #ffffff;
+		color: var(--dialog-text-color);
 		transition:
 			width 0.3s ease,
 			translate 0.2s ease;
@@ -91,7 +88,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 0.8rem;
-		border-bottom: 1px solid #2a2a2a;
+		border-bottom: 1px solid var(--dialog-border-color);
 		font-size: 1.2rem;
 	}
 
@@ -101,18 +98,23 @@
 		justify-content: center;
 		font-weight: bold;
 		font-size: 1.2rem;
+		color: var(--dialog-title-color);
 	}
 
 	.collapse-toggle {
 		background: none;
 		border: none;
-		color: #ffffff;
+		color: var(--dialog-text-color);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		width: 2.2rem;
 		height: 2.2rem;
+	}
+
+	.collapse-toggle:hover {
+		background-color: var(--dialog-hover-bg);
 	}
 
 	.tools-list {
@@ -128,7 +130,7 @@
 		padding: 0.75rem 1rem;
 		background: none;
 		border: none;
-		color: #aaaaaa;
+		color: var(--dialog-text-color);
 		cursor: pointer;
 		transition: all 0.3s ease;
 		border-radius: 4px;
@@ -136,8 +138,8 @@
 	}
 
 	.tool-item:hover {
-		background-color: #2a2a2a;
-		color: #ffffff;
+		background-color: var(--dialog-hover-bg);
+		color: var(--dialog-text-color);
 	}
 
 	.tool-icon {

@@ -34,6 +34,7 @@ export type GearSaveObject = {
 // Constants
 export const LOCAL_STATS_MAIN = 'stats_main' as const;
 export const LOCAL_GEAR_MAIN = 'gear_main' as const;
+export const STYLES = 'styles' as const;
 
 // Templates
 const TEMPLATE_USER_ATTRIBUTES = [
@@ -134,15 +135,50 @@ export const DEFAULT_GEAR_MAIN_DATA: GearRowData[] = [
 	{ id: 'main_exoskeleton', part: 'Exoskeleton' },
 	{ id: 'main_reactor', part: 'Reactor' }
 ];
-// Maps
+
+export const DEFAULT_STYLES = {
+	// Base colors
+	'bg-color': '#1e1e2e',
+	'text-color': '#cdd6f4',
+	'title-color': '#cba6f7',
+	'border-color': '#313244',
+
+	// Button colors
+	'button-bg': '#313244',
+	'button-text': '#cdd6f4',
+	'button-border': '#45475a',
+	'button-hover-bg': '#45475a',
+
+	// Primary button colors
+	'button-primary-bg': '#89b4fa',
+	'button-primary-text': '#1e1e2e',
+	'button-primary-border': '#74c7ec',
+	'button-primary-hover-bg': '#74c7ec',
+
+	// Interactive elements
+	'hover-bg': '#313244',
+	'active-bg': '#45475a',
+	'focus-outline': '#89b4fa',
+
+	// Overlay and shadows
+	'overlay-bg': 'rgba(0, 0, 0, 0.5)',
+	'shadow-color': 'rgba(0, 0, 0, 0.4)',
+
+	// Status colors
+	'error-color': '#f38ba8',
+	'success-color': '#a6e3a1',
+	'warning-color': '#f9e2af',
+	'info-color': '#89dceb'
+};
 
 export function loadObject(key: typeof LOCAL_STATS_MAIN, force_default?: boolean): AttributeItem[];
 export function loadObject(key: typeof LOCAL_GEAR_MAIN, force_default?: boolean): GearSaveObject;
+export function loadObject(key: typeof STYLES, force_default?: boolean): typeof DEFAULT_STYLES;
 export function loadObject(
 	key: string,
 	force_default?: boolean
-): string[] | AttributeItem[] | GearSaveObject | null {
-	let loadedObject: string[] | GearSaveObject | null = null;
+): string[] | AttributeItem[] | GearSaveObject | null | typeof DEFAULT_STYLES {
+	let loadedObject: string[] | GearSaveObject | null | typeof DEFAULT_STYLES = null;
 
 	if (typeof localStorage !== 'undefined' && localStorage && !force_default) {
 		const savedObject = localStorage.getItem(key);

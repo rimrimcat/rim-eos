@@ -1,6 +1,6 @@
-<!-- Dialog.svelte -->
-<script>
+<script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
+	import { DEFAULT_STYLES } from '$lib/scripts/loader';
 
 	let {
 		blocking = false,
@@ -23,7 +23,7 @@
 		}
 	}
 
-	function clickButton(buttonType) {
+	function clickButton(buttonType: string) {
 		const btnType = buttonType.toLowerCase();
 
 		switch (btnType) {
@@ -38,14 +38,14 @@
 		closeDialog();
 	}
 
-	function keydown(event) {
+	function keydown(event: Event) {
 		if (event.key === 'Escape' && closable) {
 			closeDialog();
 			onClose();
 		}
 	}
 
-	function clickOutside(event) {
+	function clickOutside(event: Event) {
 		onClickOutside();
 		if (event.target === event.currentTarget && closable && !blocking) {
 			closeDialog();
@@ -54,7 +54,7 @@
 		}
 	}
 
-	// // Set up and tear down event listeners
+	// Set up and tear down event listeners
 	onMount(() => {
 		document.addEventListener('keydown', keydown);
 
@@ -122,7 +122,7 @@
 		align-items: center;
 		justify-content: center;
 		z-index: 1000;
-		background-color: rgba(0, 0, 0, 0.3);
+		background-color: var(--dialog-overlay-bg);
 	}
 
 	.blur {
@@ -134,9 +134,10 @@
 	}
 
 	.dialog-container {
-		background: white;
+		background: var(--dialog-bg-color);
+		color: var(--dialog-text-color);
 		border-radius: 0.7rem;
-		box-shadow: 0 0.1rem 0.9rem rgba(0, 0, 0, 0.2);
+		box-shadow: 0 0.2rem 1rem var(--dialog-shadow-color);
 		width: 100%;
 		max-width: 70vw;
 		max-height: 90vh;
@@ -162,12 +163,13 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1rem 1.2rem;
-		border-bottom: 0.1rem solid #eee;
+		border-bottom: 0.1rem solid var(--dialog-border-color);
 	}
 
 	.dialog-header h2 {
 		margin: 0;
 		font-size: 1.25rem;
+		color: var(--dialog-title-color);
 	}
 
 	.close-button {
@@ -180,10 +182,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		color: var(--dialog-text-color);
 	}
 
 	.close-button:hover {
-		background-color: #f5f5f5;
+		background-color: var(--dialog-hover-bg);
 	}
 
 	.dialog-content {
@@ -197,28 +200,30 @@
 		justify-content: flex-end;
 		gap: 0.75rem;
 		padding: 1rem 1.25rem;
-		border-top: 0.1rem solid #eee;
+		border-top: 0.1rem solid var(--dialog-border-color);
 	}
 
 	.dialog-button {
 		padding: 0.5rem 1rem;
 		border-radius: 0.25rem;
-		border: 0.1rem solid #ddd;
-		background-color: #f5f5f5;
+		border: 0.1rem solid var(--dialog-button-border);
+		background-color: var(--dialog-button-bg);
+		color: var(--dialog-button-text);
 		cursor: pointer;
+		transition: all 0.2s ease;
 	}
 
 	.dialog-button:hover {
-		background-color: #eee;
+		background-color: var(--dialog-button-hover-bg);
 	}
 
 	.dialog-button.primary {
-		background-color: #4f46e5;
-		color: white;
-		border: 0.1rem solid #4338ca;
+		background-color: var(--dialog-button-primary-bg);
+		color: var(--dialog-button-primary-text);
+		border: 0.1rem solid var(--dialog-button-primary-border);
 	}
 
 	.dialog-button.primary:hover {
-		background-color: #4338ca;
+		background-color: var(--dialog-button-primary-hover-bg);
 	}
 </style>
