@@ -8,13 +8,10 @@
 	import { ChartNoAxesColumn, Trash2, Download, FilePlus2, ImagePlus } from '@lucide/svelte';
 	import NavTools from '../NavTools.svelte';
 	import { onMount } from 'svelte';
-	import StatPanelFromScreenshot from '../dialog/StatPanelFromScreenshot.svelte';
+	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 	import cv from '@techstark/opencv-js';
 	import { createWorker } from 'tesseract.js';
 	import FlexGrid from '../FlexGrid.svelte';
-
-	// Properties
-	let { size_factor = 1.25 } = $props();
 
 	// State
 	let user_attributes: AttributeItem[] = $state(loadObject(LOCAL_STATS_MAIN));
@@ -334,7 +331,7 @@
 	}
 
 	// register
-	const id = 'stat-panel';
+	const id = 'stat-page';
 
 	const metadata: ComponentMetadata = {
 		id,
@@ -394,7 +391,7 @@
 							{:else}
 								<div
 									class="stat-value-text"
-									style="font-size: {14 * size_factor}px"
+									style="font-size: 1.25rem"
 									role="textbox"
 									tabindex={10 + attribute.index}
 									ondblclick={() => startEditCell(attribute.index)}
@@ -412,7 +409,7 @@
 	<h1 class="Pro">Character Stats</h1>
 </div>
 
-<StatPanelFromScreenshot
+<UploadScreenshot
 	{onFileUpload}
 	bind:open={screenshotDialogOpen}
 	bind:uploadedImageURL
@@ -431,13 +428,11 @@
 	}
 
 	.head {
-		/* font-family: Georgia, 'Times New Roman', Times, serif; */
 		color: var(--title-color);
 	}
 
 	.stat-cell {
 		background-color: var(--bg-color);
-		/* border: 1px solid var(--border-color); */
 	}
 
 	.stat-content {

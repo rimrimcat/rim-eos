@@ -154,7 +154,9 @@
 		// Initial measurement of items
 		await measureItems();
 		window.addEventListener('resize', updateGrid);
+	});
 
+	onMount(() => {
 		onDestroy(() => {
 			window.removeEventListener('resize', updateGrid);
 		});

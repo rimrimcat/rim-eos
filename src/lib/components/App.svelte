@@ -4,19 +4,21 @@
 	import Dialog from './Dialog.svelte';
 
 	// Components to display
-	import StatPanel from './nav/StatPanel.svelte';
+	import StatPage from './nav/StatPage.svelte';
 	import OpenCvTest from './nav/OpenCvTest.svelte';
 	import type { Component } from 'svelte';
+	import GearPage from './nav/GearPage.svelte';
 
 	// Map of component IDs to component definitions
 	const componentMap: { [key: string]: Component } = {
-		'stat-panel': StatPanel,
+		'stat-page': StatPage,
+		'gear-page': GearPage,
 		'opencv-test': OpenCvTest
 	};
 
 	// Other stuff
 	let dialogOpen = $state(true);
-	const CurrentComponent: Component = $derived(componentMap[$activeComponent] || StatPanel);
+	const CurrentComponent: Component = $derived(componentMap[$activeComponent] || StatPage);
 
 	// COLOR SCHEMEEEEE
 	let styles = $state({
@@ -82,8 +84,9 @@
 
 	<div class="content-container">
 		<div style="display: none">
-			<StatPanel />
+			<StatPage />
 			<OpenCvTest />
+			<GearPage />
 		</div>
 
 		<CurrentComponent />

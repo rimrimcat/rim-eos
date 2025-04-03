@@ -408,7 +408,8 @@
 
 <style>
 	.opencv-test {
-		max-width: 35rem;
+		width: 100%;
+		max-width: 100%;
 	}
 
 	.image-upload {

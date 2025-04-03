@@ -6,29 +6,36 @@ export type AttributeItem = {
 	index: number;
 };
 
-export type GearColumn = {
-	id: string;
-	label: string;
-	width?: number;
-	hidden?: boolean;
-	editable?: boolean;
-};
-export type GearRowData = {
+export type GearStats = {
 	id: string;
 	part: string;
-	atk?: string;
-	ele_atk?: string;
-	total_atk?: string;
-	ele_atk_percent?: string;
-	ele_dmg_percent?: string;
-	crit?: string;
-	crit_percent?: string;
-	// TODO: Add other stuff here
-	validationErrors?: Record<string, boolean>;
-};
-export type GearSaveObject = {
-	columns: GearColumn[];
-	data: GearRowData[];
+	// Attack
+	atk: string;
+	flame_atk: string;
+	frost_atk: string;
+	volt_atk: string;
+	phys_atk: string;
+	alt_atk: string;
+	ele_atk: string;
+	// Attack percent
+	atk_percent: string;
+	flame_atk_percent: string;
+	frost_atk_percent: string;
+	volt_atk_percent: string;
+	phys_atk_percent: string;
+	alt_atk_percent: string;
+	ele_atk_percent: string;
+	// Damage percent
+	dmg_percent: string;
+	flame_dmg_percent: string;
+	frost_dmg_percent: string;
+	volt_dmg_percent: string;
+	phys_dmg_percent: string;
+	alt_dmg_percent: string;
+	ele_dmg_percent: string;
+	// Crit
+	crit: string;
+	crit_percent: string;
 };
 
 // Constants
@@ -55,20 +62,6 @@ const TEMPLATE_USER_ATTRIBUTES = [
 	{ name: 'Volt Resistance', icon: './stat/voltres.webp', index: 14 },
 	{ name: 'Altered Resistance', icon: './stat/placeholder.webp', index: 15 }
 ] as const;
-const TEMPLATE_GEAR_ROW_DATA: GearRowData[] = [
-	{ id: 'main_helmet', part: 'Helmet' },
-	{ id: 'main_spaulders', part: 'Spaulders' },
-	{ id: 'main_armor', part: 'Armor' },
-	{ id: 'main_armbands', part: 'Armbands' },
-	{ id: 'main_belt', part: 'Belt' },
-	{ id: 'main_legguards', part: 'Legguards' },
-	{ id: 'main_gloves', part: 'Gloves' },
-	{ id: 'main_boots,', part: 'Boots' },
-	{ id: 'main_visor', part: 'Visor' },
-	{ id: 'main_engine', part: 'Engine' },
-	{ id: 'main_exoskeleton', part: 'Exoskeleton' },
-	{ id: 'main_reactor', part: 'Reactor' }
-] as const;
 
 // Defaults
 export const DEFAULT_STATS_MAIN = [
@@ -89,52 +82,6 @@ export const DEFAULT_STATS_MAIN = [
 	'10518',
 	'4892'
 ] as const;
-
-export const DEFAULT_GEAR_MAIN_COLUMNS: GearColumn[] = [
-	{ id: 'id', label: 'ID', hidden: true, editable: false },
-	{ id: 'part', label: 'Part', editable: false },
-	// Attack
-	{ id: 'atk', label: 'Atk' },
-	{ id: 'flame_atk', label: 'Flame Atk', hidden: true },
-	{ id: 'frost_atk', label: 'Frost Atk', hidden: true },
-	{ id: 'volt_atk', label: 'Volt Atk', hidden: true },
-	{ id: 'phys_atk', label: 'Phys Atk', hidden: true },
-	{ id: 'ele_atk', label: 'Ele Atk' },
-	{ id: 'alt_atk', label: 'Alt Atk', hidden: true },
-	// Attack Percent
-	{ id: 'flame_atk_percent', label: 'Flame Atk %', hidden: true },
-	{ id: 'frost_atk_percent', label: 'Frost Atk %', hidden: true },
-	{ id: 'volt_atk_percent', label: 'Volt Atk %', hidden: true },
-	{ id: 'phys_atk_percent', label: 'Phys Atk %', hidden: true },
-	{ id: 'ele_atk_percent', label: 'Ele Atk %' },
-	{ id: 'alt_atk_percent', label: 'Alt Atk %', hidden: true },
-	// Damage Percent
-	{ id: 'dmg_percent', label: 'Dmg %', hidden: true },
-	{ id: 'flame_dmg_percent', label: 'Flame Dmg %', hidden: true },
-	{ id: 'frost_dmg_percent', label: 'Frost Dmg %', hidden: true },
-	{ id: 'volt_dmg_percent', label: 'Volt Dmg %', hidden: true },
-	{ id: 'phys_dmg_percent', label: 'Phys Dmg %', hidden: true },
-	{ id: 'ele_dmg_percent', label: 'Ele Dmg %', hidden: true },
-	{ id: 'alt_dmg_percent', label: 'Alt Dmg %', hidden: true },
-	// Crit
-	{ id: 'crit', label: 'Crit' },
-	{ id: 'crit_percent', label: 'Crit %', hidden: true }
-];
-
-export const DEFAULT_GEAR_MAIN_DATA: GearRowData[] = [
-	{ id: 'main_helmet', part: 'Helmet' },
-	{ id: 'main_spaulders', part: 'Spaulders' },
-	{ id: 'main_armor', part: 'Armor' },
-	{ id: 'main_armbands', part: 'Armbands' },
-	{ id: 'main_belt', part: 'Belt' },
-	{ id: 'main_legguards', part: 'Legguards' },
-	{ id: 'main_gloves', part: 'Gloves' },
-	{ id: 'main_boots,', part: 'Boots' },
-	{ id: 'main_visor', part: 'Visor' },
-	{ id: 'main_engine', part: 'Engine' },
-	{ id: 'main_exoskeleton', part: 'Exoskeleton' },
-	{ id: 'main_reactor', part: 'Reactor' }
-];
 
 export const DEFAULT_STYLES = {
 	// Base colors
@@ -172,13 +119,13 @@ export const DEFAULT_STYLES = {
 };
 
 export function loadObject(key: typeof LOCAL_STATS_MAIN, force_default?: boolean): AttributeItem[];
-export function loadObject(key: typeof LOCAL_GEAR_MAIN, force_default?: boolean): GearSaveObject;
+// export function loadObject(key: typeof LOCAL_GEAR_MAIN, force_default?: boolean): GearSaveObject;
 export function loadObject(key: typeof STYLES, force_default?: boolean): typeof DEFAULT_STYLES;
 export function loadObject(
 	key: string,
 	force_default?: boolean
-): string[] | AttributeItem[] | GearSaveObject | null | typeof DEFAULT_STYLES {
-	let loadedObject: string[] | GearSaveObject | null | typeof DEFAULT_STYLES = null;
+): string[] | AttributeItem[] | null | typeof DEFAULT_STYLES {
+	let loadedObject: string[] | null | typeof DEFAULT_STYLES = null;
 
 	if (typeof localStorage !== 'undefined' && localStorage && !force_default) {
 		const savedObject = localStorage.getItem(key);
@@ -202,15 +149,15 @@ export function loadObject(
 			});
 			return user_attributes;
 		}
-		case LOCAL_GEAR_MAIN: {
-			const _column_ = DEFAULT_GEAR_MAIN_COLUMNS;
-			const _data_ = DEFAULT_GEAR_MAIN_DATA;
+		// case LOCAL_GEAR_MAIN: {
+		// 	const _column_ = DEFAULT_GEAR_MAIN_COLUMNS;
+		// 	const _data_ = DEFAULT_GEAR_MAIN_DATA;
 
-			return {
-				columns: _column_,
-				data: _data_
-			};
-		}
+		// 	return {
+		// 		columns: _column_,
+		// 		data: _data_
+		// 	};
+		// }
 
 		default:
 			break;
@@ -223,11 +170,8 @@ export async function saveObject(
 	key: typeof LOCAL_STATS_MAIN,
 	value: AttributeItem[]
 ): Promise<void>;
-export async function saveObject(key: typeof LOCAL_GEAR_MAIN, value: GearSaveObject): Promise<void>;
-export async function saveObject(
-	key: string,
-	value: AttributeItem[] | GearSaveObject
-): Promise<void> {
+// export async function saveObject(key: typeof LOCAL_GEAR_MAIN, value: GearSaveObject): Promise<void>;
+export async function saveObject(key: string, value: AttributeItem[]): Promise<void> {
 	switch (key) {
 		case LOCAL_STATS_MAIN: {
 			value = value as AttributeItem[];
@@ -236,10 +180,10 @@ export async function saveObject(
 			break;
 		}
 
-		case LOCAL_GEAR_MAIN: {
-			localStorage.setItem(key, JSON.stringify(value));
-			break;
-		}
+		// case LOCAL_GEAR_MAIN: {
+		// 	localStorage.setItem(key, JSON.stringify(value));
+		// 	break;
+		// }
 
 		default:
 			break;
