@@ -12,6 +12,7 @@
 	} = $props();
 
 	function uploadImage(file: File | undefined) {
+		processText = 'Uploading...';
 		if (file) {
 			uploadedImageURL = URL.createObjectURL(file);
 
@@ -42,7 +43,6 @@
 	}
 
 	function onchange(event: Event) {
-		processText = 'Uploading...';
 		uploadImage((event.target as HTMLInputElement).files?.[0]);
 	}
 

@@ -11,22 +11,36 @@
 	import StatPanelFromScreenshot from '../dialog/StatPanelFromScreenshot.svelte';
 	import cv from '@techstark/opencv-js';
 	import { createWorker } from 'tesseract.js';
+	import FlexGrid from '../FlexGrid.svelte';
 
 	// Properties
-	let { n_rows = 8, n_columns = 2, size_factor = 1.25 } = $props();
+	let { size_factor = 1.25 } = $props();
 
 	// State
 	let user_attributes: AttributeItem[] = $state(loadObject(LOCAL_STATS_MAIN));
+	let validated_attributes: AttributeItem[] = $state([]);
 	let editValue: string = $state('');
 	let editingIndex: number | null = $state(null);
-	let grid: AttributeItem[][] = $state([]);
 	let screenshotDialogOpen = $state(false);
 	let uploadedImageURL: string = $state('');
 	let processText: string = $state('');
 
+	// Process and validate attributes
+	function processAttributes() {
+		validated_attributes = user_attributes.map((attr, index) => {
+			const __val = attr.value;
+			const __use_percent = index === 2 || index === 10;
+			return {
+				...attr,
+				value: __use_percent
+					? validateValue(FLOAT_PERCENT_3D, __val)
+					: validateValue(INTEGER, __val)
+			};
+		});
+	}
+
 	function startEditCell(index: number) {
 		editingIndex = index;
-
 		const user_value = user_attributes[index].value;
 		editValue = user_value !== undefined ? user_value : '';
 
@@ -47,20 +61,11 @@
 			console.log('Saved key: ' + LOCAL_STATS_MAIN);
 		});
 
-		// Update grid
-		const flatIndex = index;
-		const col = Math.floor(flatIndex / n_rows);
-		const row = flatIndex % n_rows;
-
-		if (grid[row] && grid[row][col]) {
-			//  2 -> crit rate
-			// 10 -> crit dmg
-			if (index === 2 || index === 10) {
-				grid[row][col].value = validateValue(FLOAT_PERCENT_3D, editValue);
-			} else {
-				grid[row][col].value = validateValue(INTEGER, editValue);
-			}
-		}
+		// Update validated attributes
+		const __use_percent = index === 2 || index === 10;
+		validated_attributes[index].value = __use_percent
+			? validateValue(FLOAT_PERCENT_3D, editValue)
+			: validateValue(INTEGER, editValue);
 
 		editingIndex = null;
 		editValue = '';
@@ -72,43 +77,7 @@
 		}
 	}
 
-	function createGrid() {
-		grid = [];
-
-		for (let r = 0; r < n_rows; r++) {
-			const row = [];
-			for (let c = 0; c < n_columns; c++) {
-				row.push({ name: '', icon: '', value: '', index: -1 });
-			}
-			grid.push(row);
-		}
-
-		let attributeIndex = 0;
-		let __val = '';
-		let __use_percent = false;
-		for (let c = 0; c < n_columns; c++) {
-			for (let r = 0; r < n_rows; r++) {
-				if (attributeIndex < user_attributes.length) {
-					// only include if attributeIndex < length
-					// the inverse normally never happens but it is whatever
-
-					__val = user_attributes[attributeIndex].value;
-					__use_percent = attributeIndex === 2 || attributeIndex === 10;
-
-					grid[r][c] = {
-						...user_attributes[attributeIndex],
-						value: __use_percent
-							? validateValue(FLOAT_PERCENT_3D, __val)
-							: validateValue(INTEGER, __val)
-					};
-					attributeIndex++;
-				}
-			}
-		}
-	}
-
 	// actions
-
 	function* boxIterator(w: number, h: number, off_x: number = 0, off_y: number = 0) {
 		const box_width = Math.round(0.23 * w);
 		const box_height = Math.round(0.047 * h);
@@ -198,7 +167,7 @@
 			}
 			await worker.terminate();
 			saveObject(LOCAL_STATS_MAIN, user_attributes);
-			createGrid();
+			processAttributes();
 			processText = 'Done!';
 		}
 	}
@@ -361,7 +330,7 @@
 		saveObject(LOCAL_STATS_MAIN, user_attributes).then(() => {
 			console.log('Cleared key: ' + LOCAL_STATS_MAIN);
 		});
-		createGrid();
+		processAttributes();
 	}
 
 	// register
@@ -369,7 +338,7 @@
 
 	const metadata: ComponentMetadata = {
 		id,
-		label: 'Stat Panel',
+		label: 'Stats',
 		lucide: ChartNoAxesColumn,
 		showInNav: true,
 		order: 0,
@@ -380,19 +349,17 @@
 				lucide: ImagePlus,
 				action: () => (screenshotDialogOpen = true)
 			},
-			{ id: 'import', label: 'Import', lucide: FilePlus2 },
-			{ id: 'export', label: 'Export', lucide: Download },
-			{ id: 'reset', label: 'Reset', lucide: Trash2, action: resetStats },
-			{ id: 'share', label: 'Share' }
+			{ id: 'import', label: 'Import (NO WORK)', lucide: FilePlus2 },
+			{ id: 'export', label: 'Export (NO WORK)', lucide: Download },
+			{ id: 'reset', label: 'Reset', lucide: Trash2, action: resetStats }
+			// { id: 'share', label: 'Share' }
 		]
 	};
 
 	onMount(() => {
 		registerComponent(id, metadata);
+		processAttributes();
 	});
-
-	// initialize grid
-	createGrid();
 </script>
 
 <div style="display: none">
@@ -406,54 +373,41 @@
 <div class="stat-panel">
 	<h1 class="head">Character Stats</h1>
 
-	<div
-		class="grid"
-		style="grid-template-rows: repeat({n_rows}, auto); grid-template-columns: repeat({n_columns}, 1fr);"
-	>
-		{#each grid as row, rowIndex}
-			{#each row as cell, colIndex}
-				{#if cell}
-					<div class="stat-cell" style="grid-row: {rowIndex + 1}; grid-column: {colIndex + 1};">
-						<div class="stat-content">
-							<div class="stat-icon">
-								<img src={cell.icon} alt={cell.name + ' icon'} />
-							</div>
-							<div class="stat-info">
-								<div class="stat-name">{cell.name}</div>
-								<div class="stat-value-container">
-									{#if editingIndex === cell.index}
-										<input
-											id="a"
-											type="text"
-											class="stat-value"
-											bind:value={editValue}
-											onblur={() => saveEditCell(cell.index)}
-											onkeydown={(e) => handleKeyDown(e, cell.index)}
-										/>
-									{:else}
-										<div
-											class="stat-value-text"
-											style="font-size: {14 * size_factor}px"
-											role="textbox"
-											tabindex={10 + cell.index}
-											ondblclick={() => startEditCell(cell.index)}
-										>
-											{cell.value}
-										</div>
-									{/if}
+	<FlexGrid gap="0.9rem 1rem" minColumns={1} maxColumns={2} preferDivisible={false}>
+		{#each validated_attributes as attribute}
+			<div class="stat-cell">
+				<div class="stat-content">
+					<div class="stat-icon">
+						<img src={attribute.icon} alt={attribute.name + ' icon'} />
+					</div>
+					<div class="stat-info">
+						<div class="stat-name">{attribute.name}</div>
+						<div class="stat-value-container">
+							{#if editingIndex === attribute.index}
+								<input
+									type="text"
+									class="stat-value"
+									bind:value={editValue}
+									onblur={() => saveEditCell(attribute.index)}
+									onkeydown={(e) => handleKeyDown(e, attribute.index)}
+								/>
+							{:else}
+								<div
+									class="stat-value-text"
+									style="font-size: {14 * size_factor}px"
+									role="textbox"
+									tabindex={10 + attribute.index}
+									ondblclick={() => startEditCell(attribute.index)}
+								>
+									{attribute.value}
 								</div>
-							</div>
+							{/if}
 						</div>
 					</div>
-				{:else}
-					<div
-						class="stat-cell empty"
-						style="grid-row: {rowIndex + 1}; grid-column: {colIndex + 1};"
-					></div>
-				{/if}
-			{/each}
+				</div>
+			</div>
 		{/each}
-	</div>
+	</FlexGrid>
 
 	<h1 class="Pro">Character Stats</h1>
 </div>
@@ -472,16 +426,13 @@
 		padding: 1rem;
 		color: var(--text-color);
 		background-color: var(--bg-color);
+		width: 100%;
+		max-width: 100%;
 	}
 
 	.head {
 		/* font-family: Georgia, 'Times New Roman', Times, serif; */
 		color: var(--title-color);
-	}
-
-	.grid {
-		display: grid;
-		gap: 0.9rem 1rem;
 	}
 
 	.stat-cell {
@@ -504,9 +455,10 @@
 	}
 
 	.stat-icon img {
+		display: block;
 		width: 100%;
 		height: 100%;
-		object-fit: contain;
+		object-fit: none;
 		filter: invert(75%);
 	}
 
@@ -544,9 +496,5 @@
 		padding: 2px 6px;
 		color: var(--text-color);
 		cursor: pointer;
-	}
-
-	.empty {
-		visibility: hidden;
 	}
 </style>

@@ -13,7 +13,7 @@
 
 <svelte:window bind:scrollY />
 <div
-	class="component-tools"
+	class="nav-tools"
 	class:collapsed={isCollapsed}
 	style="translate: 0px {scrollY}px; height: {5.5 + 3 * tools.length}rem"
 >
@@ -54,11 +54,11 @@
 </div>
 
 <style>
-	.component-tools {
+	.nav-tools {
 		position: sticky;
-		left: 100vw;
 		top: 1rem;
 		width: 13.75rem;
+		margin-right: 0.5rem;
 		background-color: var(--bg-color);
 		display: flex;
 		flex-direction: column;
@@ -70,7 +70,7 @@
 		box-shadow: 0 4px 8px var(--shadow-color);
 	}
 
-	.component-tools.collapsed {
+	.nav-tools.collapsed {
 		position: sticky;
 		width: 3.75rem;
 		background-color: var(--bg-color);

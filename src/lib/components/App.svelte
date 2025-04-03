@@ -180,7 +180,6 @@
 		display: flex;
 		height: 100vh;
 		overflow: hidden;
-		/* background-color: var(--main-bg-color); */
 		background-color: var(--bg-color);
 		color: var(--text-color);
 	}
@@ -188,10 +187,7 @@
 	.content-container {
 		flex: 1;
 		display: flex;
-		overflow: hidden;
-		/* background-color: var(--main-bg-color); */
+		overflow: scroll;
 		padding-left: 1rem;
-
-		/* border-left: 1px solid var(--border-color); */
 	}
 </style>

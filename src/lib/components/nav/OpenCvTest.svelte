@@ -338,14 +338,7 @@
 		label: 'OpenCV Test',
 		lucide: ImageIcon,
 		showInNav: true,
-		order: 10,
-		tools: [
-			{ id: 'screenshot', label: 'From Screenshot', lucide: ImagePlus },
-			{ id: 'import', label: 'Import', lucide: FilePlus2 },
-			{ id: 'export', label: 'Export', lucide: Download },
-			{ id: 'reset', label: 'Reset', lucide: Trash2 },
-			{ id: 'share', label: 'Share' }
-		]
+		order: 10
 	};
 
 	onMount(() => {
