@@ -1,6 +1,23 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
-	import { DEFAULT_STYLES } from '$lib/scripts/loader';
+	function doClose() {
+		open = false;
+	}
+
+	function doClickOutside(event: MouseEvent) {
+		if (event.target === event.currentTarget && closable && !blocking) {
+			onCancel();
+		}
+	}
+
+	function doKeydown(event: KeyboardEvent) {
+		if (event.key === 'Escape' && closable) {
+			onClose();
+		}
+	}
+
+	function doPaste(event: ClipboardEvent) {
+		console.error("You can't paste here!");
+	}
 
 	let {
 		blocking = false,
@@ -9,23 +26,17 @@
 		buttons = [],
 		title = 'Dialog',
 		open = $bindable(false),
-		onClose = () => {},
-		onConfirm = () => {},
-		onCancel = () => {},
-		onClickOutside = () => {},
+		onClose = doClose,
+		onConfirm = doClose,
+		onCancel = doClose,
+		onClickOutside = doClickOutside,
+		onkeydown = doKeydown,
+		onpaste = doPaste,
 		children
 	} = $props();
 
-	function closeDialog() {
-		if (closable) {
-			open = false;
-			onClose();
-		}
-	}
-
 	function clickButton(buttonType: string) {
 		const btnType = buttonType.toLowerCase();
-
 		switch (btnType) {
 			case 'confirm':
 				onConfirm();
@@ -34,42 +45,8 @@
 				onCancel();
 				break;
 		}
-
-		closeDialog();
+		onClose();
 	}
-
-	function keydown(event: Event) {
-		if (event.key === 'Escape' && closable) {
-			closeDialog();
-			onClose();
-		}
-	}
-
-	function clickOutside(event: Event) {
-		onClickOutside();
-		if (event.target === event.currentTarget && closable && !blocking) {
-			closeDialog();
-			onCancel();
-			onClose();
-		}
-	}
-
-	// Set up and tear down event listeners
-	onMount(() => {
-		document.addEventListener('keydown', keydown);
-
-		onDestroy(() => {
-			document.removeEventListener('keydown', keydown);
-		});
-	});
-
-	$effect(() => {
-		if (open) {
-			document.addEventListener('keydown', keydown);
-		} else {
-			document.removeEventListener('keydown', keydown);
-		}
-	});
 </script>
 
 {#if open}
@@ -77,8 +54,9 @@
 		class="dialog-overlay"
 		class:blocking
 		class:blur
-		onclick={clickOutside}
-		onkeydown={clickOutside}
+		onclick={onClickOutside}
+		{onkeydown}
+		{onpaste}
 		role="presentation"
 		tabindex="-1"
 	>
@@ -86,7 +64,7 @@
 			<div class="dialog-header">
 				<h2>{title}</h2>
 				{#if closable}
-					<button class="close-button" aria-label="Close dialog" onclick={closeDialog}> ✕ </button>
+					<button class="close-button" aria-label="Close dialog" onclick={doClose}> ✕ </button>
 				{/if}
 			</div>
 

@@ -26,7 +26,7 @@
 		// 'bg-color': '#1e1e2e',
 		'text-color': '#cdd6f4',
 		'title-color': '#cba6f7',
-		'border-color': '#313244',
+		'border-color': '#7A7B84',
 
 		// Button colors
 		'button-bg': '#313244',
@@ -142,9 +142,38 @@
 		background-color: var(--button-primary-hover-bg);
 	}
 
+	/* for buttons that contain lucide icons */
+	:global(button.icon) {
+		background-color: transparent;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+		opacity: 0.6;
+		transition: opacity 0.3s ease;
+	}
+
+	:global(button.icon:hover) {
+		opacity: 1;
+	}
+
+	/* for buttons that contain images*/
+	:global(button.image) {
+		background-color: transparent;
+		border: none;
+		padding: 0;
+		cursor: pointer;
+		transition: opacity 0.3s ease;
+		opacity: 1;
+	}
+
 	:global(*:focus-visible) {
 		outline: 2px solid var(--focus-outline);
 		outline-offset: 2px;
+	}
+
+	:global(img.user-upload) {
+		max-width: 100%;
+		max-height: 100%;
 	}
 
 	.app-container {

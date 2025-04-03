@@ -100,13 +100,7 @@
 		}
 	}
 
-	// Example usage:
-	// const iterator = alternateIterator('A', 'B');
-	// console.log(iterator.next().value); // 'A'
-	// console.log(iterator.next().value); // 'B'
-	// console.log(iterator.next().value); // 'A'
-
-	function matchCritOnly(src_mat: cv.Mat, minimumMatch: number = 0.9) {
+	function matchCharacterStats(src_mat: cv.Mat, minimumMatch: number = 0.9) {
 		// remove possibly white pixels from top
 		const _W = src_mat.cols;
 		const _H = src_mat.rows;
@@ -219,7 +213,6 @@
 						const data_url = canvas.toDataURL();
 
 						const worker = await createWorker('eng');
-						// const ret = await worker.recognize('https://tesseract.projectnaptha.com/img/eng_bw.png');
 						const ret = await worker.recognize(data_url);
 						console.error('ret.data.text: ', ret.data.text);
 						await worker.terminate();
@@ -280,7 +273,7 @@
 		function doMatch() {
 			if (sourceImage2 && document !== undefined) {
 				const source = cv.imread(sourceImage2);
-				const match_obj = matchCritOnly(source);
+				const match_obj = matchCharacterStats(source);
 
 				const canvas = document.createElement('canvas');
 				cv.imshow(canvas, match_obj.image);
