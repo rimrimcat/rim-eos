@@ -14,8 +14,6 @@
 	let scrollY = $state(0);
 
 	const sliderCount = actions.filter((action) => action.type === ActionType.SLIDER).length;
-	const toggleCount = actions.filter((action) => action.type === ActionType.TOGGLE).length;
-	const buttonCount = actions.filter((action) => action.type === ActionType.BUTTON).length;
 
 	function toggleCollapse() {
 		isCollapsed = !isCollapsed;
@@ -48,7 +46,7 @@
 	class="nav-tools"
 	class:collapsed={isCollapsed}
 	style="translate: 0px {scrollY}px; height:{5.5 +
-		3 * (toggleCount + buttonCount) +
+		3 * (actions.length - sliderCount) +
 		5 * sliderCount}rem"
 >
 	<div class="tools-header">
@@ -109,10 +107,6 @@
 								class="slider-input"
 							/>
 						</div>
-					{:else}
-						<!-- <button class="tool-collapsed-action" onclick={() => !isCollapsed}>
-							<span class="sr-only">{action.label}</span>
-						</button> -->
 					{/if}
 				</div>
 			{:else}

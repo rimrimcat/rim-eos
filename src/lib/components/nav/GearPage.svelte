@@ -3,7 +3,7 @@
 		GearParts,
 		loadObject,
 		saveObject,
-		Stat,
+		GearStat as Stat,
 		StorageKey,
 		type Gear,
 		type GearStatItem,
@@ -370,7 +370,7 @@
 	</div>
 
 	<div class="gear-grid">
-		<FlexGrid maxColumns={4} verticalGap="0rem" horizontalGap="0rem" bind:hasMeasured>
+		<FlexGrid maxColumns={4} verticalGap="0rem" horizontalGap="5rem" bind:hasMeasured>
 			{#if user_gears.length !== 0}
 				{#each gear_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">

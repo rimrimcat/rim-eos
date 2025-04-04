@@ -2,7 +2,6 @@ import type { Component } from 'svelte';
 import { writable } from 'svelte/store';
 
 type NoReturnType = () => void;
-type ActionCallback<T> = (value: T) => void;
 
 export enum ActionType {
 	BUTTON = 'button',
@@ -37,6 +36,7 @@ export interface SliderAction extends BaseAction {
 
 export interface DummyAction extends BaseAction {
 	type?: undefined;
+	callback?: () => void;
 }
 
 export type ComponentAction = ButtonAction | ToggleAction | SliderAction | DummyAction;

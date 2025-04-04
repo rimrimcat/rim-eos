@@ -316,9 +316,10 @@
 
 			(async () => {
 				const worker = await createWorker('eng');
-				// const ret = await worker.recognize('https://tesseract.projectnaptha.com/img/eng_bw.png');
-				const ret = await worker.recognize(sourceImage3.src);
-				tesseractResult = ret.data.text;
+				if (sourceImage3) {
+					const ret = await worker.recognize(sourceImage3.src);
+					tesseractResult = ret.data.text;
+				}
 				await worker.terminate();
 			})();
 		}

@@ -37,12 +37,6 @@
 	const _arr_ = Array.from({ length: 1 + maxColumns - minColumns + 1 }, (_, i) => i + minColumns);
 	let sizeArr = $derived(_arr_.map((value) => value * itemWidth + (value - 1) * gap_px));
 
-	$inspect('HAS MEASURED', hasMeasured);
-	$inspect('cols', columns);
-	$inspect('itemWidth', itemWidth);
-	$inspect('gap', gap_px);
-	$inspect('sizear', sizeArr);
-
 	// Function to check if items have changed
 	function checkItemsChanged() {
 		if (!container) return;

@@ -25,7 +25,7 @@ export enum GearParts {
 	UNKNOWN = 'U'
 }
 
-export enum Stat {
+export enum GearStat {
 	HP = 'hp',
 	HP_PERCENT = 'hp_percent',
 	// Attack
@@ -73,51 +73,7 @@ export enum Stat {
 }
 
 export type GearValidStats = {
-	// Attack
-	ATK?: string;
-	FLAME_ATK?: string;
-	FROST_ATK?: string;
-	VOLT_ATK?: string;
-	PHYS_ATK?: string;
-	ALT_ATK?: string;
-	ELE_ATK?: string;
-	// Attack percent
-	ATK_PERCENT?: string;
-	FLAME_ATK_PERCENT?: string;
-	FROST_ATK_PERCENT?: string;
-	VOLT_ATK_PERCENT?: string;
-	PHYS_ATK_PERCENT?: string;
-	ALT_ATK_PERCENT?: string;
-	ELE_ATK_PERCENT?: string;
-	// Damage percent
-	DMG_PERCENT?: string;
-	FLAME_DMG_PERCENT?: string;
-	FROST_DMG_PERCENT?: string;
-	VOLT_DMG_PERCENT?: string;
-	PHYS_DMG_PERCENT?: string;
-	ALT_DMG_PERCENT?: string;
-	ELE_DMG_PERCENT?: string;
-	// Crit
-	CRIT?: string;
-	CRIT_PERCENT?: string;
-	CRIT_DMG?: string;
-	// HP
-	HP?: string;
-	HP_PERCENT?: string;
-	// Resistance
-	RES?: string;
-	FLAME_RES?: string;
-	FROST_RES?: string;
-	VOLT_RES?: string;
-	ALT_RES?: string;
-	PHYS_RES?: string;
-	// Resistance percent
-	RES_PERCENT?: string;
-	FLAME_RES_PERCENT?: string;
-	FROST_RES_PERCENT?: string;
-	VOLT_RES_PERCENT?: string;
-	ALT_RES_PERCENT?: string;
-	PHYS_RES_PERCENT?: string;
+	[key in GearStat]?: string;
 };
 
 type GearId = {
@@ -126,7 +82,7 @@ type GearId = {
 };
 
 export type GearStatItem = {
-	stat: Stat;
+	stat: GearStat;
 	stat_label: string;
 	value: number;
 	value_label: string;
