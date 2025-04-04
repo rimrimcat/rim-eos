@@ -1,13 +1,11 @@
 <script lang="ts">
 	import { activeComponent } from '$lib/scripts/navMetadata.svelte.ts';
-	import Toolbar from './Toolbar.svelte';
-	import Dialog from './Dialog.svelte';
-
-	// Components to display
-	import StatPage from './nav/StatPage.svelte';
-	import OpenCvTest from './nav/OpenCvTest.svelte';
 	import type { Component } from 'svelte';
+	import Dialog from './Dialog.svelte';
 	import GearPage from './nav/GearPage.svelte';
+	import OpenCvTest from './nav/OpenCvTest.svelte';
+	import StatPage from './nav/StatPage.svelte';
+	import Toolbar from './Toolbar.svelte';
 
 	// Map of component IDs to component definitions
 	const componentMap: { [key: string]: Component } = {

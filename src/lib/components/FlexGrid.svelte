@@ -14,12 +14,11 @@
 
 	// For backward compatibility - if gap is provided, use it for both dimensions
 	// unless horizontalGap or verticalGap were explicitly set
-	$effect(() => {
-		if (gap !== undefined) {
-			horizontalGap = gap;
-			verticalGap = gap;
-		}
-	});
+
+	if (gap !== undefined) {
+		horizontalGap = gap;
+		verticalGap = gap;
+	}
 
 	let columns = $state(1);
 
@@ -97,7 +96,7 @@
 				_itemWrapper.style.width = 'auto';
 
 				// Clone the item
-				const clone = _item.cloneNode(true);
+				const clone = _item.cloneNode(true) as HTMLDivElement;
 				_itemWrapper.appendChild(clone);
 
 				// Add to measuring container
@@ -122,8 +121,8 @@
 			itemWidth = Math.ceil(Math.max(...itemWidths));
 			itemHeight = Math.ceil(Math.max(...itemHeights));
 
-			console.log('Calculated itemWidth:', itemWidth);
-			console.log('Calculated itemHeight:', itemHeight);
+			// console.log('Calculated itemWidth:', itemWidth);
+			// console.log('Calculated itemHeight:', itemHeight);
 		}
 
 		hasMeasured = true;
@@ -151,7 +150,7 @@
 			}
 		}
 
-		console.log('fittable cols', fittableColumns);
+		// console.log('fittable cols', fittableColumns);
 
 		// Update grid CSS
 		container.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;

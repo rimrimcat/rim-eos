@@ -138,10 +138,12 @@ export type GearView = GearId & {
 	stats: GearStatItem[];
 };
 
-// Constants
-export const LOCAL_STATS_MAIN = 'stats_main' as const;
-export const LOCAL_GEAR_MAIN = 'gear_main' as const;
-export const STYLES = 'styles' as const;
+// Keys
+export enum StorageKey {
+	STATS = 'stats_main',
+	GEARS_V1 = 'gears_v1',
+	STYLES = 'styles'
+}
 
 // Templates
 const TEMPLATE_USER_ATTRIBUTES = [
@@ -216,16 +218,19 @@ export const DEFAULT_STYLES = {
 	'success-color': '#a6e3a1',
 	'warning-color': '#f9e2af',
 	'info-color': '#89dceb'
-};
+} as const;
 
-export function loadObject(key: typeof LOCAL_STATS_MAIN, force_default?: boolean): AttributeItem[];
-// export function loadObject(key: typeof LOCAL_GEAR_MAIN, force_default?: boolean): GearSaveObject;
-export function loadObject(key: typeof STYLES, force_default?: boolean): typeof DEFAULT_STYLES;
+export function loadObject(key: typeof StorageKey.STATS, force_default?: boolean): AttributeItem[];
+export function loadObject(key: typeof StorageKey.GEARS_V1, force_default?: boolean): Gear[];
 export function loadObject(
-	key: string,
+	key: typeof StorageKey.STYLES,
 	force_default?: boolean
-): string[] | AttributeItem[] | null | typeof DEFAULT_STYLES {
-	let loadedObject: string[] | null | typeof DEFAULT_STYLES = null;
+): typeof DEFAULT_STYLES;
+export function loadObject(
+	key: StorageKey,
+	force_default?: boolean
+): string[] | AttributeItem[] | Gear[] | null | typeof DEFAULT_STYLES {
+	let loadedObject: string[] | Gear[] | null | typeof DEFAULT_STYLES = null;
 
 	if (typeof localStorage !== 'undefined' && localStorage && !force_default) {
 		const savedObject = localStorage.getItem(key);
@@ -237,7 +242,7 @@ export function loadObject(
 	}
 
 	switch (key) {
-		case LOCAL_STATS_MAIN: {
+		case StorageKey.STATS: {
 			loadedObject = loadedObject as string[];
 
 			const processedObject = loadedObject ? loadedObject : DEFAULT_STATS_MAIN;
@@ -249,16 +254,10 @@ export function loadObject(
 			});
 			return user_attributes;
 		}
-		// case LOCAL_GEAR_MAIN: {
-		// 	const _column_ = DEFAULT_GEAR_MAIN_COLUMNS;
-		// 	const _data_ = DEFAULT_GEAR_MAIN_DATA;
-
-		// 	return {
-		// 		columns: _column_,
-		// 		data: _data_
-		// 	};
-		// }
-
+		case StorageKey.GEARS_V1: {
+			loadedObject = loadedObject as Gear[];
+			return loadedObject ? loadedObject : [];
+		}
 		default:
 			break;
 	}
@@ -267,23 +266,22 @@ export function loadObject(
 }
 
 export async function saveObject(
-	key: typeof LOCAL_STATS_MAIN,
+	key: typeof StorageKey.STATS,
 	value: AttributeItem[]
 ): Promise<void>;
-// export async function saveObject(key: typeof LOCAL_GEAR_MAIN, value: GearSaveObject): Promise<void>;
-export async function saveObject(key: string, value: AttributeItem[]): Promise<void> {
+export async function saveObject(key: typeof StorageKey.GEARS_V1, value: Gear[]): Promise<void>;
+export async function saveObject(key: StorageKey, value: AttributeItem[] | Gear[]): Promise<void> {
 	switch (key) {
-		case LOCAL_STATS_MAIN: {
+		case StorageKey.STATS: {
 			value = value as AttributeItem[];
 			const toSaveObject = value.map((attr) => attr.value);
 			localStorage.setItem(key, JSON.stringify(toSaveObject));
 			break;
 		}
-
-		// case LOCAL_GEAR_MAIN: {
-		// 	localStorage.setItem(key, JSON.stringify(value));
-		// 	break;
-		// }
+		case StorageKey.GEARS_V1: {
+			localStorage.setItem(key, JSON.stringify(value));
+			break;
+		}
 
 		default:
 			break;

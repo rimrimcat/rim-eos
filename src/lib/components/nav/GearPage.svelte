@@ -1,42 +1,37 @@
 <script lang="ts">
-	import { Format, formatValue } from '$lib/scripts/validation.ts';
 	import {
-		LOCAL_STATS_MAIN,
+		GearParts,
 		loadObject,
 		saveObject,
+		Stat,
+		StorageKey,
 		type Gear,
-		type GearView,
-		type GearValidStats,
 		type GearStatItem,
-		GearParts,
-		Stat
+		type GearView
 	} from '$lib/scripts/loader.ts';
-	import { type AttributeItem } from '$lib/scripts/loader.ts';
-	import { registerComponent, type ComponentMetadata } from '$lib/scripts/navMetadata.svelte.ts';
-
 	import {
-		ChartNoAxesColumn,
-		Shirt,
-		Download,
-		FilePlus2,
-		ImagePlus,
-		Asterisk
-	} from '@lucide/svelte';
-	import NavTools from '../NavTools.svelte';
-	import { onMount } from 'svelte';
-	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
-	import { createWorker } from 'tesseract.js';
-	import FlexGrid from '../FlexGrid.svelte';
+		ActionType,
+		registerComponent,
+		type ComponentMetadata
+	} from '$lib/scripts/navMetadata.svelte.ts';
+	import { Format, formatValue } from '$lib/scripts/validation.ts';
 
-	let user_gears: Gear[] = $state([]);
-	let view_gears: GearView[] = $state([]);
+	import { ImagePlus, Shirt } from '@lucide/svelte';
+	import { onMount } from 'svelte';
+	import { createWorker } from 'tesseract.js';
+	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
+	import FlexGrid from '../FlexGrid.svelte';
+	import NavToolbar from '../NavToolbar.svelte';
+
+	let user_gears: Gear[] = $state(loadObject(StorageKey.GEARS_V1));
+	let gear_views: GearView[] = $state([]);
 
 	let fourStatMode = $state(true);
 	let screenshotDialogOpen = $state(false);
 	let uploadedImageURL: string = $state('');
 	let processText: string = $state('');
 
-	const ocr_stat_map = {
+	const OCR_KEY_MAP = {
 		hp: 'hp',
 		atk: 'atk',
 		crit: 'crit',
@@ -210,15 +205,12 @@
 		}
 	}
 
-	function addNewGear(gear: Gear) {
-		user_gears.push(gear);
-
-		// TODO: validate
+	async function createGearView(gear: Gear): Promise<GearView> {
 		const stats: GearStatItem[] = [];
 		let id: number = -1;
 		let part: GearParts = GearParts.UNKNOWN;
+
 		Object.entries(gear).forEach(([key, value]) => {
-			console.log(key, value);
 			switch (key) {
 				case 'id':
 					id = value as number;
@@ -243,18 +235,24 @@
 		});
 		stats.sort((a, b) => (b.roll ?? 0) - (a.roll ?? 0));
 
-		const gearView: GearView = {
+		console.log('Created GearView for ', id, ':', stats);
+		return {
 			id,
 			part,
 			stats
 		};
-
-		view_gears.push(gearView);
-
-		console.log(stats);
 	}
 
-	async function testRawCV(canvas: HTMLCanvasElement) {
+	function addNewGear(gear: Gear) {
+		user_gears.push(gear);
+		saveObject(StorageKey.GEARS_V1, user_gears);
+
+		createGearView(gear).then((gearView) => {
+			gear_views.push(gearView);
+		});
+	}
+
+	async function doGearOCR(canvas: HTMLCanvasElement) {
 		const worker = await createWorker('eng');
 		const data_url = canvas.toDataURL();
 
@@ -289,7 +287,7 @@
 				const _spl = line.split('+');
 
 				// @ts-expect-error
-				const _base = ocr_stat_map[_spl[0].trim()];
+				const _base = OCR_KEY_MAP[_spl[0].trim()];
 				if (_spl[1] && _base) {
 					const _stat = _base + (_spl[1].includes('%') ? '_percent' : '');
 					const _val = _spl[1].replace('%', '').replace(',', '').trim();
@@ -318,9 +316,14 @@
 
 	function onFileUpload(canvas: HTMLCanvasElement) {
 		if (uploadedImageURL && canvas) {
-			testRawCV(canvas);
+			doGearOCR(canvas);
 		}
 	}
+
+	Promise.all(user_gears.map((gear) => createGearView(gear))).then((gearViews) => {
+		gear_views = gearViews;
+		console.log('Done processing user_gears');
+	});
 
 	// register
 	const id = 'gear-page';
@@ -331,12 +334,13 @@
 		lucide: Shirt,
 		showInNav: true,
 		order: 1,
-		tools: [
+		actions: [
 			{
 				id: 'screenshot',
 				label: 'From Screenshot',
 				lucide: ImagePlus,
-				action: () => (screenshotDialogOpen = true)
+				type: ActionType.BUTTON,
+				callback: () => (screenshotDialogOpen = true)
 			}
 		]
 	};
@@ -347,67 +351,77 @@
 </script>
 
 <div class="gear-page">
-	<FlexGrid maxColumns={2} verticalGap="0rem" horizontalGap="10rem">
-		{#if user_gears.length !== 0}
-			{#each view_gears as gear}
-				<div class="gear-cell gear-id-{gear.id}">
-					<div class="gear-icon">
-						<div class="icon-container">
-							<img src="./gear/{gear.part}.png" alt="Gear" />
-						</div>
-					</div>
+	<div class="gear-settings">
+		<h1 class="Pro">Gear List</h1>
+	</div>
 
-					{#if fourStatMode}
-						<div class="stats-container">
-							<div class="stats-grid">
-								<div class="stat-item top-left">
-									<div class="stat-content">
-										{gear.stats[0].stat_label ?? ''}
-										+{gear.stats[0].value_label ?? ''}
+	<div class="gear-grid">
+		<FlexGrid maxColumns={2} verticalGap="0rem" horizontalGap="10rem">
+			{#if user_gears.length !== 0}
+				{#each gear_views as gear}
+					<div class="gear-cell gear-id-{gear.id}">
+						<div class="gear-icon">
+							<div class="icon-container">
+								<img src="./gear/{gear.part}.png" alt="Gear" />
+							</div>
+						</div>
+
+						{#if fourStatMode}
+							<div class="stats-container">
+								<div class="stats-grid">
+									<div class="stat-item top-left">
+										<div class="stat-content">
+											{gear.stats[0].stat_label ?? ''}
+											+{gear.stats[0].value_label ?? ''}
+										</div>
 									</div>
-								</div>
-								<div class="stat-item top-right">
-									<div class="stat-content">
-										{gear.stats[2].stat_label ?? ''}
-										+{gear.stats[2].value_label ?? ''}
+									<div class="stat-item top-right">
+										<div class="stat-content">
+											{gear.stats[2].stat_label ?? ''}
+											+{gear.stats[2].value_label ?? ''}
+										</div>
 									</div>
-								</div>
-								<div class="stat-item bottom-left">
-									<div class="stat-content">
-										{gear.stats[1].stat_label ?? ''}
-										+{gear.stats[1].value_label ?? ''}
+									<div class="stat-item bottom-left">
+										<div class="stat-content">
+											{gear.stats[1].stat_label ?? ''}
+											+{gear.stats[1].value_label ?? ''}
+										</div>
 									</div>
-								</div>
-								<div class="stat-item bottom-right">
-									<div class="stat-content">
-										{gear.stats[3].stat_label ?? ''}
-										+{gear.stats[3].value_label ?? ''}
+									<div class="stat-item bottom-right">
+										<div class="stat-content">
+											{gear.stats[3].stat_label ?? ''}
+											+{gear.stats[3].value_label ?? ''}
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-					{:else}
-						<div class="single-stat">
-							<div class="stat">Stat 1</div>
-						</div>
-					{/if}
+						{:else}
+							<div class="single-stat">
+								<!-- <div class="stat">Stat 1</div> -->
+								<div class="stat-content">
+									{gear.stats[0].stat_label ?? ''}
+									+{gear.stats[0].value_label ?? ''}
+								</div>
+							</div>
+						{/if}
 
-					<div class="gear-actions"></div>
-				</div>
-			{/each}
-		{:else}
-			<div class="gear-cell">
-				<div class="gear-icon">
-					<div class="icon-container-nogear">
-						<img src="./gear/A.png" alt="Armor" />
+						<div class="gear-actions"></div>
+					</div>
+				{/each}
+			{:else}
+				<div class="gear-cell">
+					<div class="gear-icon">
+						<div class="icon-container-nogear">
+							<img src="./gear/A.png" alt="Armor" />
+						</div>
+					</div>
+					<div class="single-stat">
+						<div class="stat">Add gears first!</div>
 					</div>
 				</div>
-				<div class="single-stat">
-					<div class="stat">Add gears first!</div>
-				</div>
-			</div>
-		{/if}
-	</FlexGrid>
+			{/if}
+		</FlexGrid>
+	</div>
 </div>
 
 <UploadScreenshot
@@ -417,10 +431,28 @@
 	bind:processText
 />
 
-<NavTools tools={metadata.tools} />
+<NavToolbar actions={metadata.actions} />
 
 <style>
 	.gear-page {
+		margin-top: 1rem;
+		color: var(--text-color);
+		background-color: var(--bg-color);
+		width: 100%;
+		max-width: 100%;
+		margin-right: 3vw;
+	}
+
+	.gear-settings {
+		display: block;
+		padding: 1rem;
+		color: var(--text-color);
+		background-color: var(--bg-color);
+		width: 100%;
+		max-width: 100%;
+	}
+
+	.gear-grid {
 		margin-top: 1rem;
 		color: var(--text-color);
 		background-color: var(--bg-color);

@@ -1,20 +1,22 @@
 <script lang="ts">
-	// Imports
-	import { validateValue, FLOAT_PERCENT_3D, INTEGER } from '$lib/scripts/validation.ts';
-	import { LOCAL_STATS_MAIN, loadObject, saveObject } from '$lib/scripts/loader.ts';
-	import { type AttributeItem } from '$lib/scripts/loader.ts';
-	import { registerComponent, type ComponentMetadata } from '$lib/scripts/navMetadata.svelte.ts';
+	import { StorageKey, loadObject, saveObject, type AttributeItem } from '$lib/scripts/loader.ts';
+	import {
+		ActionType,
+		registerComponent,
+		type ComponentMetadata
+	} from '$lib/scripts/navMetadata.svelte.ts';
+	import { FLOAT_PERCENT_3D, INTEGER, validateValue } from '$lib/scripts/validation.ts';
 
-	import { ChartNoAxesColumn, Trash2, Download, FilePlus2, ImagePlus } from '@lucide/svelte';
-	import NavTools from '../NavTools.svelte';
-	import { onMount } from 'svelte';
-	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
+	import { ChartNoAxesColumn, Download, FilePlus2, ImagePlus, Trash2 } from '@lucide/svelte';
 	import cv from '@techstark/opencv-js';
+	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
+	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
+	import NavToolbar from '../NavToolbar.svelte';
 
 	// State
-	let user_attributes: AttributeItem[] = $state(loadObject(LOCAL_STATS_MAIN));
+	let user_attributes: AttributeItem[] = $state(loadObject(StorageKey.STATS));
 	let validated_attributes: AttributeItem[] = $state([]);
 	let editValue: string = $state('');
 	let editingIndex: number | null = $state(null);
@@ -54,9 +56,7 @@
 		// Update the source attributes array
 		user_attributes[index].value = editValue;
 
-		saveObject(LOCAL_STATS_MAIN, user_attributes).then(() => {
-			console.log('Saved key: ' + LOCAL_STATS_MAIN);
-		});
+		saveObject(StorageKey.STATS, user_attributes);
 
 		// Update validated attributes
 		const __use_percent = index === 2 || index === 10;
@@ -163,7 +163,7 @@
 				src_mat_edit.delete();
 			}
 			await worker.terminate();
-			saveObject(LOCAL_STATS_MAIN, user_attributes);
+			saveObject(StorageKey.STATS, user_attributes);
 			processAttributes();
 			processText = 'Done!';
 		}
@@ -323,10 +323,8 @@
 	}
 
 	function resetStats() {
-		user_attributes = loadObject(LOCAL_STATS_MAIN, true);
-		saveObject(LOCAL_STATS_MAIN, user_attributes).then(() => {
-			console.log('Cleared key: ' + LOCAL_STATS_MAIN);
-		});
+		user_attributes = loadObject(StorageKey.STATS, true);
+		saveObject(StorageKey.STATS, user_attributes);
 		processAttributes();
 	}
 
@@ -339,16 +337,17 @@
 		lucide: ChartNoAxesColumn,
 		showInNav: true,
 		order: 0,
-		tools: [
+		actions: [
 			{
 				id: 'screenshot',
 				label: 'From Screenshot',
 				lucide: ImagePlus,
-				action: () => (screenshotDialogOpen = true)
+				type: ActionType.BUTTON,
+				callback: () => (screenshotDialogOpen = true)
 			},
 			{ id: 'import', label: 'Import (NO WORK)', lucide: FilePlus2 },
 			{ id: 'export', label: 'Export (NO WORK)', lucide: Download },
-			{ id: 'reset', label: 'Reset', lucide: Trash2, action: resetStats }
+			{ id: 'reset', label: 'Reset', lucide: Trash2, type: ActionType.BUTTON, callback: resetStats }
 			// { id: 'share', label: 'Share' }
 		]
 	};
@@ -370,7 +369,13 @@
 <div class="stat-panel">
 	<h1 class="head">Character Stats</h1>
 
-	<FlexGrid gap="0.9rem 1rem" minColumns={1} maxColumns={2} preferDivisible={false}>
+	<FlexGrid
+		horizontalGap="0.9rem"
+		verticalGap="1rem"
+		minColumns={1}
+		maxColumns={2}
+		preferDivisible={false}
+	>
 		{#each validated_attributes as attribute}
 			<div class="stat-cell">
 				<div class="stat-content">
@@ -416,7 +421,7 @@
 	bind:processText
 />
 
-<NavTools tools={metadata.tools} />
+<NavToolbar actions={metadata.actions} />
 
 <style>
 	.stat-panel {

@@ -1,15 +1,48 @@
-import { writable } from 'svelte/store';
 import type { Component } from 'svelte';
+import { writable } from 'svelte/store';
 
 type NoReturnType = () => void;
+type ActionCallback<T> = (value: T) => void;
 
-export type ComponentTool = {
+export enum ActionType {
+	BUTTON = 'button',
+	SLIDER = 'slider',
+	TOGGLE = 'toggle'
+}
+
+interface BaseAction {
 	id: string;
 	label: string;
 	lucide?: Component;
-	type?: string; // button, slider, toggle
-	action?: NoReturnType;
-};
+	type?: ActionType;
+}
+
+interface ButtonAction extends BaseAction {
+	type: ActionType.BUTTON;
+	callback?: NoReturnType;
+}
+
+interface ToggleAction extends BaseAction {
+	type: ActionType.TOGGLE;
+	bind?: { get: () => boolean; set: (val: boolean) => void };
+	defaultValue?: boolean;
+	callback?: ActionCallback<boolean>;
+}
+
+interface SliderAction extends BaseAction {
+	type: ActionType.SLIDER;
+	minValue?: number;
+	maxValue?: number;
+	stepSize?: number;
+	defaultValue?: number;
+	callback?: ActionCallback<number>;
+}
+
+interface DummyTool extends BaseAction {
+	type?: undefined;
+}
+
+export type ComponentAction = ButtonAction | ToggleAction | SliderAction | DummyTool;
 
 export type ComponentMetadata = {
 	id?: string;
@@ -17,8 +50,7 @@ export type ComponentMetadata = {
 	lucide?: Component;
 	showInNav?: boolean;
 	order?: number;
-	tools?: ComponentTool[];
-	[key: string]: any; // Allow additional component-specific metadata
+	actions?: ComponentAction[];
 };
 
 // Initialize stores with proper typing
@@ -44,7 +76,7 @@ export function registerComponent(id: string, metadata: ComponentMetadata) {
 				id,
 				label: metadata.label,
 				lucide: metadata.lucide ?? undefined,
-				tools: metadata.tools ?? [],
+				tools: metadata.actions ?? [],
 				order: metadata.order ?? items.length
 			};
 

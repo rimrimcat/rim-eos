@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { registerComponent, type ComponentMetadata } from '$lib/scripts/navMetadata.svelte.ts';
 
-	import { Trash2, Download, FilePlus2, ImagePlus, Image as ImageIcon } from '@lucide/svelte';
-	import NavTools from '../NavTools.svelte';
+	import { Image as ImageIcon } from '@lucide/svelte';
 	import { onMount } from 'svelte';
+	import NavToolbar from '../NavToolbar.svelte';
 
 	import cv from '@techstark/opencv-js';
 	import { createWorker } from 'tesseract.js';
@@ -404,7 +404,7 @@
 	</div>
 </div>
 
-<NavTools tools={metadata.tools} />
+<NavToolbar actions={metadata.actions} />
 
 <style>
 	.opencv-test {
