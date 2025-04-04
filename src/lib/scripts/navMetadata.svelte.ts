@@ -24,13 +24,12 @@ export interface ButtonAction extends BaseAction {
 
 export interface ToggleAction extends BaseAction {
 	type: ActionType.TOGGLE;
-	onValueChange: (newValue: boolean) => void;
-	defaultValue?: boolean; // Kept for initialization in parent component
+	onValueChange?: () => void;
 }
 
 export interface SliderAction extends BaseAction {
 	type: ActionType.SLIDER;
-	onValueChange: (newValue: number) => void;
+	onValueChange?: () => void;
 	minValue?: number;
 	maxValue?: number;
 	stepSize?: number;

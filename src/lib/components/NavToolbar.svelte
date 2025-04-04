@@ -18,9 +18,9 @@
 	}
 
 	function handleToggle(tool: ToggleAction) {
-		if (bound_objects[tool.id] !== undefined && tool.onValueChange) {
-			bound_objects[tool.id] = !bound_objects[tool.id];
-			tool.onValueChange(bound_objects[tool.id]);
+		bound_objects[tool.id] = !bound_objects[tool.id];
+		if (tool.onValueChange) {
+			tool.onValueChange();
 		}
 	}
 
@@ -31,9 +31,10 @@
 		tool: SliderAction
 	) {
 		const value = parseFloat(event.currentTarget.value);
+		bound_objects[tool.id] = value;
+
 		if (tool.onValueChange) {
-			bound_objects[tool.id] = value;
-			tool.onValueChange(value);
+			tool.onValueChange();
 		}
 	}
 </script>

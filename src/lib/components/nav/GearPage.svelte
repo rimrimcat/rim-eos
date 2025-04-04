@@ -16,7 +16,7 @@
 	} from '$lib/scripts/navMetadata.svelte.ts';
 	import { Format, formatValue } from '$lib/scripts/validation.ts';
 
-	import { ImagePlus, Shirt } from '@lucide/svelte';
+	import { ImagePlus, LayoutGrid, Shirt } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
@@ -26,7 +26,6 @@
 	let user_gears: Gear[] = $state(loadObject(StorageKey.GEARS_V1));
 	let gear_views: GearView[] = $state([]);
 
-	let fourStatMode = $state(true);
 	let screenshotDialogOpen = $state(false);
 	let uploadedImageURL: string = $state('');
 	let processText: string = $state('');
@@ -326,6 +325,10 @@
 	});
 
 	// register
+	let bound_objects = $state({
+		fourStatMode: true
+	});
+
 	const id = 'gear-page';
 
 	const metadata: ComponentMetadata = {
@@ -341,6 +344,12 @@
 				lucide: ImagePlus,
 				type: ActionType.BUTTON,
 				callback: () => (screenshotDialogOpen = true)
+			},
+			{
+				id: 'fourStatMode',
+				label: 'Extended Stats',
+				lucide: LayoutGrid,
+				type: ActionType.TOGGLE
 			}
 		]
 	};
@@ -366,7 +375,7 @@
 							</div>
 						</div>
 
-						{#if fourStatMode}
+						{#if bound_objects.fourStatMode}
 							<div class="stats-container">
 								<div class="stats-grid">
 									<div class="stat-item top-left">
@@ -431,7 +440,7 @@
 	bind:processText
 />
 
-<NavToolbar actions={metadata.actions} />
+<NavToolbar actions={metadata.actions} {bound_objects} />
 
 <style>
 	.gear-page {

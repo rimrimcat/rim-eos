@@ -363,17 +363,16 @@
 				label: 'Dark Mode',
 				lucide: Sun,
 				type: ActionType.TOGGLE,
-				onValueChange: (newValue) => {
+				onValueChange: () => {
 					console.log('value changed to', bound_objects.darkMode);
-				},
-				defaultValue: false // Optional, used for documentation
+				}
 			},
 			{
 				id: 'volume',
 				label: 'Volume',
 				lucide: Volume2,
 				type: ActionType.SLIDER,
-				onValueChange: (newValue) => {
+				onValueChange: () => {
 					console.log('value changed to', bound_objects.volume);
 				},
 				minValue: 0,
