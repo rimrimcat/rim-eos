@@ -1,22 +1,19 @@
 <script lang="ts">
-	import { createEventDispatcher } from 'svelte';
 	import { ArrowRightToLine, Menu, CircleHelp } from '@lucide/svelte';
 
-	export let tools = [];
+	let { tools = [] } = $props();
 
-	let isCollapsed = false;
-	let scrollY = 0;
-	const dispatch = createEventDispatcher();
+	let isCollapsed = $state(false);
+	let scrollY = $state(0);
 
 	function toggleCollapse() {
 		isCollapsed = !isCollapsed;
-		dispatch('toggleCollapse', { isCollapsed });
 	}
 </script>
 
 <svelte:window bind:scrollY />
 <div
-	class="component-tools"
+	class="nav-tools"
 	class:collapsed={isCollapsed}
 	style="translate: 0px {scrollY}px; height: {5.5 + 3 * tools.length}rem"
 >
@@ -43,7 +40,7 @@
 			>
 				<div class="tool-icon">
 					{#if tool.lucide}
-						<svelte:component this={tool.lucide} />
+						<tool.lucide />
 					{:else}
 						<CircleHelp />
 					{/if}
@@ -57,28 +54,29 @@
 </div>
 
 <style>
-	.component-tools {
+	.nav-tools {
 		position: sticky;
-		left: 100vw;
 		top: 1rem;
 		width: 13.75rem;
-		background-color: #1a1a1a;
+		margin-right: 0.5rem;
+		background-color: var(--bg-color);
 		display: flex;
 		flex-direction: column;
-		color: #ffffff;
+		color: var(--text-color);
 		transition:
 			width 0.3s ease,
 			translate 0.2s ease;
 		border-radius: 1rem;
+		box-shadow: 0 4px 8px var(--shadow-color);
 	}
 
-	.component-tools.collapsed {
+	.nav-tools.collapsed {
 		position: sticky;
 		width: 3.75rem;
-		background-color: #1a1a1a;
+		background-color: var(--bg-color);
 		display: flex;
 		flex-direction: column;
-		color: #ffffff;
+		color: var(--text-color);
 		transition:
 			width 0.3s ease,
 			translate 0.2s ease;
@@ -91,7 +89,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 0.8rem;
-		border-bottom: 1px solid #2a2a2a;
+		border-bottom: 1px solid var(--border-color);
 		font-size: 1.2rem;
 	}
 
@@ -101,18 +99,23 @@
 		justify-content: center;
 		font-weight: bold;
 		font-size: 1.2rem;
+		color: var(--title-color);
 	}
 
 	.collapse-toggle {
 		background: none;
 		border: none;
-		color: #ffffff;
+		color: var(--text-color);
 		cursor: pointer;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		width: 2.2rem;
 		height: 2.2rem;
+	}
+
+	.collapse-toggle:hover {
+		background-color: var(--hover-bg);
 	}
 
 	.tools-list {
@@ -128,7 +131,7 @@
 		padding: 0.75rem 1rem;
 		background: none;
 		border: none;
-		color: #aaaaaa;
+		color: var(--text-color);
 		cursor: pointer;
 		transition: all 0.3s ease;
 		border-radius: 4px;
@@ -136,8 +139,8 @@
 	}
 
 	.tool-item:hover {
-		background-color: #2a2a2a;
-		color: #ffffff;
+		background-color: var(--hover-bg);
+		color: var(--text-color);
 	}
 
 	.tool-icon {
