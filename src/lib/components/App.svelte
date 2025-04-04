@@ -175,8 +175,9 @@
 	}
 
 	:global(img.user-upload) {
-		max-width: 100%;
-		max-height: 100%;
+		max-width: 80vw;
+		max-height: 60vh;
+		border-radius: 1rem;
 	}
 
 	.app-container {

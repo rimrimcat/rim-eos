@@ -6,36 +6,136 @@ export type AttributeItem = {
 	index: number;
 };
 
-export type GearStats = {
-	id: string;
-	part: string;
+export enum GearParts {
+	HELMET = 'H',
+	SPAULDERS = 'S',
+	ARMOR = 'A',
+	BRACERS = 'C',
+	BELT = 'B',
+	LEGGUARDS = 'L',
+	//
+	GLOVES = 'G',
+	BOOTS = 'T',
+	//
+	VISOR = 'V',
+	ENGINE = 'N',
+	EXOSKELETON = 'X',
+	REACTOR = 'R',
+	//
+	UNKNOWN = 'U'
+}
+
+export enum Stat {
+	HP = 'hp',
+	HP_PERCENT = 'hp_percent',
 	// Attack
-	atk: string;
-	flame_atk: string;
-	frost_atk: string;
-	volt_atk: string;
-	phys_atk: string;
-	alt_atk: string;
-	ele_atk: string;
+	ATK = 'atk',
+	FLAME_ATK = 'flame_atk',
+	FROST_ATK = 'frost_atk',
+	VOLT_ATK = 'volt_atk',
+	PHYS_ATK = 'phys_atk',
+	ALT_ATK = 'alt_atk',
+	ELE_ATK = 'ele_atk',
 	// Attack percent
-	atk_percent: string;
-	flame_atk_percent: string;
-	frost_atk_percent: string;
-	volt_atk_percent: string;
-	phys_atk_percent: string;
-	alt_atk_percent: string;
-	ele_atk_percent: string;
+	ATK_PERCENT = 'atk_percent',
+	FLAME_ATK_PERCENT = 'flame_atk_percent',
+	FROST_ATK_PERCENT = 'frost_atk_percent',
+	VOLT_ATK_PERCENT = 'volt_atk_percent',
+	PHYS_ATK_PERCENT = 'phys_atk_percent',
+	ALT_ATK_PERCENT = 'alt_atk_percent',
+	ELE_ATK_PERCENT = 'ele_atk_percent',
 	// Damage percent
-	dmg_percent: string;
-	flame_dmg_percent: string;
-	frost_dmg_percent: string;
-	volt_dmg_percent: string;
-	phys_dmg_percent: string;
-	alt_dmg_percent: string;
-	ele_dmg_percent: string;
+	DMG_PERCENT = 'dmg_percent',
+	FLAME_DMG_PERCENT = 'flame_dmg_percent',
+	FROST_DMG_PERCENT = 'frost_dmg_percent',
+	VOLT_DMG_PERCENT = 'volt_dmg_percent',
+	PHYS_DMG_PERCENT = 'phys_dmg_percent',
+	ALT_DMG_PERCENT = 'alt_dmg_percent',
+	ELE_DMG_PERCENT = 'ele_dmg_percent',
 	// Crit
-	crit: string;
-	crit_percent: string;
+	CRIT = 'crit',
+	CRIT_PERCENT = 'crit_percent',
+	CRIT_DMG = 'crit_dmg',
+	// Resistance
+	RES = 'res',
+	FLAME_RES = 'flame_res',
+	FROST_RES = 'frost_res',
+	VOLT_RES = 'volt_res',
+	ALT_RES = 'alt_res',
+	PHYS_RES = 'phys_res',
+	// Resistance percent
+	RES_PERCENT = 'res_percent',
+	FLAME_RES_PERCENT = 'flame_res_percent',
+	FROST_RES_PERCENT = 'frost_res_percent',
+	VOLT_RES_PERCENT = 'volt_res_percent',
+	ALT_RES_PERCENT = 'alt_res_percent',
+	PHYS_RES_PERCENT = 'phys_res_percent'
+}
+
+export type GearValidStats = {
+	// Attack
+	ATK?: string;
+	FLAME_ATK?: string;
+	FROST_ATK?: string;
+	VOLT_ATK?: string;
+	PHYS_ATK?: string;
+	ALT_ATK?: string;
+	ELE_ATK?: string;
+	// Attack percent
+	ATK_PERCENT?: string;
+	FLAME_ATK_PERCENT?: string;
+	FROST_ATK_PERCENT?: string;
+	VOLT_ATK_PERCENT?: string;
+	PHYS_ATK_PERCENT?: string;
+	ALT_ATK_PERCENT?: string;
+	ELE_ATK_PERCENT?: string;
+	// Damage percent
+	DMG_PERCENT?: string;
+	FLAME_DMG_PERCENT?: string;
+	FROST_DMG_PERCENT?: string;
+	VOLT_DMG_PERCENT?: string;
+	PHYS_DMG_PERCENT?: string;
+	ALT_DMG_PERCENT?: string;
+	ELE_DMG_PERCENT?: string;
+	// Crit
+	CRIT?: string;
+	CRIT_PERCENT?: string;
+	CRIT_DMG?: string;
+	// HP
+	HP?: string;
+	HP_PERCENT?: string;
+	// Resistance
+	RES?: string;
+	FLAME_RES?: string;
+	FROST_RES?: string;
+	VOLT_RES?: string;
+	ALT_RES?: string;
+	PHYS_RES?: string;
+	// Resistance percent
+	RES_PERCENT?: string;
+	FLAME_RES_PERCENT?: string;
+	FROST_RES_PERCENT?: string;
+	VOLT_RES_PERCENT?: string;
+	ALT_RES_PERCENT?: string;
+	PHYS_RES_PERCENT?: string;
+};
+
+type GearId = {
+	id: number;
+	part: (typeof GearParts)[keyof typeof GearParts];
+};
+
+export type GearStatItem = {
+	stat: Stat;
+	stat_label: string;
+	value: number;
+	value_label: string;
+	roll?: number;
+};
+
+export type Gear = GearId & GearValidStats;
+export type GearView = GearId & {
+	stats: GearStatItem[];
 };
 
 // Constants

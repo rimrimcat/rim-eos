@@ -70,7 +70,7 @@
 					class="user-upload-full"
 					id="user-upload-full"
 					src={uploadedImageURL}
-					alt="Uploaded screenshot"
+					alt="Uploaded screenshot at full size"
 					style="display: none"
 				/>
 			{:else}

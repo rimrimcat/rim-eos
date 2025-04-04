@@ -72,6 +72,7 @@ const validation = {
 	header: HEADER
 } as const;
 
+// Used by GearTable, which I don't use anymore
 export function validateValue(inputName: string, inputValue: string): string {
 	const validation_type = validation[inputName] || inputName;
 
@@ -162,4 +163,20 @@ export function validateValue(inputName: string, inputValue: string): string {
 
 	console.error('Not validated.');
 	return inputValue;
+}
+
+export enum Format {
+	INTEGER = 'int',
+	FLOAT_PERCENT_3D = 'float3d'
+}
+
+export function formatValue(format: Format, value: string): string {
+	switch (format) {
+		case Format.INTEGER:
+			return String(parseInt(value, 10));
+		case Format.FLOAT_PERCENT_3D:
+			return String(Number(value).toFixed(3)) + '%';
+	}
+
+	return '';
 }

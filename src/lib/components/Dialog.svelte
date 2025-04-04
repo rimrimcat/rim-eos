@@ -116,7 +116,8 @@
 		color: var(--text-color);
 		border-radius: 0.7rem;
 		box-shadow: 0 0.2rem 1rem var(--shadow-color);
-		width: 100%;
+		min-width: 30vw;
+		min-height: 30vh;
 		max-width: 70vw;
 		max-height: 90vh;
 		display: flex;

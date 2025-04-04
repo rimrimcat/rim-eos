@@ -2,13 +2,24 @@
 	import { onDestroy, onMount, tick } from 'svelte';
 
 	let {
-		gap = '2rem',
+		horizontalGap = '1rem',
+		verticalGap = '1rem',
+		gap = undefined,
 		minColumns = 1,
 		maxColumns = 10,
 		preferDivisible = false,
 		by_column = true,
 		children
 	} = $props();
+
+	// For backward compatibility - if gap is provided, use it for both dimensions
+	// unless horizontalGap or verticalGap were explicitly set
+	$effect(() => {
+		if (gap !== undefined) {
+			horizontalGap = gap;
+			verticalGap = gap;
+		}
+	});
 
 	let columns = $state(1);
 
@@ -17,25 +28,50 @@
 	let itemHeight = $state(0);
 
 	let container: HTMLDivElement;
-	let items = $state([]);
+	let items = $state<Element[]>([]);
 	let measuringContainer: HTMLDivElement | null = $state(null);
 
 	let hasMeasured = $state(false);
+	let previousItemCount = $state(0);
+	let mutationObserver: MutationObserver | null = null;
+
+	// Function to check if items have changed
+	function checkItemsChanged() {
+		if (!container) return;
+
+		const currentItems = Array.from(
+			container.querySelectorAll(':scope > *:not(.measuring-container)')
+		);
+
+		if (currentItems.length !== previousItemCount) {
+			console.log(`Items changed: ${previousItemCount} → ${currentItems.length}`);
+			previousItemCount = currentItems.length;
+
+			// Reset measurements to force recalculation
+			itemWidth = 0;
+			itemHeight = 0;
+			hasMeasured = false;
+
+			// Remeasure and update grid
+			measureItems();
+		}
+	}
 
 	// Function to measure the natural size of items
 	async function measureItems() {
-		if (!container || hasMeasured) return;
+		if (!container) return;
 
 		// Wait for the DOM to update
 		await tick();
 
 		// Get all slot items
 		items = Array.from(container.querySelectorAll(':scope > *:not(.measuring-container)'));
+		numItems = items.length;
 
 		if (items.length === 0) return;
 
-		// If minItemWidth is not provided, we need to measure
-		if (!itemWidth) {
+		// If itemWidth is not set or we need to remeasure
+		if (!itemWidth || !hasMeasured) {
 			// Create a measuring container
 			measuringContainer = document.createElement('div');
 			measuringContainer.className = 'measuring-container';
@@ -81,13 +117,13 @@
 
 			// Remove measuring container
 			container.removeChild(measuringContainer);
+			measuringContainer = null;
 
 			itemWidth = Math.ceil(Math.max(...itemWidths));
 			itemHeight = Math.ceil(Math.max(...itemHeights));
-			numItems = items.length;
 
-			console.log('Calculated minItemWidth:', itemWidth);
-			console.log('Calculated minItemHeight:', itemHeight);
+			console.log('Calculated itemWidth:', itemWidth);
+			console.log('Calculated itemHeight:', itemHeight);
 		}
 
 		hasMeasured = true;
@@ -99,9 +135,10 @@
 		if (!container || !itemWidth) return;
 
 		const fittableColumns = Math.floor(container.offsetWidth / itemWidth);
+		const currMaxColumns = Math.min(maxColumns, numItems);
 
-		if (fittableColumns > maxColumns) {
-			columns = maxColumns;
+		if (fittableColumns > currMaxColumns) {
+			columns = currMaxColumns;
 		} else if (fittableColumns < minColumns) {
 			columns = minColumns;
 		} else {
@@ -109,10 +146,12 @@
 		}
 
 		if (preferDivisible && columns != 1) {
-			while (numItems % columns !== 0) {
+			while (numItems % columns !== 0 && columns > 1) {
 				columns--;
 			}
 		}
+
+		console.log('fittable cols', fittableColumns);
 
 		// Update grid CSS
 		container.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
@@ -154,11 +193,39 @@
 		// Initial measurement of items
 		await measureItems();
 		window.addEventListener('resize', updateGrid);
+
+		// Set up mutation observer to detect DOM changes
+		mutationObserver = new MutationObserver((mutations) => {
+			const shouldCheck = mutations.some(
+				(mutation) =>
+					mutation.type === 'childList' ||
+					mutation.type === 'attributes' ||
+					mutation.type === 'characterData'
+			);
+
+			if (shouldCheck) {
+				checkItemsChanged();
+			}
+		});
+
+		// Start observing the container
+		if (container) {
+			mutationObserver.observe(container, {
+				childList: true,
+				subtree: true,
+				attributes: true,
+				characterData: true
+			});
+		}
 	});
 
 	onMount(() => {
+		// put it here because server doesnt like it
 		onDestroy(() => {
 			window.removeEventListener('resize', updateGrid);
+			if (mutationObserver) {
+				mutationObserver.disconnect();
+			}
 		});
 	});
 </script>
@@ -168,7 +235,7 @@
 	bind:this={container}
 	role="grid"
 	aria-colcount={columns}
-	style="gap: {gap};"
+	style="column-gap: {horizontalGap}; row-gap: {verticalGap};"
 >
 	{@render children()}
 </div>
