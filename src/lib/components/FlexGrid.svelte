@@ -9,11 +9,9 @@
 		maxColumns = 10,
 		preferDivisible = false,
 		by_column = true,
+		hasMeasured = $bindable(false),
 		children
 	} = $props();
-
-	// For backward compatibility - if gap is provided, use it for both dimensions
-	// unless horizontalGap or verticalGap were explicitly set
 
 	if (gap !== undefined) {
 		horizontalGap = gap;
@@ -30,9 +28,20 @@
 	let items = $state<Element[]>([]);
 	let measuringContainer: HTMLDivElement | null = $state(null);
 
-	let hasMeasured = $state(false);
 	let previousItemCount = $state(0);
 	let mutationObserver: MutationObserver | null = null;
+
+	let gap_px = $state(0);
+
+	// resizing calcs
+	const _arr_ = Array.from({ length: 1 + maxColumns - minColumns + 1 }, (_, i) => i + minColumns);
+	let sizeArr = $derived(_arr_.map((value) => value * itemWidth + (value - 1) * gap_px));
+
+	$inspect('HAS MEASURED', hasMeasured);
+	$inspect('cols', columns);
+	$inspect('itemWidth', itemWidth);
+	$inspect('gap', gap_px);
+	$inspect('sizear', sizeArr);
 
 	// Function to check if items have changed
 	function checkItemsChanged() {
@@ -133,15 +142,18 @@
 	function updateGrid() {
 		if (!container || !itemWidth) return;
 
-		const fittableColumns = Math.floor(container.offsetWidth / itemWidth);
-		const currMaxColumns = Math.min(maxColumns, numItems);
+		const currMaxColumns = Math.min(maxColumns, numItems); // # columns shouldnt be greater than # items
 
-		if (fittableColumns > currMaxColumns) {
+		if (container.offsetWidth > sizeArr[columns]) {
+			columns++;
+		} else if (container.offsetWidth < sizeArr[columns - 1] && columns > 1) {
+			columns--;
+		}
+
+		if (columns > currMaxColumns) {
 			columns = currMaxColumns;
-		} else if (fittableColumns < minColumns) {
+		} else if (columns < minColumns) {
 			columns = minColumns;
-		} else {
-			columns = fittableColumns;
 		}
 
 		if (preferDivisible && columns != 1) {
@@ -149,8 +161,6 @@
 				columns--;
 			}
 		}
-
-		// console.log('fittable cols', fittableColumns);
 
 		// Update grid CSS
 		container.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
@@ -188,9 +198,8 @@
 		}
 	}
 
-	onMount(async () => {
-		// Initial measurement of items
-		await measureItems();
+	onMount(() => {
+		measureItems();
 		window.addEventListener('resize', updateGrid);
 
 		// Set up mutation observer to detect DOM changes
@@ -216,16 +225,19 @@
 				characterData: true
 			});
 		}
-	});
 
-	onMount(() => {
-		// put it here because server doesnt like it
+		gap_px =
+			parseInt(horizontalGap, 10) * parseFloat(getComputedStyle(document.documentElement).fontSize);
 		onDestroy(() => {
 			window.removeEventListener('resize', updateGrid);
 			if (mutationObserver) {
 				mutationObserver.disconnect();
 			}
 		});
+	});
+	$effect(() => {
+		hasMeasured;
+		measureItems();
 	});
 </script>
 
@@ -244,5 +256,6 @@
 		display: grid;
 		width: 100%;
 		grid-template-columns: 1fr;
+		overflow-x: hidden;
 	}
 </style>

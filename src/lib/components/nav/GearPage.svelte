@@ -30,6 +30,8 @@
 	let uploadedImageURL: string = $state('');
 	let processText: string = $state('');
 
+	let hasMeasured = $state(false); // for triggering flexGrid itemWidth update
+
 	const OCR_KEY_MAP = {
 		hp: 'hp',
 		atk: 'atk',
@@ -349,7 +351,10 @@
 				id: 'fourStatMode',
 				label: 'Extended Stats',
 				lucide: LayoutGrid,
-				type: ActionType.TOGGLE
+				type: ActionType.TOGGLE,
+				callback: () => {
+					hasMeasured = false;
+				}
 			}
 		]
 	};
@@ -365,7 +370,7 @@
 	</div>
 
 	<div class="gear-grid">
-		<FlexGrid maxColumns={2} verticalGap="0rem" horizontalGap="10rem">
+		<FlexGrid maxColumns={4} verticalGap="0rem" horizontalGap="0rem" bind:hasMeasured>
 			{#if user_gears.length !== 0}
 				{#each gear_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
@@ -440,7 +445,7 @@
 	bind:processText
 />
 
-<NavToolbar actions={metadata.actions} {bound_objects} />
+<NavToolbar actions={metadata.actions} bind:bound_objects />
 
 <style>
 	.gear-page {

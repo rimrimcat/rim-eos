@@ -13,14 +13,18 @@
 	let isCollapsed = $state(false);
 	let scrollY = $state(0);
 
+	const sliderCount = actions.filter((action) => action.type === ActionType.SLIDER).length;
+	const toggleCount = actions.filter((action) => action.type === ActionType.TOGGLE).length;
+	const buttonCount = actions.filter((action) => action.type === ActionType.BUTTON).length;
+
 	function toggleCollapse() {
 		isCollapsed = !isCollapsed;
 	}
 
 	function handleToggle(tool: ToggleAction) {
 		bound_objects[tool.id] = !bound_objects[tool.id];
-		if (tool.onValueChange) {
-			tool.onValueChange();
+		if (tool.callback) {
+			tool.callback();
 		}
 	}
 
@@ -33,8 +37,8 @@
 		const value = parseFloat(event.currentTarget.value);
 		bound_objects[tool.id] = value;
 
-		if (tool.onValueChange) {
-			tool.onValueChange();
+		if (tool.callback) {
+			tool.callback();
 		}
 	}
 </script>
@@ -43,7 +47,9 @@
 <div
 	class="nav-tools"
 	class:collapsed={isCollapsed}
-	style="translate: 0px {scrollY}px; height: auto; min-height: {5.5 + 3 * actions.length}rem"
+	style="translate: 0px {scrollY}px; height:{5.5 +
+		3 * (toggleCount + buttonCount) +
+		5 * sliderCount}rem"
 >
 	<div class="tools-header">
 		<div class="header-content">

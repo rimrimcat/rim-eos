@@ -363,7 +363,7 @@
 				label: 'Dark Mode',
 				lucide: Sun,
 				type: ActionType.TOGGLE,
-				onValueChange: () => {
+				callback: () => {
 					console.log('value changed to', bound_objects.darkMode);
 				}
 			},
@@ -372,7 +372,7 @@
 				label: 'Volume',
 				lucide: Volume2,
 				type: ActionType.SLIDER,
-				onValueChange: () => {
+				callback: () => {
 					console.log('value changed to', bound_objects.volume);
 				},
 				minValue: 0,

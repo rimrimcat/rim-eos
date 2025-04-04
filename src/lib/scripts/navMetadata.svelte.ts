@@ -24,12 +24,12 @@ export interface ButtonAction extends BaseAction {
 
 export interface ToggleAction extends BaseAction {
 	type: ActionType.TOGGLE;
-	onValueChange?: () => void;
+	callback?: () => void;
 }
 
 export interface SliderAction extends BaseAction {
 	type: ActionType.SLIDER;
-	onValueChange?: () => void;
+	callback?: () => void;
 	minValue?: number;
 	maxValue?: number;
 	stepSize?: number;
