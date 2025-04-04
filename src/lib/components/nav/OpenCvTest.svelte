@@ -1,7 +1,11 @@
 <script lang="ts">
-	import { registerComponent, type ComponentMetadata } from '$lib/scripts/navMetadata.svelte.ts';
+	import {
+		ActionType,
+		registerComponent,
+		type ComponentMetadata
+	} from '$lib/scripts/navMetadata.svelte.ts';
 
-	import { Image as ImageIcon } from '@lucide/svelte';
+	import { Image as ImageIcon, PlayCircle, Sun, Volume2 } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import NavToolbar from '../NavToolbar.svelte';
 
@@ -54,6 +58,7 @@
 			const result = new cv.Mat();
 			const mask = new cv.Mat();
 			cv.matchTemplate(source, template, result, cv.TM_CCOEFF_NORMED, mask);
+			// @ts-expect-error
 			const minMax = cv.minMaxLoc(result);
 			matchScore = minMax.maxVal;
 
@@ -331,6 +336,11 @@
 	}
 
 	// register
+	let bound_objects = $state({
+		darkMode: false,
+		volume: 50
+	});
+
 	const id = 'opencv-test';
 
 	const metadata: ComponentMetadata = {
@@ -338,7 +348,39 @@
 		label: 'OpenCV Test',
 		lucide: ImageIcon,
 		showInNav: true,
-		order: 10
+		order: 10,
+
+		actions: [
+			{
+				id: 'play',
+				label: 'Play',
+				lucide: PlayCircle,
+				type: ActionType.BUTTON,
+				callback: () => console.log('Play button clicked')
+			},
+			{
+				id: 'darkMode',
+				label: 'Dark Mode',
+				lucide: Sun,
+				type: ActionType.TOGGLE,
+				onValueChange: (newValue) => {
+					console.log('value changed to', bound_objects.darkMode);
+				},
+				defaultValue: false // Optional, used for documentation
+			},
+			{
+				id: 'volume',
+				label: 'Volume',
+				lucide: Volume2,
+				type: ActionType.SLIDER,
+				onValueChange: (newValue) => {
+					console.log('value changed to', bound_objects.volume);
+				},
+				minValue: 0,
+				maxValue: 100,
+				stepSize: 5
+			} // add another action that adjusts screen brightness
+		]
 	};
 
 	onMount(() => {
@@ -404,7 +446,7 @@
 	</div>
 </div>
 
-<NavToolbar actions={metadata.actions} />
+<NavToolbar actions={metadata.actions} {bound_objects} />
 
 <style>
 	.opencv-test {

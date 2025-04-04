@@ -17,32 +17,30 @@ interface BaseAction {
 	type?: ActionType;
 }
 
-interface ButtonAction extends BaseAction {
+export interface ButtonAction extends BaseAction {
 	type: ActionType.BUTTON;
 	callback?: NoReturnType;
 }
 
-interface ToggleAction extends BaseAction {
+export interface ToggleAction extends BaseAction {
 	type: ActionType.TOGGLE;
-	bind?: { get: () => boolean; set: (val: boolean) => void };
-	defaultValue?: boolean;
-	callback?: ActionCallback<boolean>;
+	onValueChange: (newValue: boolean) => void;
+	defaultValue?: boolean; // Kept for initialization in parent component
 }
 
-interface SliderAction extends BaseAction {
+export interface SliderAction extends BaseAction {
 	type: ActionType.SLIDER;
+	onValueChange: (newValue: number) => void;
 	minValue?: number;
 	maxValue?: number;
 	stepSize?: number;
-	defaultValue?: number;
-	callback?: ActionCallback<number>;
 }
 
-interface DummyTool extends BaseAction {
+export interface DummyAction extends BaseAction {
 	type?: undefined;
 }
 
-export type ComponentAction = ButtonAction | ToggleAction | SliderAction | DummyTool;
+export type ComponentAction = ButtonAction | ToggleAction | SliderAction | DummyAction;
 
 export type ComponentMetadata = {
 	id?: string;

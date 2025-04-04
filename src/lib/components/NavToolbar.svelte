@@ -1,44 +1,39 @@
 <script lang="ts">
 	import { ArrowRightToLine, CircleHelp, Menu, ToggleLeft, ToggleRight } from '@lucide/svelte';
 
-	import { ActionType, type ComponentAction } from '$lib/scripts/navMetadata.svelte.ts';
+	import {
+		ActionType,
+		type ComponentAction,
+		type SliderAction,
+		type ToggleAction
+	} from '$lib/scripts/navMetadata.svelte.ts';
 
-	let { actions = [] as ComponentAction[] } = $props();
+	let { actions = [] as ComponentAction[], bound_objects = $bindable({}) } = $props();
 
 	let isCollapsed = $state(false);
 	let scrollY = $state(0);
-
-	// Store for toggle and slider values
-	let toolValues = $state(
-		actions.reduce((acc, tool) => {
-			if (tool.type === ActionType.TOGGLE) {
-				acc[tool.id] = tool.defaultValue ?? false;
-			} else if (tool.type === ActionType.SLIDER) {
-				acc[tool.id] = tool.defaultValue ?? tool.minValue ?? 0;
-			}
-			return acc;
-		}, {})
-	);
 
 	function toggleCollapse() {
 		isCollapsed = !isCollapsed;
 	}
 
-	function handleToggle(tool) {
-		toolValues[tool.id] = !toolValues[tool.id];
-		if (tool.bind) {
-			tool.bind.set(!tool.bind.get());
-		}
-		if (tool.action) {
-			tool.action(toolValues[tool.id]);
+	function handleToggle(tool: ToggleAction) {
+		if (bound_objects[tool.id] !== undefined && tool.onValueChange) {
+			bound_objects[tool.id] = !bound_objects[tool.id];
+			tool.onValueChange(bound_objects[tool.id]);
 		}
 	}
 
-	function handleSliderChange(event, tool) {
-		const value = parseFloat(event.target.value);
-		toolValues[tool.id] = value;
-		if (tool.action) {
-			tool.action(value);
+	function handleSliderChange(
+		event: Event & {
+			currentTarget: EventTarget & HTMLInputElement;
+		},
+		tool: SliderAction
+	) {
+		const value = parseFloat(event.currentTarget.value);
+		if (tool.onValueChange) {
+			bound_objects[tool.id] = value;
+			tool.onValueChange(value);
 		}
 	}
 </script>
@@ -66,56 +61,51 @@
 	<div class="tools-list">
 		{#each actions as action}
 			{#if action.type === ActionType.TOGGLE}
-				<div class="tool-item toggle-item" title={isCollapsed ? action.label : 'Unset'}>
-					<div class="tool-icon">
-						{#if toolValues[action.id]}
-							<ToggleRight />
-						{:else}
-							<ToggleLeft />
+				<button class="toggle-button" onclick={() => handleToggle(action)}>
+					<div class="tool-item toggle-item" title={isCollapsed ? action.label : 'Unset'}>
+						<div class="tool-icon">
+							{#if bound_objects[action.id]}
+								<ToggleRight />
+							{:else}
+								<ToggleLeft />
+							{/if}
+						</div>
+						{#if !isCollapsed}
+							<span class="tool-label">{action.label}</span>
 						{/if}
 					</div>
-					{#if !isCollapsed}
-						<span class="tool-label">{action.label}</span>
-						<button class="toggle-button" onclick={() => handleToggle(action)}>
-							<span class="toggle-track" class:active={toolValues[action.id]}>
-								<span class="toggle-thumb"> </span>
-							</span>
-						</button>
-					{:else}
-						<button class="icon-toggle-button" onclick={() => handleToggle(action)}>
-							<span class="sr-only">Toggle {action.label}</span>
-						</button>
-					{/if}
-				</div>
+				</button>
 			{:else if action.type === ActionType.SLIDER}
 				<div class="tool-item slider-item" title={isCollapsed ? action.label : 'Unset'}>
-					<div class="tool-icon">
-						{#if action.lucide}
-							<action.lucide />
-						{:else}
-							<CircleHelp />
+					<div class="slider-icon-text">
+						<div class="tool-icon">
+							{#if action.lucide}
+								<action.lucide />
+							{:else}
+								<CircleHelp />
+							{/if}
+						</div>
+						{#if !isCollapsed}
+							<span class="tool-label">{action.label}</span>
 						{/if}
 					</div>
 					{#if !isCollapsed}
-						<div class="slider-container">
-							<span class="tool-label">{action.label}</span>
-							<div class="slider-controls">
-								<span class="slider-value">{toolValues[action.id]}</span>
-								<input
-									type="range"
-									min={action.minValue ?? 0}
-									max={action.maxValue ?? 100}
-									step={action.stepSize ?? 1}
-									value={toolValues[action.id]}
-									oninput={(e) => handleSliderChange(e, action)}
-									class="slider-input"
-								/>
-							</div>
+						<div class="slider-controls">
+							<span class="slider-value">{bound_objects[action.id]}</span>
+							<input
+								type="range"
+								min={action.minValue ?? 0}
+								max={action.maxValue ?? 100}
+								step={action.stepSize ?? 1}
+								value={bound_objects[action.id]}
+								oninput={(e) => handleSliderChange(e, action)}
+								class="slider-input"
+							/>
 						</div>
 					{:else}
-						<button class="tool-collapsed-action" onclick={() => !isCollapsed}>
+						<!-- <button class="tool-collapsed-action" onclick={() => !isCollapsed}>
 							<span class="sr-only">{action.label}</span>
-						</button>
+						</button> -->
 					{/if}
 				</div>
 			{:else}
@@ -305,6 +295,15 @@
 		align-items: flex-start;
 	}
 
+	.slider-icon-text {
+		display: flex;
+		align-items: center;
+		flex: 1;
+		max-width: 100%;
+		width: 100%;
+		font-size: small;
+	}
+
 	.slider-container {
 		width: 100%;
 		display: flex;
@@ -333,6 +332,7 @@
 		border-radius: 0.25rem;
 		background: var(--border-color);
 		outline: none;
+		width: 75%;
 	}
 
 	.slider-input::-webkit-slider-thumb {
