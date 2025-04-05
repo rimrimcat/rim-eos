@@ -12,9 +12,9 @@
 	import cv from '@techstark/opencv-js';
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
+	import ActionToolbar from '../ActionToolbar.svelte';
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
-	import NavToolbar from '../NavToolbar.svelte';
 
 	// State
 	let user_attributes: AttributeItem[] = $state(loadObject(StorageKey.STATS));
@@ -422,7 +422,7 @@
 	bind:processText
 />
 
-<NavToolbar actions={metadata.actions} />
+<ActionToolbar actions={metadata.actions} />
 
 <style>
 	.stat-panel {

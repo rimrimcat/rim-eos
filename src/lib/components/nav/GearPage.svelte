@@ -25,9 +25,9 @@
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
+	import ActionToolbar from '../ActionToolbar.svelte';
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
-	import NavToolbar from '../NavToolbar.svelte';
 
 	let user_gears: UserGear[] = $state(loadObject(StorageKey.GEARS_V1));
 	let gear_views: GearView[] = $state([]);
@@ -401,7 +401,7 @@
 	bind:processText
 />
 
-<NavToolbar actions={metadata.actions} bind:bound_objects />
+<ActionToolbar actions={metadata.actions} bind:bound_objects />
 
 <style>
 	.gear-page {

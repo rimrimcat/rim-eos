@@ -7,7 +7,7 @@
 
 	import { Image as ImageIcon, PlayCircle, Sun, Volume2 } from '@lucide/svelte';
 	import { onMount } from 'svelte';
-	import NavToolbar from '../NavToolbar.svelte';
+	import ActionToolbar from '../ActionToolbar.svelte';
 
 	import cv from '@techstark/opencv-js';
 	import { createWorker } from 'tesseract.js';
@@ -446,7 +446,7 @@
 	</div>
 </div>
 
-<NavToolbar actions={metadata.actions} {bound_objects} />
+<ActionToolbar actions={metadata.actions} {bound_objects} />
 
 <style>
 	.opencv-test {
