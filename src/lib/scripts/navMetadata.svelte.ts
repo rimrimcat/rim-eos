@@ -47,8 +47,6 @@ export type ComponentMetadata = {
 
 // Initialize stores with proper typing
 export const navItems = writable<ComponentMetadata[]>([]);
-export const activeComponent = writable<string>('stat-panel');
-export const isCollapsed = writable<boolean>(false);
 export const componentRegistry = writable<Record<string, ComponentMetadata>>({});
 
 export function registerComponent(id: string, metadata: ComponentMetadata) {

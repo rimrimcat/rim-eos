@@ -322,44 +322,40 @@
 								<div class="stats-grid">
 									<div class="stat-item top-left">
 										<div class="stat-content">
+											{gear.stats[0].stat_label ?? ''}
 											{#if bound_objects.titanMode}
-												{gear.stats[0].stat_label ?? ''}
 												+{gear.stats[0].titan_value_label ?? ''}
 											{:else}
-												{gear.stats[0].stat_label ?? ''}
 												+{gear.stats[0].value_label ?? ''}
 											{/if}
 										</div>
 									</div>
 									<div class="stat-item top-right">
 										<div class="stat-content">
+											{gear.stats[2].stat_label ?? ''}
 											{#if bound_objects.titanMode}
-												{gear.stats[2].stat_label ?? ''}
 												+{gear.stats[2].titan_value_label ?? ''}
 											{:else}
-												{gear.stats[2].stat_label ?? ''}
 												+{gear.stats[2].value_label ?? ''}
 											{/if}
 										</div>
 									</div>
 									<div class="stat-item bottom-left">
 										<div class="stat-content">
+											{gear.stats[1].stat_label ?? ''}
 											{#if bound_objects.titanMode}
-												{gear.stats[1].stat_label ?? ''}
 												+{gear.stats[1].titan_value_label ?? ''}
 											{:else}
-												{gear.stats[1].stat_label ?? ''}
 												+{gear.stats[1].value_label ?? ''}
 											{/if}
 										</div>
 									</div>
 									<div class="stat-item bottom-right">
 										<div class="stat-content">
+											{gear.stats[3].stat_label ?? ''}
 											{#if bound_objects.titanMode}
-												{gear.stats[3].stat_label ?? ''}
 												+{gear.stats[3].titan_value_label ?? ''}
 											{:else}
-												{gear.stats[3].stat_label ?? ''}
 												+{gear.stats[3].value_label ?? ''}
 											{/if}
 										</div>
@@ -368,13 +364,11 @@
 							</div>
 						{:else}
 							<div class="single-stat">
-								<!-- <div class="stat">Stat 1</div> -->
 								<div class="stat-content">
+									{gear.stats[0].stat_label ?? ''}
 									{#if bound_objects.titanMode}
-										{gear.stats[0].stat_label ?? ''}
 										+{gear.stats[0].titan_value_label ?? ''}
 									{:else}
-										{gear.stats[0].stat_label ?? ''}
 										+{gear.stats[0].value_label ?? ''}
 									{/if}
 								</div>

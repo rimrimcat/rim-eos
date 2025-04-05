@@ -1,22 +1,30 @@
 <script lang="ts">
-	import { activeComponent } from '$lib/scripts/navMetadata.svelte.ts';
-	import type { Component } from 'svelte';
+	// import { activeComponent } from '$lib/scripts/navMetadata.svelte.ts';
+	import { onMount, type Component } from 'svelte';
 	import Dialog from './Dialog.svelte';
 	import GearPage from './nav/GearPage.svelte';
 	import OpenCvTest from './nav/OpenCvTest.svelte';
 	import StatPage from './nav/StatPage.svelte';
 	import Toolbar from './Toolbar.svelte';
 
-	// Map of component IDs to component definitions
-	const componentMap: { [key: string]: Component } = {
+	// Detect if mobile
+	let fontSize = $state(0);
+	let innerWidth = $state(1000);
+	let isMobile = $derived((13.75 * fontSize) / innerWidth > 0.25);
+
+	// Active Nav
+	const navMap: { [key: string]: Component } = {
 		'stat-page': StatPage,
 		'gear-page': GearPage,
 		'opencv-test': OpenCvTest
 	};
+	let activeComponent = $state('stat-page');
+	let CurrentComponent: Component = $derived(navMap[activeComponent] || StatPage);
 
 	// Other stuff
 	let dialogOpen = $state(true);
-	const CurrentComponent: Component = $derived(componentMap[$activeComponent] || StatPage);
+
+	// Map of component IDs to component definitions
 
 	// COLOR SCHEMEEEEE
 	let styles = $state({
@@ -57,13 +65,21 @@
 		'info-color': '#89dceb'
 	});
 
+	onMount(() => {
+		fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+	});
+
 	$effect(() => {
 		const root = document.documentElement;
 		Object.entries(styles).forEach(([key, value]) => {
 			root.style.setProperty(`--${key}`, value);
 		});
 	});
+
+	$inspect('mobile detection:', isMobile);
 </script>
+
+<svelte:window bind:innerWidth />
 
 <Dialog
 	bind:open={dialogOpen}
@@ -78,7 +94,7 @@
 </Dialog>
 
 <div class="app-container">
-	<Toolbar />
+	<Toolbar bind:isMobile bind:activeComponent />
 
 	<div class="content-container">
 		<div style="display: none">

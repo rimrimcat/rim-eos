@@ -1,29 +1,32 @@
 <script lang="ts">
-	import { navItems, activeComponent, isCollapsed } from '$lib/scripts/navMetadata.svelte.ts';
+	import { navItems } from '$lib/scripts/navMetadata.svelte.ts';
 	import { ArrowLeftToLine, Menu } from '@lucide/svelte';
 
-	const DEFAULT_ACTIVE_COMPONENT = 'stat-panel' as const;
+	let { isMobile = $bindable(false), activeComponent = $bindable('stat-page') } = $props();
 
-	let scrollY = $state(0);
+	const DEFAULT_ACTIVE_COMPONENT = 'stat-panel' as const;
+	let isCollapsed = $state(false);
+	let scrollY = $state(0); // is this even still needed?
 
 	function toggleCollapse() {
-		$isCollapsed = !$isCollapsed;
+		isCollapsed = !isCollapsed;
 	}
 
 	function selectComponent(id: string) {
-		$activeComponent = id;
+		activeComponent = id;
 	}
 </script>
 
 <svelte:window bind:scrollY />
 <div
 	class="toolbar"
-	class:collapsed={$isCollapsed}
+	class:mobile={isMobile}
+	class:collapsed={isCollapsed}
 	style="translate: 0px {scrollY}px; height: {5.5 + 4 * $navItems.length}rem"
 >
 	<div class="toolbar-header">
 		<button class="collapse-toggle" onclick={toggleCollapse}>
-			{#if $isCollapsed}
+			{#if isCollapsed}
 				<Menu />
 			{:else}
 				<ArrowLeftToLine />
@@ -31,7 +34,7 @@
 		</button>
 
 		<div class="logo">
-			{#if !$isCollapsed}
+			{#if !isCollapsed}
 				<span class="logo-text">GearComp</span>
 			{/if}
 		</div>
@@ -41,7 +44,7 @@
 		{#each $navItems as item}
 			<button
 				class="nav-item"
-				class:active={$activeComponent === item.id}
+				class:active={activeComponent === item.id}
 				onclick={() => selectComponent(item.id ?? DEFAULT_ACTIVE_COMPONENT)}
 			>
 				<div class="nav-icon">
@@ -49,7 +52,7 @@
 						<item.lucide />
 					{/if}
 				</div>
-				{#if !$isCollapsed}
+				{#if !isCollapsed}
 					<span class="nav-label">{item.label}</span>
 				{/if}
 			</button>
@@ -73,9 +76,32 @@
 		box-shadow: 0 4px 8px var(--shadow-color);
 	}
 
+	.toolbar.mobile {
+		position: sticky;
+		top: 0rem;
+		display: flex;
+		flex-direction: column;
+		background-color: var(--bg-color);
+		color: var(--text-color);
+		transition:
+			width 0.3s ease,
+			translate 0.2s ease;
+		width: 13.75rem;
+		border-radius: 1rem;
+		box-shadow: 0 4px 8px var(--shadow-color);
+	}
+
 	.toolbar.collapsed {
 		width: 3.75rem;
 	}
+
+	.toolbar.mobile.collapsed {
+		position: fixed;
+		left: -4rem;
+		/* translate: -3.75rem 10rem; */
+		width: 3.75rem;
+	}
+
 	.toolbar-header {
 		display: flex;
 		align-items: center;
