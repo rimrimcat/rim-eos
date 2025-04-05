@@ -1,38 +1,22 @@
-# sv
+# TOF-GEAR (Working Title)
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+some webapp im making since no more content at TOF
 
-## Creating a project
+## TODO-List
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+- [x] Gear: basic template matching
+- [x] Gear: tesseract OCR
+- [ ] Gear: implement augmented gear template matching
+- [ ] Gear: implement derived stats from gear (include titan stats)
+- [ ] Gear: allow searching for gear using stat
+- [ ] Gear: allow equipping gears
+- [ ] Gear: add gear icons based on best stats
+- [ ] Gear: add remove gear button
+- [ ] Gear: check for identical gears when adding
+- [ ] Gear: add clear gear list
+- [ ] Gear: add tutorial on how gear image should be uploaded
+- [ ] Gear: add side by side comparison (not sure if this will actually be useful since I'll be adding a value that helps you decide which gear is better)
+- [ ] Stats: add tutorial on how stat image should be uploaded
+- [ ] Design: make color slightly darker
+- [ ] Design: allow user to choose webpage style?
+- [ ] Misc: add image that you can click and it switches so you have something to look and play with ig
