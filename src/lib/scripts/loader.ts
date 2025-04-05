@@ -1,98 +1,5 @@
-// Types
-export type AttributeItem = {
-	name: string;
-	icon: string;
-	value: string;
-	index: number;
-};
-
-export enum GearParts {
-	HELMET = 'H',
-	SPAULDERS = 'S',
-	ARMOR = 'A',
-	BRACERS = 'C',
-	BELT = 'B',
-	LEGGUARDS = 'L',
-	//
-	GLOVES = 'G',
-	BOOTS = 'T',
-	//
-	VISOR = 'V',
-	ENGINE = 'N',
-	EXOSKELETON = 'X',
-	REACTOR = 'R',
-	//
-	UNKNOWN = 'U'
-}
-
-export enum GearStat {
-	HP = 'hp',
-	HP_PERCENT = 'hp_percent',
-	// Attack
-	ATK = 'atk',
-	FLAME_ATK = 'flame_atk',
-	FROST_ATK = 'frost_atk',
-	VOLT_ATK = 'volt_atk',
-	PHYS_ATK = 'phys_atk',
-	ALT_ATK = 'alt_atk',
-	ELE_ATK = 'ele_atk',
-	// Attack percent
-	ATK_PERCENT = 'atk_percent',
-	FLAME_ATK_PERCENT = 'flame_atk_percent',
-	FROST_ATK_PERCENT = 'frost_atk_percent',
-	VOLT_ATK_PERCENT = 'volt_atk_percent',
-	PHYS_ATK_PERCENT = 'phys_atk_percent',
-	ALT_ATK_PERCENT = 'alt_atk_percent',
-	ELE_ATK_PERCENT = 'ele_atk_percent',
-	// Damage percent
-	DMG_PERCENT = 'dmg_percent',
-	FLAME_DMG_PERCENT = 'flame_dmg_percent',
-	FROST_DMG_PERCENT = 'frost_dmg_percent',
-	VOLT_DMG_PERCENT = 'volt_dmg_percent',
-	PHYS_DMG_PERCENT = 'phys_dmg_percent',
-	ALT_DMG_PERCENT = 'alt_dmg_percent',
-	ELE_DMG_PERCENT = 'ele_dmg_percent',
-	// Crit
-	CRIT = 'crit',
-	CRIT_PERCENT = 'crit_percent',
-	CRIT_DMG = 'crit_dmg',
-	// Resistance
-	RES = 'res',
-	FLAME_RES = 'flame_res',
-	FROST_RES = 'frost_res',
-	VOLT_RES = 'volt_res',
-	ALT_RES = 'alt_res',
-	PHYS_RES = 'phys_res',
-	// Resistance percent
-	RES_PERCENT = 'res_percent',
-	FLAME_RES_PERCENT = 'flame_res_percent',
-	FROST_RES_PERCENT = 'frost_res_percent',
-	VOLT_RES_PERCENT = 'volt_res_percent',
-	ALT_RES_PERCENT = 'alt_res_percent',
-	PHYS_RES_PERCENT = 'phys_res_percent'
-}
-
-export type GearValidStats = {
-	[key in GearStat]?: string;
-};
-
-type GearId = {
-	id: number;
-	part: (typeof GearParts)[keyof typeof GearParts];
-};
-
-export type GearStatItem = {
-	stat: GearStat;
-	stat_label: string;
-	value: number;
-	value_label: string;
-	roll?: number;
-};
-
-export type Gear = GearId & GearValidStats;
-export type GearView = GearId & {
-	stats: GearStatItem[];
-};
+import { type UserGear } from '$lib/scripts/gears';
+import { type AttributeItem } from '$lib/scripts/stats';
 
 // Keys
 export enum StorageKey {
@@ -177,7 +84,7 @@ export const DEFAULT_STYLES = {
 } as const;
 
 export function loadObject(key: typeof StorageKey.STATS, force_default?: boolean): AttributeItem[];
-export function loadObject(key: typeof StorageKey.GEARS_V1, force_default?: boolean): Gear[];
+export function loadObject(key: typeof StorageKey.GEARS_V1, force_default?: boolean): UserGear[];
 export function loadObject(
 	key: typeof StorageKey.STYLES,
 	force_default?: boolean
@@ -185,8 +92,8 @@ export function loadObject(
 export function loadObject(
 	key: StorageKey,
 	force_default?: boolean
-): string[] | AttributeItem[] | Gear[] | null | typeof DEFAULT_STYLES {
-	let loadedObject: string[] | Gear[] | null | typeof DEFAULT_STYLES = null;
+): string[] | AttributeItem[] | UserGear[] | null | typeof DEFAULT_STYLES {
+	let loadedObject: string[] | UserGear[] | null | typeof DEFAULT_STYLES = null;
 
 	if (typeof localStorage !== 'undefined' && localStorage && !force_default) {
 		const savedObject = localStorage.getItem(key);
@@ -211,7 +118,7 @@ export function loadObject(
 			return user_attributes;
 		}
 		case StorageKey.GEARS_V1: {
-			loadedObject = loadedObject as Gear[];
+			loadedObject = loadedObject as UserGear[];
 			return loadedObject ? loadedObject : [];
 		}
 		default:
@@ -225,8 +132,11 @@ export async function saveObject(
 	key: typeof StorageKey.STATS,
 	value: AttributeItem[]
 ): Promise<void>;
-export async function saveObject(key: typeof StorageKey.GEARS_V1, value: Gear[]): Promise<void>;
-export async function saveObject(key: StorageKey, value: AttributeItem[] | Gear[]): Promise<void> {
+export async function saveObject(key: typeof StorageKey.GEARS_V1, value: UserGear[]): Promise<void>;
+export async function saveObject(
+	key: StorageKey,
+	value: AttributeItem[] | UserGear[]
+): Promise<void> {
 	switch (key) {
 		case StorageKey.STATS: {
 			value = value as AttributeItem[];

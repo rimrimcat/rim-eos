@@ -1,14 +1,14 @@
 <script lang="ts">
 	import {
 		GearParts,
-		loadObject,
-		saveObject,
-		GearStat as Stat,
-		StorageKey,
-		type Gear,
-		type GearStatItem,
-		type GearView
-	} from '$lib/scripts/loader.ts';
+		type GearView,
+		type GearViewDerivedStatItem,
+		type GearViewStatItem,
+		type UserGear
+	} from '$lib/scripts/gears.ts';
+	import { loadObject, saveObject, StorageKey } from '$lib/scripts/loader.ts';
+	import { StatGearUser as Stat, STAT_CONSTANTS, STAT_LABELS } from '$lib/scripts/stats.ts';
+
 	import {
 		ActionType,
 		registerComponent,
@@ -23,7 +23,7 @@
 	import FlexGrid from '../FlexGrid.svelte';
 	import NavToolbar from '../NavToolbar.svelte';
 
-	let user_gears: Gear[] = $state(loadObject(StorageKey.GEARS_V1));
+	let user_gears: UserGear[] = $state(loadObject(StorageKey.GEARS_V1));
 	let gear_views: GearView[] = $state([]);
 
 	let screenshotDialogOpen = $state(false);
@@ -54,120 +54,15 @@
 		'alt resistance': 'alt_res'
 	} as const;
 
-	const STAT_LABEL = {
-		[Stat.HP]: 'HP',
-		[Stat.HP_PERCENT]: 'HP',
-		[Stat.CRIT]: 'Crit',
-		[Stat.CRIT_PERCENT]: 'Crit',
-		[Stat.CRIT_DMG]: 'Crit Dmg',
-		[Stat.RES]: 'Res',
-		[Stat.RES_PERCENT]: 'Res',
-		[Stat.ATK]: 'ATK',
-		[Stat.PHYS_ATK]: 'Phys Atk',
-		[Stat.PHYS_ATK_PERCENT]: 'Phys Atk',
-		[Stat.PHYS_DMG_PERCENT]: 'Phys Dmg',
-		[Stat.PHYS_RES]: 'Phys Res',
-		[Stat.PHYS_RES_PERCENT]: 'Phys Res',
-		[Stat.FLAME_ATK]: 'Flame Atk',
-		[Stat.FLAME_ATK_PERCENT]: 'Flame Atk',
-		[Stat.FLAME_DMG_PERCENT]: 'Flame Dmg',
-		[Stat.FLAME_RES]: 'Flame Res',
-		[Stat.FLAME_RES_PERCENT]: 'Flame Res',
-		[Stat.FROST_ATK]: 'Frost Atk',
-		[Stat.FROST_ATK_PERCENT]: 'Frost Atk',
-		[Stat.FROST_DMG_PERCENT]: 'Frost Dmg',
-		[Stat.FROST_RES]: 'Frost Res',
-		[Stat.FROST_RES_PERCENT]: 'Frost Res',
-		[Stat.VOLT_ATK]: 'Volt Atk',
-		[Stat.VOLT_ATK_PERCENT]: 'Volt Atk',
-		[Stat.VOLT_DMG_PERCENT]: 'Volt Dmg',
-		[Stat.VOLT_RES]: 'Volt Res',
-		[Stat.VOLT_RES_PERCENT]: 'Volt Res',
-		[Stat.ALT_ATK]: 'Alt Atk',
-		[Stat.ALT_ATK_PERCENT]: 'Alt Atk',
-		[Stat.ALT_DMG_PERCENT]: 'Alt Dmg',
-		[Stat.ALT_RES]: 'Alt Res',
-		[Stat.ALT_RES_PERCENT]: 'Alt Res'
-	} as const;
-
+	// reference: https://tof-tools.vercel.app/stats
 	function getRollValue(stat: Stat, value: number): number {
-		let base;
-		let low_roll;
-		let high_roll;
-		switch (stat) {
-			case Stat.HP:
-				base = 4125;
-				low_roll = 7480;
-				high_roll = 18700;
-				break;
-			case Stat.HP_PERCENT:
-				base = 0.94;
-				low_roll = 1.08;
-				high_roll = 1.08;
-				break;
-			case Stat.ATK:
-				base = 52;
-				low_roll = 93;
-				high_roll = 234;
-				break;
-			case Stat.CRIT:
-				base = 258;
-				low_roll = 468;
-				high_roll = 1169;
-				break;
-			case Stat.CRIT_PERCENT:
-				base = 1.05;
-				low_roll = 1.19;
-				high_roll = 1.19;
-				break;
-			case Stat.RES:
-				base = 64;
-				low_roll = 117;
-				high_roll = 292;
-				break;
-			case Stat.ALT_ATK:
-				base = 137;
-				low_roll = 249;
-				high_roll = 623;
-				break;
-			case Stat.ALT_RES:
-				base = 215;
-				low_roll = 390;
-				high_roll = 974;
-				break;
-			case Stat.ALT_RES_PERCENT:
-				base = 7.87;
-				low_roll = 9;
-				high_roll = 9;
-				break;
-			default:
-				if (stat.includes('_atk_percent')) {
-					base = 1.26;
-					low_roll = 1.44;
-					high_roll = 1.44;
-				} else if (stat.includes('_atk')) {
-					base = 69;
-					low_roll = 125;
-					high_roll = 312;
-				} else if (stat.includes('_dmg_percent')) {
-					base = 0.65;
-					low_roll = 0.72;
-					high_roll = 0.72;
-				} else if (stat.includes('_res_percent')) {
-					base = 7.87;
-					low_roll = 9;
-					high_roll = 9;
-				} else if (stat.includes('_res')) {
-					base = 215;
-					low_roll = 390;
-					high_roll = 974;
-				} else {
-					console.error('Unknown stat:', stat);
-					return 0;
-				}
-		}
+		const stc = STAT_CONSTANTS[stat];
+		return ((value - stc.base) * 2) / (stc.high_roll + stc.low_roll);
+	}
 
-		return ((value - base) * 2) / (high_roll + low_roll);
+	function getTitanValue(stat: Stat, value: number): number {
+		const stc = STAT_CONSTANTS[stat];
+		return value + stc.titan_base + stc.titan_multiplier * (value - stc.base);
 	}
 
 	function getGearPart(part: string) {
@@ -206,8 +101,9 @@
 		}
 	}
 
-	async function createGearView(gear: Gear): Promise<GearView> {
-		const stats: GearStatItem[] = [];
+	async function createGearView(gear: UserGear): Promise<GearView> {
+		const stats: GearViewStatItem[] = [];
+		const derived: GearViewDerivedStatItem[] = [];
 		let id: number = -1;
 		let part: GearParts = GearParts.UNKNOWN;
 
@@ -223,7 +119,7 @@
 					stats.push({
 						stat: key as Stat,
 						// @ts-expect-error
-						stat_label: STAT_LABEL[key as Stat] ?? key,
+						stat_label: STAT_LABELS[key as Stat] ?? key,
 						value: value as number,
 						value_label: formatValue(
 							key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER,
@@ -231,6 +127,16 @@
 						),
 						roll: getRollValue(key as Stat, Number(value))
 					});
+					// add titan stats
+					// const titan_key =  "titan_" +key;
+					// const titan_value = getTitanValue(key as Stat, Number(value));
+					// derived.push({
+					// 	stat: titan_key as TitanStat,
+					// 	// @ts-expect-error
+					// 	stat_label: "Titan " + (STAT_LABELS[key as TitanStat] ?? key),
+					// 	value: getTitanValue(key as Stat, Number(value)),
+					// 	value_label: formatValue(Format.INTEGER, value as string)
+					// });
 					break;
 			}
 		});
@@ -240,11 +146,12 @@
 		return {
 			id,
 			part,
-			stats
+			stats,
+			derived
 		};
 	}
 
-	function addNewGear(gear: Gear) {
+	function addNewGear(gear: UserGear) {
 		user_gears.push(gear);
 		saveObject(StorageKey.GEARS_V1, user_gears);
 
@@ -272,7 +179,7 @@
 			txt[0].replace('fortress ', '').replace('tactics ', '').replace('combat ', '').split(' ')[0]
 		);
 
-		const newGear: Gear = {
+		const newGear: UserGear = {
 			id,
 			part
 		};

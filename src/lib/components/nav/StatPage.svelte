@@ -1,10 +1,11 @@
 <script lang="ts">
-	import { StorageKey, loadObject, saveObject, type AttributeItem } from '$lib/scripts/loader.ts';
+	import { StorageKey, loadObject, saveObject } from '$lib/scripts/loader.ts';
 	import {
 		ActionType,
 		registerComponent,
 		type ComponentMetadata
 	} from '$lib/scripts/navMetadata.svelte.ts';
+	import { type AttributeItem } from '$lib/scripts/stats';
 	import { FLOAT_PERCENT_3D, INTEGER, validateValue } from '$lib/scripts/validation.ts';
 
 	import { ChartNoAxesColumn, Download, FilePlus2, ImagePlus, Trash2 } from '@lucide/svelte';
