@@ -11,7 +11,7 @@ export type AttributeItem = {
 /**
  * Gear stats that can be added by the user
  */
-export enum StatGearUser {
+export const enum StatGearUser {
 	HP = 'hp',
 	HP_PERCENT = 'hp_percent',
 	// Attack
@@ -60,7 +60,7 @@ export enum StatGearUser {
 /**
  * Gear stats that are derived from the user's stats
  */
-export enum StatGearTitan {
+export const enum StatGearTitan {
 	TITAN_HP = 'titan_hp',
 	TITAN_HP_PERCENT = 'titan_hp_percent',
 	// Attack
@@ -139,7 +139,7 @@ export const STAT_LABELS = {
 	[StatGearUser.ALT_DMG_PERCENT]: 'Alt Dmg',
 	[StatGearUser.ALT_RES]: 'Alt Res',
 	[StatGearUser.ALT_RES_PERCENT]: 'Alt Res'
-} as const;
+};
 
 export type StatConstant = {
 	base: number;

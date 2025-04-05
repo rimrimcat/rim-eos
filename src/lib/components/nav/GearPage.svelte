@@ -7,7 +7,12 @@
 		type UserGear
 	} from '$lib/scripts/gears.ts';
 	import { loadObject, saveObject, StorageKey } from '$lib/scripts/loader.ts';
-	import { StatGearUser as Stat, STAT_CONSTANTS, STAT_LABELS } from '$lib/scripts/stats.ts';
+	import {
+		StatGearUser as Stat,
+		STAT_CONSTANTS,
+		STAT_LABELS,
+		StatGearTitan as TitanStat
+	} from '$lib/scripts/stats.ts';
 
 	import {
 		ActionType,
@@ -116,33 +121,38 @@
 					part = value as GearParts;
 					break;
 				default:
+					const _stat = key as Stat;
+					// @ts-expect-error
+					const stat_label = STAT_LABELS[_stat] ?? key;
+
 					stats.push({
-						stat: key as Stat,
-						// @ts-expect-error
-						stat_label: STAT_LABELS[key as Stat] ?? key,
+						stat: _stat,
+						stat_label,
 						value: value as number,
 						value_label: formatValue(
 							key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER,
 							value as string
 						),
-						roll: getRollValue(key as Stat, Number(value))
+						roll: getRollValue(_stat, Number(value))
 					});
 					// add titan stats
-					// const titan_key =  "titan_" +key;
-					// const titan_value = getTitanValue(key as Stat, Number(value));
-					// derived.push({
-					// 	stat: titan_key as TitanStat,
-					// 	// @ts-expect-error
-					// 	stat_label: "Titan " + (STAT_LABELS[key as TitanStat] ?? key),
-					// 	value: getTitanValue(key as Stat, Number(value)),
-					// 	value_label: formatValue(Format.INTEGER, value as string)
-					// });
+					const titan_key = 'titan_' + _stat;
+					const titan_value = getTitanValue(_stat, Number(value));
+					derived.push({
+						stat: titan_key as TitanStat,
+						stat_label: 'Titan ' + stat_label,
+						value: titan_value,
+						value_label: formatValue(
+							key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER,
+							titan_value.toString()
+						)
+					});
 					break;
 			}
 		});
 		stats.sort((a, b) => (b.roll ?? 0) - (a.roll ?? 0));
 
-		console.log('Created GearView for ', id, ':', stats);
+		console.log('Created GearView for ', id, ':', stats, derived);
 		return {
 			id,
 			part,
