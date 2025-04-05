@@ -21,7 +21,7 @@
 	} from '$lib/scripts/navMetadata.svelte.ts';
 	import { Format, formatValue } from '$lib/scripts/validation.ts';
 
-	import { ImagePlus, LayoutGrid, Shirt } from '@lucide/svelte';
+	import { ImagePlus, LayoutGrid, Shirt, Square } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
@@ -267,11 +267,12 @@
 			{
 				id: 'fourStatMode',
 				label: 'Extended Stats',
-				lucide: LayoutGrid,
 				type: ActionType.TOGGLE,
 				callback: () => {
 					hasMeasured = false;
-				}
+				},
+				lucide_on: LayoutGrid,
+				lucide_off: Square
 			}
 		]
 	};

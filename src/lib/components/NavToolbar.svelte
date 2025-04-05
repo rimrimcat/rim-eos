@@ -70,9 +70,15 @@
 					<div class="tool-item toggle-item" title={isCollapsed ? action.label : 'Unset'}>
 						<div class="tool-icon">
 							{#if bound_objects[action.id]}
-								<ToggleRight />
+								{#if action.lucide_on}
+									<action.lucide_on />
+								{:else}
+									<ToggleRight fill="darkgreen" />
+								{/if}
+							{:else if action.lucide_off}
+								<action.lucide_off />
 							{:else}
-								<ToggleLeft />
+								<ToggleLeft fill="brown" />
 							{/if}
 						</div>
 						{#if !isCollapsed}

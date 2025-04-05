@@ -14,32 +14,27 @@ interface BaseAction {
 	label: string;
 	lucide?: Component;
 	type?: ActionType;
+	callback?: NoReturnType;
 }
 
 export interface ButtonAction extends BaseAction {
-	type: ActionType.BUTTON;
-	callback?: NoReturnType;
+	type?: ActionType.BUTTON;
 }
 
 export interface ToggleAction extends BaseAction {
 	type: ActionType.TOGGLE;
-	callback?: () => void;
+	lucide_on?: Component;
+	lucide_off?: Component;
 }
 
 export interface SliderAction extends BaseAction {
 	type: ActionType.SLIDER;
-	callback?: () => void;
 	minValue?: number;
 	maxValue?: number;
 	stepSize?: number;
 }
 
-export interface DummyAction extends BaseAction {
-	type?: undefined;
-	callback?: () => void;
-}
-
-export type ComponentAction = ButtonAction | ToggleAction | SliderAction | DummyAction;
+export type ComponentAction = ButtonAction | ToggleAction | SliderAction;
 
 export type ComponentMetadata = {
 	id?: string;
