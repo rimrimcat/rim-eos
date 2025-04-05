@@ -310,7 +310,10 @@
 					<div class="gear-cell gear-id-{gear.id}">
 						<div class="gear-icon">
 							<div class="icon-container">
-								<img src="./gear/{gear.part}.png" alt="Gear" />
+								<img
+									src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
+									alt="Gear"
+								/>
 							</div>
 						</div>
 
@@ -320,7 +323,7 @@
 									<div class="stat-item top-left">
 										<div class="stat-content">
 											{#if bound_objects.titanMode}
-												{gear.stats[0].titan_stat_label ?? ''}
+												{gear.stats[0].stat_label ?? ''}
 												+{gear.stats[0].titan_value_label ?? ''}
 											{:else}
 												{gear.stats[0].stat_label ?? ''}
@@ -331,7 +334,7 @@
 									<div class="stat-item top-right">
 										<div class="stat-content">
 											{#if bound_objects.titanMode}
-												{gear.stats[2].titan_stat_label ?? ''}
+												{gear.stats[2].stat_label ?? ''}
 												+{gear.stats[2].titan_value_label ?? ''}
 											{:else}
 												{gear.stats[2].stat_label ?? ''}
@@ -342,7 +345,7 @@
 									<div class="stat-item bottom-left">
 										<div class="stat-content">
 											{#if bound_objects.titanMode}
-												{gear.stats[1].titan_stat_label ?? ''}
+												{gear.stats[1].stat_label ?? ''}
 												+{gear.stats[1].titan_value_label ?? ''}
 											{:else}
 												{gear.stats[1].stat_label ?? ''}
@@ -353,7 +356,7 @@
 									<div class="stat-item bottom-right">
 										<div class="stat-content">
 											{#if bound_objects.titanMode}
-												{gear.stats[3].titan_stat_label ?? ''}
+												{gear.stats[3].stat_label ?? ''}
 												+{gear.stats[3].titan_value_label ?? ''}
 											{:else}
 												{gear.stats[3].stat_label ?? ''}
@@ -368,7 +371,7 @@
 								<!-- <div class="stat">Stat 1</div> -->
 								<div class="stat-content">
 									{#if bound_objects.titanMode}
-										{gear.stats[0].titan_stat_label ?? ''}
+										{gear.stats[0].stat_label ?? ''}
 										+{gear.stats[0].titan_value_label ?? ''}
 									{:else}
 										{gear.stats[0].stat_label ?? ''}
