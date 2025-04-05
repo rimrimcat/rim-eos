@@ -1,11 +1,15 @@
 <script lang="ts">
 	// import { activeComponent } from '$lib/scripts/navMetadata.svelte.ts';
 	import { onMount, type Component } from 'svelte';
+	import { swipe, type SwipeCustomEvent } from 'svelte-gestures';
 	import Dialog from './Dialog.svelte';
 	import GearPage from './nav/GearPage.svelte';
 	import OpenCvTest from './nav/OpenCvTest.svelte';
 	import StatPage from './nav/StatPage.svelte';
 	import Toolbar from './Toolbar.svelte';
+
+	// Toolbar
+	let isCollapsed = $state(false);
 
 	// Detect if mobile
 	let fontSize = $state(0);
@@ -24,7 +28,18 @@
 	// Other stuff
 	let dialogOpen = $state(true);
 
-	// Map of component IDs to component definitions
+	function handleSwipe(event: SwipeCustomEvent) {
+		if (!isMobile) {
+			return;
+		}
+
+		const dir = event.detail.direction;
+		if (dir == 'left' && !isCollapsed) {
+			isCollapsed = true;
+		} else if (dir == 'right' && isCollapsed) {
+			isCollapsed = false;
+		}
+	}
 
 	// COLOR SCHEMEEEEE
 	let styles = $state({
@@ -77,6 +92,7 @@
 	});
 
 	$inspect('mobile detection:', isMobile);
+	$inspect('innerWidth', innerWidth);
 </script>
 
 <svelte:window bind:innerWidth />
@@ -93,8 +109,12 @@
 	<p>Go on.</p>
 </Dialog>
 
-<div class="app-container">
-	<Toolbar bind:isMobile bind:activeComponent />
+<div
+	class="app-container"
+	use:swipe={() => ({ timeframe: 300, minSwipeDistance: 100, touchAction: 'pan-y' })}
+	onswipe={handleSwipe}
+>
+	<Toolbar bind:isMobile bind:activeComponent bind:isCollapsed />
 
 	<div class="content-container">
 		<div style="display: none">
@@ -205,7 +225,8 @@
 	.content-container {
 		flex: 1;
 		display: flex;
-		overflow: scroll;
+		overflow-y: scroll;
+		overflow-x: hidden;
 		padding-left: 1rem;
 	}
 </style>

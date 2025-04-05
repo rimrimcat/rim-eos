@@ -149,8 +149,8 @@
 		flex-direction: column;
 		color: var(--text-color);
 		transition:
-			width 0.3s ease,
-			translate 0.2s ease;
+			width 0.3s ease-in,
+			translate 0.2s ease-in;
 		border-radius: 1rem;
 		box-shadow: 0 4px 8px var(--shadow-color);
 	}
@@ -163,8 +163,8 @@
 		flex-direction: column;
 		color: var(--text-color);
 		transition:
-			width 0.3s ease,
-			translate 0.2s ease;
+			width 0.3s ease-out,
+			translate 0.2s ease-out;
 		border-radius: 1rem;
 		font-size: medium;
 	}

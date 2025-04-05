@@ -2,11 +2,15 @@
 	import { navItems } from '$lib/scripts/navMetadata.svelte.ts';
 	import { ArrowLeftToLine, Menu } from '@lucide/svelte';
 
-	let { isMobile = $bindable(false), activeComponent = $bindable('stat-page') } = $props();
+	let {
+		isMobile = $bindable(false),
+		activeComponent = $bindable('stat-page'),
+		isCollapsed = $bindable(false)
+	} = $props();
 
 	const DEFAULT_ACTIVE_COMPONENT = 'stat-panel' as const;
-	let isCollapsed = $state(false);
 	let scrollY = $state(0); // is this even still needed?
+	let toolbarWidth = $state(0);
 
 	function toggleCollapse() {
 		isCollapsed = !isCollapsed;
@@ -22,7 +26,9 @@
 	class="toolbar"
 	class:mobile={isMobile}
 	class:collapsed={isCollapsed}
-	style="translate: 0px {scrollY}px; height: {5.5 + 4 * $navItems.length}rem"
+	style="translate: {isMobile && isCollapsed ? '-6rem' : '0'} {scrollY}px; height: {5.5 +
+		4 * $navItems.length}rem;"
+	bind:offsetWidth={toolbarWidth}
 >
 	<div class="toolbar-header">
 		<button class="collapse-toggle" onclick={toggleCollapse}>
@@ -74,18 +80,19 @@
 		width: 13.75rem;
 		border-radius: 1rem;
 		box-shadow: 0 4px 8px var(--shadow-color);
+		z-index: 10;
 	}
 
 	.toolbar.mobile {
-		position: sticky;
-		top: 0rem;
+		position: fixed;
+		top: 1rem;
 		display: flex;
 		flex-direction: column;
 		background-color: var(--bg-color);
 		color: var(--text-color);
 		transition:
-			width 0.3s ease,
-			translate 0.2s ease;
+			width 0.5s ease,
+			translate 0.4s ease;
 		width: 13.75rem;
 		border-radius: 1rem;
 		box-shadow: 0 4px 8px var(--shadow-color);
@@ -97,9 +104,7 @@
 
 	.toolbar.mobile.collapsed {
 		position: fixed;
-		left: -4rem;
-		/* translate: -3.75rem 10rem; */
-		width: 3.75rem;
+		width: 0rem;
 	}
 
 	.toolbar-header {
