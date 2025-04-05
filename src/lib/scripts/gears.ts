@@ -60,6 +60,9 @@ export type GearViewStatItem = {
 	value: number;
 	value_label: string;
 	roll: number;
+	// titan
+	titan_stat_label: string;
+	titan_value_label: string;
 };
 
 /**
@@ -88,5 +91,5 @@ export type UserGear = GearId & GearValidStats;
  */
 export type GearView = GearId & {
 	stats: GearViewStatItem[];
-	derived: GearViewDerivedStatItem[];
+	// derived: GearViewDerivedStatItem[];
 };

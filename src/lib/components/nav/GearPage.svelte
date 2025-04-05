@@ -2,17 +2,11 @@
 	import {
 		GearParts,
 		type GearView,
-		type GearViewDerivedStatItem,
 		type GearViewStatItem,
 		type UserGear
 	} from '$lib/scripts/gears.ts';
 	import { loadObject, saveObject, StorageKey } from '$lib/scripts/loader.ts';
-	import {
-		StatGearUser as Stat,
-		STAT_CONSTANTS,
-		STAT_LABELS,
-		StatGearTitan as TitanStat
-	} from '$lib/scripts/stats.ts';
+	import { StatGearUser as Stat, STAT_CONSTANTS, STAT_LABELS } from '$lib/scripts/stats.ts';
 
 	import {
 		ActionType,
@@ -21,7 +15,14 @@
 	} from '$lib/scripts/navMetadata.svelte.ts';
 	import { Format, formatValue } from '$lib/scripts/validation.ts';
 
-	import { ImagePlus, LayoutGrid, Shirt, Square } from '@lucide/svelte';
+	import {
+		ImagePlusIcon,
+		LayoutGridIcon,
+		Shirt,
+		SparkleIcon,
+		SparklesIcon,
+		SquareIcon
+	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
@@ -108,7 +109,6 @@
 
 	async function createGearView(gear: UserGear): Promise<GearView> {
 		const stats: GearViewStatItem[] = [];
-		const derived: GearViewDerivedStatItem[] = [];
 		let id: number = -1;
 		let part: GearParts = GearParts.UNKNOWN;
 
@@ -125,6 +125,9 @@
 					// @ts-expect-error
 					const stat_label = STAT_LABELS[_stat] ?? key;
 
+					const titan_key = 'titan_' + _stat;
+					const titan_value = getTitanValue(_stat, Number(value));
+
 					stats.push({
 						stat: _stat,
 						stat_label,
@@ -133,31 +136,33 @@
 							key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER,
 							value as string
 						),
-						roll: getRollValue(_stat, Number(value))
-					});
-					// add titan stats
-					const titan_key = 'titan_' + _stat;
-					const titan_value = getTitanValue(_stat, Number(value));
-					derived.push({
-						stat: titan_key as TitanStat,
-						stat_label: 'Titan ' + stat_label,
-						value: titan_value,
-						value_label: formatValue(
+						roll: getRollValue(_stat, Number(value)),
+						titan_stat_label: 'Titan ' + stat_label,
+						titan_value_label: formatValue(
 							key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER,
 							titan_value.toString()
 						)
 					});
+					// add titan stats
+					// derived.push({
+					// 	stat: titan_key as TitanStat,
+					// 	stat_label: 'Titan ' + stat_label,
+					// 	value: titan_value,
+					// 	value_label: formatValue(
+					// 		key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER,
+					// 		titan_value.toString()
+					// 	)
+					// });
 					break;
 			}
 		});
 		stats.sort((a, b) => (b.roll ?? 0) - (a.roll ?? 0));
 
-		console.log('Created GearView for ', id, ':', stats, derived);
+		console.log('Created GearView for ', id, ':', stats);
 		return {
 			id,
 			part,
-			stats,
-			derived
+			stats
 		};
 	}
 
@@ -245,7 +250,8 @@
 
 	// register
 	let bound_objects = $state({
-		fourStatMode: true
+		fourStatMode: true,
+		titanMode: false
 	});
 
 	const id = 'gear-page';
@@ -260,7 +266,7 @@
 			{
 				id: 'screenshot',
 				label: 'From Screenshot',
-				lucide: ImagePlus,
+				lucide: ImagePlusIcon,
 				type: ActionType.BUTTON,
 				callback: () => (screenshotDialogOpen = true)
 			},
@@ -271,8 +277,18 @@
 				callback: () => {
 					hasMeasured = false;
 				},
-				lucide_on: LayoutGrid,
-				lucide_off: Square
+				lucide_on: LayoutGridIcon,
+				lucide_off: SquareIcon
+			},
+			{
+				id: 'titanMode',
+				label: 'Titan Stats',
+				type: ActionType.TOGGLE,
+				callback: () => {
+					hasMeasured = false;
+				},
+				lucide_on: SparklesIcon,
+				lucide_off: SparkleIcon
 			}
 		]
 	};
@@ -303,26 +319,46 @@
 								<div class="stats-grid">
 									<div class="stat-item top-left">
 										<div class="stat-content">
-											{gear.stats[0].stat_label ?? ''}
-											+{gear.stats[0].value_label ?? ''}
+											{#if bound_objects.titanMode}
+												{gear.stats[0].titan_stat_label ?? ''}
+												+{gear.stats[0].titan_value_label ?? ''}
+											{:else}
+												{gear.stats[0].stat_label ?? ''}
+												+{gear.stats[0].value_label ?? ''}
+											{/if}
 										</div>
 									</div>
 									<div class="stat-item top-right">
 										<div class="stat-content">
-											{gear.stats[2].stat_label ?? ''}
-											+{gear.stats[2].value_label ?? ''}
+											{#if bound_objects.titanMode}
+												{gear.stats[2].titan_stat_label ?? ''}
+												+{gear.stats[2].titan_value_label ?? ''}
+											{:else}
+												{gear.stats[2].stat_label ?? ''}
+												+{gear.stats[2].value_label ?? ''}
+											{/if}
 										</div>
 									</div>
 									<div class="stat-item bottom-left">
 										<div class="stat-content">
-											{gear.stats[1].stat_label ?? ''}
-											+{gear.stats[1].value_label ?? ''}
+											{#if bound_objects.titanMode}
+												{gear.stats[1].titan_stat_label ?? ''}
+												+{gear.stats[1].titan_value_label ?? ''}
+											{:else}
+												{gear.stats[1].stat_label ?? ''}
+												+{gear.stats[1].value_label ?? ''}
+											{/if}
 										</div>
 									</div>
 									<div class="stat-item bottom-right">
 										<div class="stat-content">
-											{gear.stats[3].stat_label ?? ''}
-											+{gear.stats[3].value_label ?? ''}
+											{#if bound_objects.titanMode}
+												{gear.stats[3].titan_stat_label ?? ''}
+												+{gear.stats[3].titan_value_label ?? ''}
+											{:else}
+												{gear.stats[3].stat_label ?? ''}
+												+{gear.stats[3].value_label ?? ''}
+											{/if}
 										</div>
 									</div>
 								</div>
@@ -331,8 +367,13 @@
 							<div class="single-stat">
 								<!-- <div class="stat">Stat 1</div> -->
 								<div class="stat-content">
-									{gear.stats[0].stat_label ?? ''}
-									+{gear.stats[0].value_label ?? ''}
+									{#if bound_objects.titanMode}
+										{gear.stats[0].titan_stat_label ?? ''}
+										+{gear.stats[0].titan_value_label ?? ''}
+									{:else}
+										{gear.stats[0].stat_label ?? ''}
+										+{gear.stats[0].value_label ?? ''}
+									{/if}
 								</div>
 							</div>
 						{/if}
