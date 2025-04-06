@@ -16,6 +16,8 @@
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
+	let { isMobile = $bindable(false) } = $props();
+
 	// State
 	let user_attributes: AttributeItem[] = $state(loadObject(StorageKey.STATS));
 	let validated_attributes: AttributeItem[] = $state([]);

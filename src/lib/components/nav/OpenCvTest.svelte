@@ -12,6 +12,8 @@
 	import cv from '@techstark/opencv-js';
 	import { createWorker } from 'tesseract.js';
 
+	let { isMobile = $bindable(false) } = $props();
+
 	let templateImage: HTMLImageElement | null = $state(null);
 	let sourceImage: HTMLImageElement | null = $state(null);
 	let matchScore: number = $state(0);

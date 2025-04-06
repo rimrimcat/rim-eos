@@ -21,13 +21,16 @@
 		Shirt,
 		SparkleIcon,
 		SparklesIcon,
-		SquareIcon
+		SquareIcon,
+		Trash2Icon
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
 	import ActionToolbar from '../ActionToolbar.svelte';
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
+
+	let { isMobile = $bindable(false) } = $props();
 
 	let user_gears: UserGear[] = $state(loadObject(StorageKey.GEARS_V1));
 	let gear_views: GearView[] = $state([]);
@@ -176,6 +179,33 @@
 		});
 	}
 
+	function renumberGears(start: number = 0) {
+		if (start == user_gears.length) {
+			// no need to renumber if removing the last index
+			return;
+		}
+
+		for (let i = start; i < user_gears.length; i++) {
+			user_gears[i].id--;
+		}
+
+		// iterate through gear_views, if gv_id > start, then gv_id--
+		for (let i = 0; i < gear_views.length; i++) {
+			if (gear_views[i].id > start) {
+				gear_views[i].id--;
+			}
+		}
+	}
+
+	function removeGear(id: number) {
+		user_gears = user_gears.filter((gear) => gear.id !== id);
+		gear_views = gear_views.filter((gear) => gear.id !== id);
+
+		renumberGears(id);
+
+		saveObject(StorageKey.GEARS_V1, user_gears);
+	}
+
 	async function doGearOCR(canvas: HTMLCanvasElement) {
 		const worker = await createWorker('eng');
 		const data_url = canvas.toDataURL();
@@ -190,7 +220,7 @@
 			.replace(/^[^\s]{1,3} /gm, '') // remove 2-3 characters followed by space at the start of a line
 			.split('\n'); // those characters are noise from trying to read symbols
 
-		const id = user_gears.length + 1;
+		const id = user_gears.length;
 		const part = getGearPart(
 			txt[0].replace('fortress ', '').replace('tactics ', '').replace('combat ', '').split(' ')[0]
 		);
@@ -251,7 +281,7 @@
 
 	// register
 	let bound_objects = $state({
-		fourStatMode: true,
+		fourStatMode: isMobile ? false : true,
 		titanMode: false
 	});
 
@@ -376,7 +406,11 @@
 							</div>
 						{/if}
 
-						<div class="gear-actions"></div>
+						<div class="gear-actions">
+							<button class="gear-action" title="Remove Gear" onclick={() => removeGear(gear.id)}>
+								<Trash2Icon />
+							</button>
+						</div>
 					</div>
 				{/each}
 			{:else}
@@ -429,8 +463,8 @@
 		background-color: var(--bg-color);
 		width: 100%;
 		max-width: 100%;
-		overflow: scroll;
-		margin-right: 3vw;
+		/* overflow-y: scroll; */
+		overflow-x: hidden;
 		border-top: 4px solid var(--border-color);
 	}
 
@@ -438,10 +472,13 @@
 		background-color: var(--bg-color);
 		display: flex;
 		flex-direction: row;
-		width: 100%;
+		/* width: 80%; */
+		max-width: 100%;
+		min-width: 0;
 		/* border: 2px solid #000; */
 		padding: 1rem;
 		border-bottom: 2px solid var(--border-color);
+		align-items: center;
 	}
 
 	.gear-icon {
@@ -451,6 +488,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		flex-shrink: 0;
 	}
 
 	.icon-container,
@@ -475,8 +513,11 @@
 
 	.stats-container {
 		flex: 1;
+		min-width: 0;
 		display: flex;
 		align-items: center;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
 	.stats-grid {
@@ -508,5 +549,24 @@
 		align-items: center;
 		justify-content: center;
 		vertical-align: middle;
+	}
+
+	.gear-actions {
+		margin-left: 1rem;
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		flex-shrink: 0;
+	}
+
+	.gear-action {
+		display: flex;
+		background: none;
+		border: none;
+		cursor: pointer;
+		padding: 0;
+		height: 100%;
+		align-items: center;
+		justify-content: center;
 	}
 </style>

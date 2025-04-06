@@ -123,7 +123,7 @@
 			<GearPage />
 		</div>
 
-		<CurrentComponent />
+		<CurrentComponent bind:isMobile />
 	</div>
 </div>
 

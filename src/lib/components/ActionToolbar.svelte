@@ -10,7 +10,7 @@
 
 	let { actions = [] as ComponentAction[], bound_objects = $bindable({}) } = $props();
 
-	let isCollapsed = $state(false);
+	let isCollapsed = $state(true);
 	let scrollY = $state(0);
 	let headerText = $state('Actions');
 
