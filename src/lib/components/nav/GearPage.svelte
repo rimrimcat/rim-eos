@@ -2,11 +2,17 @@
 	import {
 		GearParts,
 		type GearView,
-		type GearViewStatItem,
+		type GearViewStatLong,
+		type GearViewStatShort,
 		type UserGear
 	} from '$lib/scripts/gears.ts';
 	import { loadObject, saveObject, StorageKey } from '$lib/scripts/loader.ts';
-	import { StatGearUser as Stat, STAT_CONSTANTS, STAT_LABELS } from '$lib/scripts/stats.ts';
+	import {
+		StatGearUser as Stat,
+		STAT_CONSTANTS,
+		STAT_LABELS,
+		StatGearTitan as TitanStat
+	} from '$lib/scripts/stats.ts';
 
 	import {
 		ActionType,
@@ -20,6 +26,7 @@
 		DiamondIcon,
 		ImagePlusIcon,
 		LayoutGridIcon,
+		SearchSlashIcon,
 		Shirt,
 		SparkleIcon,
 		SparklesIcon,
@@ -29,6 +36,7 @@
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
 	import ActionToolbar from '../ActionToolbar.svelte';
+	import GearSearch from '../dialog/GearSearch.svelte';
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 	import StatIcon from '../StatIcon.svelte';
@@ -38,9 +46,14 @@
 	let user_gears: UserGear[] = $state(loadObject(StorageKey.GEARS_V1));
 	let gear_views: GearView[] = $state([]);
 
+	// Screenshot Dialog
 	let screenshotDialogOpen = $state(false);
 	let uploadedImageURL: string = $state('');
 	let processText: string = $state('');
+
+	// Search Dialog
+	let searchDialogOpen = $state(false);
+	let isSearching = $state(false);
 
 	let hasMeasured = $state(false); // for triggering flexGrid itemWidth update
 
@@ -114,7 +127,8 @@
 	}
 
 	async function createGearView(gear: UserGear): Promise<GearView> {
-		const stats: GearViewStatItem[] = [];
+		const stats: GearViewStatLong[] = [];
+		const derived: GearViewStatShort[] = [];
 		let id: number = -1;
 		let part: GearParts = GearParts.UNKNOWN;
 		let hash = '';
@@ -130,26 +144,40 @@
 					break;
 				default:
 					const _stat = key as Stat;
+					const value_format = key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER;
 					// @ts-expect-error
 					const stat_label = STAT_LABELS[_stat] ?? key;
+					const stat_value_label = formatValue(value_format, value as string);
 
 					const titan_key = 'titan_' + _stat;
+					const titan_label = 'Titan ' + stat_label;
 					const titan_value = getTitanValue(_stat, Number(value));
+					const titan_value_label = formatValue(value_format, titan_value.toString());
 
 					stats.push({
 						stat: _stat,
 						stat_label,
 						value: value as number,
-						value_label: formatValue(
-							key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER,
-							value as string
-						),
+						value_label: stat_value_label,
 						roll: getRollValue(_stat, Number(value)),
-						titan_stat_label: 'Titan ' + stat_label,
-						titan_value_label: formatValue(
-							key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER,
-							titan_value.toString()
-						)
+						titan_stat_label: titan_label,
+						titan_value_label: titan_value_label
+					});
+
+					// normal stat
+					derived.push({
+						stat: _stat,
+						stat_label,
+						value: value as number,
+						value_label: stat_value_label
+					});
+
+					// titan stat
+					derived.push({
+						stat: titan_key as TitanStat,
+						stat_label: titan_label,
+						value: titan_value,
+						value_label: titan_value_label
 					});
 
 					hash += _stat + value.toString();
@@ -159,12 +187,15 @@
 		});
 		stats.sort((a, b) => (b.roll ?? 0) - (a.roll ?? 0));
 
+		// TODO: add other derived stats
+
 		console.log('Created GearView for ', id, ':', stats);
 		return {
 			id,
 			part,
 			stats,
-			hash
+			hash,
+			derived
 		};
 	}
 
@@ -278,11 +309,15 @@
 		}
 	}
 
+	function onGearSearch(query: string) {
+		isSearching = true;
+	}
+
 	// register
 	let bound_objects = $state({
 		fourStatMode: isMobile ? false : true,
-		titanMode: false,
-		iconStats: isMobile ? true : false
+		iconStats: isMobile ? true : false,
+		titanMode: false
 	});
 
 	const id = 'gear-page';
@@ -300,6 +335,13 @@
 				lucide: ImagePlusIcon,
 				type: ActionType.BUTTON,
 				callback: () => (screenshotDialogOpen = true)
+			},
+			{
+				id: 'search',
+				label: 'Search & Sort',
+				lucide: SearchSlashIcon,
+				type: ActionType.BUTTON,
+				callback: () => (searchDialogOpen = true)
 			},
 			{
 				id: 'fourStatMode',
@@ -491,6 +533,8 @@
 	bind:uploadedImageURL
 	bind:processText
 />
+
+<GearSearch bind:open={searchDialogOpen} onConfirmSearch={onGearSearch} />
 
 <ActionToolbar actions={metadata.actions} bind:bound_objects bind:isMobile />
 

@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { ImagePlus } from '@lucide/svelte';
-	import Dialog from '../Dialog.svelte';
-	import { onMount, onDestroy } from 'svelte';
 	import cv from '@techstark/opencv-js';
+	import { onDestroy } from 'svelte';
+	import Dialog from '../Dialog.svelte';
 
 	let {
 		open = $bindable(false),
@@ -83,7 +83,7 @@
 		{#if uploadedImageURL}
 			<p class="upload-text">{processText ?? 'Processing...'}</p>
 		{:else}
-			<p class="upload-text">Paste or upload full window screenshot here</p>
+			<p class="upload-text">Paste or upload screenshot here</p>
 		{/if}
 	</div>
 

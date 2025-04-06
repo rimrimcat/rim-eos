@@ -54,7 +54,7 @@ type GearValidStats = {
  * @property {string} value_label - Formatted string representation of the value
  * @property {number} [roll] - Optional roll value indicating stat quality
  */
-export type GearViewStatItem = {
+export type GearViewStatLong = {
 	stat: StatGearUser;
 	stat_label: string;
 	value: number;
@@ -67,13 +67,13 @@ export type GearViewStatItem = {
 
 /**
  * Represents a derived stat from gear stats
- * @property {StatGearTitan} stat - The type of derived stat (TODO: Add more derived stat)
+ * @property {StatGearUser | StatGearTitan} stat - The type of stat
  * @property {string} stat_label - Display string for the stat
  * @property {number} value - Numerical value of the stat
  * @property {string} value_label - Formatted string representation of the value
  */
-export type GearViewDerivedStatItem = {
-	stat: StatGearTitan;
+export type GearViewStatShort = {
+	stat: StatGearUser | StatGearTitan;
 	stat_label: string;
 	value: number;
 	value_label: string;
@@ -86,11 +86,19 @@ export type UserGear = GearId & GearValidStats;
 
 /**
  * Processed gear data for display and sorting
- * @property {GearStatItem[]} stats - Array of processed stat items
- * @property {GearDerivedTitanStats} derived - Calculated titan stats
+ * @property {GearViewStatLong[]} stats - Array of processed stat items
+ * @property {GearViewStatShort[]} derived - Calculated stats for sorting purposes
  */
 export type GearView = GearId & {
-	stats: GearViewStatItem[];
+	stats: GearViewStatLong[];
 	hash: string;
-	// derived: GearViewDerivedStatItem[];
+	derived: GearViewStatShort[];
+};
+
+/**
+ * Gear data for search result
+ * @property {GearViewStatShort[]} stats - Array of processed stat items, references GearView's derived key
+ */
+export type GearSearchView = GearId & {
+	stats: GearViewStatShort[];
 };

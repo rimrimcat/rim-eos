@@ -14,7 +14,6 @@
 	let fontSize = $state(0);
 	let innerWidth = $state(1000);
 	let isMobile = $derived((13.75 * fontSize) / innerWidth > 0.25);
-	let swipeDist = $derived(Math.min(200, Math.floor(innerWidth * 0.2)));
 
 	// Active Nav
 	const navMap: { [key: string]: Component } = {
@@ -80,21 +79,20 @@
 
 	$inspect('mobile detection:', isMobile);
 	$inspect('innerWidth', innerWidth);
-	$inspect('swipeDist', swipeDist);
 </script>
 
 <svelte:window bind:innerWidth />
 
 <Dialog
 	bind:open={dialogOpen}
-	title="WARNINGGGGG"
+	title="Note"
 	blocking={true}
 	blur={true}
 	closable={true}
 	buttons={['OK', 'Cancel']}
 >
-	<h3>Not Important Information</h3>
-	<p>Go on.</p>
+	<h3>This WebApp is under development</h3>
+	<p>Will be missing some features.</p>
 </Dialog>
 
 <div class="app-container">

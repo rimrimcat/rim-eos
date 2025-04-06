@@ -5,18 +5,22 @@
 
 	function doClickOutside(event: MouseEvent) {
 		if (event.target === event.currentTarget && closable && !blocking) {
-			onCancel();
+			doClose();
 		}
 	}
 
 	function doKeydown(event: KeyboardEvent) {
 		if (event.key === 'Escape' && closable) {
-			onClose();
+			doClose();
 		}
 	}
 
 	function doPaste(event: ClipboardEvent) {
 		console.error("You can't paste here!");
+	}
+
+	function doButtonPress(buttonType: string) {
+		doClose();
 	}
 
 	let {
@@ -26,27 +30,14 @@
 		buttons = [],
 		title = 'Dialog',
 		open = $bindable(false),
-		onClose = doClose,
-		onConfirm = doClose,
-		onCancel = doClose,
+		primary = 'OK',
+		width = $bindable('50vw'),
+		onButtonPress = doButtonPress,
 		onClickOutside = doClickOutside,
 		onkeydown = doKeydown,
 		onpaste = doPaste,
 		children
 	} = $props();
-
-	function clickButton(buttonType: string) {
-		const btnType = buttonType.toLowerCase();
-		switch (btnType) {
-			case 'confirm':
-				onConfirm();
-				break;
-			case 'cancel':
-				onCancel();
-				break;
-		}
-		onClose();
-	}
 </script>
 
 {#if open}
@@ -60,7 +51,7 @@
 		role="presentation"
 		tabindex="-1"
 	>
-		<div class="dialog-container" role="dialog" aria-modal="true">
+		<div class="dialog-container" role="dialog" aria-modal="true" style="width: {width};">
 			<div class="dialog-header">
 				<h2>{title}</h2>
 				{#if closable}
@@ -77,8 +68,8 @@
 					{#each buttons as button}
 						<button
 							class="dialog-button"
-							class:primary={button.toLowerCase() === 'ok'}
-							onclick={() => clickButton(button)}
+							class:primary={button.toLowerCase() === primary.toLowerCase()}
+							onclick={() => onButtonPress(button)}
 						>
 							{button}
 						</button>
@@ -92,6 +83,8 @@
 <style>
 	.dialog-overlay {
 		position: fixed;
+		display: flex;
+		width: 100%;
 		top: 0;
 		left: 0;
 		right: 0;
@@ -120,6 +113,7 @@
 		min-height: 30vh;
 		max-width: 70vw;
 		max-height: 90vh;
+
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;

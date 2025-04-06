@@ -15,7 +15,6 @@
 	} = $props();
 
 	let isCollapsed = $state(true);
-	let headerText = $state('Actions');
 
 	const sliderCount = actions.filter((action) => action.type === ActionType.SLIDER).length;
 
@@ -43,15 +42,6 @@
 			tool.callback();
 		}
 	}
-
-	$inspect('header text', headerText);
-	$effect(() => {
-		if (isCollapsed) {
-			headerText = '';
-		} else {
-			headerText = 'Actions';
-		}
-	});
 </script>
 
 <div
@@ -62,7 +52,7 @@
 >
 	<div class="tools-header">
 		<div class="header-content">
-			<span class="header-text" class:collapsed={isCollapsed}>{headerText}</span>
+			<span class="header-text" class:collapsed={isCollapsed}>{isCollapsed ? '' : 'Actions'}</span>
 		</div>
 		<button class="collapse-toggle" onclick={toggleCollapse}>
 			{#if isCollapsed}
@@ -182,28 +172,42 @@
 	.tools-header {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		padding: 0.8rem;
+		position: relative;
+		height: 3.8rem;
 		border-bottom: 1px solid var(--border-color);
-		font-size: 1.2rem;
+		overflow: hidden;
 	}
 
 	.header-content {
+		position: absolute;
+		left: 0;
+		right: 3.8rem;
 		display: flex;
-		flex: 1;
 		justify-content: center;
+		align-items: center;
+		height: 100%;
+		transition: opacity 0.25s ease;
+	}
+
+	.header-text {
 		font-weight: bold;
 		font-size: 1.2rem;
 		color: var(--title-color);
+		white-space: nowrap;
+		transition:
+			transform 0.3s ease,
+			opacity 0.25s ease;
 	}
 
 	.header-text.collapsed {
-		translate: 3rem 0;
 		opacity: 0;
-		transition: opacity 0.15s ease;
+		transform: translateX(-20px);
 	}
 
 	.collapse-toggle {
+		position: absolute;
+		right: 0.8rem;
+		top: 0.8rem;
 		background: none;
 		border: none;
 		color: var(--text-color);
@@ -214,6 +218,8 @@
 		width: 2.2rem;
 		height: 2.2rem;
 		z-index: 10;
+		border-radius: 0.5rem;
+		transition: background-color 0.2s ease;
 	}
 
 	.collapse-toggle:hover {
@@ -257,12 +263,14 @@
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
-		transition: opacity 0.3s ease;
+		transition:
+			opacity 0.3s ease,
+			transform 0.3s ease;
 	}
 
 	.tool-label.collapsed {
 		opacity: 0;
-		transition: opacity 0.15s ease;
+		transform: translateX(-20px);
 	}
 
 	/* Toggle Styles */

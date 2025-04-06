@@ -14,7 +14,6 @@
 	let scrollY = $state(0);
 	let toolbarWidth = $state(0);
 	let offsetHeight = $state(0);
-	let toolbarTransform = $derived(isMobile ? offsetHeight - 60 : 0);
 
 	function toggleCollapse() {
 		isCollapsed = !isCollapsed;
@@ -22,8 +21,8 @@
 
 	function selectComponent(id: string) {
 		activeComponent = id;
-		if (isMobile && isCollapsed) {
-			isCollapsed = false;
+		if (isMobile && !isCollapsed) {
+			isCollapsed = true;
 		}
 	}
 
