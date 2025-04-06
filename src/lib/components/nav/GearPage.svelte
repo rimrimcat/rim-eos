@@ -381,6 +381,7 @@
 				label: 'Extended Stats',
 				type: ActionType.TOGGLE,
 				callback: () => {
+					bound_objects.fourStatMode = !bound_objects.fourStatMode;
 					hasMeasured = false;
 				},
 				lucide_on: LayoutGridIcon,
@@ -391,6 +392,7 @@
 				label: 'Icon Stats',
 				type: ActionType.TOGGLE,
 				callback: () => {
+					bound_objects.iconStats = !bound_objects.iconStats;
 					hasMeasured = false;
 				},
 				lucide_on: DiamondIcon,
@@ -401,6 +403,7 @@
 				label: 'Titan Stats',
 				type: ActionType.TOGGLE,
 				callback: () => {
+					bound_objects.titanMode = !bound_objects.titanMode;
 					hasMeasured = false;
 				},
 				lucide_on: SparklesIcon,

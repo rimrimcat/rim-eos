@@ -23,9 +23,10 @@
 	}
 
 	function handleToggle(tool: ToggleAction) {
-		bound_objects[tool.id] = !bound_objects[tool.id];
 		if (tool.callback) {
 			tool.callback();
+		} else {
+			console.error('No callback for toggle action', tool.id);
 		}
 	}
 
