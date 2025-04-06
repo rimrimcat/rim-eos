@@ -11,7 +11,7 @@ some webapp im making since no more content at TOF
 - [x] Gear: check for identical gears when adding (2025-04-06)
 - [x] Gear: add remove gear button (2025-04-06)
 - [x] Gear: add clear gear list (2025-04-06)
-- [ ] Gear: allow searching for/sorting gear using stat
+- [x] Gear: allow searching for/sorting gear using stat (2025-04-06)
 - [ ] Gear: add gear icons based on best stats
 - [ ] Gear: implement augmented gear template matching
 - [ ] Gear: allow equipping gears

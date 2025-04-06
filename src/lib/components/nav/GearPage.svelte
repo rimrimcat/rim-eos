@@ -27,7 +27,8 @@
 		DiamondIcon,
 		ImagePlusIcon,
 		LayoutGridIcon,
-		SearchSlashIcon,
+		SearchIcon,
+		SearchXIcon,
 		Shirt,
 		SparkleIcon,
 		SparklesIcon,
@@ -46,6 +47,7 @@
 
 	let user_gears: UserGear[] = $state(loadObject(StorageKey.GEARS_V1));
 	let gear_views: GearView[] = $state([]);
+
 	let prev_search_query: string = $state('');
 	let search_views: GearSearchView[] = $state([]);
 
@@ -243,6 +245,7 @@
 	function removeGear(id: number) {
 		user_gears = user_gears.filter((gear) => gear.id !== id);
 		gear_views = gear_views.filter((gear) => gear.id !== id);
+		search_views = search_views.filter((gear) => gear.id !== id);
 
 		renumberGears(id);
 
@@ -325,10 +328,17 @@
 		isSearching = true;
 		searchDialogOpen = false;
 
+		// disable these while in search mode
+		bound_objects.fourStatMode = false;
+		bound_objects.titanMode = false;
+
 		if (query === prev_search_query) {
 			console.log('Search query is the same as before!');
 			return;
 		}
+
+		search_views = [];
+		prev_search_query = query;
 
 		function doFiltering(gear: GearView) {
 			const stats = gear.derived.filter((stat) => stat.stat === query);
@@ -343,6 +353,8 @@
 		}
 
 		gear_views.map(doFiltering);
+		search_views.sort((a, b) => b.stats[0].value - a.stats[0].value);
+
 		console.log(search_views);
 	}
 
@@ -372,7 +384,7 @@
 			{
 				id: 'search',
 				label: 'Search & Sort',
-				lucide: SearchSlashIcon,
+				lucide: SearchIcon,
 				type: ActionType.BUTTON,
 				callback: () => (searchDialogOpen = true)
 			},
@@ -381,6 +393,9 @@
 				label: 'Extended Stats',
 				type: ActionType.TOGGLE,
 				callback: () => {
+					if (isSearching) {
+						return;
+					}
 					bound_objects.fourStatMode = !bound_objects.fourStatMode;
 					hasMeasured = false;
 				},
@@ -403,6 +418,10 @@
 				label: 'Titan Stats',
 				type: ActionType.TOGGLE,
 				callback: () => {
+					if (isSearching) {
+						return;
+					}
+
 					bound_objects.titanMode = !bound_objects.titanMode;
 					hasMeasured = false;
 				},
@@ -435,6 +454,13 @@
 <div class="gear-page">
 	<div class="gear-settings">
 		<h1 class="Pro">Gear List</h1>
+		{#if isSearching}
+			<p>Searching for: {prev_search_query}</p>
+
+			<button class="stop-search" title="Cancel Search" onclick={() => (isSearching = false)}>
+				<SearchXIcon /> Stop Searching
+			</button>
+		{/if}
 	</div>
 
 	<div class="gear-grid">
@@ -493,6 +519,38 @@
 								</div>
 							</div>
 						{/if}
+
+						<div class="gear-actions">
+							<button class="gear-action" title="Remove Gear" onclick={() => removeGear(gear.id)}>
+								<Trash2Icon />
+							</button>
+						</div>
+					</div>
+				{/each}
+			{:else if search_views.length !== 0 && isSearching}
+				{#each search_views as gear}
+					<div class="gear-cell gear-id-{gear.id}">
+						<div class="gear-icon">
+							<div class="icon-container">
+								<img
+									src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
+									alt="Gear"
+								/>
+							</div>
+						</div>
+
+						<div class="single-stat">
+							<div class="stat-content" class:icon={bound_objects.iconStats}>
+								{#if bound_objects.iconStats}
+									<div class="stat-icon">
+										<StatIcon stat={gear.stats[0].stat.replace('titan_', '') as Stat} size="75%" />
+									</div>
+								{:else}
+									{gear.stats[0].stat_label ?? ''}
+								{/if}
+								+{gear.stats[0].value_label ?? ''}
+							</div>
+						</div>
 
 						<div class="gear-actions">
 							<button class="gear-action" title="Remove Gear" onclick={() => removeGear(gear.id)}>
@@ -673,5 +731,19 @@
 		height: 100%;
 		align-items: center;
 		justify-content: center;
+	}
+
+	.stop-search {
+		display: flex;
+		background: none;
+		border: 2px solid var(--border-color);
+		border-radius: 0.25rem;
+		cursor: pointer;
+		padding: 0.5rem;
+		height: 100%;
+		align-items: center;
+		justify-content: center;
+		background-color: rgb(125 58 58);
+		color: var(--text-color);
 	}
 </style>
