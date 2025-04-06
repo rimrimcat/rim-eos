@@ -33,6 +33,7 @@
 		if (!isMobile) {
 			return;
 		}
+		event.preventDefault();
 
 		const dir = event.detail.direction;
 		if (dir == 'left' && !isCollapsed) {

@@ -74,10 +74,6 @@
 
 	function getTitanValue(stat: Stat, value: number): number {
 		const stc = STAT_CONSTANTS[stat];
-		if (stat == Stat.VOLT_ATK) {
-			console.error('constants', stc);
-			console.error('value', value);
-		}
 		return value + stc.titan_base + stc.titan_multiplier * (value - stc.base);
 	}
 
