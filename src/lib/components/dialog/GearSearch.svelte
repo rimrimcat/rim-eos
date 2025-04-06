@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { GearParts } from '$lib/scripts/gears.ts';
 	import { SvelteSet } from 'svelte/reactivity';
 	import Dialog from '../Dialog.svelte';
 
@@ -9,31 +10,64 @@
 	let selectedElement = $state<string | null>(null);
 	let selectedStat = $state('ATK');
 	let selectedOthers = $state<SvelteSet<string>>(new SvelteSet());
+	let selectedSlot = $state<string | null>(null);
 
-	// [TITAN_][ELEMENT_]<STAT>[_PERCENT]
-	let query = $derived(getQuery(selectedElement, selectedStat, selectedOthers));
+	let query = $derived(getQuery(selectedElement, selectedStat, selectedOthers, selectedSlot));
 
-	const ELEMENTS = ['Flame', 'Frost', 'Volt', 'Phys', 'Alt'];
-	const STATS = ['ATK', 'TOTAL ATK', 'DMG', 'RES', 'CRIT'];
-	const OTHERS = ['Titan', 'Percent'];
+	const ELEMENTS = ['Flame', 'Frost', 'Volt', 'Phys', 'Alt'] as const;
+	const STATS = ['ATK', 'TOTAL ATK', 'DMG', 'RES', 'CRIT'] as const;
+	const OTHERS = ['Titan', 'Percent'] as const;
+	const SLOTS = [
+		'Helmet',
+		'Spaulders',
+		'Armor',
+		'Bracers',
+		'Belt',
+		'Legguards',
+		'Gloves',
+		'Boots',
+		'Visor',
+		'Engine',
+		'Exoskeleton',
+		'Reactor'
+	] as const;
+	const SLOT_GROUPS = {
+		'Group 1': ['Helmet', 'Spaulders', 'Armor', 'Bracers', 'Belt', 'Legguards'],
+		'Group 2': ['Gloves', 'Boots'],
+		'Group 3': ['Visor', 'Engine', 'Exoskeleton', 'Reactor']
+	};
 
 	function getQuery(
 		_selectedElement: string | null,
 		_selectedStat: string,
-		_selectedOthers: SvelteSet<string>
+		_selectedOthers: SvelteSet<string>,
+		_selectedGear: string | null
 	) {
 		const titan = selectedOthers.has('Titan') ? 'titan_' : '';
 		const element = _selectedElement ? _selectedElement.toLowerCase() + '_' : '';
 		const percent = selectedOthers.has('Percent') ? '_percent' : '';
 
+		const gear = _selectedGear // @ts-expect-error
+			? `( 'gear' === '${GearParts[_selectedGear.toUpperCase()]}' ) * `
+			: '';
+
 		if (_selectedStat !== 'TOTAL ATK') {
-			return titan + element + selectedStat.toLowerCase() + percent;
+			return gear + titan + element + selectedStat.toLowerCase() + percent;
 		} else {
-			return titan + element + 'atk' + ' + ' + titan + 'atk';
+			return gear + '( ' + titan + element + 'atk' + ' + ' + titan + 'atk )';
 		}
 	}
 
-	function selectElement(element: string) {
+	function getSlotGroup(slot: string): string | null {
+		for (const [group, slots] of Object.entries(SLOT_GROUPS)) {
+			if (slots.includes(slot)) {
+				return group;
+			}
+		}
+		return null;
+	}
+
+	function selectElement(element: (typeof ELEMENTS)[number]) {
 		if (selectedElement === element) {
 			selectedElement = null;
 		} else {
@@ -41,13 +75,13 @@
 		}
 	}
 
-	function selectStat(stat: string) {
+	function selectStat(stat: (typeof STATS)[number]) {
 		if (selectedStat !== stat) {
 			selectedStat = stat;
 		}
 	}
 
-	function selectOthers(option: string) {
+	function selectOthers(option: (typeof OTHERS)[number]) {
 		if (selectedOthers.has(option)) {
 			selectedOthers.delete(option);
 		} else {
@@ -55,7 +89,15 @@
 		}
 	}
 
-	function isSelected(type: string, value: string): boolean {
+	function selectSlot(slot: (typeof SLOTS)[number]) {
+		if (selectedSlot === slot) {
+			selectedSlot = null;
+		} else {
+			selectedSlot = slot;
+		}
+	}
+
+	function isSelected(type: 'element' | 'stat' | 'other' | 'slot', value: string): boolean {
 		switch (type) {
 			case 'element':
 				return selectedElement === value;
@@ -63,6 +105,8 @@
 				return selectedStat === value;
 			case 'other':
 				return selectedOthers.has(value);
+			case 'slot':
+				return selectedSlot === value;
 			default:
 				return false;
 		}
@@ -88,7 +132,7 @@
 		} else if (selectedStat == 'TOTAL ATK') {
 			selectedOthers.delete('Percent');
 
-			if (selectedElement === null) {
+			if (selectedElement === null || selectedElement === 'Alt') {
 				selectedElement = 'Flame';
 			}
 		}
@@ -106,6 +150,33 @@
 		<label for="search">Search Query:</label>
 		<div class="search-bar">
 			<input id="search" type="text" readonly value={query} placeholder="Search Query" />
+		</div>
+
+		<div class="slot-section">
+			<h3>Slot</h3>
+			<div class="slot-grid">
+				{#each SLOTS as slot}
+					<button
+						class:selected={isSelected('slot', slot)}
+						class:group1={getSlotGroup(slot) === 'Group 1'}
+						class:group2={getSlotGroup(slot) === 'Group 2'}
+						class:group3={getSlotGroup(slot) === 'Group 3'}
+						onclick={() => selectSlot(slot)}
+						title={slot}
+					>
+						<div class="slot-button-content">
+							<img
+								src={`./gear_icon/${slot.toLowerCase()}.png`}
+								alt={`${slot} icon`}
+								class="slot-icon"
+								width="30px"
+								height="30px"
+							/>
+							<span class="slot-label">{slot}</span>
+						</div>
+					</button>
+				{/each}
+			</div>
 		</div>
 
 		<div class="search-params-simple">
@@ -172,6 +243,79 @@
 		color: var(--input-text, #fff);
 	}
 
+	/* Slot section styling */
+	.slot-section {
+		margin-bottom: 1.5rem;
+	}
+
+	.slot-section h3 {
+		margin-top: 0;
+		margin-bottom: 0.5rem;
+		text-align: center;
+	}
+
+	.slot-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 0.5rem;
+		margin-bottom: 1rem;
+	}
+
+	/* Group styling for slot buttons */
+	.slot-grid button {
+		padding: 0.5rem;
+		height: auto;
+	}
+
+	.slot-button-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.slot-icon {
+		/* Fixed size of 40x40px */
+		width: 30px;
+		height: 30px;
+		object-fit: contain;
+	}
+
+	.slot-label {
+		margin-top: 0.25rem;
+		font-size: 0.8rem;
+		text-align: center;
+		word-break: break-word;
+	}
+
+	.slot-grid button.group1 {
+		border-left: 3px solid #ff7700;
+	}
+
+	.slot-grid button.group2 {
+		border-left: 3px solid #00aaff;
+	}
+
+	.slot-grid button.group3 {
+		border-left: 3px solid #44cc44;
+	}
+
+	/* Highlight the group borders when selected */
+	.slot-grid button.selected.group1 {
+		border: 1px solid var(--border-color);
+		border-left: 3px solid #ff7700;
+	}
+
+	.slot-grid button.selected.group2 {
+		border: 1px solid var(--border-color);
+		border-left: 3px solid #00aaff;
+	}
+
+	.slot-grid button.selected.group3 {
+		border: 1px solid var(--border-color);
+		border-left: 3px solid #44cc44;
+	}
+
 	.search-params-simple {
 		display: flex;
 		width: 100%;
@@ -224,7 +368,7 @@
 	.btn-content {
 		display: flex;
 		align-items: center;
-		justify-content: flex-start;
+		justify-content: center;
 	}
 
 	.element-icon {

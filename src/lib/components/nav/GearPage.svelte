@@ -355,13 +355,17 @@
 		const extractedVars = [...new Set(query.match(ALL_STATS_REGEX))] as AllStats[];
 
 		function doFiltering(gear: GearView) {
-			const variables: { [key in AllStats]?: number } = {};
+			const variables: { [key in AllStats]?: number } & { gear?: GearParts } = {};
 
 			extractedVars.forEach((varName) => {
 				variables[varName] = gear.derived.find((stat) => stat.stat === varName)?.value ?? 0;
 			});
+			// override for geara
+			variables.gear = gear.part;
 
+			// @ts-expect-error
 			const new_query = query.replace(ALL_STATS_REGEX, (match) => variables[match].toString());
+			console.log('regex', ALL_STATS_REGEX);
 			console.log('new_query:', new_query);
 
 			const result = eval(new_query);
@@ -374,9 +378,9 @@
 					stats: [
 						{
 							stat: 'atk',
-							stat_label: 'result',
+							stat_label: 'Result',
 							value: result,
-							value_label: result.toString()
+							value_label: result.toFixed(2).toString()
 						}
 					]
 				});
@@ -400,7 +404,11 @@
 			return;
 		}
 
-		await advancedGearSearch(query as AllStats);
+		if (query.includes('+')) {
+			await advancedGearSearch(query as AllStats);
+		} else {
+			await simpleGearSearch(query as AllStats);
+		}
 	}
 
 	// register
@@ -519,6 +527,7 @@
 			{#if user_gears.length !== 0 && !isSearching}
 				{#each gear_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
+						<span>{gear.id}</span>
 						<div class="gear-icon">
 							<div class="icon-container">
 								<img
