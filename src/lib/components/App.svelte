@@ -1,7 +1,6 @@
 <script lang="ts">
 	// import { activeComponent } from '$lib/scripts/navMetadata.svelte.ts';
 	import { onMount, type Component } from 'svelte';
-	import { swipe, type SwipeCustomEvent } from 'svelte-gestures';
 	import Dialog from './Dialog.svelte';
 	import GearPage from './nav/GearPage.svelte';
 	import OpenCvTest from './nav/OpenCvTest.svelte';
@@ -28,20 +27,6 @@
 
 	// Other stuff
 	let dialogOpen = $state(true);
-
-	function handleSwipe(event: SwipeCustomEvent) {
-		if (!isMobile) {
-			return;
-		}
-		event.preventDefault();
-
-		const dir = event.detail.direction;
-		if (dir == 'left' && !isCollapsed) {
-			isCollapsed = true;
-		} else if (dir == 'right' && isCollapsed) {
-			isCollapsed = false;
-		}
-	}
 
 	// COLOR SCHEMEEEEE
 	let styles = $state({
@@ -112,14 +97,10 @@
 	<p>Go on.</p>
 </Dialog>
 
-<div
-	class="app-container"
-	use:swipe={() => ({ timeframe: 300, minSwipeDistance: swipeDist, touchAction: 'pan-y' })}
-	onswipe={handleSwipe}
->
+<div class="app-container">
 	<Toolbar bind:isMobile bind:activeComponent bind:isCollapsed />
 
-	<div class="content-container">
+	<div class="content-container" class:mobile={isMobile}>
 		<div style="display: none">
 			<StatPage />
 			<OpenCvTest />
@@ -223,6 +204,7 @@
 		overflow: hidden;
 		background-color: var(--bg-color);
 		color: var(--text-color);
+		overscroll-behavior-x: none;
 	}
 
 	.content-container {
@@ -232,5 +214,9 @@
 		overflow-x: hidden;
 		padding-left: 1rem;
 		padding-right: 5rem;
+	}
+
+	.content-container.mobile {
+		margin-top: 3rem;
 	}
 </style>

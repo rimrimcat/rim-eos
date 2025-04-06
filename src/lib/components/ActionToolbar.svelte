@@ -8,10 +8,13 @@
 		type ToggleAction
 	} from '$lib/scripts/navMetadata.svelte.ts';
 
-	let { actions = [] as ComponentAction[], bound_objects = $bindable({}) } = $props();
+	let {
+		actions = [] as ComponentAction[],
+		bound_objects = $bindable({}),
+		isMobile = $bindable(false)
+	} = $props();
 
 	let isCollapsed = $state(true);
-	let scrollY = $state(0);
 	let headerText = $state('Actions');
 
 	const sliderCount = actions.filter((action) => action.type === ActionType.SLIDER).length;
@@ -51,13 +54,11 @@
 	});
 </script>
 
-<svelte:window bind:scrollY />
 <div
 	class="nav-tools"
 	class:collapsed={isCollapsed}
-	style="translate: 0px {scrollY}px; height:{5.5 +
-		3 * (actions.length - sliderCount) +
-		5 * sliderCount}rem"
+	class:mobile={isMobile}
+	style="height:{5.5 + 3 * (actions.length - sliderCount) + 5 * sliderCount}rem"
 >
 	<div class="tools-header">
 		<div class="header-content">
@@ -145,7 +146,7 @@
 <style>
 	.nav-tools {
 		position: fixed;
-		top: 1rem;
+		top: 5rem;
 		width: 13.75rem;
 		margin-right: 0.5rem;
 		right: 0.5rem;
@@ -158,6 +159,10 @@
 			translate 0.2s ease-in;
 		border-radius: 1rem;
 		box-shadow: 0 4px 8px var(--shadow-color);
+	}
+
+	.nav-tools.mobile {
+		top: 5rem;
 	}
 
 	.nav-tools.collapsed {
@@ -282,37 +287,6 @@
 		transition: background-color 0.3s ease;
 	}
 
-	.toggle-track.active {
-		background-color: var(--primary-color, #3b82f6);
-	}
-
-	.toggle-thumb {
-		position: absolute;
-		top: 0.125rem;
-		left: 0.125rem;
-		width: 1rem;
-		height: 1rem;
-		background-color: white;
-		border-radius: 50%;
-		transition: transform 0.3s ease;
-	}
-
-	.toggle-track.active .toggle-thumb {
-		transform: translateX(1.25rem);
-	}
-
-	.icon-toggle-button {
-		background: none;
-		border: none;
-		cursor: pointer;
-		padding: 0;
-		width: 100%;
-		height: 100%;
-		position: absolute;
-		top: 0;
-		left: 0;
-	}
-
 	/* Slider Styles */
 	.slider-item {
 		flex-direction: column;
@@ -376,25 +350,5 @@
 		background: var(--primary-color, #3b82f6);
 		cursor: pointer;
 		border: none;
-	}
-
-	.sr-only {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		padding: 0;
-		margin: -1px;
-		overflow: hidden;
-		clip: rect(0, 0, 0, 0);
-		white-space: nowrap;
-		border-width: 0;
-	}
-
-	.tool-collapsed-action {
-		background: none;
-		border: none;
-		cursor: pointer;
-		width: 100%;
-		height: 100%;
 	}
 </style>

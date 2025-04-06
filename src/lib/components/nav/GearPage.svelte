@@ -481,7 +481,7 @@
 	bind:processText
 />
 
-<ActionToolbar actions={metadata.actions} bind:bound_objects />
+<ActionToolbar actions={metadata.actions} bind:bound_objects bind:isMobile />
 
 <style>
 	.gear-page {

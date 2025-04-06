@@ -424,7 +424,7 @@
 	bind:processText
 />
 
-<ActionToolbar actions={metadata.actions} />
+<ActionToolbar actions={metadata.actions} bind:isMobile />
 
 <style>
 	.stat-panel {
