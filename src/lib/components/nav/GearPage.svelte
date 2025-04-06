@@ -9,8 +9,10 @@
 	} from '$lib/scripts/gears.ts';
 	import { loadObject, saveObject, StorageKey } from '$lib/scripts/loader.ts';
 	import {
+		ALL_STATS_REGEX,
 		STAT_CONSTANTS,
 		STAT_LABELS,
+		type AllStats,
 		type StatGearUser as Stat,
 		type StatGearTitan as TitanStat
 	} from '$lib/scripts/stats.ts';
@@ -322,20 +324,8 @@
 		}
 	}
 
-	async function onGearSearch(query: string) {
-		console.log('Search query:', query);
-
-		isSearching = true;
-		searchDialogOpen = false;
-
-		// disable these while in search mode
-		bound_objects.fourStatMode = false;
-		bound_objects.titanMode = false;
-
-		if (query === prev_search_query) {
-			console.log('Search query is the same as before!');
-			return;
-		}
+	async function simpleGearSearch(query: AllStats) {
+		console.log('Simple search query:', query);
 
 		search_views = [];
 		prev_search_query = query;
@@ -354,8 +344,63 @@
 
 		gear_views.map(doFiltering);
 		search_views.sort((a, b) => b.stats[0].value - a.stats[0].value);
+	}
 
-		console.log(search_views);
+	async function advancedGearSearch(query: string) {
+		console.log('Advanced search query:', query);
+
+		search_views = [];
+		prev_search_query = query;
+
+		const extractedVars = [...new Set(query.match(ALL_STATS_REGEX))] as AllStats[];
+
+		function doFiltering(gear: GearView) {
+			const variables: { [key in AllStats]?: number } = {};
+
+			extractedVars.forEach((varName) => {
+				variables[varName] = gear.derived.find((stat) => stat.stat === varName)?.value ?? 0;
+			});
+
+			const new_query = query.replace(ALL_STATS_REGEX, (match) => variables[match].toString());
+			console.log('new_query:', new_query);
+
+			const result = eval(new_query);
+			console.log('result:', result);
+
+			if (result) {
+				search_views.push({
+					id: gear.id,
+					part: gear.part,
+					stats: [
+						{
+							stat: 'atk',
+							stat_label: 'result',
+							value: result,
+							value_label: result.toString()
+						}
+					]
+				});
+			}
+		}
+
+		gear_views.map(doFiltering);
+		search_views.sort((a, b) => b.stats[0].value - a.stats[0].value);
+	}
+
+	async function onGearSearch(query: string) {
+		isSearching = true;
+		searchDialogOpen = false;
+
+		// disable these while in search mode
+		bound_objects.fourStatMode = false;
+		bound_objects.titanMode = false;
+
+		if (query === prev_search_query) {
+			console.log('Search query is the same as before!');
+			return;
+		}
+
+		await advancedGearSearch(query as AllStats);
 	}
 
 	// register
@@ -464,7 +509,13 @@
 	</div>
 
 	<div class="gear-grid">
-		<FlexGrid maxColumns={4} verticalGap="0rem" horizontalGap="5rem" bind:hasMeasured>
+		<FlexGrid
+			by_column={false}
+			maxColumns={4}
+			verticalGap="0rem"
+			horizontalGap="5rem"
+			bind:hasMeasured
+		>
 			{#if user_gears.length !== 0 && !isSearching}
 				{#each gear_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">

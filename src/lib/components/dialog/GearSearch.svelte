@@ -8,19 +8,30 @@
 
 	let selectedElement = $state<string | null>(null);
 	let selectedStat = $state('ATK');
-	let selectedOthers = $state(new SvelteSet());
+	let selectedOthers = $state<SvelteSet<string>>(new SvelteSet());
 
 	// [TITAN_][ELEMENT_]<STAT>[_PERCENT]
-	let query = $derived(
-		(selectedOthers.has('Titan') ? 'titan_' : '') +
-			(selectedElement ? selectedElement.toLowerCase() + '_' : '') +
-			selectedStat.toLowerCase() +
-			(selectedOthers.has('Percent') ? '_percent' : '')
-	);
+	let query = $derived(getQuery(selectedElement, selectedStat, selectedOthers));
 
 	const ELEMENTS = ['Flame', 'Frost', 'Volt', 'Phys', 'Alt'];
-	const STATS = ['ATK', 'DMG', 'RES', 'CRIT'];
+	const STATS = ['ATK', 'TOTAL ATK', 'DMG', 'RES', 'CRIT'];
 	const OTHERS = ['Titan', 'Percent'];
+
+	function getQuery(
+		_selectedElement: string | null,
+		_selectedStat: string,
+		_selectedOthers: SvelteSet<string>
+	) {
+		const titan = selectedOthers.has('Titan') ? 'titan_' : '';
+		const element = _selectedElement ? _selectedElement.toLowerCase() + '_' : '';
+		const percent = selectedOthers.has('Percent') ? '_percent' : '';
+
+		if (_selectedStat !== 'TOTAL ATK') {
+			return titan + element + selectedStat.toLowerCase() + percent;
+		} else {
+			return titan + element + 'atk' + ' + ' + titan + 'atk';
+		}
+	}
 
 	function selectElement(element: string) {
 		if (selectedElement === element) {
@@ -71,6 +82,15 @@
 
 		if (selectedStat === 'CRIT') {
 			selectedElement = null;
+		} else if (selectedStat === 'DMG') {
+			selectedOthers.add('Percent');
+			selectedOthers.delete('Total');
+		} else if (selectedStat == 'TOTAL ATK') {
+			selectedOthers.delete('Percent');
+
+			if (selectedElement === null) {
+				selectedElement = 'Flame';
+			}
 		}
 	});
 </script>
