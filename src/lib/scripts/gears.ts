@@ -1,4 +1,4 @@
-import { StatGearTitan, StatGearUser } from '$lib/scripts/stats';
+import { type StatGearTitan, type StatGearUser } from '$lib/scripts/stats';
 
 /**
  * Enum for different gear slots

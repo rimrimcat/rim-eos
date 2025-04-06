@@ -1,6 +1,7 @@
 <script lang="ts">
 	import {
 		GearParts,
+		type GearSearchView,
 		type GearView,
 		type GearViewStatLong,
 		type GearViewStatShort,
@@ -8,10 +9,10 @@
 	} from '$lib/scripts/gears.ts';
 	import { loadObject, saveObject, StorageKey } from '$lib/scripts/loader.ts';
 	import {
-		StatGearUser as Stat,
 		STAT_CONSTANTS,
 		STAT_LABELS,
-		StatGearTitan as TitanStat
+		type StatGearUser as Stat,
+		type StatGearTitan as TitanStat
 	} from '$lib/scripts/stats.ts';
 
 	import {
@@ -45,6 +46,8 @@
 
 	let user_gears: UserGear[] = $state(loadObject(StorageKey.GEARS_V1));
 	let gear_views: GearView[] = $state([]);
+	let prev_search_query: string = $state('');
+	let search_views: GearSearchView[] = $state([]);
 
 	// Screenshot Dialog
 	let screenshotDialogOpen = $state(false);
@@ -56,6 +59,14 @@
 	let isSearching = $state(false);
 
 	let hasMeasured = $state(false); // for triggering flexGrid itemWidth update
+
+	// html
+	const GRID_ORDERING = [
+		{ position: 'top-left', index: 0 },
+		{ position: 'top-right', index: 2 },
+		{ position: 'bottom-left', index: 1 },
+		{ position: 'bottom-right', index: 3 }
+	];
 
 	const OCR_KEY_MAP = {
 		hp: 'hp',
@@ -79,7 +90,6 @@
 		'alt resistance': 'alt_res'
 	} as const;
 
-	// reference: https://tof-tools.vercel.app/stats
 	function getRollValue(stat: Stat, value: number): number {
 		const stc = STAT_CONSTANTS[stat];
 		return ((value - stc.base) * 2) / (stc.high_roll + stc.low_roll);
@@ -145,7 +155,6 @@
 				default:
 					const _stat = key as Stat;
 					const value_format = key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER;
-					// @ts-expect-error
 					const stat_label = STAT_LABELS[_stat] ?? key;
 					const stat_value_label = formatValue(value_format, value as string);
 
@@ -240,6 +249,7 @@
 		saveObject(StorageKey.GEARS_V1, user_gears);
 	}
 
+	// OCR
 	async function doGearOCR(canvas: HTMLCanvasElement) {
 		const worker = await createWorker('eng');
 		const data_url = canvas.toDataURL();
@@ -309,8 +319,31 @@
 		}
 	}
 
-	function onGearSearch(query: string) {
+	async function onGearSearch(query: string) {
+		console.log('Search query:', query);
+
 		isSearching = true;
+		searchDialogOpen = false;
+
+		if (query === prev_search_query) {
+			console.log('Search query is the same as before!');
+			return;
+		}
+
+		function doFiltering(gear: GearView) {
+			const stats = gear.derived.filter((stat) => stat.stat === query);
+			if (stats[0]) {
+				console.log(stats);
+				search_views.push({
+					id: gear.id,
+					part: gear.part,
+					stats
+				});
+			}
+		}
+
+		gear_views.map(doFiltering);
+		console.log(search_views);
 	}
 
 	// register
@@ -403,7 +436,7 @@
 
 	<div class="gear-grid">
 		<FlexGrid maxColumns={4} verticalGap="0rem" horizontalGap="5rem" bind:hasMeasured>
-			{#if user_gears.length !== 0}
+			{#if user_gears.length !== 0 && !isSearching}
 				{#each gear_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
 						<div class="gear-icon">
@@ -418,71 +451,25 @@
 						{#if bound_objects.fourStatMode}
 							<div class="stats-container">
 								<div class="stats-grid">
-									<div class="stat-item top-left">
-										<div class="stat-content" class:icon={bound_objects.iconStats}>
-											{#if bound_objects.iconStats}
-												<div class="stat-icon">
-													<StatIcon stat={gear.stats[0].stat} size="75%" />
-												</div>
-											{:else}
-												{gear.stats[0].stat_label ?? ''}
-											{/if}
+									{#each GRID_ORDERING as item}
+										<div class="stat-item {item.position}">
+											<div class="stat-content" class:icon={bound_objects.iconStats}>
+												{#if bound_objects.iconStats}
+													<div class="stat-icon">
+														<StatIcon stat={gear.stats[item.index].stat} size="75%" />
+													</div>
+												{:else}
+													{gear.stats[item.index].stat_label ?? ''}
+												{/if}
 
-											{#if bound_objects.titanMode}
-												+{gear.stats[0].titan_value_label ?? ''}
-											{:else}
-												+{gear.stats[0].value_label ?? ''}
-											{/if}
+												{#if bound_objects.titanMode}
+													+{gear.stats[item.index].titan_value_label ?? ''}
+												{:else}
+													+{gear.stats[item.index].value_label ?? ''}
+												{/if}
+											</div>
 										</div>
-									</div>
-									<div class="stat-item top-right">
-										<div class="stat-content" class:icon={bound_objects.iconStats}>
-											{#if bound_objects.iconStats}
-												<div class="stat-icon">
-													<StatIcon stat={gear.stats[2].stat} size="75%" />
-												</div>
-											{:else}
-												{gear.stats[2].stat_label ?? ''}
-											{/if}
-											{#if bound_objects.titanMode}
-												+{gear.stats[2].titan_value_label ?? ''}
-											{:else}
-												+{gear.stats[2].value_label ?? ''}
-											{/if}
-										</div>
-									</div>
-									<div class="stat-item bottom-left">
-										<div class="stat-content" class:icon={bound_objects.iconStats}>
-											{#if bound_objects.iconStats}
-												<div class="stat-icon">
-													<StatIcon stat={gear.stats[1].stat} size="75%" />
-												</div>
-											{:else}
-												{gear.stats[1].stat_label ?? ''}
-											{/if}
-											{#if bound_objects.titanMode}
-												+{gear.stats[1].titan_value_label ?? ''}
-											{:else}
-												+{gear.stats[1].value_label ?? ''}
-											{/if}
-										</div>
-									</div>
-									<div class="stat-item bottom-right">
-										<div class="stat-content" class:icon={bound_objects.iconStats}>
-											{#if bound_objects.iconStats}
-												<div class="stat-icon">
-													<StatIcon stat={gear.stats[3].stat} size="75%" />
-												</div>
-											{:else}
-												{gear.stats[3].stat_label ?? ''}
-											{/if}
-											{#if bound_objects.titanMode}
-												+{gear.stats[3].titan_value_label ?? ''}
-											{:else}
-												+{gear.stats[3].value_label ?? ''}
-											{/if}
-										</div>
-									</div>
+									{/each}
 								</div>
 							</div>
 						{:else}
@@ -519,7 +506,7 @@
 						</div>
 					</div>
 					<div class="single-stat">
-						<div class="stat">Add gears first!</div>
+						<div class="stat">No gears to show here!</div>
 					</div>
 				</div>
 			{/if}

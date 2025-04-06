@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { StatGearUser } from '$lib/scripts/stats';
+	import { type StatGearUser } from '$lib/scripts/stats';
 	import { onMount } from 'svelte';
 
-	let { stat = StatGearUser.ATK as StatGearUser, size = '100%' } = $props();
+	let { stat = 'atk' as StatGearUser, size = '100%' } = $props();
 
 	let img = $state('phys');
 	let unit = $state('none');

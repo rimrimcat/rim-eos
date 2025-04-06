@@ -12,14 +12,14 @@
 
 	// [TITAN_][ELEMENT_]<STAT>[_PERCENT]
 	let query = $derived(
-		(selectedOthers.has('Titan') ? 'TITAN_' : '') +
-			(selectedElement ? selectedElement.toUpperCase() + '_' : '') +
-			selectedStat +
-			(selectedOthers.has('Percent') ? '_PERCENT' : '')
+		(selectedOthers.has('Titan') ? 'titan_' : '') +
+			(selectedElement ? selectedElement.toLowerCase() + '_' : '') +
+			selectedStat.toLowerCase() +
+			(selectedOthers.has('Percent') ? '_percent' : '')
 	);
 
 	const ELEMENTS = ['Flame', 'Frost', 'Volt', 'Phys', 'Alt'];
-	const STATS = ['ATK', 'DMG', 'RES'];
+	const STATS = ['ATK', 'DMG', 'RES', 'CRIT'];
 	const OTHERS = ['Titan', 'Percent'];
 
 	function selectElement(element: string) {
@@ -64,6 +64,15 @@
 			open = false;
 		}
 	}
+
+	// validate query
+	$effect(() => {
+		console.log('validating query:', query);
+
+		if (selectedStat === 'CRIT') {
+			selectedElement = null;
+		}
+	});
 </script>
 
 <Dialog

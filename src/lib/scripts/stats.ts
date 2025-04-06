@@ -11,134 +11,165 @@ export type AttributeItem = {
 /**
  * Gear stats that can be added by the user
  */
-export const enum StatGearUser {
-	HP = 'hp',
-	HP_PERCENT = 'hp_percent',
-	// Attack
-	ATK = 'atk',
-	FLAME_ATK = 'flame_atk',
-	FROST_ATK = 'frost_atk',
-	VOLT_ATK = 'volt_atk',
-	PHYS_ATK = 'phys_atk',
-	ALT_ATK = 'alt_atk',
-	ELE_ATK = 'ele_atk',
-	// Attack percent
-	ATK_PERCENT = 'atk_percent',
-	FLAME_ATK_PERCENT = 'flame_atk_percent',
-	FROST_ATK_PERCENT = 'frost_atk_percent',
-	VOLT_ATK_PERCENT = 'volt_atk_percent',
-	PHYS_ATK_PERCENT = 'phys_atk_percent',
-	ALT_ATK_PERCENT = 'alt_atk_percent',
-	ELE_ATK_PERCENT = 'ele_atk_percent',
-	// Damage percent
-	DMG_PERCENT = 'dmg_percent',
-	FLAME_DMG_PERCENT = 'flame_dmg_percent',
-	FROST_DMG_PERCENT = 'frost_dmg_percent',
-	VOLT_DMG_PERCENT = 'volt_dmg_percent',
-	PHYS_DMG_PERCENT = 'phys_dmg_percent',
-	ALT_DMG_PERCENT = 'alt_dmg_percent',
-	ELE_DMG_PERCENT = 'ele_dmg_percent',
-	// Crit
-	CRIT = 'crit',
-	CRIT_PERCENT = 'crit_percent',
-	// Resistance
-	RES = 'res',
-	FLAME_RES = 'flame_res',
-	FROST_RES = 'frost_res',
-	VOLT_RES = 'volt_res',
-	ALT_RES = 'alt_res',
-	PHYS_RES = 'phys_res',
-	// Resistance percent
-	RES_PERCENT = 'res_percent',
-	FLAME_RES_PERCENT = 'flame_res_percent',
-	FROST_RES_PERCENT = 'frost_res_percent',
-	VOLT_RES_PERCENT = 'volt_res_percent',
-	ALT_RES_PERCENT = 'alt_res_percent',
-	PHYS_RES_PERCENT = 'phys_res_percent'
-}
+export type StatGearUser =
+	| 'hp'
+	| 'hp_percent'
+	| 'atk'
+	| 'flame_atk'
+	| 'frost_atk'
+	| 'volt_atk'
+	| 'phys_atk'
+	| 'alt_atk'
+	| 'ele_atk'
+	| 'atk_percent'
+	| 'flame_atk_percent'
+	| 'frost_atk_percent'
+	| 'volt_atk_percent'
+	| 'phys_atk_percent'
+	| 'alt_atk_percent'
+	| 'ele_atk_percent'
+	| 'dmg_percent'
+	| 'flame_dmg_percent'
+	| 'frost_dmg_percent'
+	| 'volt_dmg_percent'
+	| 'phys_dmg_percent'
+	| 'alt_dmg_percent'
+	| 'ele_dmg_percent'
+	| 'crit'
+	| 'crit_percent'
+	| 'res'
+	| 'flame_res'
+	| 'frost_res'
+	| 'volt_res'
+	| 'alt_res'
+	| 'phys_res'
+	| 'res_percent'
+	| 'flame_res_percent'
+	| 'frost_res_percent'
+	| 'volt_res_percent'
+	| 'alt_res_percent'
+	| 'phys_res_percent';
 
 /**
  * Gear stats that are derived from the user's stats
  */
-export const enum StatGearTitan {
-	TITAN_HP = 'titan_hp',
-	TITAN_HP_PERCENT = 'titan_hp_percent',
-	// Attack
-	TITAN_ATK = 'titan_atk',
-	TITAN_FLAME_ATK = 'titan_flame_atk',
-	TITAN_FROST_ATK = 'titan_frost_atk',
-	TITAN_VOLT_ATK = 'titan_volt_atk',
-	TITAN_PHYS_ATK = 'titan_phys_atk',
-	TITAN_ALT_ATK = 'titan_alt_atk',
-	TITAN_ELE_ATK = 'titan_ele_atk',
-	// Attack percent
-	TITAN_ATK_PERCENT = 'titan_atk_percent',
-	TITAN_FLAME_ATK_PERCENT = 'titan_flame_atk_percent',
-	TITAN_FROST_ATK_PERCENT = 'titan_frost_atk_percent',
-	TITAN_VOLT_ATK_PERCENT = 'titan_volt_atk_percent',
-	TITAN_PHYS_ATK_PERCENT = 'titan_phys_atk_percent',
-	TITAN_ALT_ATK_PERCENT = 'titan_alt_atk_percent',
-	TITAN_ELE_ATK_PERCENT = 'titan_ele_atk_percent',
-	// Damage percent
-	TITAN_DMG_PERCENT = 'titan_dmg_percent',
-	TITAN_FLAME_DMG_PERCENT = 'titan_flame_dmg_percent',
-	TITAN_FROST_DMG_PERCENT = 'titan_frost_dmg_percent',
-	TITAN_VOLT_DMG_PERCENT = 'titan_volt_dmg_percent',
-	TITAN_PHYS_DMG_PERCENT = 'titan_phys_dmg_percent',
-	TITAN_ALT_DMG_PERCENT = 'titan_alt_dmg_percent',
-	TITAN_ELE_DMG_PERCENT = 'titan_ele_dmg_percent',
-	// Crit
-	TITAN_CRIT = 'titan_crit',
-	TITAN_CRIT_PERCENT = 'titan_crit_percent',
-	// Resistance
-	TITAN_RES = 'titan_res',
-	TITAN_FLAME_RES = 'titan_flame_res',
-	TITAN_FROST_RES = 'titan_frost_res',
-	TITAN_VOLT_RES = 'titan_volt_res',
-	TITAN_ALT_RES = 'titan_alt_res',
-	TITAN_PHYS_RES = 'titan_phys_res',
-	// Resistance percent
-	TITAN_RES_PERCENT = 'titan_res_percent',
-	TITAN_FLAME_RES_PERCENT = 'titan_flame_res_percent',
-	TITAN_FROST_RES_PERCENT = 'titan_frost_res_percent',
-	TITAN_VOLT_RES_PERCENT = 'titan_volt_res_percent',
-	TITAN_ALT_RES_PERCENT = 'titan_alt_res_percent',
-	TITAN_PHYS_RES_PERCENT = 'titan_phys_res_percent'
-}
+export type StatGearTitan =
+	| 'titan_hp'
+	| 'titan_hp_percent'
+	| 'titan_atk'
+	| 'titan_flame_atk'
+	| 'titan_frost_atk'
+	| 'titan_volt_atk'
+	| 'titan_phys_atk'
+	| 'titan_alt_atk'
+	| 'titan_ele_atk'
+	| 'titan_atk_percent'
+	| 'titan_flame_atk_percent'
+	| 'titan_frost_atk_percent'
+	| 'titan_volt_atk_percent'
+	| 'titan_phys_atk_percent'
+	| 'titan_alt_atk_percent'
+	| 'titan_ele_atk_percent'
+	| 'titan_dmg_percent'
+	| 'titan_flame_dmg_percent'
+	| 'titan_frost_dmg_percent'
+	| 'titan_volt_dmg_percent'
+	| 'titan_phys_dmg_percent'
+	| 'titan_alt_dmg_percent'
+	| 'titan_ele_dmg_percent'
+	| 'titan_crit'
+	| 'titan_crit_percent'
+	| 'titan_res'
+	| 'titan_flame_res'
+	| 'titan_frost_res'
+	| 'titan_volt_res'
+	| 'titan_alt_res'
+	| 'titan_phys_res'
+	| 'titan_res_percent'
+	| 'titan_flame_res_percent'
+	| 'titan_frost_res_percent'
+	| 'titan_volt_res_percent'
+	| 'titan_alt_res_percent'
+	| 'titan_phys_res_percent';
 
-export const STAT_LABELS = {
-	[StatGearUser.HP]: 'HP',
-	[StatGearUser.HP_PERCENT]: 'HP',
-	[StatGearUser.CRIT]: 'Crit',
-	[StatGearUser.CRIT_PERCENT]: 'Crit',
-	[StatGearUser.RES]: 'Res',
-	[StatGearUser.RES_PERCENT]: 'Res',
-	[StatGearUser.ATK]: 'ATK',
-	[StatGearUser.PHYS_ATK]: 'Phys Atk',
-	[StatGearUser.PHYS_ATK_PERCENT]: 'Phys Atk',
-	[StatGearUser.PHYS_DMG_PERCENT]: 'Phys Dmg',
-	[StatGearUser.PHYS_RES]: 'Phys Res',
-	[StatGearUser.PHYS_RES_PERCENT]: 'Phys Res',
-	[StatGearUser.FLAME_ATK]: 'Flame Atk',
-	[StatGearUser.FLAME_ATK_PERCENT]: 'Flame Atk',
-	[StatGearUser.FLAME_DMG_PERCENT]: 'Flame Dmg',
-	[StatGearUser.FLAME_RES]: 'Flame Res',
-	[StatGearUser.FLAME_RES_PERCENT]: 'Flame Res',
-	[StatGearUser.FROST_ATK]: 'Frost Atk',
-	[StatGearUser.FROST_ATK_PERCENT]: 'Frost Atk',
-	[StatGearUser.FROST_DMG_PERCENT]: 'Frost Dmg',
-	[StatGearUser.FROST_RES]: 'Frost Res',
-	[StatGearUser.FROST_RES_PERCENT]: 'Frost Res',
-	[StatGearUser.VOLT_ATK]: 'Volt Atk',
-	[StatGearUser.VOLT_ATK_PERCENT]: 'Volt Atk',
-	[StatGearUser.VOLT_DMG_PERCENT]: 'Volt Dmg',
-	[StatGearUser.VOLT_RES]: 'Volt Res',
-	[StatGearUser.VOLT_RES_PERCENT]: 'Volt Res',
-	[StatGearUser.ALT_ATK]: 'Alt Atk',
-	[StatGearUser.ALT_ATK_PERCENT]: 'Alt Atk',
-	[StatGearUser.ALT_DMG_PERCENT]: 'Alt Dmg',
-	[StatGearUser.ALT_RES]: 'Alt Res',
-	[StatGearUser.ALT_RES_PERCENT]: 'Alt Res'
+export type AllStats = StatGearUser | StatGearTitan;
+
+export const STAT_LABELS: Record<AllStats, string> = {
+	hp: 'HP',
+	hp_percent: 'HP',
+	crit: 'Crit',
+	crit_percent: 'Crit',
+	res: 'Res',
+	res_percent: 'Res',
+	atk: 'ATK',
+	atk_percent: 'ATK',
+	ele_atk: 'Ele Atk',
+	ele_atk_percent: 'Ele Atk',
+	dmg_percent: 'Dmg',
+	ele_dmg_percent: 'Ele Dmg',
+	phys_atk: 'Phys Atk',
+	phys_atk_percent: 'Phys Atk',
+	phys_dmg_percent: 'Phys Dmg',
+	phys_res: 'Phys Res',
+	phys_res_percent: 'Phys Res',
+	flame_atk: 'Flame Atk',
+	flame_atk_percent: 'Flame Atk',
+	flame_dmg_percent: 'Flame Dmg',
+	flame_res: 'Flame Res',
+	flame_res_percent: 'Flame Res',
+	frost_atk: 'Frost Atk',
+	frost_atk_percent: 'Frost Atk',
+	frost_dmg_percent: 'Frost Dmg',
+	frost_res: 'Frost Res',
+	frost_res_percent: 'Frost Res',
+	volt_atk: 'Volt Atk',
+	volt_atk_percent: 'Volt Atk',
+	volt_dmg_percent: 'Volt Dmg',
+	volt_res: 'Volt Res',
+	volt_res_percent: 'Volt Res',
+	alt_atk: 'Alt Atk',
+	alt_atk_percent: 'Alt Atk',
+	alt_dmg_percent: 'Alt Dmg',
+	alt_res: 'Alt Res',
+	alt_res_percent: 'Alt Res',
+	// Titan stats
+	titan_hp: 'Titan HP',
+	titan_hp_percent: 'Titan HP',
+	titan_atk: 'Titan ATK',
+	titan_flame_atk: 'Titan Flame Atk',
+	titan_frost_atk: 'Titan Frost Atk',
+	titan_volt_atk: 'Titan Volt Atk',
+	titan_phys_atk: 'Titan Phys Atk',
+	titan_alt_atk: 'Titan Alt Atk',
+	titan_ele_atk: 'Titan Ele Atk',
+	titan_atk_percent: 'Titan ATK',
+	titan_flame_atk_percent: 'Titan Flame Atk',
+	titan_frost_atk_percent: 'Titan Frost Atk',
+	titan_volt_atk_percent: 'Titan Volt Atk',
+	titan_phys_atk_percent: 'Titan Phys Atk',
+	titan_alt_atk_percent: 'Titan Alt Atk',
+	titan_ele_atk_percent: 'Titan Ele Atk',
+	titan_dmg_percent: 'Titan Dmg',
+	titan_flame_dmg_percent: 'Titan Flame Dmg',
+	titan_frost_dmg_percent: 'Titan Frost Dmg',
+	titan_volt_dmg_percent: 'Titan Volt Dmg',
+	titan_phys_dmg_percent: 'Titan Phys Dmg',
+	titan_alt_dmg_percent: 'Titan Alt Dmg',
+	titan_ele_dmg_percent: 'Titan Ele Dmg',
+	titan_crit: 'Titan Crit',
+	titan_crit_percent: 'Titan Crit',
+	titan_res: 'Titan Res',
+	titan_flame_res: 'Titan Flame Res',
+	titan_frost_res: 'Titan Frost Res',
+	titan_volt_res: 'Titan Volt Res',
+	titan_alt_res: 'Titan Alt Res',
+	titan_phys_res: 'Titan Phys Res',
+	titan_res_percent: 'Titan Res',
+	titan_flame_res_percent: 'Titan Flame Res',
+	titan_frost_res_percent: 'Titan Frost Res',
+	titan_volt_res_percent: 'Titan Volt Res',
+	titan_alt_res_percent: 'Titan Alt Res',
+	titan_phys_res_percent: 'Titan Phys Res'
 };
 
 export type StatConstant = {
@@ -149,267 +180,263 @@ export type StatConstant = {
 	titan_multiplier: number;
 };
 
-export type StatConstants = {
-	[key in StatGearUser]: StatConstant;
-};
-
 /**
  * Constants for calculating stat values
  */
-export const STAT_CONSTANTS: StatConstants = {
-	[StatGearUser.HP]: {
+export const STAT_CONSTANTS: Record<StatGearUser, StatConstant> = {
+	hp: {
 		base: 4125,
 		low_roll: 7480,
 		high_roll: 18700,
 		titan_base: 19937,
 		titan_multiplier: 0.1
 	},
-	[StatGearUser.HP_PERCENT]: {
+	hp_percent: {
 		base: 0.94,
 		low_roll: 1.08,
 		high_roll: 1.08,
 		titan_base: 0.681,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.ATK]: {
+	atk: {
 		base: 52,
 		low_roll: 93,
 		high_roll: 234,
 		titan_base: 249,
 		titan_multiplier: 0.1
 	},
-	[StatGearUser.CRIT]: {
+	crit: {
 		base: 258,
 		low_roll: 468,
 		high_roll: 1169,
 		titan_base: 1246,
 		titan_multiplier: 0.1
 	},
-	[StatGearUser.CRIT_PERCENT]: {
+	crit_percent: {
 		base: 1.05,
 		low_roll: 1.19,
 		high_roll: 1.19,
 		titan_base: 0,
 		titan_multiplier: 0
 	},
-	[StatGearUser.RES]: {
+	res: {
 		base: 64,
 		low_roll: 117,
 		high_roll: 292,
 		titan_base: 272,
 		titan_multiplier: 0.1
 	},
-	[StatGearUser.ALT_ATK]: {
+	alt_atk: {
 		base: 137,
 		low_roll: 249,
 		high_roll: 623,
 		titan_base: 0,
 		titan_multiplier: 0
 	},
-	[StatGearUser.ALT_RES]: {
+	alt_res: {
 		base: 215,
 		low_roll: 390,
 		high_roll: 974,
 		titan_base: 0,
 		titan_multiplier: 0
 	},
-	[StatGearUser.ALT_RES_PERCENT]: {
+	alt_res_percent: {
 		base: 7.87,
 		low_roll: 9,
 		high_roll: 9,
 		titan_base: 0,
 		titan_multiplier: 0
 	},
-	[StatGearUser.FLAME_ATK]: {
+	flame_atk: {
 		base: 69,
 		low_roll: 125,
 		high_roll: 312,
 		titan_base: 332,
 		titan_multiplier: 0.1
 	},
-	[StatGearUser.FROST_ATK]: {
+	frost_atk: {
 		base: 69,
 		low_roll: 125,
 		high_roll: 312,
 		titan_base: 332,
 		titan_multiplier: 0.1
 	},
-	[StatGearUser.VOLT_ATK]: {
+	volt_atk: {
 		base: 69,
 		low_roll: 125,
 		high_roll: 312,
 		titan_base: 332,
 		titan_multiplier: 0.1
 	},
-	[StatGearUser.PHYS_ATK]: {
+	phys_atk: {
 		base: 69,
 		low_roll: 125,
 		high_roll: 312,
 		titan_base: 332,
 		titan_multiplier: 0.1
 	},
-	[StatGearUser.ELE_ATK]: {
+	ele_atk: {
 		base: 69,
 		low_roll: 125,
 		high_roll: 312,
 		titan_base: 332,
 		titan_multiplier: 0.1
 	},
-	[StatGearUser.ATK_PERCENT]: {
+	atk_percent: {
 		base: 1.26,
 		low_roll: 1.44,
 		high_roll: 1.44,
 		titan_base: 0.909,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.FLAME_ATK_PERCENT]: {
+	flame_atk_percent: {
 		base: 1.26,
 		low_roll: 1.44,
 		high_roll: 1.44,
 		titan_base: 0.909,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.FROST_ATK_PERCENT]: {
+	frost_atk_percent: {
 		base: 1.26,
 		low_roll: 1.44,
 		high_roll: 1.44,
 		titan_base: 0.909,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.VOLT_ATK_PERCENT]: {
+	volt_atk_percent: {
 		base: 1.26,
 		low_roll: 1.44,
 		high_roll: 1.44,
 		titan_base: 0.909,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.PHYS_ATK_PERCENT]: {
+	phys_atk_percent: {
 		base: 1.26,
 		low_roll: 1.44,
 		high_roll: 1.44,
 		titan_base: 0.909,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.ALT_ATK_PERCENT]: {
+	alt_atk_percent: {
 		base: 1.26,
 		low_roll: 1.44,
 		high_roll: 1.44,
 		titan_base: 0,
 		titan_multiplier: 0
 	},
-	[StatGearUser.ELE_ATK_PERCENT]: {
+	ele_atk_percent: {
 		base: 1.26,
 		low_roll: 1.44,
 		high_roll: 1.44,
 		titan_base: 0.909,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.DMG_PERCENT]: {
+	dmg_percent: {
 		base: 0.65,
 		low_roll: 0.72,
 		high_roll: 0.72,
 		titan_base: 0.422,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.FLAME_DMG_PERCENT]: {
+	flame_dmg_percent: {
 		base: 0.65,
 		low_roll: 0.72,
 		high_roll: 0.72,
 		titan_base: 0.422,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.FROST_DMG_PERCENT]: {
+	frost_dmg_percent: {
 		base: 0.65,
 		low_roll: 0.72,
 		high_roll: 0.72,
 		titan_base: 0.422,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.VOLT_DMG_PERCENT]: {
+	volt_dmg_percent: {
 		base: 0.65,
 		low_roll: 0.72,
 		high_roll: 0.72,
 		titan_base: 0.422,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.PHYS_DMG_PERCENT]: {
+	phys_dmg_percent: {
 		base: 0.65,
 		low_roll: 0.72,
 		high_roll: 0.72,
 		titan_base: 0.422,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.ALT_DMG_PERCENT]: {
+	alt_dmg_percent: {
 		base: 0.65,
 		low_roll: 0.72,
 		high_roll: 0.72,
 		titan_base: 0,
 		titan_multiplier: 0
 	},
-	[StatGearUser.ELE_DMG_PERCENT]: {
+	ele_dmg_percent: {
 		base: 0.65,
 		low_roll: 0.72,
 		high_roll: 0.72,
 		titan_base: 0.422,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.FLAME_RES]: {
+	flame_res: {
 		base: 215,
 		low_roll: 390,
 		high_roll: 974,
 		titan_base: 1038,
 		titan_multiplier: 0.1
 	},
-	[StatGearUser.FROST_RES]: {
+	frost_res: {
 		base: 215,
 		low_roll: 390,
 		high_roll: 974,
 		titan_base: 1038,
 		titan_multiplier: 0.1
 	},
-	[StatGearUser.VOLT_RES]: {
+	volt_res: {
 		base: 215,
 		low_roll: 390,
 		high_roll: 974,
 		titan_base: 1038,
 		titan_multiplier: 0.1
 	},
-	[StatGearUser.PHYS_RES]: {
+	phys_res: {
 		base: 215,
 		low_roll: 390,
 		high_roll: 974,
 		titan_base: 1038,
 		titan_multiplier: 0.1
 	},
-	[StatGearUser.RES_PERCENT]: {
+	res_percent: {
 		base: 7.87,
 		low_roll: 9,
 		high_roll: 9,
 		titan_base: 5.681,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.FLAME_RES_PERCENT]: {
+	flame_res_percent: {
 		base: 7.87,
 		low_roll: 9,
 		high_roll: 9,
 		titan_base: 5.681,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.FROST_RES_PERCENT]: {
+	frost_res_percent: {
 		base: 7.87,
 		low_roll: 9,
 		high_roll: 9,
 		titan_base: 5.681,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.VOLT_RES_PERCENT]: {
+	volt_res_percent: {
 		base: 7.87,
 		low_roll: 9,
 		high_roll: 9,
 		titan_base: 5.681,
 		titan_multiplier: 0.05
 	},
-	[StatGearUser.PHYS_RES_PERCENT]: {
+	phys_res_percent: {
 		base: 7.87,
 		low_roll: 9,
 		high_roll: 9,
