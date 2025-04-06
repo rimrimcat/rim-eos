@@ -67,7 +67,11 @@
 	<!-- Symbol on top of the base -->
 	<div style="position: absolute; top: 50%; left: 25%;">
 		{#if atk_kind == 'dmg'}
-			<img src="./stat_icon/{atk_kind}.webp" alt="Stat Icon" />
+			<img
+				src="./stat_icon/{atk_kind}.webp"
+				alt="Stat Icon"
+				style="width: {size}; height: {size};"
+			/>
 		{/if}
 	</div>
 </div>

@@ -312,6 +312,16 @@
 				lucide_off: SquareIcon
 			},
 			{
+				id: 'iconStats',
+				label: 'Icon Stats',
+				type: ActionType.TOGGLE,
+				callback: () => {
+					hasMeasured = false;
+				},
+				lucide_on: DiamondIcon,
+				lucide_off: CaseSensitiveIcon
+			},
+			{
 				id: 'titanMode',
 				label: 'Titan Stats',
 				type: ActionType.TOGGLE,
@@ -322,14 +332,15 @@
 				lucide_off: SparkleIcon
 			},
 			{
-				id: 'iconStats',
-				label: 'Icon Stats',
-				type: ActionType.TOGGLE,
+				id: 'clearGears',
+				label: 'Clear List',
+				lucide: Trash2Icon,
+				type: ActionType.BUTTON,
 				callback: () => {
-					hasMeasured = false;
-				},
-				lucide_on: DiamondIcon,
-				lucide_off: CaseSensitiveIcon
+					user_gears = [];
+					gear_views = [];
+					saveObject(StorageKey.GEARS_V1, user_gears);
+				}
 			}
 		]
 	};
