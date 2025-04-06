@@ -587,6 +587,7 @@
 	.stat-icon {
 		align-items: center;
 		justify-content: center;
+		flex-shrink: 0;
 	}
 
 	.stat-content {

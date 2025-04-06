@@ -15,6 +15,7 @@
 	let fontSize = $state(0);
 	let innerWidth = $state(1000);
 	let isMobile = $derived((13.75 * fontSize) / innerWidth > 0.25);
+	let swipeDist = $derived(Math.min(200, Math.floor(innerWidth * 0.2)));
 
 	// Active Nav
 	const navMap: { [key: string]: Component } = {
@@ -93,6 +94,7 @@
 
 	$inspect('mobile detection:', isMobile);
 	$inspect('innerWidth', innerWidth);
+	$inspect('swipeDist', swipeDist);
 </script>
 
 <svelte:window bind:innerWidth />
@@ -111,7 +113,7 @@
 
 <div
 	class="app-container"
-	use:swipe={() => ({ timeframe: 300, minSwipeDistance: 100, touchAction: 'pan-y' })}
+	use:swipe={() => ({ timeframe: 300, minSwipeDistance: swipeDist, touchAction: 'pan-y' })}
 	onswipe={handleSwipe}
 >
 	<Toolbar bind:isMobile bind:activeComponent bind:isCollapsed />
