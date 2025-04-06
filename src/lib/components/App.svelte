@@ -228,5 +228,6 @@
 		overflow-y: scroll;
 		overflow-x: hidden;
 		padding-left: 1rem;
+		padding-right: 5rem;
 	}
 </style>

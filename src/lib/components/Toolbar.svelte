@@ -18,6 +18,9 @@
 
 	function selectComponent(id: string) {
 		activeComponent = id;
+		if (isMobile) {
+			isCollapsed = true;
+		}
 	}
 </script>
 

@@ -91,5 +91,6 @@ export type UserGear = GearId & GearValidStats;
  */
 export type GearView = GearId & {
 	stats: GearViewStatItem[];
+	hash: string;
 	// derived: GearViewDerivedStatItem[];
 };

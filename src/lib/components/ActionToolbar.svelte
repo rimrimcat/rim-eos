@@ -12,6 +12,7 @@
 
 	let isCollapsed = $state(false);
 	let scrollY = $state(0);
+	let headerText = $state('Actions');
 
 	const sliderCount = actions.filter((action) => action.type === ActionType.SLIDER).length;
 
@@ -39,6 +40,15 @@
 			tool.callback();
 		}
 	}
+
+	$inspect('header text', headerText);
+	$effect(() => {
+		if (isCollapsed) {
+			headerText = '';
+		} else {
+			headerText = 'Actions';
+		}
+	});
 </script>
 
 <svelte:window bind:scrollY />
@@ -51,9 +61,7 @@
 >
 	<div class="tools-header">
 		<div class="header-content">
-			{#if !isCollapsed}
-				<span>Actions</span>
-			{/if}
+			<span class="header-text" class:collapsed={isCollapsed}>{headerText}</span>
 		</div>
 		<button class="collapse-toggle" onclick={toggleCollapse}>
 			{#if isCollapsed}
@@ -96,9 +104,7 @@
 								<CircleHelp />
 							{/if}
 						</div>
-						{#if !isCollapsed}
-							<span class="tool-label">{action.label}</span>
-						{/if}
+						<span class="tool-label" class:collapsed={isCollapsed}>{action.label}</span>
 					</div>
 					{#if !isCollapsed}
 						<div class="slider-controls">
@@ -129,9 +135,7 @@
 							<CircleHelp />
 						{/if}
 					</div>
-					{#if !isCollapsed}
-						<span class="tool-label">{action.label}</span>
-					{/if}
+					<span class="tool-label" class:collapsed={isCollapsed}>{action.label}</span>
 				</button>
 			{/if}
 		{/each}
@@ -140,10 +144,11 @@
 
 <style>
 	.nav-tools {
-		position: sticky;
+		position: fixed;
 		top: 1rem;
 		width: 13.75rem;
 		margin-right: 0.5rem;
+		right: 0.5rem;
 		background-color: var(--bg-color);
 		display: flex;
 		flex-direction: column;
@@ -156,7 +161,7 @@
 	}
 
 	.nav-tools.collapsed {
-		position: sticky;
+		position: fixed;
 		width: 3.75rem;
 		background-color: var(--bg-color);
 		display: flex;
@@ -187,6 +192,12 @@
 		color: var(--title-color);
 	}
 
+	.header-text.collapsed {
+		translate: 3rem 0;
+		opacity: 0;
+		transition: opacity 0.15s ease;
+	}
+
 	.collapse-toggle {
 		background: none;
 		border: none;
@@ -197,6 +208,7 @@
 		justify-content: center;
 		width: 2.2rem;
 		height: 2.2rem;
+		z-index: 10;
 	}
 
 	.collapse-toggle:hover {
@@ -241,6 +253,11 @@
 		white-space: nowrap;
 		text-overflow: ellipsis;
 		transition: opacity 0.3s ease;
+	}
+
+	.tool-label.collapsed {
+		opacity: 0;
+		transition: opacity 0.15s ease;
 	}
 
 	/* Toggle Styles */

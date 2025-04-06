@@ -111,6 +111,7 @@
 		const stats: GearViewStatItem[] = [];
 		let id: number = -1;
 		let part: GearParts = GearParts.UNKNOWN;
+		let hash = '';
 
 		Object.entries(gear).forEach(([key, value]) => {
 			switch (key) {
@@ -119,6 +120,7 @@
 					break;
 				case 'part':
 					part = value as GearParts;
+					hash += value;
 					break;
 				default:
 					const _stat = key as Stat;
@@ -143,16 +145,9 @@
 							titan_value.toString()
 						)
 					});
-					// add titan stats
-					// derived.push({
-					// 	stat: titan_key as TitanStat,
-					// 	stat_label: 'Titan ' + stat_label,
-					// 	value: titan_value,
-					// 	value_label: formatValue(
-					// 		key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER,
-					// 		titan_value.toString()
-					// 	)
-					// });
+
+					hash += _stat + value.toString();
+
 					break;
 			}
 		});
@@ -162,16 +157,22 @@
 		return {
 			id,
 			part,
-			stats
+			stats,
+			hash
 		};
 	}
 
 	function addNewGear(gear: UserGear) {
-		user_gears.push(gear);
-		saveObject(StorageKey.GEARS_V1, user_gears);
-
 		createGearView(gear).then((gearView) => {
+			if (gear_views.some((gv) => gv.hash === gearView.hash)) {
+				console.log('GearView already exists!');
+				processText = 'Duplicate gear!';
+				return;
+			}
+
+			user_gears.push(gear);
 			gear_views.push(gearView);
+			saveObject(StorageKey.GEARS_V1, user_gears);
 		});
 	}
 
