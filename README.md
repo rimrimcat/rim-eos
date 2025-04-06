@@ -10,10 +10,10 @@ some webapp im making since no more content at TOF
 - [x] Design: fix UI for moboile users (partially done ig) (2025-04-05)
 - [x] Gear: check for identical gears when adding (2025-04-06)
 - [x] Gear: add remove gear button (2025-04-06)
+- [ ] Gear: add gear icons based on best stats
 - [ ] Gear: implement augmented gear template matching
 - [ ] Gear: allow searching for gear using stat
 - [ ] Gear: allow equipping gears
-- [ ] Gear: add gear icons based on best stats
 - [ ] Gear: add clear gear list
 - [ ] Gear: add tutorial on how gear image should be uploaded
 - [ ] Gear: add side by side comparison (not sure if this will actually be useful since I'll be adding a value that helps you decide which gear is better)

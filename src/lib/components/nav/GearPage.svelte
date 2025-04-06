@@ -16,6 +16,8 @@
 	import { Format, formatValue } from '$lib/scripts/validation.ts';
 
 	import {
+		CaseSensitiveIcon,
+		DiamondIcon,
 		ImagePlusIcon,
 		LayoutGridIcon,
 		Shirt,
@@ -29,6 +31,7 @@
 	import ActionToolbar from '../ActionToolbar.svelte';
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
+	import StatIcon from '../StatIcon.svelte';
 
 	let { isMobile = $bindable(false) } = $props();
 
@@ -71,6 +74,10 @@
 
 	function getTitanValue(stat: Stat, value: number): number {
 		const stc = STAT_CONSTANTS[stat];
+		if (stat == Stat.VOLT_ATK) {
+			console.error('constants', stc);
+			console.error('value', value);
+		}
 		return value + stc.titan_base + stc.titan_multiplier * (value - stc.base);
 	}
 
@@ -244,7 +251,8 @@
 				const _base = OCR_KEY_MAP[_spl[0].trim()];
 				if (_spl[1] && _base) {
 					const _stat = _base + (_spl[1].includes('%') ? '_percent' : '');
-					const _val = _spl[1].replace('%', '').replace(',', '').trim();
+					const _val = _spl[1].split(' ')[0].replace('%', '').replace(',', '').trim();
+					// add .split(' ')[0] to remove random crap after the numbers
 
 					// @ts-expect-error
 					newGear[_stat] = _val;
@@ -274,15 +282,11 @@
 		}
 	}
 
-	Promise.all(user_gears.map((gear) => createGearView(gear))).then((gearViews) => {
-		gear_views = gearViews;
-		console.log('Done processing user_gears');
-	});
-
 	// register
 	let bound_objects = $state({
 		fourStatMode: isMobile ? false : true,
-		titanMode: false
+		titanMode: false,
+		iconStats: isMobile ? true : false
 	});
 
 	const id = 'gear-page';
@@ -320,12 +324,26 @@
 				},
 				lucide_on: SparklesIcon,
 				lucide_off: SparkleIcon
+			},
+			{
+				id: 'iconStats',
+				label: 'Icon Stats',
+				type: ActionType.TOGGLE,
+				callback: () => {
+					hasMeasured = false;
+				},
+				lucide_on: DiamondIcon,
+				lucide_off: CaseSensitiveIcon
 			}
 		]
 	};
 
 	onMount(() => {
 		registerComponent(id, metadata);
+		Promise.all(user_gears.map((gear) => createGearView(gear))).then((gearViews) => {
+			gear_views = gearViews;
+			console.log('Done processing user_gears');
+		});
 	});
 </script>
 
@@ -352,8 +370,15 @@
 							<div class="stats-container">
 								<div class="stats-grid">
 									<div class="stat-item top-left">
-										<div class="stat-content">
-											{gear.stats[0].stat_label ?? ''}
+										<div class="stat-content" class:icon={bound_objects.iconStats}>
+											{#if bound_objects.iconStats}
+												<div class="stat-icon">
+													<StatIcon stat={gear.stats[0].stat} size="75%" />
+												</div>
+											{:else}
+												{gear.stats[0].stat_label ?? ''}
+											{/if}
+
 											{#if bound_objects.titanMode}
 												+{gear.stats[0].titan_value_label ?? ''}
 											{:else}
@@ -362,8 +387,14 @@
 										</div>
 									</div>
 									<div class="stat-item top-right">
-										<div class="stat-content">
-											{gear.stats[2].stat_label ?? ''}
+										<div class="stat-content" class:icon={bound_objects.iconStats}>
+											{#if bound_objects.iconStats}
+												<div class="stat-icon">
+													<StatIcon stat={gear.stats[2].stat} size="75%" />
+												</div>
+											{:else}
+												{gear.stats[2].stat_label ?? ''}
+											{/if}
 											{#if bound_objects.titanMode}
 												+{gear.stats[2].titan_value_label ?? ''}
 											{:else}
@@ -372,8 +403,14 @@
 										</div>
 									</div>
 									<div class="stat-item bottom-left">
-										<div class="stat-content">
-											{gear.stats[1].stat_label ?? ''}
+										<div class="stat-content" class:icon={bound_objects.iconStats}>
+											{#if bound_objects.iconStats}
+												<div class="stat-icon">
+													<StatIcon stat={gear.stats[1].stat} size="75%" />
+												</div>
+											{:else}
+												{gear.stats[1].stat_label ?? ''}
+											{/if}
 											{#if bound_objects.titanMode}
 												+{gear.stats[1].titan_value_label ?? ''}
 											{:else}
@@ -382,8 +419,14 @@
 										</div>
 									</div>
 									<div class="stat-item bottom-right">
-										<div class="stat-content">
-											{gear.stats[3].stat_label ?? ''}
+										<div class="stat-content" class:icon={bound_objects.iconStats}>
+											{#if bound_objects.iconStats}
+												<div class="stat-icon">
+													<StatIcon stat={gear.stats[3].stat} size="75%" />
+												</div>
+											{:else}
+												{gear.stats[3].stat_label ?? ''}
+											{/if}
 											{#if bound_objects.titanMode}
 												+{gear.stats[3].titan_value_label ?? ''}
 											{:else}
@@ -395,8 +438,14 @@
 							</div>
 						{:else}
 							<div class="single-stat">
-								<div class="stat-content">
-									{gear.stats[0].stat_label ?? ''}
+								<div class="stat-content" class:icon={bound_objects.iconStats}>
+									{#if bound_objects.iconStats}
+										<div class="stat-icon">
+											<StatIcon stat={gear.stats[0].stat} size="75%" />
+										</div>
+									{:else}
+										{gear.stats[0].stat_label ?? ''}
+									{/if}
 									{#if bound_objects.titanMode}
 										+{gear.stats[0].titan_value_label ?? ''}
 									{:else}
@@ -535,10 +584,24 @@
 		justify-content: center;
 	}
 
+	.stat-icon {
+		align-items: center;
+		justify-content: center;
+	}
+
 	.stat-content {
 		/* padding: 5px; */
 		font-size: large;
-		/* text-transform: capitalize; */
+		text-align: center;
+	}
+
+	.stat-content.icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		font-size: large;
+		text-align: center;
 	}
 
 	.single-stat {
