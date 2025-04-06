@@ -360,12 +360,11 @@
 			extractedVars.forEach((varName) => {
 				variables[varName] = gear.derived.find((stat) => stat.stat === varName)?.value ?? 0;
 			});
-			// override for geara
+			// override for gear
 			variables.gear = gear.part;
 
 			// @ts-expect-error
 			const new_query = query.replace(ALL_STATS_REGEX, (match) => variables[match].toString());
-			console.log('regex', ALL_STATS_REGEX);
 			console.log('new_query:', new_query);
 
 			const result = eval(new_query);
@@ -590,6 +589,7 @@
 			{:else if search_views.length !== 0 && isSearching}
 				{#each search_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
+						<span>{gear.id}</span>
 						<div class="gear-icon">
 							<div class="icon-container">
 								<img
@@ -642,7 +642,7 @@
 	bind:processText
 />
 
-<GearSearch bind:open={searchDialogOpen} onConfirmSearch={onGearSearch} />
+<GearSearch bind:open={searchDialogOpen} bind:isMobile onConfirmSearch={onGearSearch} />
 
 <ActionToolbar actions={metadata.actions} bind:bound_objects bind:isMobile />
 

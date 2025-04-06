@@ -3,7 +3,11 @@
 	import { SvelteSet } from 'svelte/reactivity';
 	import Dialog from '../Dialog.svelte';
 
-	let { open = $bindable(false), onConfirmSearch = (query: string) => {} } = $props();
+	let {
+		open = $bindable(false),
+		onConfirmSearch = (query: string) => {},
+		isMobile = $bindable(false)
+	} = $props();
 
 	let advancedOptions = $state(false);
 
@@ -16,7 +20,7 @@
 
 	const ELEMENTS = ['Flame', 'Frost', 'Volt', 'Phys', 'Alt'] as const;
 	const STATS = ['ATK', 'TOTAL ATK', 'DMG', 'RES', 'CRIT'] as const;
-	const OTHERS = ['Titan', 'Percent'] as const;
+	const OTHERS = ['Titan', 'Percent', 'Rainbow'] as const;
 	const SLOTS = [
 		'Helmet',
 		'Spaulders',
@@ -43,18 +47,21 @@
 		_selectedOthers: SvelteSet<string>,
 		_selectedGear: string | null
 	) {
-		const titan = selectedOthers.has('Titan') ? 'titan_' : '';
-		const element = _selectedElement ? _selectedElement.toLowerCase() + '_' : '';
-		const percent = selectedOthers.has('Percent') ? '_percent' : '';
-
+		const rainbow = _selectedOthers.has('Rainbow')
+			? '(( !flame_atk + !frost_atk + !volt_atk + !phys_atk) <= 2 ) * '
+			: '';
 		const gear = _selectedGear // @ts-expect-error
 			? `( 'gear' === '${GearParts[_selectedGear.toUpperCase()]}' ) * `
 			: '';
+		const titan = selectedOthers.has('Titan') ? 'titan_' : '';
+		const stat = _selectedStat.toLowerCase();
+		const element = _selectedElement ? _selectedElement.toLowerCase() + '_' : '';
+		const percent = selectedOthers.has('Percent') ? '_percent' : '';
 
 		if (_selectedStat !== 'TOTAL ATK') {
-			return gear + titan + element + selectedStat.toLowerCase() + percent;
+			return rainbow + gear + titan + element + stat + percent;
 		} else {
-			return gear + '( ' + titan + element + 'atk' + ' + ' + titan + 'atk )';
+			return rainbow + gear + '( ' + titan + element + 'atk' + ' + ' + titan + 'atk )';
 		}
 	}
 
@@ -147,10 +154,12 @@
 	bind:open
 >
 	<div class="search-dialog">
-		<label for="search">Search Query:</label>
-		<div class="search-bar">
-			<input id="search" type="text" readonly value={query} placeholder="Search Query" />
-		</div>
+		{#if !isMobile}
+			<label for="search">Search Query:</label>
+			<div class="search-bar">
+				<input id="search" type="text" readonly value={query} placeholder="Search Query" />
+			</div>
+		{/if}
 
 		<div class="slot-section">
 			<h3>Slot</h3>
@@ -172,7 +181,9 @@
 								width="30px"
 								height="30px"
 							/>
-							<span class="slot-label">{slot}</span>
+							{#if !isMobile}
+								<span class="slot-label">{slot}</span>
+							{/if}
 						</div>
 					</button>
 				{/each}
