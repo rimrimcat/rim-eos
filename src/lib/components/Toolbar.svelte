@@ -38,15 +38,6 @@
 		setCollapsedHeight();
 		mobileToolbarTransform = offsetHeight - collapsedHeight;
 	});
-
-	$inspect(
-		'mobile height:',
-		offsetHeight,
-		'initially',
-		collapsedHeight,
-		'transform',
-		mobileToolbarTransform
-	);
 </script>
 
 <svelte:window bind:scrollY />

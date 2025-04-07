@@ -106,6 +106,7 @@
 		spaulders: GearParts.SPAULDERS,
 		armor: GearParts.ARMOR,
 		bracers: GearParts.BRACERS,
+		armbands: GearParts.BRACERS,
 		belt: GearParts.BELT,
 		legguards: GearParts.LEGGUARDS,
 		//
