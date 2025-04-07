@@ -1,14 +1,15 @@
 <script lang="ts">
-	// import { activeComponent } from '$lib/scripts/navMetadata.svelte.ts';
 	import { onMount, type Component } from 'svelte';
 	import Dialog from './Dialog.svelte';
 	import GearPage from './nav/GearPage.svelte';
+	import MainPage from './nav/MainPage.svelte';
 	import OpenCvTest from './nav/OpenCvTest.svelte';
 	import StatPage from './nav/StatPage.svelte';
 	import Toolbar from './Toolbar.svelte';
 
 	// Toolbar
-	let isCollapsed = $state(false);
+	let isCollapsed = $state(true);
+	let mobileToolbarTransform = $state(0);
 
 	// Detect if mobile
 	let fontSize = $state(0);
@@ -16,12 +17,13 @@
 	let isMobile = $derived((13.75 * fontSize) / innerWidth > 0.25);
 
 	// Active Nav
-	const navMap: { [key: string]: Component } = {
+	const navMap: Record<string, Component> = {
+		'main-page': MainPage,
 		'stat-page': StatPage,
 		'gear-page': GearPage,
 		'opencv-test': OpenCvTest
 	};
-	let activeComponent = $state('stat-page');
+	let activeComponent = $state('main-page');
 	let CurrentComponent: Component = $derived(navMap[activeComponent] || StatPage);
 
 	// Other stuff
@@ -96,13 +98,18 @@
 </Dialog>
 
 <div class="app-container">
-	<Toolbar bind:isMobile bind:activeComponent bind:isCollapsed />
+	<Toolbar bind:isMobile bind:activeComponent bind:isCollapsed bind:mobileToolbarTransform />
 
-	<div class="content-container" class:mobile={isMobile}>
+	<div
+		class="content-container"
+		class:mobile={isMobile}
+		style="translate: 0 {isMobile ? mobileToolbarTransform : 0}px;"
+	>
 		<div style="display: none">
+			<MainPage />
 			<StatPage />
-			<OpenCvTest />
 			<GearPage />
+			<OpenCvTest />
 		</div>
 
 		<CurrentComponent bind:isMobile />
@@ -212,6 +219,7 @@
 		overflow-x: hidden;
 		padding-left: 1rem;
 		padding-right: 5rem;
+		transition: translate 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.content-container.mobile {

@@ -351,7 +351,6 @@
 		label: 'OpenCV Test',
 		lucide: ImageIcon,
 		showInNav: true,
-		order: 10,
 
 		actions: [
 			{

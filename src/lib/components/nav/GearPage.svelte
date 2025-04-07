@@ -258,14 +258,14 @@
 
 		// TODO: add other derived stats
 
-		console.log('Created GearView for ', id, ':', {
-			id,
-			part,
-			isEquipped,
-			stats,
-			hash,
-			derived
-		});
+		// console.log('Created GearView for ', id, ':', {
+		// 	id,
+		// 	part,
+		// 	isEquipped,
+		// 	stats,
+		// 	hash,
+		// 	derived
+		// });
 		return {
 			id,
 			part,
@@ -498,7 +498,6 @@
 		label: 'Gears',
 		lucide: Shirt,
 		showInNav: true,
-		order: 1,
 		actions: [
 			{
 				id: 'screenshot',
@@ -597,16 +596,18 @@
 			horizontalGap="5rem"
 			bind:hasMeasured
 		>
-			{#if user_gears.length !== 0 && !isSearching}
+			{#if gear_views.length !== 0 && !isSearching}
 				{#each gear_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
 						<span>{gear.id}</span>
 						<div class="gear-icon">
 							<div class="icon-container">
-								<img
-									src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
-									alt="Gear"
-								/>
+								<button class="icon" onclick={() => equipGear(gear.id)} style="opacity: 1">
+									<img
+										src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
+										alt="Gear"
+									/>
+								</button>
 							</div>
 						</div>
 
@@ -653,19 +654,21 @@
 							</div>
 						{/if}
 
-						<div class="gear-actions">
-							<button class="gear-action" title="Remove Gear" onclick={() => removeGear(gear.id)}>
-								<Trash2Icon />
-							</button>
-							<button
-								class="gear-action"
-								class:no-pointer={gear.isEquipped}
-								title="Equip Gear"
-								onclick={() => (gear.isEquipped ? {} : equipGear(gear.id))}
-							>
-								<ShirtIcon opacity={gear.isEquipped ? 0.5 : 1} />
-							</button>
-						</div>
+						{#if !isMobile}
+							<div class="gear-actions">
+								<button class="gear-action" title="Remove Gear" onclick={() => removeGear(gear.id)}>
+									<Trash2Icon />
+								</button>
+								<button
+									class="gear-action"
+									class:no-pointer={gear.isEquipped}
+									title="Equip Gear"
+									onclick={() => (gear.isEquipped ? {} : equipGear(gear.id))}
+								>
+									<ShirtIcon opacity={gear.isEquipped ? 0.5 : 1} />
+								</button>
+							</div>
+						{/if}
 					</div>
 				{/each}
 			{:else if search_views.length !== 0 && isSearching}
@@ -738,7 +741,6 @@
 
 <style>
 	.gear-page {
-		margin-top: 1rem;
 		color: var(--text-color);
 		background-color: var(--bg-color);
 		width: 100%;

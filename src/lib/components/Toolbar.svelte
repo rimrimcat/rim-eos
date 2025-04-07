@@ -7,13 +7,15 @@
 	let {
 		isMobile = $bindable(false),
 		activeComponent = $bindable('stat-page'),
-		isCollapsed = $bindable(false)
+		isCollapsed = $bindable(false),
+		mobileToolbarTransform = $bindable(0)
 	} = $props();
 
 	const DEFAULT_ACTIVE_COMPONENT = 'stat-panel' as const;
 	let scrollY = $state(0);
 	let toolbarWidth = $state(0);
 	let offsetHeight = $state(0);
+	let collapsedHeight = $state(0);
 
 	function toggleCollapse() {
 		isCollapsed = !isCollapsed;
@@ -26,7 +28,25 @@
 		}
 	}
 
-	$inspect('mobile height:', offsetHeight);
+	function setCollapsedHeight() {
+		if (collapsedHeight === 0) {
+			collapsedHeight = offsetHeight;
+		}
+	}
+
+	$effect(() => {
+		setCollapsedHeight();
+		mobileToolbarTransform = offsetHeight - collapsedHeight;
+	});
+
+	$inspect(
+		'mobile height:',
+		offsetHeight,
+		'initially',
+		collapsedHeight,
+		'transform',
+		mobileToolbarTransform
+	);
 </script>
 
 <svelte:window bind:scrollY />

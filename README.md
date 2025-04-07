@@ -15,6 +15,8 @@ some webapp im making since no more content at TOF
 - [x] Gear: add part filtering (2025-04-06)
 - [x] Gear: allow parsing equipped titan gear (2025-04-07)
 - [x] Gear: allow equipping gears (2025-04-07)
+- [ ] Gear: make more accessible for mobile users
+- [ ] Gear: show equipped gears
 - [ ] Gear: add element selection
 - [ ] Gear: add loadouts per element
 - [ ] Gear: add more reponsive toasts for actions (?)
@@ -29,4 +31,5 @@ some webapp im making since no more content at TOF
 - [ ] Design: allow user to choose webpage style?
 - [ ] Design: fix animations
 - [ ] Misc: add image that you can click and it switches so you have something to look and play with ig
+- [ ] Misc: disable some buttons when mid animation
 - [ ] Gear: implement augmented gear template matching (NOT PLANNED)

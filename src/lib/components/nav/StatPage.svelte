@@ -339,7 +339,6 @@
 		label: 'Stats',
 		lucide: ChartNoAxesColumn,
 		showInNav: true,
-		order: 0,
 		actions: [
 			{
 				id: 'screenshot',
