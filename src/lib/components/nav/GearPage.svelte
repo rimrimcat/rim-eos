@@ -212,6 +212,17 @@
 						titan_value_label = formatValue(value_format, titan_value.toString());
 					}
 
+					console.log('Would have pushed:');
+					console.log({
+						stat: _stat,
+						stat_label,
+						value: _stat_value,
+						value_label: stat_value_label,
+						roll: getRollValue(_stat, _stat_value),
+						titan_stat_label: titan_label,
+						titan_value_label: titan_value_label
+					});
+
 					stats.push({
 						stat: _stat,
 						stat_label,
@@ -226,7 +237,7 @@
 					derived.push({
 						stat: _stat,
 						stat_label,
-						value: value as number,
+						value: _stat_value,
 						value_label: stat_value_label
 					});
 
@@ -238,7 +249,7 @@
 						value_label: titan_value_label
 					});
 
-					hash += _stat + value.toString();
+					hash += _stat + stat_value_label;
 
 					break;
 			}
@@ -247,7 +258,14 @@
 
 		// TODO: add other derived stats
 
-		console.log('Created GearView for ', id, ':', stats);
+		console.log('Created GearView for ', id, ':', {
+			id,
+			part,
+			isEquipped,
+			stats,
+			hash,
+			derived
+		});
 		return {
 			id,
 			part,
@@ -428,10 +446,7 @@
 
 			// @ts-expect-error
 			const new_query = query.replace(ALL_STATS_REGEX, (match) => variables[match].toString());
-			console.log('new_query:', new_query);
-
 			const result = eval(new_query);
-			console.log('result:', result);
 
 			if (result) {
 				search_views.push({
