@@ -32,6 +32,7 @@
 		SearchIcon,
 		SearchXIcon,
 		Shirt,
+		ShirtIcon,
 		SparkleIcon,
 		SparklesIcon,
 		SquareIcon,
@@ -127,6 +128,31 @@
 		return (
 			(titanValue - stc.titan_base + stc.titan_multiplier * stc.base) / (1 + stc.titan_multiplier)
 		);
+	}
+
+	function decrementGearId(start: number = 0) {
+		if (start == user_gears.length) {
+			// no need to renumber if removing the last index
+			return;
+		}
+
+		for (let i = start; i < user_gears.length; i++) {
+			user_gears[i].id--;
+		}
+
+		// iterate through gear_views, if gv_id > start, then gv_id--
+		for (let i = 0; i < gear_views.length; i++) {
+			if (gear_views[i].id > start) {
+				gear_views[i].id--;
+			}
+		}
+
+		// same with search_views
+		for (let i = 0; i < search_views.length; i++) {
+			if (search_views[i].id > start) {
+				search_views[i].id--;
+			}
+		}
 	}
 
 	async function createGearView(gear: UserGear): Promise<GearView> {
@@ -251,29 +277,18 @@
 		});
 	}
 
-	function decrementGearId(start: number = 0) {
-		if (start == user_gears.length) {
-			// no need to renumber if removing the last index
-			return;
-		}
-
-		for (let i = start; i < user_gears.length; i++) {
-			user_gears[i].id--;
-		}
-
-		// iterate through gear_views, if gv_id > start, then gv_id--
-		for (let i = 0; i < gear_views.length; i++) {
-			if (gear_views[i].id > start) {
-				gear_views[i].id--;
+	function equipGear(id: number) {
+		// search for equipped gear with same part
+		gear_views.forEach((gear) => {
+			if (gear.part === gear_views[id].part && gear.isEquipped) {
+				gear.isEquipped = false;
+				user_gears[gear.id].isEquipped = false;
 			}
-		}
+		});
 
-		// same with search_views
-		for (let i = 0; i < search_views.length; i++) {
-			if (search_views[i].id > start) {
-				search_views[i].id--;
-			}
-		}
+		gear_views[id].isEquipped = true;
+		user_gears[id].isEquipped = true;
+		saveObject(StorageKey.GEARS_V1, user_gears);
 	}
 
 	function removeGear(id: number) {
@@ -312,7 +327,9 @@
 			.split(' ')[0];
 		const part = OCR_PART_MAP[partCleanedStr] ?? GearParts.UNKNOWN;
 		const isTitan = txt[0].includes('titan');
-		const isEquipped = txt[0].includes('equipped');
+		const isEquipped =
+			txt[0].includes('equipped') &&
+			!gear_views.some((gear) => gear.part === part && gear.isEquipped);
 
 		console.log('part text clean', partCleanedStr);
 		console.log('Titan', isTitan);
@@ -625,6 +642,14 @@
 							<button class="gear-action" title="Remove Gear" onclick={() => removeGear(gear.id)}>
 								<Trash2Icon />
 							</button>
+							<button
+								class="gear-action"
+								class:no-pointer={gear.isEquipped}
+								title="Equip Gear"
+								onclick={() => (gear.isEquipped ? {} : equipGear(gear.id))}
+							>
+								<ShirtIcon opacity={gear.isEquipped ? 0.5 : 1} />
+							</button>
 						</div>
 					</div>
 				{/each}
@@ -657,6 +682,14 @@
 						<div class="gear-actions">
 							<button class="gear-action" title="Remove Gear" onclick={() => removeGear(gear.id)}>
 								<Trash2Icon />
+							</button>
+							<button
+								class="gear-action"
+								class:no-pointer={user_gears[gear.id].isEquipped}
+								title="Equip Gear"
+								onclick={() => (user_gears[gear.id].isEquipped ? {} : equipGear(gear.id))}
+							>
+								<ShirtIcon opacity={user_gears[gear.id].isEquipped ? 0.5 : 1} />
 							</button>
 						</div>
 					</div>
@@ -822,6 +855,7 @@
 		align-items: center;
 		justify-content: flex-end;
 		flex-shrink: 0;
+		gap: 0.5rem;
 	}
 
 	.gear-action {
@@ -833,6 +867,10 @@
 		height: 100%;
 		align-items: center;
 		justify-content: center;
+	}
+
+	.gear-action.no-pointer {
+		cursor: auto;
 	}
 
 	.stop-search {
