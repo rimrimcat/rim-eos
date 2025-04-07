@@ -41,6 +41,7 @@
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
 	import ActionToolbar from '../ActionToolbar.svelte';
+	import GearInfo from '../dialog/GearInfo.svelte';
 	import GearSearch from '../dialog/GearSearch.svelte';
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
@@ -62,6 +63,10 @@
 	// Search Dialog
 	let searchDialogOpen = $state(false);
 	let isSearching = $state(false);
+
+	// Gear Info Dialog
+	let gearInfoDialogOpen = $state(false);
+	let gearInfoGear: GearView | null = $state(null);
 
 	let hasMeasured = $state(false); // for triggering flexGrid itemWidth update
 
@@ -175,6 +180,8 @@
 				case 'isEquipped':
 					isEquipped = value as boolean;
 					break;
+				case 'dateAdded':
+					break;
 				default:
 					const isTitan = key.startsWith('titan_');
 					const value_format = key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER;
@@ -211,17 +218,6 @@
 						titan_value = getTitanValue(_stat, _stat_value);
 						titan_value_label = formatValue(value_format, titan_value.toString());
 					}
-
-					console.log('Would have pushed:');
-					console.log({
-						stat: _stat,
-						stat_label,
-						value: _stat_value,
-						value_label: stat_value_label,
-						roll: getRollValue(_stat, _stat_value),
-						titan_stat_label: titan_label,
-						titan_value_label: titan_value_label
-					});
 
 					stats.push({
 						stat: _stat,
@@ -269,7 +265,6 @@
 		return {
 			id,
 			part,
-			isEquipped,
 			stats,
 			hash,
 			derived
@@ -347,7 +342,8 @@
 		const isTitan = txt[0].includes('titan');
 		const isEquipped =
 			txt[0].includes('equipped') &&
-			!gear_views.some((gear) => gear.part === part && gear.isEquipped);
+			!gear_views.some((gear_v) => gear_v.part === part && user_gears[gear_v.id].isEquipped);
+		const dateAdded = new Date();
 
 		console.log('part text clean', partCleanedStr);
 		console.log('Titan', isTitan);
@@ -356,7 +352,8 @@
 		const newGear: UserGear = {
 			id,
 			part,
-			isEquipped
+			isEquipped,
+			dateAdded
 		};
 
 		const rsIndex = txt.findIndex((line) => line.includes('random stats'));
@@ -484,6 +481,11 @@
 		await advancedGearSearch(query as AllStats);
 	}
 
+	function showGearInfo(gear: GearView) {
+		gearInfoGear = gear;
+		gearInfoDialogOpen = true;
+	}
+
 	// register
 	let bound_objects = $state({
 		fourStatMode: isMobile ? false : true,
@@ -602,7 +604,12 @@
 						<span>{gear.id}</span>
 						<div class="gear-icon">
 							<div class="icon-container">
-								<button class="icon" onclick={() => equipGear(gear.id)} style="opacity: 1">
+								<!-- TODO: dialog for this button -->
+								<button
+									class="gear-button icon"
+									onclick={() => showGearInfo(gear)}
+									style="opacity: 1"
+								>
 									<img
 										src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
 										alt="Gear"
@@ -661,11 +668,11 @@
 								</button>
 								<button
 									class="gear-action"
-									class:no-pointer={gear.isEquipped}
+									class:no-pointer={user_gears[gear.id].isEquipped}
 									title="Equip Gear"
-									onclick={() => (gear.isEquipped ? {} : equipGear(gear.id))}
+									onclick={() => (user_gears[gear.id].isEquipped ? {} : equipGear(gear.id))}
 								>
-									<ShirtIcon opacity={gear.isEquipped ? 0.5 : 1} />
+									<ShirtIcon opacity={user_gears[gear.id].isEquipped ? 0.5 : 1} />
 								</button>
 							</div>
 						{/if}
@@ -733,6 +740,15 @@
 	bind:open={screenshotDialogOpen}
 	bind:uploadedImageURL
 	bind:processText
+/>
+
+<GearInfo
+	bind:open={gearInfoDialogOpen}
+	bind:gear={gearInfoGear}
+	bind:isMobile
+	bind:user_gears
+	onRemoveGear={removeGear}
+	onEquipGear={equipGear}
 />
 
 <GearSearch bind:open={searchDialogOpen} bind:isMobile onConfirmSearch={onGearSearch} />
