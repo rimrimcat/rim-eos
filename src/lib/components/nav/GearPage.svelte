@@ -94,6 +94,24 @@
 		'alt resistance': 'alt_res'
 	} as const;
 
+	const OCR_PART_MAP: Record<string, GearParts> = {
+		helm: GearParts.HELMET,
+		helmet: GearParts.HELMET,
+		spaulders: GearParts.SPAULDERS,
+		armor: GearParts.ARMOR,
+		bracers: GearParts.BRACERS,
+		belt: GearParts.BELT,
+		legguards: GearParts.LEGGUARDS,
+		//
+		handguards: GearParts.GLOVES,
+		sabatons: GearParts.BOOTS,
+		//
+		eyepiece: GearParts.VISOR,
+		engine: GearParts.ENGINE,
+		exoskeleton: GearParts.EXOSKELETON,
+		microreactor: GearParts.REACTOR
+	};
+
 	function getRollValue(stat: Stat, value: number): number {
 		const stc = STAT_CONSTANTS[stat];
 		return ((value - stc.base) * 2) / (stc.high_roll + stc.low_roll);
@@ -104,48 +122,20 @@
 		return value + stc.titan_base + stc.titan_multiplier * (value - stc.base);
 	}
 
-	function getGearPart(part: string) {
-		switch (part) {
-			case 'helm':
-				return GearParts.HELMET;
-			case 'spaulders':
-				return GearParts.SPAULDERS;
-			case 'armor':
-				return GearParts.ARMOR;
-			case 'bracers':
-				return GearParts.BRACERS;
-			case 'belt':
-				return GearParts.BELT;
-			case 'legguards':
-				return GearParts.LEGGUARDS;
-			//
-			case 'handguards':
-				return GearParts.GLOVES;
-			case 'sabatons':
-				return GearParts.BOOTS;
-			//
-			case 'eyepiece':
-				return GearParts.VISOR;
-			case 'visor':
-				return GearParts.VISOR;
-			case 'engine':
-				return GearParts.ENGINE;
-			case 'exoskeleton':
-				return GearParts.EXOSKELETON;
-			case 'microreactor':
-				return GearParts.REACTOR;
-			default:
-				console.error('UNKNOWN PART:', part);
-				return GearParts.UNKNOWN;
-		}
+	function reverseTitanValue(stat: Stat, titanValue: number): number {
+		const stc = STAT_CONSTANTS[stat];
+		return (
+			(titanValue - stc.titan_base + stc.titan_multiplier * stc.base) / (1 + stc.titan_multiplier)
+		);
 	}
 
-	async function createGearView(gear: UserGear): Promise<GearView> {
+	async function createGearView(gear: UserGear, isTitan: boolean): Promise<GearView> {
 		const stats: GearViewStatLong[] = [];
 		const derived: GearViewStatShort[] = [];
 		let id: number = -1;
 		let part: GearParts = GearParts.UNKNOWN;
 		let hash = '';
+		let isEquipped = false;
 
 		Object.entries(gear).forEach(([key, value]) => {
 			switch (key) {
@@ -156,23 +146,51 @@
 					part = value as GearParts;
 					hash += value;
 					break;
+				case 'isEquipped':
+					isEquipped = value as boolean;
+					break;
 				default:
-					const _stat = key as Stat;
 					const value_format = key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER;
-					const stat_label = STAT_LABELS[_stat] ?? key;
-					const stat_value_label = formatValue(value_format, value as string);
 
-					const titan_key = 'titan_' + _stat;
-					const titan_label = 'Titan ' + stat_label;
-					const titan_value = getTitanValue(_stat, Number(value));
-					const titan_value_label = formatValue(value_format, titan_value.toString());
+					let _stat: Stat;
+					let _stat_value: number;
+					let stat_label: string;
+					let stat_value_label: string;
+
+					let titan_key: TitanStat;
+					let titan_label: string;
+					let titan_value: number;
+					let titan_value_label: string;
+
+					if (isTitan) {
+						// derive normal stat from corresponding titan stat
+						titan_key = key as TitanStat;
+						titan_label = STAT_LABELS[titan_key] ?? key;
+						titan_value = Number(value);
+						titan_value_label = formatValue(value_format, value as string);
+
+						_stat = key.replace('titan_', '') as Stat;
+						_stat_value = reverseTitanValue(_stat, titan_value);
+						stat_label = STAT_LABELS[_stat] ?? key;
+						stat_value_label = formatValue(value_format, _stat_value.toString());
+					} else {
+						_stat = key as Stat;
+						_stat_value = Number(value);
+						stat_label = STAT_LABELS[_stat] ?? key;
+						stat_value_label = formatValue(value_format, _stat_value.toString());
+
+						titan_key = 'titan_' + _stat;
+						titan_label = 'Titan ' + stat_label;
+						titan_value = getTitanValue(_stat, _stat_value);
+						titan_value_label = formatValue(value_format, titan_value.toString());
+					}
 
 					stats.push({
 						stat: _stat,
 						stat_label,
-						value: value as number,
+						value: _stat_value,
 						value_label: stat_value_label,
-						roll: getRollValue(_stat, Number(value)),
+						roll: getRollValue(_stat, _stat_value),
 						titan_stat_label: titan_label,
 						titan_value_label: titan_value_label
 					});
@@ -206,14 +224,15 @@
 		return {
 			id,
 			part,
+			isEquipped,
 			stats,
 			hash,
 			derived
 		};
 	}
 
-	function addNewGear(gear: UserGear) {
-		createGearView(gear).then((gearView) => {
+	function addNewGear(gear: UserGear, isTitan: boolean) {
+		createGearView(gear, isTitan).then((gearView) => {
 			if (gear_views.some((gv) => gv.hash === gearView.hash)) {
 				console.log('GearView already exists!');
 				processText = 'Duplicate gear!';
@@ -270,13 +289,25 @@
 			.split('\n'); // those characters are noise from trying to read symbols
 
 		const id = user_gears.length;
-		const part = getGearPart(
-			txt[0].replace('fortress ', '').replace('tactics ', '').replace('combat ', '').split(' ')[0]
-		);
+
+		const partCleanedStr = txt[0]
+			.replace('titan ', '')
+			.replace('fortress ', '')
+			.replace('tactics ', '')
+			.replace('combat ', '')
+			.split(' ')[0];
+		const part = OCR_PART_MAP[partCleanedStr] ?? GearParts.UNKNOWN;
+		const isTitan = txt[0].includes('titan');
+		const isEquipped = txt[0].includes('equipped');
+
+		console.log('part text clean', partCleanedStr);
+		console.log('Titan', isTitan);
+		console.log('Equipped', isEquipped);
 
 		const newGear: UserGear = {
 			id,
-			part
+			part,
+			isEquipped
 		};
 
 		const rsIndex = txt.findIndex((line) => line.includes('random stats'));
@@ -292,9 +323,9 @@
 				// @ts-expect-error
 				const _base = OCR_KEY_MAP[_spl[0].trim()];
 				if (_spl[1] && _base) {
-					const _stat = _base + (_spl[1].includes('%') ? '_percent' : '');
+					const _stat =
+						(isTitan ? 'titan_' : '') + _base + (_spl[1].includes('%') ? '_percent' : '');
 					const _val = _spl[1].split(' ')[0].replace('%', '').replace(',', '').trim();
-					// add .split(' ')[0] to remove random crap after the numbers
 
 					// @ts-expect-error
 					newGear[_stat] = _val;
@@ -312,9 +343,10 @@
 			console.error('I CANT FIND RANDOM STATS!');
 			console.error('Perhaps I should go for reverse order...');
 			console.error('(I havent encountered this yet)');
+			return;
 		}
 
-		addNewGear(newGear);
+		addNewGear(newGear, isTitan);
 		processText = 'Done!';
 	}
 
@@ -403,11 +435,7 @@
 			return;
 		}
 
-		if (query.includes('+')) {
-			await advancedGearSearch(query as AllStats);
-		} else {
-			await simpleGearSearch(query as AllStats);
-		}
+		await advancedGearSearch(query as AllStats);
 	}
 
 	// register

@@ -82,7 +82,7 @@ export type GearViewStatShort = {
 /**
  * Represents raw gear data as stored/input by the user
  */
-export type UserGear = GearId & GearValidStats;
+export type UserGear = GearId & GearValidStats & { isEquipped: boolean };
 
 /**
  * Processed gear data for display and sorting
@@ -93,6 +93,7 @@ export type GearView = GearId & {
 	stats: GearViewStatLong[];
 	hash: string;
 	derived: GearViewStatShort[];
+	isEquipped: boolean;
 };
 
 /**
