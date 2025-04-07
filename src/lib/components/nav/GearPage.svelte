@@ -1,5 +1,6 @@
 <script lang="ts">
 	import {
+		ALL_STATS_REGEX,
 		GearParts,
 		type GearSearchView,
 		type GearView,
@@ -9,7 +10,6 @@
 	} from '$lib/scripts/gears.ts';
 	import { loadObject, saveObject, StorageKey } from '$lib/scripts/loader.ts';
 	import {
-		ALL_STATS_REGEX,
 		STAT_CONSTANTS,
 		STAT_LABELS,
 		type AllStats,
@@ -129,7 +129,7 @@
 		);
 	}
 
-	async function createGearView(gear: UserGear, isTitan: boolean): Promise<GearView> {
+	async function createGearView(gear: UserGear): Promise<GearView> {
 		const stats: GearViewStatLong[] = [];
 		const derived: GearViewStatShort[] = [];
 		let id: number = -1;
@@ -150,6 +150,7 @@
 					isEquipped = value as boolean;
 					break;
 				default:
+					const isTitan = key.startsWith('titan_');
 					const value_format = key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER;
 
 					let _stat: Stat;
@@ -231,8 +232,8 @@
 		};
 	}
 
-	function addNewGear(gear: UserGear, isTitan: boolean) {
-		createGearView(gear, isTitan).then((gearView) => {
+	function addNewGear(gear: UserGear) {
+		createGearView(gear).then((gearView) => {
 			if (gear_views.some((gv) => gv.hash === gearView.hash)) {
 				console.log('GearView already exists!');
 				processText = 'Duplicate gear!';
@@ -242,10 +243,15 @@
 			user_gears.push(gear);
 			gear_views.push(gearView);
 			saveObject(StorageKey.GEARS_V1, user_gears);
+
+			// reset searching after adding gear
+			search_views = [];
+			prev_search_query = '';
+			isSearching = false;
 		});
 	}
 
-	function renumberGears(start: number = 0) {
+	function decrementGearId(start: number = 0) {
 		if (start == user_gears.length) {
 			// no need to renumber if removing the last index
 			return;
@@ -261,6 +267,13 @@
 				gear_views[i].id--;
 			}
 		}
+
+		// same with search_views
+		for (let i = 0; i < search_views.length; i++) {
+			if (search_views[i].id > start) {
+				search_views[i].id--;
+			}
+		}
 	}
 
 	function removeGear(id: number) {
@@ -268,7 +281,8 @@
 		gear_views = gear_views.filter((gear) => gear.id !== id);
 		search_views = search_views.filter((gear) => gear.id !== id);
 
-		renumberGears(id);
+		// simple renumbering
+		decrementGearId(id);
 
 		saveObject(StorageKey.GEARS_V1, user_gears);
 	}
@@ -346,7 +360,7 @@
 			return;
 		}
 
-		addNewGear(newGear, isTitan);
+		addNewGear(newGear);
 		processText = 'Done!';
 	}
 

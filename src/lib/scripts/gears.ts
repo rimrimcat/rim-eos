@@ -1,4 +1,4 @@
-import { type StatGearTitan, type StatGearUser } from '$lib/scripts/stats';
+import { type StatGearTitan, type StatGearUser, ALL_STATS_LIST } from '$lib/scripts/stats';
 
 /**
  * Enum for different gear slots
@@ -103,3 +103,24 @@ export type GearView = GearId & {
 export type GearSearchView = GearId & {
 	stats: GearViewStatShort[];
 };
+
+export const ALL_STATS_REGEX = new RegExp(`\\b(${ALL_STATS_LIST.join('|')}|gear)\\b`, 'g');
+
+const __allowedRegexLits = [
+	'\\+',
+	'\\(',
+	'\\ ',
+	'\\)',
+	'\\<',
+	'\\=',
+	'\\>',
+	'\\*',
+	'\\d',
+	'\\!',
+	"'gear'",
+	...Object.values(GearParts).map((value) => `'${value}'`)
+].join('|');
+const __allowedRegexVars = [...ALL_STATS_LIST].join('|');
+
+export const ALLOWED_REGEX_VARS = new RegExp(`\\b(${__allowedRegexVars})\\b`, 'g');
+export const ALLOWED_REGEX_OPS = new RegExp(`(${__allowedRegexLits})`, 'g');

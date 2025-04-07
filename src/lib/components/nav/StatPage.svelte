@@ -371,6 +371,7 @@
 
 <div class="stat-panel">
 	<h1 class="head">Character Stats</h1>
+	<p>This page might undergo overhaul soon, just waiting for gear page to be completed.</p>
 
 	<FlexGrid
 		horizontalGap="0.9rem"

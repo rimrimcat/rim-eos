@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { GearParts } from '$lib/scripts/gears.ts';
+	import { ALLOWED_REGEX_OPS, ALLOWED_REGEX_VARS, GearParts } from '$lib/scripts/gears.ts';
 	import { SvelteSet } from 'svelte/reactivity';
 	import Dialog from '../Dialog.svelte';
 
@@ -21,7 +21,7 @@
 	const ELEMENTS = ['Flame', 'Frost', 'Volt', 'Phys', 'Alt'] as const;
 	const STATS = ['ATK', 'TOTAL ATK', 'DMG', 'RES', 'CRIT'] as const;
 	const OTHERS = ['Titan', 'Percent', 'Rainbow'] as const;
-	const SLOTS = [
+	const PARTS = [
 		'Helmet',
 		'Spaulders',
 		'Armor',
@@ -35,7 +35,7 @@
 		'Exoskeleton',
 		'Reactor'
 	] as const;
-	const SLOT_GROUPS = {
+	const PART_GROUPS: Record<string, string[]> = {
 		'Group 1': ['Helmet', 'Spaulders', 'Armor', 'Bracers', 'Belt', 'Legguards'],
 		'Group 2': ['Gloves', 'Boots'],
 		'Group 3': ['Visor', 'Engine', 'Exoskeleton', 'Reactor']
@@ -48,7 +48,7 @@
 		_selectedGear: string | null
 	) {
 		const rainbow = _selectedOthers.has('Rainbow')
-			? '(( !flame_atk + !frost_atk + !volt_atk + !phys_atk) <= 2 ) * '
+			? '(( !flame_atk + !frost_atk + !volt_atk + !phys_atk ) <= 2 ) * '
 			: '';
 		const gear = _selectedGear // @ts-expect-error
 			? `( 'gear' === '${GearParts[_selectedGear.toUpperCase()]}' ) * `
@@ -66,7 +66,7 @@
 	}
 
 	function getSlotGroup(slot: string): string | null {
-		for (const [group, slots] of Object.entries(SLOT_GROUPS)) {
+		for (const [group, slots] of Object.entries(PART_GROUPS)) {
 			if (slots.includes(slot)) {
 				return group;
 			}
@@ -96,7 +96,7 @@
 		}
 	}
 
-	function selectSlot(slot: (typeof SLOTS)[number]) {
+	function selectSlot(slot: (typeof PARTS)[number]) {
 		if (selectedSlot === slot) {
 			selectedSlot = null;
 		} else {
@@ -121,6 +121,13 @@
 
 	function onButtonPress(button: string) {
 		if (button === 'Search!') {
+			// check if query is safe
+			const invalid = query.replaceAll(ALLOWED_REGEX_VARS, '').replaceAll(ALLOWED_REGEX_OPS, '');
+			if (invalid) {
+				console.error('bad stuff in query!!!:', invalid);
+				return;
+			}
+
 			onConfirmSearch(query);
 		} else {
 			open = false;
@@ -143,6 +150,13 @@
 				selectedElement = 'Flame';
 			}
 		}
+
+		const invalid = query.replaceAll(ALLOWED_REGEX_VARS, '').replaceAll(ALLOWED_REGEX_OPS, '');
+		if (invalid) {
+			console.error('bad query!!!:', invalid);
+		} else {
+			console.log('query looks safe!');
+		}
 	});
 </script>
 
@@ -164,7 +178,7 @@
 		<div class="slot-section">
 			<h3>Slot</h3>
 			<div class="slot-grid">
-				{#each SLOTS as slot}
+				{#each PARTS as slot}
 					<button
 						class:selected={isSelected('slot', slot)}
 						class:group1={getSlotGroup(slot) === 'Group 1'}

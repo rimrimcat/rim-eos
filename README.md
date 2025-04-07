@@ -13,9 +13,8 @@ some webapp im making since no more content at TOF
 - [x] Gear: add clear gear list (2025-04-06)
 - [x] Gear: allow searching for/sorting gear using stat (2025-04-06)
 - [x] Gear: add part filtering (2025-04-06)
-- [x] Gear: allow parsing equipped titan gear
+- [x] Gear: allow parsing equipped titan gear (2025-04-07)
 - [ ] Gear: add gear icons based on best stats
-- [ ] Gear: implement augmented gear template matching
 - [ ] Gear: allow equipping gears
 - [ ] Gear: add tutorial on how gear image should be uploaded
 - [ ] Gear: add side by side comparison (not sure if this will actually be useful since I'll be adding a value that helps you decide which gear is better)
@@ -26,3 +25,4 @@ some webapp im making since no more content at TOF
 - [ ] Design: allow user to choose webpage style?
 - [ ] Design: fix animations
 - [ ] Misc: add image that you can click and it switches so you have something to look and play with ig
+- [ ] Gear: implement augmented gear template matching (NOT PLANNED)

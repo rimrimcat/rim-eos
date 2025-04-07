@@ -521,5 +521,3 @@ export const ALL_STATS_LIST = [
 	'titan_alt_res_percent',
 	'titan_phys_res_percent'
 ];
-
-export const ALL_STATS_REGEX = new RegExp(`\\b(${ALL_STATS_LIST.join('|')}|gear)\\b`, 'g');
