@@ -287,11 +287,7 @@ export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadO
 				return {};
 			}
 
-			// Note: This is a synchronous function, but we're initiating an async operation
-			// The images will be loaded asynchronously after this function returns
-			// Consider refactoring to use an async approach if immediate image loading is required
 			try {
-				// Open the database but don't wait for images to load
 				const request = indexedDB.open(DB_NAME, DB_VERSION);
 
 				request.onerror = () => {
@@ -342,15 +338,15 @@ export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadO
 			break;
 	}
 	console.error('Unknown key: ' + key);
-	return [''];
+	return null;
 }
 
 export async function saveObject(key: 'stats_main', value: AttributeItem[]): Promise<void>;
 export async function saveObject(key: 'gears_v1', value: UserGear[]): Promise<void>;
-
+export async function saveObject(key: 'loadouts_v1', value: AllLoadouts): Promise<void>;
 export async function saveObject(
 	key: LocalStorageKey,
-	value: AttributeItem[] | UserGear[]
+	value: AttributeItem[] | UserGear[] | AllLoadouts
 ): Promise<void> {
 	switch (key) {
 		case 'stats_main': {
@@ -360,6 +356,10 @@ export async function saveObject(
 			break;
 		}
 		case 'gears_v1': {
+			localStorage.setItem(key, JSON.stringify(value));
+			break;
+		}
+		case 'loadouts_v1': {
 			localStorage.setItem(key, JSON.stringify(value));
 			break;
 		}

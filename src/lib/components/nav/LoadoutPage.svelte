@@ -19,7 +19,7 @@
 	import StatIcon from '../StatIcon.svelte';
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 
-	import { addImageToDB, getImageUrlFromDB } from '$lib/scripts/loader';
+	import { addImageToDB, getImageUrlFromDB, loadObject, saveObject } from '$lib/scripts/loader';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import { type StatGearUser } from '$lib/scripts/stats';
 
@@ -27,15 +27,9 @@
 
 	// State
 
-	let loadouts = $state({
-		main: {
-			name: 'main',
-			description: 'No description',
-			icon: 'flame'
-		}
-	} as AllLoadouts);
+	let loadouts = $state({} as AllLoadouts);
 
-	let selectedLoadout = $state('main');
+	let selectedLoadout = $state('');
 
 	let loadoutName = $state('');
 	let loadoutDescription = $state('');
@@ -61,6 +55,15 @@
 	const weaponPresets = ['Preset 1', 'Preset 2', 'Preset 3', 'Custom Preset'];
 
 	function toggleEditing() {
+		if (isEditing) {
+			loadouts[selectedLoadout] = {
+				name: loadoutName,
+				description: loadoutDescription,
+				icon: loadoutIcon
+			};
+			saveObject('loadouts_v1', loadouts);
+		}
+
 		isEditing = !isEditing;
 	}
 
@@ -115,6 +118,22 @@
 
 	onMount(async () => {
 		registerComponent(id, metadata);
+
+		loadouts = loadObject('loadouts_v1');
+
+		// check if empty object
+		if (Object.keys(loadouts).length === 0) {
+			console.log('No loadouts found, creating default loadout');
+			loadouts = {
+				main: {
+					name: 'main',
+					description: 'No description',
+					icon: 'flame'
+				}
+			};
+		} else {
+			selectedLoadout = Object.keys(loadouts)[0];
+		}
 
 		loadoutName = loadouts[selectedLoadout].name;
 		loadoutDescription = loadouts[selectedLoadout].description;
