@@ -12,14 +12,14 @@
 		ImagePlus,
 		PencilIcon,
 		Save,
-		Trash2,
-		X
+		Trash2
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import ActionToolbar from '../ActionToolbar.svelte';
 	import StatIcon from '../StatIcon.svelte';
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 
+	import { addImageToDB, getImageUrlFromDB } from '$lib/scripts/loader';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import { type StatGearUser } from '$lib/scripts/stats';
 
@@ -65,22 +65,15 @@
 	}
 
 	async function handleImageUpload(file: File) {
-		// resize to 200 x 200
-
-		const reader = new FileReader();
-		reader.onload = (e) => {
-			const img = new Image();
-			img.onload = () => {
-				const canvas = document.createElement('canvas');
-				const ctx = canvas.getContext('2d');
-				canvas.width = 200;
-				canvas.height = 200;
-				ctx?.drawImage(img, 0, 0, 200, 200);
-				loadoutImageBase64 = canvas.toDataURL('image/webp');
+		if (file) {
+			const reader = new FileReader();
+			reader.onload = (e) => {
+				loadoutImageBase64 = e.target?.result as string;
 			};
-			img.src = e.target?.result as string;
-		};
-		reader.readAsDataURL(file);
+			reader.readAsDataURL(file);
+
+			addImageToDB(selectedLoadout, file);
+		}
 	}
 
 	// function resetLoadout() {
@@ -120,12 +113,19 @@
 		]
 	};
 
-	onMount(() => {
+	onMount(async () => {
 		registerComponent(id, metadata);
 
 		loadoutName = loadouts[selectedLoadout].name;
 		loadoutDescription = loadouts[selectedLoadout].description;
 		loadoutIcon = loadouts[selectedLoadout].icon;
+
+		loadoutImageBase64 = await getImageUrlFromDB(selectedLoadout);
+		if (loadoutImageBase64) {
+			console.log('Successfully loaded image for loadout:', selectedLoadout);
+		} else {
+			console.log('No image found for loadout:', selectedLoadout);
+		}
 	});
 
 	// $inspect('image source', document.getElementById('user-upload')?.src);
@@ -180,9 +180,6 @@
 						{#if isEditing}
 							<button class="edit-button" onclick={toggleEditing} title="Save changes">
 								<Save size={18} />
-							</button>
-							<button class="cancel-button" onclick={toggleEditing} title="Cancel editing">
-								<X size={18} />
 							</button>
 						{:else}
 							<button class="edit-button" onclick={toggleEditing} title="Edit loadout">
@@ -312,8 +309,7 @@
 		gap: 0.5rem;
 	}
 
-	.edit-button,
-	.cancel-button {
+	.edit-button {
 		padding: 0.25rem;
 		background-color: transparent;
 		border: none;
@@ -325,8 +321,7 @@
 		transition: background-color 0.2s;
 	}
 
-	.edit-button:hover,
-	.cancel-button:hover {
+	.edit-button:hover {
 		background-color: var(--hover-bg);
 	}
 

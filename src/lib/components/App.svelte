@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { openImageDB } from '$lib/scripts/loader';
 	import { onMount, type Component } from 'svelte';
 	import Dialog from './Dialog.svelte';
 	import GearPage from './nav/GearPage.svelte';
@@ -72,6 +73,7 @@
 
 	onMount(() => {
 		fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+		openImageDB();
 	});
 
 	$effect(() => {

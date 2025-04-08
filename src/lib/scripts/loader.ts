@@ -6,6 +6,7 @@ import { type AllLoadouts } from './loadouts';
 export type LocalStorageKey = 'stats_main' | 'gears_v1' | 'styles' | 'loadouts_v1';
 
 const DB_NAME = 'tof-gear';
+const DB_VERSION = 2;
 const IMAGE_STORE = 'images';
 
 // Templates
@@ -83,63 +84,158 @@ export const DEFAULT_STYLES = {
 	'info-color': '#89dceb'
 };
 
-async function createDB() {
-	const request = indexedDB.open(DB_NAME, 2);
+export function openImageDB(): Promise<IDBDatabase> {
+	return new Promise((resolve, reject) => {
+		const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-	request.onerror = (event) => {
-		console.error('Error opening IndexedDB database:', event);
-	};
-
-	request.onupgradeneeded = () => {
-		const db = request.result;
-
-		const imageStore = db.createObjectStore(IMAGE_STORE, { keyPath: 'id' });
-
-		imageStore.transaction.oncomplete = () => {
-			console.log('Database created and ready for use.');
+		request.onerror = () => {
+			console.error('Error opening IndexedDB database:', request.error);
+			reject(`Database error: ${request.error}`);
 		};
-	};
-}
 
-async function addImageToDB(id: string, image: string) {
-	const request = indexedDB.open(DB_NAME, 2);
-
-	request.onsuccess = (event) => {
-		const db = request.result;
-
-		const transaction = db.transaction(IMAGE_STORE, 'readwrite');
-		const imageStore = transaction.objectStore(IMAGE_STORE);
-
-		const imageObject = { id, image };
-		imageStore.add(imageObject);
-
-		transaction.oncomplete = () => {
-			console.log('Image added to IndexedDB.');
+		request.onsuccess = (event) => {
+			const db = (event.target as IDBOpenDBRequest).result;
+			resolve(db);
 		};
-	};
-}
 
-function getImageFromDB(id: string) {
-	const request = indexedDB.open(DB_NAME, 2);
+		request.onupgradeneeded = (event) => {
+			console.log('Upgrading database...');
+			const db = (event.target as IDBOpenDBRequest).result;
 
-	request.onsuccess = (event) => {
-		const db = request.result;
-
-		const transaction = db.transaction(IMAGE_STORE, 'readonly');
-		const imageStore = transaction.objectStore(IMAGE_STORE);
-
-		const getRequest = imageStore.get(id);
-
-		getRequest.onsuccess = () => {
-			const imageObject = getRequest.result;
-			if (imageObject) {
-				return imageObject.image;
-			} else {
-				console.log('Image not found in IndexedDB.');
-				return null;
+			if (!db.objectStoreNames.contains(IMAGE_STORE)) {
+				db.createObjectStore(IMAGE_STORE, { keyPath: 'id' });
+				console.log(`Object store "${IMAGE_STORE}" created.`);
 			}
 		};
-	};
+	});
+}
+
+export async function addImageToDB(id: string, image: File): Promise<void> {
+	console.log('Attempting to add/update file:', image);
+
+	return new Promise((resolve, reject) => {
+		try {
+			// read before doing transaction
+			const reader = new FileReader();
+			reader.readAsArrayBuffer(image);
+
+			reader.onerror = () => {
+				console.error('Error reading file:', reader.error);
+				reject(`Error reading file: ${reader.error}`);
+			};
+
+			reader.onload = async (event) => {
+				try {
+					const arrayBuffer = event.target?.result;
+					if (!arrayBuffer) {
+						throw new Error('Failed to read file data');
+					}
+
+					const dataToAdd = { id, image: arrayBuffer };
+					const db = await openImageDB();
+
+					const transaction = db.transaction(IMAGE_STORE, 'readwrite');
+					const imageStore = transaction.objectStore(IMAGE_STORE);
+
+					// Set up transaction event handlers
+					transaction.oncomplete = () => {
+						console.log(`Transaction completed: Image added/updated successfully for ID: ${id}.`);
+						resolve();
+					};
+
+					transaction.onerror = () => {
+						console.error('Transaction error adding/updating image:', transaction.error);
+						reject(`Transaction error: ${transaction.error}`);
+					};
+
+					const putRequest = imageStore.put(dataToAdd);
+
+					putRequest.onsuccess = () => {
+						console.log(`Put request successful for ID: ${id}`);
+					};
+
+					putRequest.onerror = () => {
+						console.error('Error adding/updating image data:', putRequest.error);
+					};
+				} catch (innerError) {
+					console.error('Error in file read callback:', innerError);
+					reject(innerError);
+				}
+			};
+		} catch (error) {
+			console.error('Failed to initiate image addition/update:', error);
+			reject(error);
+		}
+	});
+}
+
+export async function getImageFromDB(id: string): Promise<ArrayBuffer | null> {
+	console.log(`Attempting to retrieve image with ID: ${id}`);
+
+	try {
+		const db = await openImageDB();
+
+		return new Promise((resolve, reject) => {
+			try {
+				const transaction = db.transaction(IMAGE_STORE, 'readonly');
+				const imageStore = transaction.objectStore(IMAGE_STORE);
+
+				const getRequest = imageStore.get(id);
+
+				getRequest.onsuccess = () => {
+					const imageObject = getRequest.result;
+					if (imageObject) {
+						console.log(`Successfully retrieved image for ID: ${id}`);
+						resolve(imageObject.image);
+					} else {
+						console.log(`Image not found in IndexedDB for ID: ${id}`);
+						resolve(null);
+					}
+				};
+
+				getRequest.onerror = () => {
+					const errorMsg = `Error retrieving image with ID ${id}: ${getRequest.error}`;
+					console.error(errorMsg);
+					reject(new Error(errorMsg));
+				};
+
+				transaction.onerror = () => {
+					const errorMsg = `Transaction error while retrieving image with ID ${id}: ${transaction.error}`;
+					console.error(errorMsg);
+					reject(new Error(errorMsg));
+				};
+			} catch (innerError) {
+				console.error('Error in transaction setup:', innerError);
+				reject(innerError);
+			}
+		});
+	} catch (error) {
+		console.error('Failed to open database for image retrieval:', error);
+		throw error;
+	}
+}
+
+export async function getImageUrlFromDB(
+	id: string,
+	mimeType: string = 'image/jpeg'
+): Promise<string> {
+	try {
+		const imageData = await getImageFromDB(id);
+
+		if (imageData) {
+			const blob = new Blob([imageData], { type: mimeType });
+
+			const imageUrl = URL.createObjectURL(blob);
+			console.log(`Successfully created URL for image with ID: ${id}`);
+			return imageUrl;
+		} else {
+			console.log(`No image found for ID: ${id}`);
+			return '';
+		}
+	} catch (error) {
+		console.error(`Error creating URL for image with ID ${id}:`, error);
+		return '';
+	}
 }
 
 type LoadOutputs =
@@ -191,29 +287,53 @@ export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadO
 				return {};
 			}
 
-			// iterate through Loadouts, then load image_url from database
-			const request = indexedDB.open(DB_NAME, 2);
+			// Note: This is a synchronous function, but we're initiating an async operation
+			// The images will be loaded asynchronously after this function returns
+			// Consider refactoring to use an async approach if immediate image loading is required
+			try {
+				// Open the database but don't wait for images to load
+				const request = indexedDB.open(DB_NAME, DB_VERSION);
 
-			request.onsuccess = (event) => {
-				const db = request.result;
+				request.onerror = () => {
+					console.error('Error opening database:', request.error);
+				};
 
-				for (const loadout in loadedObject) {
-					const transaction = db.transaction(IMAGE_STORE, 'readonly');
-					const imageStore = transaction.objectStore(IMAGE_STORE);
+				request.onsuccess = () => {
+					const db = request.result;
+					const loadoutsObj = loadedObject as AllLoadouts;
 
-					const getRequest = imageStore.get(loadout);
+					// Process each loadout one at a time with separate transactions
+					Object.keys(loadoutsObj).forEach((loadout) => {
+						try {
+							const transaction = db.transaction(IMAGE_STORE, 'readonly');
+							const imageStore = transaction.objectStore(IMAGE_STORE);
+							const getRequest = imageStore.get(loadout);
 
-					getRequest.onsuccess = () => {
-						const imageObject = getRequest.result;
-						if (imageObject) {
-							// @ts-expect-error : its oke
-							loadedObject[loadout].image_url = imageObject.image;
-						} else {
-							console.log('Image not found in IndexedDB.');
+							getRequest.onsuccess = () => {
+								const imageObject = getRequest.result;
+								if (imageObject && loadoutsObj) {
+									// Set the image URL in the loadout object
+									loadoutsObj[loadout].image_url = imageObject.image;
+								} else {
+									console.log(`Image not found in IndexedDB for loadout: ${loadout}`);
+								}
+							};
+
+							getRequest.onerror = () => {
+								console.error(`Error getting image for loadout ${loadout}:`, getRequest.error);
+							};
+
+							transaction.onerror = () => {
+								console.error(`Transaction error for loadout ${loadout}:`, transaction.error);
+							};
+						} catch (err) {
+							console.error(`Error processing loadout ${loadout}:`, err);
 						}
-					};
-				}
-			};
+					});
+				};
+			} catch (err) {
+				console.error('Error in loadouts_v1 processing:', err);
+			}
 
 			return loadedObject;
 		}
