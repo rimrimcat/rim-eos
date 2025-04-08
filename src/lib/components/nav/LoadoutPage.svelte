@@ -50,9 +50,21 @@
 		isEditing = !isEditing;
 	}
 
-	function handleImageUpload(url: string) {
-		loadoutImageBase64 = url;
-		processText = 'Done!';
+	function handleImageUpload(file: File) {
+		const reader = new FileReader();
+		reader.onload = (e) => {
+			const img = new Image();
+			img.onload = () => {
+				const canvas = document.createElement('canvas');
+				const ctx = canvas.getContext('2d');
+				canvas.width = 200;
+				canvas.height = 200;
+				ctx?.drawImage(img, 0, 0, 200, 200);
+				loadoutImageBase64 = canvas.toDataURL('image/jpeg');
+			};
+			img.src = e.target?.result as string;
+		};
+		reader.readAsDataURL(file);
 	}
 
 	// register
@@ -200,8 +212,9 @@
 	bind:open={uploadDialogOpen}
 	onFileUpload={handleImageUpload}
 	bind:processText
+	uploadType="file"
 	promptOnOpen={true}
-	uploadType="url"
+	closeOnUpload={true}
 />
 <ActionToolbar actions={metadata.actions} bind:isMobile />
 
@@ -341,7 +354,7 @@
 		width: 240px;
 		height: 240px;
 		border: 2px dashed var(--border-color);
-		border-radius: 0.5rem;
+		border-radius: 1.5rem;
 		background-color: transparent;
 		display: flex;
 		align-items: center;

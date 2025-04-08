@@ -12,17 +12,17 @@
 		uploadedImageURL = $bindable(''),
 		processText = $bindable(''),
 		uploadType = 'canvas' as UploadCallbackType,
-		promptOnOpen = true
+		promptOnOpen = true,
+		closeOnUpload = false
 	} = $props();
 
 	function uploadImageCanvas(file: File | undefined) {
 		processText = 'Uploading...';
+
 		if (file) {
+			uploadedImageURL = URL.createObjectURL(file);
 			switch (uploadType) {
 				case 'canvas': {
-					uploadedImageURL = URL.createObjectURL(file);
-					console.error('uploaded image url', uploadedImageURL);
-
 					setTimeout(() => {
 						const canvas = document.createElement('canvas');
 						const img = cv.imread('user-upload-full');
@@ -33,25 +33,26 @@
 						img.delete();
 					}, 1000);
 
-					return;
+					break;
 				}
 				case 'url': {
-					console.log('callback as url');
-					uploadedImageURL = URL.createObjectURL(file);
 					onFileUpload(uploadedImageURL);
-					return;
+					break;
 				}
 
 				case 'file': {
-					console.log('callback as file');
 					onFileUpload(file);
-					return;
+					break;
 				}
 
 				default:
 					console.error('Unknown upload type:', uploadType);
-					return;
+					break;
 			}
+		}
+
+		if (closeOnUpload) {
+			open = false;
 		}
 	}
 
