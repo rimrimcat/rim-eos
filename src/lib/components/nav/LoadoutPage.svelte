@@ -18,6 +18,7 @@
 	import { onMount } from 'svelte';
 	import ActionToolbar from '../ActionToolbar.svelte';
 	import StatIcon from '../StatIcon.svelte';
+	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 
 	let { isMobile = $bindable(false) } = $props();
 
@@ -25,10 +26,13 @@
 	let loadoutName = $state('Default Loadout');
 	let loadoutDescription = $state('A balanced loadout for all situations');
 	let loadoutImageBase64 = $state('');
-	let uploadedImageURL = $state('./placeholder.png'); // For display purposes
 	let selectedWeaponPreset = $state('Preset 1');
 	let selectedElement = $state('flame');
 	let isEditing = $state(false);
+
+	// Dialog
+	let uploadDialogOpen = $state(false);
+	let processText = $state('');
 
 	// Element options
 	const elements = [
@@ -46,19 +50,9 @@
 		isEditing = !isEditing;
 	}
 
-	function handleImageUpload(event: Event) {
-		const target = event.target as HTMLInputElement;
-		const file = target.files?.[0];
-
-		if (file) {
-			const reader = new FileReader();
-			reader.onload = (e) => {
-				const result = e.target?.result as string;
-				loadoutImageBase64 = result;
-				uploadedImageURL = result;
-			};
-			reader.readAsDataURL(file);
-		}
+	function handleImageUpload(url: string) {
+		loadoutImageBase64 = url;
+		processText = 'Done!';
 	}
 
 	// register
@@ -92,7 +86,6 @@
 	function resetLoadout() {
 		loadoutName = 'Default Loadout';
 		loadoutDescription = 'A balanced loadout for all situations';
-		uploadedImageURL = './placeholder.png';
 		loadoutImageBase64 = '';
 		selectedWeaponPreset = 'Preset 1';
 		selectedElement = 'flame';
@@ -102,6 +95,9 @@
 	onMount(() => {
 		registerComponent(id, metadata);
 	});
+
+	$inspect('b64 image:', loadoutImageBase64);
+	// $inspect('image source', document.getElementById('user-upload')?.src);
 </script>
 
 <div class="loadout-page">
@@ -170,28 +166,18 @@
 			</div>
 
 			<div class="loadout-image-container">
-				<input
-					type="file"
-					id="srcInput"
-					accept="image/*"
-					onchange={handleImageUpload}
-					style="display: none;"
-				/>
 				<button
-					class={uploadedImageURL ? 'image' : 'icon'}
-					onclick={() => isEditing && document.getElementById('srcInput')?.click()}
+					class={loadoutImageBase64 ? 'image' : 'image'}
+					onclick={() => (uploadDialogOpen = true)}
 					disabled={!isEditing}
 					aria-label="Upload image"
 				>
-					{#if uploadedImageURL}
-						<img class="user-upload" id="user-upload" src={uploadedImageURL} alt="Loadout image" />
+					{#if loadoutImageBase64}
+						<img class="user-upload" id="user-upload" src={loadoutImageBase64} alt="Loadout" />
 					{:else}
 						<ImagePlus size={64} class="upload-icon" />
 					{/if}
 				</button>
-				{#if isEditing}
-					<div class="upload-hint">Click to upload an image</div>
-				{/if}
 			</div>
 		</div>
 
@@ -208,6 +194,15 @@
 	</div>
 </div>
 
+<div class="hidden-stuff"></div>
+
+<UploadScreenshot
+	bind:open={uploadDialogOpen}
+	onFileUpload={handleImageUpload}
+	bind:processText
+	promptOnOpen={true}
+	uploadType="url"
+/>
 <ActionToolbar actions={metadata.actions} bind:isMobile />
 
 <style>
@@ -375,17 +370,6 @@
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
-	}
-
-	.upload-icon {
-		color: var(--border-color);
-		opacity: 0.6;
-	}
-
-	.upload-hint {
-		font-size: 0.8rem;
-		color: var(--text-secondary);
-		text-align: center;
 	}
 
 	.loadout-settings {

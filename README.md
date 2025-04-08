@@ -7,7 +7,7 @@ some webapp im making since no more content at TOF
 - [x] Gear: basic template matching (2025-04-04)
 - [x] Gear: tesseract OCR (2025-04-04)
 - [x] Gear: implement derived stats from gear (include titan stats) (2025-04-05)
-- [x] Design: fix UI for moboile users (partially done ig) (2025-04-05)
+- [x] Design: fix UI for moboile users (partially done ig) 2(2025-04-05)
 - [x] Gear: check for identical gears when adding (2025-04-06)
 - [x] Gear: add remove gear button (2025-04-06)
 - [x] Gear: add clear gear list (2025-04-06)
