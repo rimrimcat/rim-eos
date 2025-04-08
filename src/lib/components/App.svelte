@@ -2,6 +2,7 @@
 	import { onMount, type Component } from 'svelte';
 	import Dialog from './Dialog.svelte';
 	import GearPage from './nav/GearPage.svelte';
+	import LoadoutPage from './nav/LoadoutPage.svelte';
 	import MainPage from './nav/MainPage.svelte';
 	import OpenCvTest from './nav/OpenCvTest.svelte';
 	import StatPage from './nav/StatPage.svelte';
@@ -19,6 +20,7 @@
 	// Active Nav
 	const navMap: Record<string, Component> = {
 		'main-page': MainPage,
+		'loadout-page': LoadoutPage,
 		'stat-page': StatPage,
 		'gear-page': GearPage,
 		'opencv-test': OpenCvTest
@@ -107,6 +109,7 @@
 	>
 		<div style="display: none">
 			<MainPage />
+			<LoadoutPage />
 			<StatPage />
 			<GearPage />
 			<OpenCvTest />
