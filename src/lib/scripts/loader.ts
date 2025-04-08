@@ -1,8 +1,12 @@
 import { type UserGear } from '$lib/scripts/gears';
 import { type AttributeItem } from '$lib/scripts/stats';
+import { type AllLoadouts } from './loadouts';
 
 // Keys
-export type StorageKey = 'stats_main' | 'gears_v1' | 'styles';
+export type LocalStorageKey = 'stats_main' | 'gears_v1' | 'styles' | 'loadouts_v1';
+
+const DB_NAME = 'tof-gear';
+const IMAGE_STORE = 'images';
 
 // Templates
 const TEMPLATE_USER_ATTRIBUTES = [
@@ -79,14 +83,79 @@ export const DEFAULT_STYLES = {
 	'info-color': '#89dceb'
 };
 
+async function createDB() {
+	const request = indexedDB.open(DB_NAME, 2);
+
+	request.onerror = (event) => {
+		console.error('Error opening IndexedDB database:', event);
+	};
+
+	request.onupgradeneeded = () => {
+		const db = request.result;
+
+		const imageStore = db.createObjectStore(IMAGE_STORE, { keyPath: 'id' });
+
+		imageStore.transaction.oncomplete = () => {
+			console.log('Database created and ready for use.');
+		};
+	};
+}
+
+async function addImageToDB(id: string, image: string) {
+	const request = indexedDB.open(DB_NAME, 2);
+
+	request.onsuccess = (event) => {
+		const db = request.result;
+
+		const transaction = db.transaction(IMAGE_STORE, 'readwrite');
+		const imageStore = transaction.objectStore(IMAGE_STORE);
+
+		const imageObject = { id, image };
+		imageStore.add(imageObject);
+
+		transaction.oncomplete = () => {
+			console.log('Image added to IndexedDB.');
+		};
+	};
+}
+
+function getImageFromDB(id: string) {
+	const request = indexedDB.open(DB_NAME, 2);
+
+	request.onsuccess = (event) => {
+		const db = request.result;
+
+		const transaction = db.transaction(IMAGE_STORE, 'readonly');
+		const imageStore = transaction.objectStore(IMAGE_STORE);
+
+		const getRequest = imageStore.get(id);
+
+		getRequest.onsuccess = () => {
+			const imageObject = getRequest.result;
+			if (imageObject) {
+				return imageObject.image;
+			} else {
+				console.log('Image not found in IndexedDB.');
+				return null;
+			}
+		};
+	};
+}
+
+type LoadOutputs =
+	| string[]
+	| AttributeItem[]
+	| UserGear[]
+	| AllLoadouts
+	| null
+	| typeof DEFAULT_STYLES;
+
 export function loadObject(key: 'stats_main', force_default?: boolean): AttributeItem[];
 export function loadObject(key: 'gears_v1', force_default?: boolean): UserGear[];
 export function loadObject(key: 'styles', force_default?: boolean): typeof DEFAULT_STYLES;
-export function loadObject(
-	key: StorageKey,
-	force_default?: boolean
-): string[] | AttributeItem[] | UserGear[] | null | typeof DEFAULT_STYLES {
-	let loadedObject: string[] | UserGear[] | null | typeof DEFAULT_STYLES = null;
+export function loadObject(key: 'loadouts_v1', force_default?: boolean): AllLoadouts;
+export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadOutputs {
+	let loadedObject: LoadOutputs = null;
 
 	if (typeof localStorage !== 'undefined' && localStorage && !force_default) {
 		const savedObject = localStorage.getItem(key);
@@ -114,6 +183,41 @@ export function loadObject(
 			loadedObject = loadedObject as UserGear[];
 			return loadedObject ? loadedObject : [];
 		}
+
+		case 'loadouts_v1': {
+			loadedObject = loadedObject as AllLoadouts;
+
+			if (!loadedObject) {
+				return {};
+			}
+
+			// iterate through Loadouts, then load image_url from database
+			const request = indexedDB.open(DB_NAME, 2);
+
+			request.onsuccess = (event) => {
+				const db = request.result;
+
+				for (const loadout in loadedObject) {
+					const transaction = db.transaction(IMAGE_STORE, 'readonly');
+					const imageStore = transaction.objectStore(IMAGE_STORE);
+
+					const getRequest = imageStore.get(loadout);
+
+					getRequest.onsuccess = () => {
+						const imageObject = getRequest.result;
+						if (imageObject) {
+							// @ts-expect-error : its oke
+							loadedObject[loadout].image_url = imageObject.image;
+						} else {
+							console.log('Image not found in IndexedDB.');
+						}
+					};
+				}
+			};
+
+			return loadedObject;
+		}
+
 		default:
 			break;
 	}
@@ -123,8 +227,9 @@ export function loadObject(
 
 export async function saveObject(key: 'stats_main', value: AttributeItem[]): Promise<void>;
 export async function saveObject(key: 'gears_v1', value: UserGear[]): Promise<void>;
+
 export async function saveObject(
-	key: StorageKey,
+	key: LocalStorageKey,
 	value: AttributeItem[] | UserGear[]
 ): Promise<void> {
 	switch (key) {

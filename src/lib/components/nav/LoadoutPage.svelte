@@ -20,16 +20,29 @@
 	import StatIcon from '../StatIcon.svelte';
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 
+	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import { type StatGearUser } from '$lib/scripts/stats';
 
 	let { isMobile = $bindable(false) } = $props();
 
 	// State
-	let loadoutName = $state('Default Loadout');
-	let loadoutDescription = $state('A balanced loadout for all situations');
+
+	let loadouts = $state({
+		main: {
+			name: 'main',
+			description: 'No description',
+			icon: 'flame'
+		}
+	} as AllLoadouts);
+
+	let selectedLoadout = $state('main');
+
+	let loadoutName = $state('');
+	let loadoutDescription = $state('');
+	let loadoutIcon = $state('');
 	let loadoutImageBase64 = $state('');
+
 	let selectedWeaponPreset = $state('Preset 1');
-	let selectedElement = $state('flame');
 	let isEditing = $state(false);
 
 	// Dialog
@@ -70,14 +83,14 @@
 		reader.readAsDataURL(file);
 	}
 
-	function resetLoadout() {
-		loadoutName = 'Default Loadout';
-		loadoutDescription = 'A balanced loadout for all situations';
-		loadoutImageBase64 = '';
-		selectedWeaponPreset = 'Preset 1';
-		selectedElement = 'flame';
-		isEditing = false;
-	}
+	// function resetLoadout() {
+	// 	loadoutName = 'Default Loadout';
+	// 	loadoutDescription = 'A balanced loadout for all situations';
+	// 	loadoutImageBase64 = '';
+	// 	selectedWeaponPreset = 'Preset 1';
+	// 	selectedElement = 'flame';
+	// 	isEditing = false;
+	// }
 
 	// register
 	const id = 'loadout-page';
@@ -101,17 +114,20 @@
 				id: 'reset',
 				label: 'Reset',
 				lucide: Trash2,
-				type: ActionType.BUTTON,
-				callback: resetLoadout
+				type: ActionType.BUTTON
+				// callback: resetLoadout
 			}
 		]
 	};
 
 	onMount(() => {
 		registerComponent(id, metadata);
+
+		loadoutName = loadouts[selectedLoadout].name;
+		loadoutDescription = loadouts[selectedLoadout].description;
+		loadoutIcon = loadouts[selectedLoadout].icon;
 	});
 
-	$inspect('b64 image:', loadoutImageBase64);
 	// $inspect('image source', document.getElementById('user-upload')?.src);
 </script>
 
@@ -124,7 +140,7 @@
 				<div class="loadout-header">
 					{#if isEditing}
 						<div class="element-selector">
-							<select id="element-select" bind:value={selectedElement}>
+							<select id="element-select" bind:value={loadoutIcon}>
 								{#each ELEMENTS as element}
 									<option value={element.value}>{element.label}</option>
 								{/each}
@@ -148,7 +164,7 @@
 						<div class="loadout-title-area">
 							<div class="element-display">
 								<div class="element-icon">
-									<StatIcon stat={selectedElement as StatGearUser} size="2rem" />
+									<StatIcon stat={loadoutIcon as StatGearUser} size="2rem" />
 								</div>
 							</div>
 							<div class="loadout-name-display">
@@ -338,7 +354,8 @@
 	}
 
 	.element-selector select {
-		width: 75%;
+		width: 15%;
+		min-width: 7rem;
 	}
 
 	.loadout-image-container {

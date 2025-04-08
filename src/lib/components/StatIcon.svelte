@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { type StatGearUser } from '$lib/scripts/stats';
-	import { onMount } from 'svelte';
 
 	type StatOrElement = StatGearUser | 'flame' | 'frost' | 'volt' | 'phys' | 'alt';
 
@@ -10,7 +9,7 @@
 	let unit = $state('none');
 	let atk_kind = $state('');
 
-	onMount(() => {
+	function getImage() {
 		if (stat.includes('atk')) {
 			atk_kind = 'atk';
 		} else if (stat.includes('dmg')) {
@@ -60,6 +59,11 @@
 		} else {
 			unit = 'none';
 		}
+	}
+
+	$effect(() => {
+		stat;
+		getImage();
 	});
 </script>
 
