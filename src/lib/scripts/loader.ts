@@ -2,11 +2,7 @@ import { type UserGear } from '$lib/scripts/gears';
 import { type AttributeItem } from '$lib/scripts/stats';
 
 // Keys
-export enum StorageKey {
-	STATS = 'stats_main',
-	GEARS_V1 = 'gears_v1',
-	STYLES = 'styles'
-}
+export type StorageKey = 'stats_main' | 'gears_v1' | 'styles';
 
 // Templates
 const TEMPLATE_USER_ATTRIBUTES = [
@@ -26,7 +22,7 @@ const TEMPLATE_USER_ATTRIBUTES = [
 	{ name: 'Frost Resistance', icon: './stat/frostres.webp', index: 13 },
 	{ name: 'Volt Resistance', icon: './stat/voltres.webp', index: 14 },
 	{ name: 'Altered Resistance', icon: './stat/placeholder.webp', index: 15 }
-] as const;
+];
 
 // Defaults
 export const DEFAULT_STATS_MAIN = [
@@ -46,7 +42,7 @@ export const DEFAULT_STATS_MAIN = [
 	'14013',
 	'10518',
 	'4892'
-] as const;
+];
 
 export const DEFAULT_STYLES = {
 	// Base colors
@@ -81,14 +77,11 @@ export const DEFAULT_STYLES = {
 	'success-color': '#a6e3a1',
 	'warning-color': '#f9e2af',
 	'info-color': '#89dceb'
-} as const;
+};
 
-export function loadObject(key: typeof StorageKey.STATS, force_default?: boolean): AttributeItem[];
-export function loadObject(key: typeof StorageKey.GEARS_V1, force_default?: boolean): UserGear[];
-export function loadObject(
-	key: typeof StorageKey.STYLES,
-	force_default?: boolean
-): typeof DEFAULT_STYLES;
+export function loadObject(key: 'stats_main', force_default?: boolean): AttributeItem[];
+export function loadObject(key: 'gears_v1', force_default?: boolean): UserGear[];
+export function loadObject(key: 'styles', force_default?: boolean): typeof DEFAULT_STYLES;
 export function loadObject(
 	key: StorageKey,
 	force_default?: boolean
@@ -105,7 +98,7 @@ export function loadObject(
 	}
 
 	switch (key) {
-		case StorageKey.STATS: {
+		case 'stats_main': {
 			loadedObject = loadedObject as string[];
 
 			const processedObject = loadedObject ? loadedObject : DEFAULT_STATS_MAIN;
@@ -117,7 +110,7 @@ export function loadObject(
 			});
 			return user_attributes;
 		}
-		case StorageKey.GEARS_V1: {
+		case 'gears_v1': {
 			loadedObject = loadedObject as UserGear[];
 			return loadedObject ? loadedObject : [];
 		}
@@ -128,23 +121,20 @@ export function loadObject(
 	return [''];
 }
 
-export async function saveObject(
-	key: typeof StorageKey.STATS,
-	value: AttributeItem[]
-): Promise<void>;
-export async function saveObject(key: typeof StorageKey.GEARS_V1, value: UserGear[]): Promise<void>;
+export async function saveObject(key: 'stats_main', value: AttributeItem[]): Promise<void>;
+export async function saveObject(key: 'gears_v1', value: UserGear[]): Promise<void>;
 export async function saveObject(
 	key: StorageKey,
 	value: AttributeItem[] | UserGear[]
 ): Promise<void> {
 	switch (key) {
-		case StorageKey.STATS: {
+		case 'stats_main': {
 			value = value as AttributeItem[];
 			const toSaveObject = value.map((attr) => attr.value);
 			localStorage.setItem(key, JSON.stringify(toSaveObject));
 			break;
 		}
-		case StorageKey.GEARS_V1: {
+		case 'gears_v1': {
 			localStorage.setItem(key, JSON.stringify(value));
 			break;
 		}

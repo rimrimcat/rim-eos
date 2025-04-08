@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { StorageKey, loadObject, saveObject } from '$lib/scripts/loader.ts';
+	import { loadObject, saveObject } from '$lib/scripts/loader.ts';
 	import {
 		ActionType,
 		registerComponent,
@@ -19,7 +19,7 @@
 	let { isMobile = $bindable(false) } = $props();
 
 	// State
-	let user_attributes: AttributeItem[] = $state(loadObject(StorageKey.STATS));
+	let user_attributes: AttributeItem[] = $state(loadObject('stats_main'));
 	let validated_attributes: AttributeItem[] = $state([]);
 	let editValue: string = $state('');
 	let editingIndex: number | null = $state(null);
@@ -59,7 +59,7 @@
 		// Update the source attributes array
 		user_attributes[index].value = editValue;
 
-		saveObject(StorageKey.STATS, user_attributes);
+		saveObject('stats_main', user_attributes);
 
 		// Update validated attributes
 		const __use_percent = index === 2 || index === 10;
@@ -126,13 +126,14 @@
 			const data_url = canvas.toDataURL();
 
 			const ret = await worker.recognize(data_url);
-			user_attributes[attr_arr[index]].value = ret.data.text.replace('%', '');
+			user_attributes[attr_arr[index]].value = ret.data.text.replace('%', '').replace('/', '');
 
 			// Clean up resources
 			_crop.delete();
 			canvas.remove();
 
 			done_tasks++;
+			console.log('OCR Text:', ret.data.text);
 			console.info('Done tasks:', done_tasks);
 		}
 
@@ -166,7 +167,7 @@
 				src_mat_edit.delete();
 			}
 			await worker.terminate();
-			saveObject(StorageKey.STATS, user_attributes);
+			saveObject('stats_main', user_attributes);
 			processAttributes();
 			processText = 'Done!';
 		}
@@ -326,8 +327,8 @@
 	}
 
 	function resetStats() {
-		user_attributes = loadObject(StorageKey.STATS, true);
-		saveObject(StorageKey.STATS, user_attributes);
+		user_attributes = loadObject('stats_main', true);
+		saveObject('stats_main', user_attributes);
 		processAttributes();
 	}
 

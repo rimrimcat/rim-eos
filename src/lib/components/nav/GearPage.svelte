@@ -8,7 +8,7 @@
 		type GearViewStatShort,
 		type UserGear
 	} from '$lib/scripts/gears.ts';
-	import { loadObject, saveObject, StorageKey } from '$lib/scripts/loader.ts';
+	import { loadObject, saveObject } from '$lib/scripts/loader.ts';
 	import {
 		STAT_CONSTANTS,
 		STAT_LABELS,
@@ -49,7 +49,7 @@
 
 	let { isMobile = $bindable(false) } = $props();
 
-	let user_gears: UserGear[] = $state(loadObject(StorageKey.GEARS_V1));
+	let user_gears: UserGear[] = $state(loadObject('gears_v1'));
 	let gear_views: GearView[] = $state([]);
 
 	let prev_search_query: string = $state('');
@@ -282,7 +282,7 @@
 
 			user_gears.push(gear);
 			gear_views.push(gearView);
-			saveObject(StorageKey.GEARS_V1, user_gears);
+			saveObject('gears_v1', user_gears);
 
 			// reset searching after adding gear
 			search_views = [];
@@ -302,7 +302,7 @@
 
 		gear_views[id].isEquipped = true;
 		user_gears[id].isEquipped = true;
-		saveObject(StorageKey.GEARS_V1, user_gears);
+		saveObject('gears_v1', user_gears);
 	}
 
 	function removeGear(id: number) {
@@ -313,7 +313,7 @@
 		// simple renumbering
 		decrementGearId(id);
 
-		saveObject(StorageKey.GEARS_V1, user_gears);
+		saveObject('gears_v1', user_gears);
 	}
 
 	// OCR
@@ -564,7 +564,7 @@
 				callback: () => {
 					user_gears = [];
 					gear_views = [];
-					saveObject(StorageKey.GEARS_V1, user_gears);
+					saveObject('gears_v1', user_gears);
 				}
 			}
 		]
