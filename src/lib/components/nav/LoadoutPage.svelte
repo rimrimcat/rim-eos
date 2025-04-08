@@ -20,6 +20,8 @@
 	import StatIcon from '../StatIcon.svelte';
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 
+	import { type StatGearUser } from '$lib/scripts/stats';
+
 	let { isMobile = $bindable(false) } = $props();
 
 	// State
@@ -32,10 +34,9 @@
 
 	// Dialog
 	let uploadDialogOpen = $state(false);
-	let processText = $state('');
 
 	// Element options
-	const elements = [
+	const ELEMENTS = [
 		{ value: 'flame', label: 'Flame' },
 		{ value: 'frost', label: 'Frost' },
 		{ value: 'volt', label: 'Volt' },
@@ -50,7 +51,9 @@
 		isEditing = !isEditing;
 	}
 
-	function handleImageUpload(file: File) {
+	async function handleImageUpload(file: File) {
+		// resize to 200 x 200
+
 		const reader = new FileReader();
 		reader.onload = (e) => {
 			const img = new Image();
@@ -60,11 +63,20 @@
 				canvas.width = 200;
 				canvas.height = 200;
 				ctx?.drawImage(img, 0, 0, 200, 200);
-				loadoutImageBase64 = canvas.toDataURL('image/jpeg');
+				loadoutImageBase64 = canvas.toDataURL('image/webp');
 			};
 			img.src = e.target?.result as string;
 		};
 		reader.readAsDataURL(file);
+	}
+
+	function resetLoadout() {
+		loadoutName = 'Default Loadout';
+		loadoutDescription = 'A balanced loadout for all situations';
+		loadoutImageBase64 = '';
+		selectedWeaponPreset = 'Preset 1';
+		selectedElement = 'flame';
+		isEditing = false;
 	}
 
 	// register
@@ -95,15 +107,6 @@
 		]
 	};
 
-	function resetLoadout() {
-		loadoutName = 'Default Loadout';
-		loadoutDescription = 'A balanced loadout for all situations';
-		loadoutImageBase64 = '';
-		selectedWeaponPreset = 'Preset 1';
-		selectedElement = 'flame';
-		isEditing = false;
-	}
-
 	onMount(() => {
 		registerComponent(id, metadata);
 	});
@@ -122,7 +125,7 @@
 					{#if isEditing}
 						<div class="element-selector">
 							<select id="element-select" bind:value={selectedElement}>
-								{#each elements as element}
+								{#each ELEMENTS as element}
 									<option value={element.value}>{element.label}</option>
 								{/each}
 							</select>
@@ -145,10 +148,7 @@
 						<div class="loadout-title-area">
 							<div class="element-display">
 								<div class="element-icon">
-									<StatIcon
-										stat={(selectedElement + '_atk') as import('$lib/scripts/stats').StatGearUser}
-										size="2rem"
-									/>
+									<StatIcon stat={selectedElement as StatGearUser} size="2rem" />
 								</div>
 							</div>
 							<div class="loadout-name-display">
@@ -211,7 +211,6 @@
 <UploadScreenshot
 	bind:open={uploadDialogOpen}
 	onFileUpload={handleImageUpload}
-	bind:processText
 	uploadType="file"
 	promptOnOpen={true}
 	closeOnUpload={true}

@@ -2,7 +2,9 @@
 	import { type StatGearUser } from '$lib/scripts/stats';
 	import { onMount } from 'svelte';
 
-	let { stat = 'atk' as StatGearUser, size = '100%' } = $props();
+	type StatOrElement = StatGearUser | 'flame' | 'frost' | 'volt' | 'phys' | 'alt';
+
+	let { stat = 'atk' as StatOrElement, size = '100%' } = $props();
 
 	let img = $state('phys');
 	let unit = $state('none');
@@ -20,7 +22,7 @@
 		} else if (stat.includes('hp')) {
 			img = 'hp';
 		} else {
-			img = 'none';
+			atk_kind = 'atk';
 		}
 
 		if (atk_kind) {
