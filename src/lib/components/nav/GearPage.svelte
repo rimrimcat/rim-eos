@@ -56,7 +56,6 @@
 	} = $props();
 
 	let gear_views: GearView[] = $state([]);
-
 	let prev_search_query: string = $state('');
 	let search_views: GearSearchView[] = $state([]);
 

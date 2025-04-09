@@ -7,6 +7,7 @@
 	let { stat = 'atk' as StatOrElement, size = '100%' } = $props();
 
 	let img = $state('phys');
+	let previous_stat = $state('atk');
 	let unit = $state('none');
 	let atk_kind = $state('');
 
@@ -63,8 +64,10 @@
 	}
 
 	$effect(() => {
-		stat;
-		getImage();
+		if (stat !== previous_stat) {
+			getImage();
+			previous_stat = stat;
+		}
 	});
 </script>
 
