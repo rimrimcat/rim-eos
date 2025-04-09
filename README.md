@@ -15,11 +15,12 @@ some webapp im making since no more content at TOF
 - [x] Gear: add part filtering (2025-04-06)
 - [x] Gear: allow parsing equipped titan gear (2025-04-07)
 - [x] Gear: allow equipping gears (2025-04-07)
-- [ ] Gear: add way to switch and create loadouts
+- [x] Loadout: add way to switch and create loadouts (2025-04-09)
+- [ ] Loadout: sync equipped gears to loadout
+- [ ] Gear: add element selection
 - [ ] Gear: add way to manually add gears
 - [ ] Gear: make more accessible for mobile users
 - [ ] Gear: show equipped gears
-- [ ] Gear: add element selection
 - [ ] Gear: add loadouts per element
 - [ ] Gear: add more reponsive toasts for actions (?)
 - [ ] Gear: add my stats and gears as examples
