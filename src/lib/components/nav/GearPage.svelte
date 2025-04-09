@@ -195,10 +195,6 @@
 		let id: number = -1;
 		let part: GearPart = GearPart.UNKNOWN;
 		let hash = '';
-		let isEquipped =
-			equip ||
-			(part !== GearPart.UNKNOWN &&
-				user_loadouts[current_loadout].equipped_gear[gear.part as ValidGearPart] === gear.id);
 
 		Object.entries(gear).forEach(([key, value]) => {
 			switch (key) {
@@ -312,14 +308,11 @@
 
 		// TODO: add other derived stats
 
-		// console.log('Created GearView for ', id, ':', {
-		// 	id,
-		// 	part,
-		// 	isEquipped,
-		// 	stats,
-		// 	hash,
-		// 	derived
-		// });
+		const isEquipped =
+			equip ||
+			(part !== GearPart.UNKNOWN &&
+				user_loadouts[current_loadout].equipped_gear[gear.part as ValidGearPart] === gear.id);
+
 		return {
 			id,
 			part,
