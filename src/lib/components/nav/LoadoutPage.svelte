@@ -31,6 +31,7 @@
 	} from '$lib/scripts/loader';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import { type StatGearUser } from '$lib/scripts/stats';
+	import SwitchLoadout from '../dialog/SwitchLoadout.svelte';
 
 	let { isMobile = $bindable(false) } = $props();
 
@@ -50,6 +51,7 @@
 
 	// Dialog
 	let uploadDialogOpen = $state(false);
+	let switchLoadoutDialogOpen = $state(false);
 
 	// Element options
 	const ELEMENTS = [
@@ -205,6 +207,15 @@
 		showInNav: true,
 		actions: [
 			{
+				id: 'switch',
+				label: 'Switch Loadout',
+				lucide: ArrowRightLeftIcon,
+				type: ActionType.BUTTON,
+				callback: () => {
+					switchLoadoutDialogOpen = true;
+				}
+			},
+			{
 				id: 'duplicate',
 				label: 'Duplicate Loadout',
 				lucide: CopyPlusIcon,
@@ -212,12 +223,6 @@
 				callback: () => {
 					duplicateLoadout(true);
 				}
-			},
-			{
-				id: 'switch',
-				label: 'Switch Loadout',
-				lucide: ArrowRightLeftIcon,
-				type: ActionType.BUTTON
 			},
 			{ id: 'import', label: 'Import', lucide: FilePlus2 },
 			{ id: 'export', label: 'Export', lucide: Download },
@@ -364,6 +369,14 @@
 	promptOnOpen={true}
 	closeOnUpload={true}
 />
+
+<SwitchLoadout
+	bind:open={switchLoadoutDialogOpen}
+	bind:loadouts
+	bind:selectedLoadout
+	onSwitchLoadout={switchLoadout}
+/>
+
 <ActionToolbar actions={metadata.actions} bind:isMobile />
 
 <style>
