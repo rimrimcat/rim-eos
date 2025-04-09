@@ -18,8 +18,7 @@ some webapp im making since no more content at TOF
 - [x] Loadout: add way to switch and create loadouts (2025-04-09)
 - [x] Loadout: sync equipped gears to loadout (2025-04-09)
 - [x] Loadout: add element selection (2025-04-09)
-- [ ] Design: fix my css
-- [ ] Gear: show equipped gears
+- [x] Gear: show equipped gears (2025-04-10)
 - [ ] Gear: add way to manually add gears
 - [ ] Gear: make more accessible for mobile users
 - [ ] Gear: add loadouts per element
@@ -34,6 +33,7 @@ some webapp im making since no more content at TOF
 - [ ] Design: make color slightly darker
 - [ ] Design: allow user to choose webpage style?
 - [ ] Design: fix animations
+- [ ] Design: fix my css
 - [ ] Misc: add image that you can click and it switches so you have something to look and play with ig
 - [ ] Misc: disable some buttons when mid animation
 - [ ] Gear: implement augmented gear template matching (NOT PLANNED)

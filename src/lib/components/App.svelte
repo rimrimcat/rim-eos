@@ -220,6 +220,34 @@
 		justify-content: space-around;
 	}
 
+	:global(div.full) {
+		width: 100%;
+		height: 100%;
+	}
+
+	:global(div.full-width) {
+		width: 100%;
+	}
+
+	:global(div.full-height) {
+		height: 100%;
+	}
+
+	:global(div.block) {
+		display: block;
+		padding: 1rem;
+		width: 100%;
+	}
+
+	:global(div.noslider) {
+		overflow-x: hidden;
+		overflow-y: hidden;
+	}
+
+	:global(div.noslider-x) {
+		overflow-x: hidden;
+	}
+
 	/* add opacity transition when hovering */
 	:global(button.hover) {
 		opacity: 0.7;
@@ -261,7 +289,7 @@
 		overflow-y: scroll;
 		overflow-x: hidden;
 		padding-left: 1rem;
-		padding-right: 5rem;
+		padding-right: 6rem;
 		transition: translate 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 

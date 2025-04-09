@@ -23,7 +23,18 @@ export enum GearPart {
 }
 
 export type ValidGearPart =
-	| GearPart.HELMET
+	| 'H'
+	| 'S'
+	| 'A'
+	| 'C'
+	| 'B'
+	| 'L'
+	| 'G'
+	| 'T'
+	| 'V'
+	| 'N'
+	| 'X'
+	| 'R'
 	| GearPart.SPAULDERS
 	| GearPart.ARMOR
 	| GearPart.BRACERS
@@ -35,6 +46,21 @@ export type ValidGearPart =
 	| GearPart.ENGINE
 	| GearPart.EXOSKELETON
 	| GearPart.REACTOR;
+
+export const VALID_GEAR_PARTS: ValidGearPart[] = [
+	'H',
+	'S',
+	'A',
+	'C',
+	'B',
+	'L',
+	'G',
+	'T',
+	'V',
+	'N',
+	'X',
+	'R'
+];
 
 /**
  * Identification for a gear piece
@@ -52,13 +78,6 @@ type GearId = {
 type GearValidStats = {
 	[key in StatGearUser]?: string;
 };
-
-// /**
-//  * Derived titan statistics calculated from gear stats
-//  */
-// type GearDerivedTitanStats = {
-// 	[key in StatGearTitan]?: number;
-// };
 
 /**
  * Represents a single stat on a gear piece with its value
@@ -102,16 +121,20 @@ export type UserGear = GearId & GearValidStats & { dateAdded: Date };
  * Processed gear data for display and sorting
  * @property {GearViewStatLong[]} stats - Array of processed stat items
  * @property {GearViewStatShort[]} derived - Calculated stats for sorting purposes
+ * @property {string} hash - Unique identifier for the gear
+ * @property {boolean} isEquipped - Indicates if the gear is currently equipped, see also AllLoadouts
  */
 export type GearView = GearId & {
 	stats: GearViewStatLong[];
-	hash: string;
 	derived: GearViewStatShort[];
+	hash: string;
 	isEquipped: boolean;
 };
 
 /**
  * Gear data for search result
+ * @property {number} id - Sequential identifier
+ * @property {GearPart} part - Gear slot
  * @property {GearViewStatShort[]} stats - Array of processed stat items, references GearView's derived key
  */
 export type GearSearchView = GearId & {

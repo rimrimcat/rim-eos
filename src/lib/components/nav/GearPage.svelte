@@ -2,6 +2,7 @@
 	import {
 		ALL_STATS_REGEX,
 		GearPart,
+		VALID_GEAR_PARTS,
 		type GearSearchView,
 		type GearView,
 		type GearViewStatLong,
@@ -59,6 +60,9 @@
 	let gear_views: GearView[] = $state([]);
 	let prev_search_query: string = $state('');
 	let search_views: GearSearchView[] = $state([]);
+
+	let isShowingEquippedGears = $state(false);
+	let equipped_gears: number[] = $state([]);
 
 	// Screenshot Dialog
 	let screenshotDialogOpen = $state(false);
@@ -386,6 +390,18 @@
 		saveObject('loadouts_v1', user_loadouts);
 	}
 
+	function updateEquippedGears() {
+		equipped_gears = [];
+		for (const part in VALID_GEAR_PARTS) {
+			const gearId = user_loadouts[current_loadout].equipped_gear[VALID_GEAR_PARTS[part]];
+			if (gearId !== null) {
+				equipped_gears.push(gearId);
+			} else {
+				equipped_gears.push(-1);
+			}
+		}
+	}
+
 	// OCR
 	async function doGearOCR(canvas: HTMLCanvasElement) {
 		const worker = await createWorker('eng');
@@ -652,8 +668,24 @@
 	});
 </script>
 
-<div class="gear-page">
-	<div class="gear-settings">
+{#snippet gear_actions(gear: GearView)}
+	<div class="gear-actions">
+		<button class="gear-action" title="Remove Gear" onclick={() => removeGear(gear.id)}>
+			<Trash2Icon />
+		</button>
+		<button
+			class="gear-action"
+			class:no-pointer={gear.isEquipped}
+			title="Equip Gear"
+			onclick={() => (gear.isEquipped ? {} : equipGear(gear.id))}
+		>
+			<ShirtIcon opacity={gear.isEquipped ? 0.5 : 1} />
+		</button>
+	</div>
+{/snippet}
+
+<div class="full-width">
+	<div class="block">
 		<h1>Gear List</h1>
 		{#if isSearching}
 			<p>Searching for: {prev_search_query}</p>
@@ -662,29 +694,51 @@
 				<SearchXIcon />
 				<label class="in-button" for="stop-search"> Stop Searching </label>
 			</button>
+		{:else if isShowingEquippedGears}
+			<p>Showing equipped gears.</p>
+
+			<button
+				class="border stop-search"
+				id="stop-show"
+				onclick={() => (isShowingEquippedGears = false)}
+			>
+				<SearchXIcon />
+				<label class="in-button" for="stop-show"> Stop Showing </label>
+			</button>
 		{:else}
 			<div class="horizontal">
+				<button class="border" id="add-gear" onclick={() => (screenshotDialogOpen = true)}>
+					<ImagePlusIcon />
+					<label class="in-button" for="add-gear">Add Gear</label>
+				</button>
 				<button class="border" id="start-search" onclick={() => (searchDialogOpen = true)}>
 					<SearchIcon />
 					<label class="in-button" for="start-search">Search Gear</label>
 				</button>
-				<button class="border" id="add-gear" onclick={() => (screenshotDialogOpen = true)}>
-					<ImagePlusIcon />
-					<label class="in-button" for="add-gear">Add Gear</label>
+				<button
+					class="border"
+					id="show-equipped"
+					onclick={() => {
+						updateEquippedGears();
+						isShowingEquippedGears = true;
+					}}
+				>
+					<ShirtIcon />
+					<label class="in-button" for="show-equipped">Show Equipped</label>
 				</button>
 			</div>
 		{/if}
 	</div>
 
-	<div class="gear-grid">
+	<div class="noslider-x gear-grid">
 		<FlexGrid
 			by_column={false}
-			maxColumns={4}
+			maxColumns={isShowingEquippedGears ? 2 : 4}
 			verticalGap="0rem"
 			horizontalGap="5rem"
 			bind:hasMeasured
 		>
-			{#if gear_views.length !== 0 && !isSearching}
+			{#if gear_views.length !== 0 && !isSearching && !isShowingEquippedGears}
 				{#each gear_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
 						<span>{gear.id}</span>
@@ -748,19 +802,7 @@
 						{/if}
 
 						{#if !isMobile}
-							<div class="gear-actions">
-								<button class="gear-action" title="Remove Gear" onclick={() => removeGear(gear.id)}>
-									<Trash2Icon />
-								</button>
-								<button
-									class="gear-action"
-									class:no-pointer={gear.isEquipped}
-									title="Equip Gear"
-									onclick={() => (gear.isEquipped ? {} : equipGear(gear.id))}
-								>
-									<ShirtIcon opacity={gear.isEquipped ? 0.5 : 1} />
-								</button>
-							</div>
+							{@render gear_actions(gear)}
 						{/if}
 					</div>
 				{/each}
@@ -790,21 +832,29 @@
 							</div>
 						</div>
 
-						<div class="gear-actions">
-							<button class="gear-action" title="Remove Gear" onclick={() => removeGear(gear.id)}>
-								<Trash2Icon />
-							</button>
-							<button
-								class="gear-action"
-								class:no-pointer={gear_views[gear.id].isEquipped}
-								title="Equip Gear"
-								onclick={() => (gear_views[gear.id].isEquipped ? {} : equipGear(gear.id))}
-							>
-								<ShirtIcon opacity={gear_views[gear.id].isEquipped ? 0.5 : 1} />
-							</button>
-						</div>
+						{@render gear_actions(gear_views[gear.id])}
 					</div>
 				{/each}
+			{:else if isShowingEquippedGears}
+				{#each equipped_gears as gearId, partIndex}
+					<div class="gear-cell gear-id-{gearId}">
+						<span>{gearId}</span>
+						<div class="gear-icon">
+							<div class="icon-container">
+								<img
+									src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{VALID_GEAR_PARTS[
+										partIndex
+									]}.png"
+									alt="Gear"
+									style={gearId === -1 ? 'filter:grayscale(100%)' : ''}
+								/>
+							</div>
+						</div>
+
+						{@render gear_actions(gear_views[gearId])}
+					</div>
+				{/each}
+				<p>test</p>
 			{:else}
 				<div class="gear-cell">
 					<div class="gear-icon">
@@ -843,36 +893,12 @@
 <ActionToolbar actions={metadata.actions} bind:bound_objects bind:isMobile />
 
 <style>
-	.gear-page {
-		color: var(--text-color);
-		background-color: var(--bg-color);
-		width: 100%;
-		max-width: 100%;
-		margin-right: 3vw;
-	}
-
-	.gear-settings {
-		display: block;
-		padding: 1rem;
-		color: var(--text-color);
-		background-color: var(--bg-color);
-		width: 100%;
-		max-width: 100%;
-	}
-
 	.gear-grid {
 		margin-top: 1rem;
-		color: var(--text-color);
-		background-color: var(--bg-color);
-		width: 100%;
-		max-width: 100%;
-		/* overflow-y: scroll; */
-		overflow-x: hidden;
 		border-top: 4px solid var(--border-color);
 	}
 
 	.gear-cell {
-		background-color: var(--bg-color);
 		display: flex;
 		flex-direction: row;
 		/* width: 80%; */
@@ -945,7 +971,6 @@
 	}
 
 	.stat-content {
-		/* padding: 5px; */
 		font-size: large;
 		text-align: center;
 	}
