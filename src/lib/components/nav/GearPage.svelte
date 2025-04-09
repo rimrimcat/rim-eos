@@ -36,6 +36,7 @@
 		SearchXIcon,
 		Shirt,
 		ShirtIcon,
+		SlashIcon,
 		SparkleIcon,
 		SparklesIcon,
 		SquareIcon,
@@ -360,18 +361,30 @@
 
 	function equipGear(id: number) {
 		// search for equipped gear with same part
-		if (gear_views[id].part === GearPart.UNKNOWN) {
+		const part = gear_views[id].part;
+		if (part === GearPart.UNKNOWN) {
 			console.error('Cannot equip UNKNOWN gear!');
 			return;
 		}
 
-		const previousPart = user_loadouts[current_loadout].equipped_gear[gear_views[id].part];
-		if (previousPart !== null) {
-			gear_views[previousPart].isEquipped = false;
+		const prevEquippedGearId = user_loadouts[current_loadout].equipped_gear[part];
+		if (prevEquippedGearId !== null) {
+			unequipGear(prevEquippedGearId, false);
 		}
 
-		user_loadouts[current_loadout].equipped_gear[gear_views[id].part] = id;
+		user_loadouts[current_loadout].equipped_gear[part] = id;
 		gear_views[id].isEquipped = true;
+		saveObject('loadouts_v1', user_loadouts);
+	}
+
+	function unequipGear(id: number, saveAfter: boolean = true) {
+		const part = gear_views[id].part;
+		if (part === GearPart.UNKNOWN || id === -1) {
+			return;
+		}
+
+		user_loadouts[current_loadout].equipped_gear[part] = null;
+		gear_views[id].isEquipped = false;
 		saveObject('loadouts_v1', user_loadouts);
 	}
 
@@ -669,18 +682,47 @@
 </script>
 
 {#snippet gear_actions(gear: GearView)}
-	<div class="gear-actions">
-		<button class="gear-action" title="Remove Gear" onclick={() => removeGear(gear.id)}>
-			<Trash2Icon />
-		</button>
-		<button
-			class="gear-action"
-			class:no-pointer={gear.isEquipped}
-			title="Equip Gear"
-			onclick={() => (gear.isEquipped ? {} : equipGear(gear.id))}
-		>
-			<ShirtIcon opacity={gear.isEquipped ? 0.5 : 1} />
-		</button>
+	{#if gear}
+		<div class="gear-actions">
+			<button class="gear-action" title="Remove Gear" onclick={() => removeGear(gear.id)}>
+				<Trash2Icon />
+			</button>
+			<button
+				class="gear-action"
+				title={gear.isEquipped ? 'Unequip Gear' : 'Equip Gear'}
+				onclick={() => (gear.isEquipped ? unequipGear(gear.id) : equipGear(gear.id))}
+			>
+				<div style="position: relative;">
+					<ShirtIcon />
+					{#if gear.isEquipped}
+						<div style="position: absolute; top: 0%; left: 0%;">
+							<SlashIcon />
+						</div>
+					{/if}
+				</div>
+			</button>
+		</div>
+	{/if}
+{/snippet}
+
+{#snippet gear_icon(gear: GearView, partIfNoGear: ValidGearPart = GearPart.HELMET)}
+	<div class="gear-icon">
+		<div class="icon-container">
+			{#if gear}
+				<button class="gear-button icon" onclick={() => showGearInfo(gear)} style="opacity: 1">
+					<img
+						src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
+						alt="Gear"
+					/>
+				</button>
+			{:else}
+				<img
+					src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{partIfNoGear}.png"
+					alt="Gear"
+					style="filter:grayscale(100%)"
+				/>
+			{/if}
+		</div>
 	</div>
 {/snippet}
 
@@ -721,6 +763,7 @@
 					onclick={() => {
 						updateEquippedGears();
 						isShowingEquippedGears = true;
+						hasMeasured = false;
 					}}
 				>
 					<ShirtIcon />
@@ -742,21 +785,7 @@
 				{#each gear_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
 						<span>{gear.id}</span>
-						<div class="gear-icon">
-							<div class="icon-container">
-								<!-- TODO: dialog for this button -->
-								<button
-									class="gear-button icon"
-									onclick={() => showGearInfo(gear)}
-									style="opacity: 1"
-								>
-									<img
-										src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
-										alt="Gear"
-									/>
-								</button>
-							</div>
-						</div>
+						{@render gear_icon(gear)}
 
 						{#if bound_objects.fourStatMode}
 							<div class="stats-container">
@@ -810,14 +839,7 @@
 				{#each search_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
 						<span>{gear.id}</span>
-						<div class="gear-icon">
-							<div class="icon-container">
-								<img
-									src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
-									alt="Gear"
-								/>
-							</div>
-						</div>
+						{@render gear_icon(gear_views[gear.id])}
 
 						<div class="single-stat">
 							<div class="stat-content" class:icon={bound_objects.iconStats}>
@@ -839,7 +861,7 @@
 				{#each equipped_gears as gearId, partIndex}
 					<div class="gear-cell gear-id-{gearId}">
 						<span>{gearId}</span>
-						<div class="gear-icon">
+						<!-- <div class="gear-icon">
 							<div class="icon-container">
 								<img
 									src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{VALID_GEAR_PARTS[
@@ -849,12 +871,12 @@
 									style={gearId === -1 ? 'filter:grayscale(100%)' : ''}
 								/>
 							</div>
-						</div>
+						</div> -->
+						{@render gear_icon(gear_views[gearId], VALID_GEAR_PARTS[partIndex])}
 
 						{@render gear_actions(gear_views[gearId])}
 					</div>
 				{/each}
-				<p>test</p>
 			{:else}
 				<div class="gear-cell">
 					<div class="gear-icon">
@@ -886,6 +908,7 @@
 	bind:gear_views
 	onRemoveGear={removeGear}
 	onEquipGear={equipGear}
+	onUnequipGear={unequipGear}
 />
 
 <GearSearch bind:open={searchDialogOpen} bind:isMobile onConfirmSearch={onGearSearch} />
