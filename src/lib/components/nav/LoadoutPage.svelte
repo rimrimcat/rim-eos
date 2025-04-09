@@ -7,6 +7,7 @@
 
 	import {
 		BoxIcon,
+		CopyPlusIcon,
 		Download,
 		FilePlus2,
 		ImagePlus,
@@ -19,7 +20,14 @@
 	import StatIcon from '../StatIcon.svelte';
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 
-	import { addImageToDB, getImageUrlFromDB, loadObject, saveObject } from '$lib/scripts/loader';
+	import {
+		addImageToDB,
+		deleteImageFromDB,
+		getImageFromDB,
+		getImageUrlFromDB,
+		loadObject,
+		saveObject
+	} from '$lib/scripts/loader';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import { type StatGearUser } from '$lib/scripts/stats';
 
@@ -56,11 +64,33 @@
 
 	function toggleEditing() {
 		if (isEditing) {
-			loadouts[selectedLoadout] = {
+			const prevSelectedLoadout = selectedLoadout;
+			loadouts[prevSelectedLoadout] = {
 				name: loadoutName,
 				description: loadoutDescription,
 				icon: loadoutIcon
 			};
+
+			const sanitizedLoadoutName = sanitizeLoadoutKey(loadoutName);
+
+			if (sanitizedLoadoutName !== prevSelectedLoadout) {
+				// copy image
+				getImageFromDB(prevSelectedLoadout).then((imageData) => {
+					if (imageData) {
+						const blob = new Blob([imageData], { type: 'image/jpeg' });
+						const file = new File([blob], `${sanitizedLoadoutName}.jpg`, { type: 'image/jpeg' });
+						addImageToDB(sanitizedLoadoutName, file).then(() => {
+							deleteImageFromDB(prevSelectedLoadout);
+						});
+					}
+				});
+
+				// rename loadout
+				loadouts[sanitizedLoadoutName] = loadouts[prevSelectedLoadout];
+				delete loadouts[prevSelectedLoadout];
+				selectedLoadout = sanitizedLoadoutName;
+			}
+
 			saveObject('loadouts_v1', loadouts);
 		}
 
@@ -77,6 +107,31 @@
 
 			addImageToDB(selectedLoadout, file);
 		}
+	}
+
+	function sanitizeLoadoutKey(key: string) {
+		return key.replace(/[^a-zA-Z0-9]/g, '');
+	}
+
+	function duplicateLoadout() {
+		// duplicate current loadout, use regex to increment numbering to name if needed
+		const newLoadoutName = loadoutName.replace(/(\d+)$/, (match, p1) => {
+			return (parseInt(p1) + 1).toString();
+		});
+		loadouts[newLoadoutName] = {
+			name: newLoadoutName,
+			description: loadoutDescription,
+			icon: loadoutIcon
+		};
+
+		// copy image, fetch from db then add to db
+		getImageFromDB(selectedLoadout).then((imageData) => {
+			if (imageData) {
+				const blob = new Blob([imageData], { type: 'image/jpeg' });
+				const file = new File([blob], `${newLoadoutName}.jpg`, { type: 'image/jpeg' });
+				addImageToDB(newLoadoutName, file);
+			}
+		});
 	}
 
 	// function resetLoadout() {
@@ -98,9 +153,9 @@
 		showInNav: true,
 		actions: [
 			{
-				id: 'screenshot',
-				label: 'Upload Image',
-				lucide: ImagePlus,
+				id: 'duplicate',
+				label: 'Duplicate Loadout',
+				lucide: CopyPlusIcon,
 				type: ActionType.BUTTON,
 				callback: () => document.getElementById('srcInput')?.click()
 			},

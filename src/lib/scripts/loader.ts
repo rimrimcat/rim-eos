@@ -238,6 +238,41 @@ export async function getImageUrlFromDB(
 	}
 }
 
+export async function deleteImageFromDB(id: string): Promise<void> {
+	console.log(`Attempting to delete image with ID: ${id}`);
+
+	try {
+		const db = await openImageDB();
+
+		return new Promise((resolve, reject) => {
+			const transaction = db.transaction(IMAGE_STORE, 'readwrite');
+			const imageStore = transaction.objectStore(IMAGE_STORE);
+
+			const deleteRequest = imageStore.delete(id);
+
+			deleteRequest.onsuccess = () => {
+				console.log(`Successfully deleted image with ID: ${id}`);
+				resolve();
+			};
+
+			deleteRequest.onerror = () => {
+				const errorMsg = `Error deleting image with ID ${id}: ${deleteRequest.error}`;
+				console.error(errorMsg);
+				reject(new Error(errorMsg));
+			};
+
+			transaction.onerror = () => {
+				const errorMsg = `Transaction error while deleting image with ID ${id}: ${transaction.error}`;
+				console.error(errorMsg);
+				reject(new Error(errorMsg));
+			};
+		});
+	} catch (error) {
+		console.error('Failed to open database for image deletion:', error);
+		throw error;
+	}
+}
+
 type LoadOutputs =
 	| string[]
 	| AttributeItem[]
