@@ -102,8 +102,7 @@ export const DEFAULT_LOADOUTS: AllLoadouts = {
 			V: null,
 			N: null,
 			X: null,
-			R: null,
-			U: null
+			R: null
 		}
 	}
 };

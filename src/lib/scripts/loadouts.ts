@@ -1,7 +1,7 @@
-import type { GearPart } from './gears';
+import type { ValidGearPart } from './gears';
 
 type EquippedGear = {
-	[key in GearPart]: number | null;
+	[key in ValidGearPart]: number | null;
 };
 
 // this should determine what element to optimize for

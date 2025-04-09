@@ -22,6 +22,20 @@ export enum GearPart {
 	UNKNOWN = 'U'
 }
 
+export type ValidGearPart =
+	| GearPart.HELMET
+	| GearPart.SPAULDERS
+	| GearPart.ARMOR
+	| GearPart.BRACERS
+	| GearPart.BELT
+	| GearPart.LEGGUARDS
+	| GearPart.GLOVES
+	| GearPart.BOOTS
+	| GearPart.VISOR
+	| GearPart.ENGINE
+	| GearPart.EXOSKELETON
+	| GearPart.REACTOR;
+
 /**
  * Identification for a gear piece
  * @property {number} id - Unique numerical identifier

@@ -6,7 +6,8 @@
 		type GearView,
 		type GearViewStatLong,
 		type GearViewStatShort,
-		type UserGear
+		type UserGear,
+		type ValidGearPart
 	} from '$lib/scripts/gears.ts';
 	import { saveObject } from '$lib/scripts/loader.ts';
 	import {
@@ -170,6 +171,22 @@
 				search_views[i].id--;
 			}
 		}
+
+		// same with user_loadouts
+		for (const key in user_loadouts) {
+			for (const gearKey in user_loadouts[key].equipped_gear) {
+				if (
+					user_loadouts[key].equipped_gear[gearKey as ValidGearPart] !== null &&
+					// @ts-expect-error
+					user_loadouts[key].equipped_gear[gearKey as ValidGearPart] > start
+				) {
+					// @ts-expect-error
+					user_loadouts[key].equipped_gear[gearKey as ValidGearPart]--;
+				}
+			}
+		}
+
+		saveObject('loadouts_v1', user_loadouts);
 	}
 
 	async function createGearView(gear: UserGear, equip: boolean = false): Promise<GearView> {
@@ -178,7 +195,10 @@
 		let id: number = -1;
 		let part: GearPart = GearPart.UNKNOWN;
 		let hash = '';
-		let isEquipped = equip || user_loadouts[current_loadout].equipped_gear[gear.part] === gear.id;
+		let isEquipped =
+			equip ||
+			(part !== GearPart.UNKNOWN &&
+				user_loadouts[current_loadout].equipped_gear[gear.part as ValidGearPart] === gear.id);
 
 		Object.entries(gear).forEach(([key, value]) => {
 			switch (key) {
@@ -261,7 +281,6 @@
 		});
 		stats.sort((a, b) => (b.roll ?? 0) - (a.roll ?? 0));
 
-		// more derived stats
 		// get highest roll stat
 		const bestRoll = stats[0];
 
