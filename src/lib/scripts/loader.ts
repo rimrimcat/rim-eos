@@ -169,7 +169,7 @@ export async function addImageToDB(id: string, image: File): Promise<void> {
 	});
 }
 
-export async function getImageFromDB(id: string): Promise<ArrayBuffer | null> {
+export async function getImageFromDB(id: string): Promise<File | null> {
 	console.log(`Attempting to retrieve image with ID: ${id}`);
 
 	try {
@@ -186,7 +186,10 @@ export async function getImageFromDB(id: string): Promise<ArrayBuffer | null> {
 					const imageObject = getRequest.result;
 					if (imageObject) {
 						console.log(`Successfully retrieved image for ID: ${id}`);
-						resolve(imageObject.image);
+						// Convert ArrayBuffer to File
+						const blob = new Blob([imageObject.image], { type: 'image/jpeg' });
+						const file = new File([blob], `${id}.jpg`, { type: 'image/jpeg' });
+						resolve(file);
 					} else {
 						console.log(`Image not found in IndexedDB for ID: ${id}`);
 						resolve(null);
@@ -215,17 +218,12 @@ export async function getImageFromDB(id: string): Promise<ArrayBuffer | null> {
 	}
 }
 
-export async function getImageUrlFromDB(
-	id: string,
-	mimeType: string = 'image/jpeg'
-): Promise<string> {
+export async function getImageUrlFromDB(id: string): Promise<string> {
 	try {
-		const imageData = await getImageFromDB(id);
+		const imageFile = await getImageFromDB(id);
 
-		if (imageData) {
-			const blob = new Blob([imageData], { type: mimeType });
-
-			const imageUrl = URL.createObjectURL(blob);
+		if (imageFile) {
+			const imageUrl = URL.createObjectURL(imageFile);
 			console.log(`Successfully created URL for image with ID: ${id}`);
 			return imageUrl;
 		} else {
@@ -343,8 +341,11 @@ export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadO
 							getRequest.onsuccess = () => {
 								const imageObject = getRequest.result;
 								if (imageObject && loadoutsObj) {
+									// Create a URL from the image data
+									const blob = new Blob([imageObject.image], { type: 'image/jpeg' });
+									const imageUrl = URL.createObjectURL(blob);
 									// Set the image URL in the loadout object
-									loadoutsObj[loadout].image_url = imageObject.image;
+									loadoutsObj[loadout].image_url = imageUrl;
 								} else {
 									console.log(`Image not found in IndexedDB for loadout: ${loadout}`);
 								}

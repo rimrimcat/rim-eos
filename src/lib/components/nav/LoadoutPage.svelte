@@ -75,11 +75,12 @@
 
 			if (sanitizedLoadoutName !== prevSelectedLoadout) {
 				// copy image
-				getImageFromDB(prevSelectedLoadout).then((imageData) => {
-					if (imageData) {
-						const blob = new Blob([imageData], { type: 'image/jpeg' });
-						const file = new File([blob], `${sanitizedLoadoutName}.jpg`, { type: 'image/jpeg' });
-						addImageToDB(sanitizedLoadoutName, file).then(() => {
+				getImageFromDB(prevSelectedLoadout).then((imageFile) => {
+					if (imageFile) {
+						const newFile = new File([imageFile], `${sanitizedLoadoutName}.jpg`, {
+							type: imageFile.type
+						});
+						addImageToDB(sanitizedLoadoutName, newFile).then(() => {
 							deleteImageFromDB(prevSelectedLoadout);
 						});
 					}
@@ -125,11 +126,11 @@
 		};
 
 		// copy image, fetch from db then add to db
-		getImageFromDB(selectedLoadout).then((imageData) => {
-			if (imageData) {
-				const blob = new Blob([imageData], { type: 'image/jpeg' });
-				const file = new File([blob], `${newLoadoutName}.jpg`, { type: 'image/jpeg' });
-				addImageToDB(newLoadoutName, file);
+		getImageFromDB(selectedLoadout).then((imageFile) => {
+			if (imageFile) {
+				// Create a new file with the new name
+				const newFile = new File([imageFile], `${newLoadoutName}.jpg`, { type: imageFile.type });
+				addImageToDB(newLoadoutName, newFile);
 			}
 		});
 	}
