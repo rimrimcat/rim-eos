@@ -293,7 +293,6 @@
 				const rainbowTitanValueLabel = formatValue(Format.INTEGER, rainbowTitanValue.toString());
 				RAINBOW_TITAN_STATS.forEach((rainbowStat) => {
 					const statIdx = derived.findIndex((der) => der.stat === rainbowStat);
-					console.log('stat idx', statIdx);
 
 					if (statIdx === -1) {
 						// add rainbow stat if missing
@@ -356,8 +355,12 @@
 	}
 
 	function equipGear(id: number) {
-		console.log('Try to press equipGear!');
 		// search for equipped gear with same part
+		if (gear_views[id].part === GearPart.UNKNOWN) {
+			console.error('Cannot equip UNKNOWN gear!');
+			return;
+		}
+
 		const previousPart = user_loadouts[current_loadout].equipped_gear[gear_views[id].part];
 		if (previousPart !== null) {
 			gear_views[previousPart].isEquipped = false;
@@ -369,7 +372,9 @@
 	}
 
 	function removeGear(id: number) {
-		user_loadouts[current_loadout].equipped_gear[gear_views[id].part] = null;
+		if (gear_views[id].part !== GearPart.UNKNOWN) {
+			user_loadouts[current_loadout].equipped_gear[gear_views[id].part] = null;
+		}
 		user_gears = user_gears.filter((gear) => gear.id !== id);
 		gear_views = gear_views.filter((gear) => gear.id !== id);
 		search_views = search_views.filter((gear) => gear.id !== id);
@@ -408,6 +413,7 @@
 		const isTitan = txt[0].includes('titan');
 		const equip =
 			txt[0].includes('equipped') && // check if any gear is equipped in current loadout
+			part !== GearPart.UNKNOWN &&
 			user_loadouts[current_loadout].equipped_gear[part] === null;
 		const dateAdded = new Date();
 
@@ -569,20 +575,20 @@
 		lucide: Shirt,
 		showInNav: true,
 		actions: [
-			{
-				id: 'screenshot',
-				label: 'From Screenshot',
-				lucide: ImagePlusIcon,
-				type: ActionType.BUTTON,
-				callback: () => (screenshotDialogOpen = true)
-			},
-			{
-				id: 'search',
-				label: 'Search & Sort',
-				lucide: SearchIcon,
-				type: ActionType.BUTTON,
-				callback: () => (searchDialogOpen = true)
-			},
+			// {
+			// 	id: 'screenshot',
+			// 	label: 'From Screenshot',
+			// 	lucide: ImagePlusIcon,
+			// 	type: ActionType.BUTTON,
+			// 	callback: () => (screenshotDialogOpen = true)
+			// },
+			// {
+			// 	id: 'search',
+			// 	label: 'Search & Sort',
+			// 	lucide: SearchIcon,
+			// 	type: ActionType.BUTTON,
+			// 	callback: () => (searchDialogOpen = true)
+			// },
 			{
 				id: 'fourStatMode',
 				label: 'Extended Stats',
@@ -648,13 +654,25 @@
 
 <div class="gear-page">
 	<div class="gear-settings">
-		<h1 class="Pro">Gear List</h1>
+		<h1>Gear List</h1>
 		{#if isSearching}
 			<p>Searching for: {prev_search_query}</p>
 
-			<button class="stop-search" title="Cancel Search" onclick={() => (isSearching = false)}>
-				<SearchXIcon /> Stop Searching
+			<button class="border stop-search" id="stop-search" onclick={() => (isSearching = false)}>
+				<SearchXIcon />
+				<label class="in-button" for="stop-search"> Stop Searching </label>
 			</button>
+		{:else}
+			<div class="horizontal">
+				<button class="border" id="start-search" onclick={() => (searchDialogOpen = true)}>
+					<SearchIcon />
+					<label class="in-button" for="start-search">Search Gear</label>
+				</button>
+				<button class="border" id="add-gear" onclick={() => (screenshotDialogOpen = true)}>
+					<ImagePlusIcon />
+					<label class="in-button" for="add-gear">Add Gear</label>
+				</button>
+			</div>
 		{/if}
 	</div>
 

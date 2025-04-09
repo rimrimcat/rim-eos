@@ -71,6 +71,7 @@
 		transition: background-color 0.2s ease;
 		gap: 1rem;
 		position: relative;
+		max-width: 80%;
 	}
 
 	.loadout-item:hover {

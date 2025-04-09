@@ -164,7 +164,7 @@
 		background-color: var(--button-primary-hover-bg);
 	}
 
-	/* for buttons that contain lucide icons */
+	/* for buttons that contain icons and responsive */
 	:global(button.icon) {
 		background-color: transparent;
 		border: none;
@@ -178,14 +178,61 @@
 		opacity: 1;
 	}
 
-	/* for buttons that contain images*/
+	/* for buttons that contain image */
 	:global(button.image) {
 		background-color: transparent;
 		border: none;
 		padding: 0;
 		cursor: pointer;
-		transition: opacity 0.3s ease;
 		opacity: 1;
+	}
+
+	/* buttons with border since they have label text */
+	:global(button.border) {
+		display: flex;
+		background: none;
+		border: 2px solid var(--border-color);
+		border-radius: 0.5rem;
+		cursor: pointer;
+		padding: 0.5rem;
+		height: 100%;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		cursor: pointer;
+	}
+
+	:global(div.column) {
+		display: grid;
+		flex-direction: column;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	:global(div.horizontal) {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	:global(div.equispace) {
+		justify-content: space-around;
+	}
+
+	/* add opacity transition when hovering */
+	:global(button.hover) {
+		opacity: 0.7;
+		transition: opacity 0.3s ease;
+	}
+
+	:global(button.hover:hover) {
+		opacity: 1;
+	}
+
+	/* labels inside button */
+	:global(label.in-button) {
+		cursor: pointer;
 	}
 
 	:global(*:focus-visible) {
