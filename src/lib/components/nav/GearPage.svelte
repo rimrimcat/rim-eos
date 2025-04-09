@@ -1,7 +1,7 @@
 <script lang="ts">
 	import {
 		ALL_STATS_REGEX,
-		GearParts,
+		GearPart,
 		type GearSearchView,
 		type GearView,
 		type GearViewStatLong,
@@ -100,23 +100,23 @@
 		'alt resistance': 'alt_res'
 	} as const;
 
-	const OCR_PART_MAP: Record<string, GearParts> = {
-		helm: GearParts.HELMET,
-		helmet: GearParts.HELMET,
-		spaulders: GearParts.SPAULDERS,
-		armor: GearParts.ARMOR,
-		bracers: GearParts.BRACERS,
-		armbands: GearParts.BRACERS,
-		belt: GearParts.BELT,
-		legguards: GearParts.LEGGUARDS,
+	const OCR_PART_MAP: Record<string, GearPart> = {
+		helm: GearPart.HELMET,
+		helmet: GearPart.HELMET,
+		spaulders: GearPart.SPAULDERS,
+		armor: GearPart.ARMOR,
+		bracers: GearPart.BRACERS,
+		armbands: GearPart.BRACERS,
+		belt: GearPart.BELT,
+		legguards: GearPart.LEGGUARDS,
 		//
-		handguards: GearParts.GLOVES,
-		sabatons: GearParts.BOOTS,
+		handguards: GearPart.GLOVES,
+		sabatons: GearPart.BOOTS,
 		//
-		eyepiece: GearParts.VISOR,
-		engine: GearParts.ENGINE,
-		exoskeleton: GearParts.EXOSKELETON,
-		microreactor: GearParts.REACTOR
+		eyepiece: GearPart.VISOR,
+		engine: GearPart.ENGINE,
+		exoskeleton: GearPart.EXOSKELETON,
+		microreactor: GearPart.REACTOR
 	};
 
 	function getRollValue(stat: Stat, value: number): number {
@@ -165,7 +165,7 @@
 		const stats: GearViewStatLong[] = [];
 		const derived: GearViewStatShort[] = [];
 		let id: number = -1;
-		let part: GearParts = GearParts.UNKNOWN;
+		let part: GearPart = GearPart.UNKNOWN;
 		let hash = '';
 		let isEquipped = false;
 
@@ -175,7 +175,7 @@
 					id = value as number;
 					break;
 				case 'part':
-					part = value as GearParts;
+					part = value as GearPart;
 					hash += value;
 					break;
 				case 'isEquipped':
@@ -339,7 +339,7 @@
 			.replace('tactics ', '')
 			.replace('combat ', '')
 			.split(' ')[0];
-		const part = OCR_PART_MAP[partCleanedStr] ?? GearParts.UNKNOWN;
+		const part = OCR_PART_MAP[partCleanedStr] ?? GearPart.UNKNOWN;
 		const isTitan = txt[0].includes('titan');
 		const isEquipped =
 			txt[0].includes('equipped') &&
@@ -434,7 +434,7 @@
 		const extractedVars = [...new Set(query.match(ALL_STATS_REGEX))] as AllStats[];
 
 		function doFiltering(gear: GearView) {
-			const variables: { [key in AllStats]?: number } & { gear?: GearParts } = {};
+			const variables: { [key in AllStats]?: number } & { gear?: GearPart } = {};
 
 			extractedVars.forEach((varName) => {
 				variables[varName] = gear.derived.find((stat) => stat.stat === varName)?.value ?? 0;

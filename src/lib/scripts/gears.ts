@@ -3,7 +3,7 @@ import { type StatGearTitan, type StatGearUser, ALL_STATS_LIST } from '$lib/scri
 /**
  * Enum for different gear slots
  */
-export enum GearParts {
+export enum GearPart {
 	HELMET = 'H',
 	SPAULDERS = 'S',
 	ARMOR = 'A',
@@ -29,7 +29,7 @@ export enum GearParts {
  */
 type GearId = {
 	id: number;
-	part: GearParts;
+	part: GearPart;
 };
 
 /**
@@ -117,7 +117,7 @@ const __allowedRegexLits = [
 	'\\d',
 	'\\!',
 	"'gear'",
-	...Object.values(GearParts).map((value) => `'${value}'`)
+	...Object.values(GearPart).map((value) => `'${value}'`)
 ].join('|');
 const __allowedRegexVars = [...ALL_STATS_LIST].join('|');
 
