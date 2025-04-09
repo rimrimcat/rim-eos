@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { openImageDB } from '$lib/scripts/loader';
+	import { loadObject, openImageDB } from '$lib/scripts/loader';
 	import { onMount, type Component } from 'svelte';
 	import Dialog from './Dialog.svelte';
 	import GearPage from './nav/GearPage.svelte';
@@ -29,62 +29,32 @@
 	let activeComponent = $state('main-page');
 	let CurrentComponent: Component = $derived(navMap[activeComponent] || StatPage);
 
-	// Other stuff
+	// Dialogs
 	let dialogOpen = $state(true);
 
 	// COLOR SCHEMEEEEE
-	let styles = $state({
-		'main-bg-color': '#2F2F37',
-		// Base colors
-		'bg-color': '#38383E',
-		// 'bg-color': '#1e1e2e',
-		'text-color': '#cdd6f4',
-		'title-color': '#cba6f7',
-		'border-color': '#7A7B84',
-
-		// Button colors
-		'button-bg': '#313244',
-		'button-text': '#cdd6f4',
-		'button-border': '#45475a',
-		'button-hover-bg': '#45475a',
-
-		// Primary button colors
-		'button-primary-bg': '#89b4fa',
-		'button-primary-text': '#1e1e2e',
-		'button-primary-border': '#74c7ec',
-		'button-primary-hover-bg': '#74c7ec',
-
-		// Interactive elements
-		'toolbar-border': '#FFFFFFA5',
-		'hover-bg': '#313244',
-		'active-bg': '#45475a',
-		'focus-outline': '#89b4fa',
-
-		// Overlay and shadows
-		'overlay-bg': 'rgba(0, 0, 0, 0.5)',
-		'shadow-color': 'rgba(0, 0, 0, 0.4)',
-
-		// Status colors
-		'error-color': '#f38ba8',
-		'success-color': '#a6e3a1',
-		'warning-color': '#f9e2af',
-		'info-color': '#89dceb'
-	});
+	let styles = $state({});
 
 	onMount(() => {
-		fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-		openImageDB();
-	});
+		// run once
 
-	$effect(() => {
+		// get font size
+		fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+
+		// setup imagedb
+		openImageDB();
+
+		// load styles
+		const _styles = loadObject('styles');
 		const root = document.documentElement;
-		Object.entries(styles).forEach(([key, value]) => {
+		Object.entries(_styles).forEach(([key, value]) => {
 			root.style.setProperty(`--${key}`, value);
 		});
+		styles = _styles;
 	});
 
-	$inspect('mobile detection:', isMobile);
-	$inspect('innerWidth', innerWidth);
+	// $inspect('mobile detection:', isMobile);
+	// $inspect('innerWidth', innerWidth);
 </script>
 
 <svelte:window bind:innerWidth />

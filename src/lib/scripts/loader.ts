@@ -49,12 +49,14 @@ export const DEFAULT_STATS_MAIN = [
 	'4892'
 ];
 
-export const DEFAULT_STYLES = {
+export const DEFAULT_STYLES: Record<string, string> = {
+	'main-bg-color': '#2F2F37',
 	// Base colors
-	'bg-color': '#1e1e2e',
+	'bg-color': '#38383E',
+	// 'bg-color': '#1e1e2e',
 	'text-color': '#cdd6f4',
 	'title-color': '#cba6f7',
-	'border-color': '#313244',
+	'border-color': '#7A7B84',
 
 	// Button colors
 	'button-bg': '#313244',
@@ -69,6 +71,7 @@ export const DEFAULT_STYLES = {
 	'button-primary-hover-bg': '#74c7ec',
 
 	// Interactive elements
+	'toolbar-border': '#FFFFFFA5',
 	'hover-bg': '#313244',
 	'active-bg': '#45475a',
 	'focus-outline': '#89b4fa',
@@ -368,6 +371,11 @@ export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadO
 			}
 
 			return loadedObject;
+		}
+
+		case 'styles': {
+			loadedObject = loadedObject as typeof DEFAULT_STYLES;
+			return loadedObject ? loadedObject : DEFAULT_STYLES;
 		}
 
 		default:
