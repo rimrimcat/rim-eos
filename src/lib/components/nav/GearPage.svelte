@@ -385,7 +385,10 @@
 
 		user_loadouts[current_loadout].equipped_gear[part] = null;
 		gear_views[id].isEquipped = false;
-		saveObject('loadouts_v1', user_loadouts);
+
+		if (saveAfter) {
+			saveObject('loadouts_v1', user_loadouts);
+		}
 	}
 
 	function removeGear(id: number) {
@@ -692,7 +695,7 @@
 				title={gear.isEquipped ? 'Unequip Gear' : 'Equip Gear'}
 				onclick={() => (gear.isEquipped ? unequipGear(gear.id) : equipGear(gear.id))}
 			>
-				<div style="position: relative;">
+				<div style="position: relative; height: 24px;">
 					<ShirtIcon />
 					{#if gear.isEquipped}
 						<div style="position: absolute; top: 0%; left: 0%;">
@@ -742,7 +745,10 @@
 			<button
 				class="border stop-search"
 				id="stop-show"
-				onclick={() => (isShowingEquippedGears = false)}
+				onclick={() => {
+					isShowingEquippedGears = false;
+					hasMeasured = false;
+				}}
 			>
 				<SearchXIcon />
 				<label class="in-button" for="stop-show"> Stop Showing </label>
