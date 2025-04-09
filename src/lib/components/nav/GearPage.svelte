@@ -292,13 +292,23 @@
 					getTitanValue(bestRoll.stat, bestRoll.value) * 0.95 + bestRoll.value;
 				const rainbowTitanValueLabel = formatValue(Format.INTEGER, rainbowTitanValue.toString());
 				RAINBOW_TITAN_STATS.forEach((rainbowStat) => {
-					if (!derived.find((der) => der.stat === rainbowStat)) {
+					const statIdx = derived.findIndex((der) => der.stat === rainbowStat);
+					console.log('stat idx', statIdx);
+
+					if (statIdx === -1) {
+						// add rainbow stat if missing
 						derived.push({
 							stat: rainbowStat,
 							stat_label: STAT_LABELS[rainbowStat],
 							value: rainbowTitanValue,
 							value_label: rainbowTitanValueLabel
 						});
+					} else {
+						// replace value if rainbow is higher
+						if (rainbowTitanValue > derived[statIdx].value) {
+							derived[statIdx].value = rainbowTitanValue;
+							derived[statIdx].value_label = rainbowTitanValueLabel;
+						}
 					}
 				});
 			}
