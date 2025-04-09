@@ -6,6 +6,7 @@
 	} from '$lib/scripts/navMetadata.svelte.ts';
 
 	import {
+		ArrowRightLeftIcon,
 		BoxIcon,
 		CopyPlusIcon,
 		Download,
@@ -114,23 +115,73 @@
 		return key.replace(/[^a-zA-Z0-9]/g, '');
 	}
 
-	function duplicateLoadout() {
-		// duplicate current loadout, use regex to increment numbering to name if needed
-		const newLoadoutName = loadoutName.replace(/(\d+)$/, (match, p1) => {
-			return (parseInt(p1) + 1).toString();
-		});
-		loadouts[newLoadoutName] = {
+	function duplicateLoadout(switchToDupe: boolean = true) {
+		let newLoadoutName = loadoutName;
+		let sanitizedLoadoutName = sanitizeLoadoutKey(newLoadoutName);
+		let counter = 1;
+
+		while (loadouts[sanitizedLoadoutName]) {
+			counter++;
+			newLoadoutName = loadoutName.match(/(.*)\s(\d+)$/)
+				? loadoutName.replace(/(\d+)$/, String(counter))
+				: `${loadoutName} ${counter}`;
+			sanitizedLoadoutName = sanitizeLoadoutKey(newLoadoutName);
+		}
+
+		console.error('sanitized', sanitizedLoadoutName);
+
+		loadouts[sanitizedLoadoutName] = {
 			name: newLoadoutName,
-			description: loadoutDescription,
+			description: loadoutDescription + ` (duplicate from ${loadoutName})`,
 			icon: loadoutIcon
 		};
 
 		// copy image, fetch from db then add to db
 		getImageFromDB(selectedLoadout).then((imageFile) => {
 			if (imageFile) {
-				// Create a new file with the new name
-				const newFile = new File([imageFile], `${newLoadoutName}.jpg`, { type: imageFile.type });
-				addImageToDB(newLoadoutName, newFile);
+				const newFile = new File([imageFile], `${sanitizedLoadoutName}.jpg`, {
+					type: imageFile.type
+				});
+				addImageToDB(sanitizedLoadoutName, newFile);
+			}
+		});
+
+		saveObject('loadouts_v1', loadouts);
+		if (switchToDupe) {
+			switchLoadout(sanitizedLoadoutName);
+		}
+	}
+
+	function deleteCurrentLoadout() {
+		console.error('deleting loadout', selectedLoadout);
+		if (Object.keys(loadouts).length === 1) {
+			console.error('Cannot delete last loadout!');
+			return;
+		}
+
+		delete loadouts[selectedLoadout];
+		deleteImageFromDB(selectedLoadout);
+
+		saveObject('loadouts_v1', loadouts);
+
+		selectedLoadout = Object.keys(loadouts)[0];
+		switchLoadout(selectedLoadout);
+	}
+
+	function switchLoadout(loadout: string) {
+		if (!loadouts[loadout]) {
+			console.error('Loadout not found:', loadout);
+			return;
+		}
+
+		selectedLoadout = loadout;
+
+		loadoutName = loadouts[loadout].name;
+		loadoutDescription = loadouts[loadout].description;
+		loadoutIcon = loadouts[loadout].icon;
+		getImageUrlFromDB(selectedLoadout).then((imageUrl) => {
+			if (imageUrl) {
+				loadoutImageBase64 = imageUrl;
 			}
 		});
 	}
@@ -158,16 +209,26 @@
 				label: 'Duplicate Loadout',
 				lucide: CopyPlusIcon,
 				type: ActionType.BUTTON,
-				callback: () => document.getElementById('srcInput')?.click()
+				callback: () => {
+					duplicateLoadout(true);
+				}
+			},
+			{
+				id: 'switch',
+				label: 'Switch Loadout',
+				lucide: ArrowRightLeftIcon,
+				type: ActionType.BUTTON
 			},
 			{ id: 'import', label: 'Import', lucide: FilePlus2 },
 			{ id: 'export', label: 'Export', lucide: Download },
 			{
-				id: 'reset',
-				label: 'Reset',
+				id: 'delete',
+				label: 'Delete Loadout',
 				lucide: Trash2,
-				type: ActionType.BUTTON
-				// callback: resetLoadout
+				type: ActionType.BUTTON,
+				callback: () => {
+					deleteCurrentLoadout();
+				}
 			}
 		]
 	};
