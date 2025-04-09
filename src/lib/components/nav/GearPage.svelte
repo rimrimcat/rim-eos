@@ -8,7 +8,7 @@
 		type GearViewStatShort,
 		type UserGear
 	} from '$lib/scripts/gears.ts';
-	import { loadObject, saveObject } from '$lib/scripts/loader.ts';
+	import { saveObject } from '$lib/scripts/loader.ts';
 	import {
 		STAT_CONSTANTS,
 		STAT_LABELS,
@@ -24,6 +24,7 @@
 	} from '$lib/scripts/navMetadata.svelte.ts';
 	import { Format, formatValue } from '$lib/scripts/validation.ts';
 
+	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import {
 		CaseSensitiveIcon,
 		DiamondIcon,
@@ -47,9 +48,13 @@
 	import FlexGrid from '../FlexGrid.svelte';
 	import StatIcon from '../StatIcon.svelte';
 
-	let { isMobile = $bindable(false) } = $props();
+	let {
+		isMobile = $bindable(false),
+		user_gears = $bindable([] as UserGear[]),
+		user_loadouts = $bindable({} as AllLoadouts),
+		current_loadout = $bindable('')
+	} = $props();
 
-	let user_gears: UserGear[] = $state(loadObject('gears_v1'));
 	let gear_views: GearView[] = $state([]);
 
 	let prev_search_query: string = $state('');
@@ -161,13 +166,13 @@
 		}
 	}
 
-	async function createGearView(gear: UserGear): Promise<GearView> {
+	async function createGearView(gear: UserGear, equip: boolean = false): Promise<GearView> {
 		const stats: GearViewStatLong[] = [];
 		const derived: GearViewStatShort[] = [];
 		let id: number = -1;
 		let part: GearPart = GearPart.UNKNOWN;
 		let hash = '';
-		let isEquipped = false;
+		let isEquipped = equip || user_loadouts[current_loadout].equipped_gear[gear.part] === gear.id;
 
 		Object.entries(gear).forEach(([key, value]) => {
 			switch (key) {
@@ -177,9 +182,6 @@
 				case 'part':
 					part = value as GearPart;
 					hash += value;
-					break;
-				case 'isEquipped':
-					isEquipped = value as boolean;
 					break;
 				case 'dateAdded':
 					break;
@@ -268,12 +270,13 @@
 			part,
 			stats,
 			hash,
-			derived
+			derived,
+			isEquipped
 		};
 	}
 
-	function addNewGear(gear: UserGear) {
-		createGearView(gear).then((gearView) => {
+	function addNewGear(gear: UserGear, equip: boolean = false) {
+		createGearView(gear, equip).then((gearView) => {
 			if (gear_views.some((gv) => gv.hash === gearView.hash)) {
 				console.log('GearView already exists!');
 				processText = 'Duplicate gear!';
@@ -282,6 +285,9 @@
 
 			user_gears.push(gear);
 			gear_views.push(gearView);
+			if (equip) {
+				equipGear(gear.id);
+			}
 			saveObject('gears_v1', user_gears);
 
 			// reset searching after adding gear
@@ -292,20 +298,20 @@
 	}
 
 	function equipGear(id: number) {
+		console.log('Try to press equipGear!');
 		// search for equipped gear with same part
-		gear_views.forEach((gear) => {
-			if (gear.part === gear_views[id].part && gear.isEquipped) {
-				gear.isEquipped = false;
-				user_gears[gear.id].isEquipped = false;
-			}
-		});
+		const previousPart = user_loadouts[current_loadout].equipped_gear[gear_views[id].part];
+		if (previousPart !== null) {
+			gear_views[previousPart].isEquipped = false;
+		}
 
+		user_loadouts[current_loadout].equipped_gear[gear_views[id].part] = id;
 		gear_views[id].isEquipped = true;
-		user_gears[id].isEquipped = true;
-		saveObject('gears_v1', user_gears);
+		saveObject('loadouts_v1', user_loadouts);
 	}
 
 	function removeGear(id: number) {
+		user_loadouts[current_loadout].equipped_gear[gear_views[id].part] = null;
 		user_gears = user_gears.filter((gear) => gear.id !== id);
 		gear_views = gear_views.filter((gear) => gear.id !== id);
 		search_views = search_views.filter((gear) => gear.id !== id);
@@ -314,6 +320,7 @@
 		decrementGearId(id);
 
 		saveObject('gears_v1', user_gears);
+		saveObject('loadouts_v1', user_loadouts);
 	}
 
 	// OCR
@@ -341,19 +348,20 @@
 			.split(' ')[0];
 		const part = OCR_PART_MAP[partCleanedStr] ?? GearPart.UNKNOWN;
 		const isTitan = txt[0].includes('titan');
-		const isEquipped =
-			txt[0].includes('equipped') &&
-			!gear_views.some((gear_v) => gear_v.part === part && user_gears[gear_v.id].isEquipped);
+		const equip =
+			txt[0].includes('equipped') && // check if any gear is equipped in current loadout
+			user_loadouts[current_loadout].equipped_gear[part] === null;
 		const dateAdded = new Date();
 
 		console.log('part text clean', partCleanedStr);
 		console.log('Titan', isTitan);
-		console.log('Equipped', isEquipped);
+		console.log('Equipped', equip);
+		console.log('Text has equip', txt[0].includes('equipped'));
+		console.log('Part is null', user_loadouts[current_loadout].equipped_gear[part] === null);
 
 		const newGear: UserGear = {
 			id,
 			part,
-			isEquipped,
 			dateAdded
 		};
 
@@ -393,7 +401,7 @@
 			return;
 		}
 
-		addNewGear(newGear);
+		addNewGear(newGear, equip);
 		processText = 'Done!';
 	}
 
@@ -669,11 +677,11 @@
 								</button>
 								<button
 									class="gear-action"
-									class:no-pointer={user_gears[gear.id].isEquipped}
+									class:no-pointer={gear.isEquipped}
 									title="Equip Gear"
-									onclick={() => (user_gears[gear.id].isEquipped ? {} : equipGear(gear.id))}
+									onclick={() => (gear.isEquipped ? {} : equipGear(gear.id))}
 								>
-									<ShirtIcon opacity={user_gears[gear.id].isEquipped ? 0.5 : 1} />
+									<ShirtIcon opacity={gear.isEquipped ? 0.5 : 1} />
 								</button>
 							</div>
 						{/if}
@@ -711,11 +719,11 @@
 							</button>
 							<button
 								class="gear-action"
-								class:no-pointer={user_gears[gear.id].isEquipped}
+								class:no-pointer={gear_views[gear.id].isEquipped}
 								title="Equip Gear"
-								onclick={() => (user_gears[gear.id].isEquipped ? {} : equipGear(gear.id))}
+								onclick={() => (gear_views[gear.id].isEquipped ? {} : equipGear(gear.id))}
 							>
-								<ShirtIcon opacity={user_gears[gear.id].isEquipped ? 0.5 : 1} />
+								<ShirtIcon opacity={gear_views[gear.id].isEquipped ? 0.5 : 1} />
 							</button>
 						</div>
 					</div>
@@ -748,6 +756,7 @@
 	bind:gear={gearInfoGear}
 	bind:isMobile
 	bind:user_gears
+	bind:gear_views
 	onRemoveGear={removeGear}
 	onEquipGear={equipGear}
 />

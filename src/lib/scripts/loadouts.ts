@@ -1,7 +1,7 @@
 import type { GearPart } from './gears';
 
 type EquippedGear = {
-	[key in GearPart]: number;
+	[key in GearPart]: number | null;
 };
 
 export type Loadout = {

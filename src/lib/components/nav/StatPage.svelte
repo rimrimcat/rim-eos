@@ -8,7 +8,7 @@
 	import { type AttributeItem } from '$lib/scripts/stats';
 	import { FLOAT_PERCENT_3D, INTEGER, validateValue } from '$lib/scripts/validation.ts';
 
-	import { ChartNoAxesColumn, Download, FilePlus2, ImagePlus, Trash2 } from '@lucide/svelte';
+	import { ChartNoAxesColumn, ImagePlus, Trash2 } from '@lucide/svelte';
 	import cv from '@techstark/opencv-js';
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
@@ -16,10 +16,10 @@
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
-	let { isMobile = $bindable(false) } = $props();
+	let { isMobile = $bindable(false), user_attributes = $bindable([] as AttributeItem[]) } =
+		$props();
 
 	// State
-	let user_attributes: AttributeItem[] = $state(loadObject('stats_main'));
 	let validated_attributes: AttributeItem[] = $state([]);
 	let editValue: string = $state('');
 	let editingIndex: number | null = $state(null);
@@ -348,8 +348,6 @@
 				type: ActionType.BUTTON,
 				callback: () => (screenshotDialogOpen = true)
 			},
-			{ id: 'import', label: 'Import (NO WORK)', lucide: FilePlus2 },
-			{ id: 'export', label: 'Export (NO WORK)', lucide: Download },
 			{ id: 'reset', label: 'Reset', lucide: Trash2, type: ActionType.BUTTON, callback: resetStats }
 			// { id: 'share', label: 'Share' }
 		]

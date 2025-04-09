@@ -23,23 +23,26 @@
 
 	import {
 		addImageToDB,
+		cloneObject,
 		deleteImageFromDB,
 		getImageFromDB,
 		getImageUrlFromDB,
-		loadObject,
 		saveObject
 	} from '$lib/scripts/loader';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import { type StatGearUser } from '$lib/scripts/stats';
 	import SwitchLoadout from '../dialog/SwitchLoadout.svelte';
 
-	let { isMobile = $bindable(false) } = $props();
+	let {
+		isMobile = $bindable(false),
+		user_loadouts = $bindable({} as AllLoadouts),
+		current_loadout = $bindable('')
+	} = $props();
 
 	// State
+	// let user_loadouts = $state({} as AllLoadouts);
 
-	let loadouts = $state({} as AllLoadouts);
-
-	let selectedLoadout = $state('');
+	// let current_loadout = $state('');
 
 	let loadoutName = $state('');
 	let loadoutDescription = $state('');
@@ -67,12 +70,10 @@
 
 	function toggleEditing() {
 		if (isEditing) {
-			const prevSelectedLoadout = selectedLoadout;
-			loadouts[prevSelectedLoadout] = {
-				name: loadoutName,
-				description: loadoutDescription,
-				icon: loadoutIcon
-			};
+			const prevSelectedLoadout = current_loadout;
+			user_loadouts[prevSelectedLoadout].name = loadoutName;
+			user_loadouts[prevSelectedLoadout].description = loadoutDescription;
+			user_loadouts[prevSelectedLoadout].icon = loadoutIcon;
 
 			const sanitizedLoadoutName = sanitizeLoadoutKey(loadoutName);
 
@@ -90,12 +91,12 @@
 				});
 
 				// rename loadout
-				loadouts[sanitizedLoadoutName] = loadouts[prevSelectedLoadout];
-				delete loadouts[prevSelectedLoadout];
-				selectedLoadout = sanitizedLoadoutName;
+				user_loadouts[sanitizedLoadoutName] = cloneObject(user_loadouts[prevSelectedLoadout]);
+				delete user_loadouts[prevSelectedLoadout];
+				current_loadout = sanitizedLoadoutName;
 			}
 
-			saveObject('loadouts_v1', loadouts);
+			saveObject('loadouts_v1', user_loadouts);
 		}
 
 		isEditing = !isEditing;
@@ -109,7 +110,7 @@
 			};
 			reader.readAsDataURL(file);
 
-			addImageToDB(selectedLoadout, file);
+			addImageToDB(current_loadout, file);
 		}
 	}
 
@@ -122,7 +123,7 @@
 		let sanitizedLoadoutName = sanitizeLoadoutKey(newLoadoutName);
 		let counter = 1;
 
-		while (loadouts[sanitizedLoadoutName]) {
+		while (user_loadouts[sanitizedLoadoutName]) {
 			counter++;
 			newLoadoutName = loadoutName.match(/(.*)\s(\d+)$/)
 				? loadoutName.replace(/(\d+)$/, String(counter))
@@ -132,14 +133,13 @@
 
 		console.error('sanitized', sanitizedLoadoutName);
 
-		loadouts[sanitizedLoadoutName] = {
-			name: newLoadoutName,
-			description: loadoutDescription + ` (duplicate from ${loadoutName})`,
-			icon: loadoutIcon
-		};
+		user_loadouts[sanitizedLoadoutName] = cloneObject(user_loadouts[current_loadout]);
+		user_loadouts[sanitizedLoadoutName].name = newLoadoutName;
+		user_loadouts[sanitizedLoadoutName].description =
+			loadoutDescription + ` (duplicate from ${loadoutName})`;
 
 		// copy image, fetch from db then add to db
-		getImageFromDB(selectedLoadout).then((imageFile) => {
+		getImageFromDB(current_loadout).then((imageFile) => {
 			if (imageFile) {
 				const newFile = new File([imageFile], `${sanitizedLoadoutName}.jpg`, {
 					type: imageFile.type
@@ -148,40 +148,40 @@
 			}
 		});
 
-		saveObject('loadouts_v1', loadouts);
+		saveObject('loadouts_v1', user_loadouts);
 		if (switchToDupe) {
 			switchLoadout(sanitizedLoadoutName);
 		}
 	}
 
 	function deleteCurrentLoadout() {
-		console.error('deleting loadout', selectedLoadout);
-		if (Object.keys(loadouts).length === 1) {
+		console.error('deleting loadout', current_loadout);
+		if (Object.keys(user_loadouts).length === 1) {
 			console.error('Cannot delete last loadout!');
 			return;
 		}
 
-		delete loadouts[selectedLoadout];
-		deleteImageFromDB(selectedLoadout);
+		delete user_loadouts[current_loadout];
+		deleteImageFromDB(current_loadout);
 
-		saveObject('loadouts_v1', loadouts);
+		saveObject('loadouts_v1', user_loadouts);
 
-		selectedLoadout = Object.keys(loadouts)[0];
-		switchLoadout(selectedLoadout);
+		current_loadout = Object.keys(user_loadouts)[0];
+		switchLoadout(current_loadout);
 	}
 
 	function switchLoadout(loadout: string) {
-		if (!loadouts[loadout]) {
+		if (!user_loadouts[loadout]) {
 			console.error('Loadout not found:', loadout);
 			return;
 		}
 
-		selectedLoadout = loadout;
+		current_loadout = loadout;
 
-		loadoutName = loadouts[loadout].name;
-		loadoutDescription = loadouts[loadout].description;
-		loadoutIcon = loadouts[loadout].icon;
-		getImageUrlFromDB(selectedLoadout).then((imageUrl) => {
+		loadoutName = user_loadouts[loadout].name;
+		loadoutDescription = user_loadouts[loadout].description;
+		loadoutIcon = user_loadouts[loadout].icon;
+		getImageUrlFromDB(current_loadout).then((imageUrl) => {
 			if (imageUrl) {
 				loadoutImageBase64 = imageUrl;
 			}
@@ -241,31 +241,13 @@
 	onMount(async () => {
 		registerComponent(id, metadata);
 
-		loadouts = loadObject('loadouts_v1');
-
-		// check if empty object
-		if (Object.keys(loadouts).length === 0) {
-			console.log('No loadouts found, creating default loadout');
-			loadouts = {
-				main: {
-					name: 'main',
-					description: 'No description',
-					icon: 'flame'
-				}
-			};
+		if (Object.keys(user_loadouts).length === 0) {
+			// skip if preload
 		} else {
-			selectedLoadout = Object.keys(loadouts)[0];
-		}
-
-		loadoutName = loadouts[selectedLoadout].name;
-		loadoutDescription = loadouts[selectedLoadout].description;
-		loadoutIcon = loadouts[selectedLoadout].icon;
-
-		loadoutImageBase64 = await getImageUrlFromDB(selectedLoadout);
-		if (loadoutImageBase64) {
-			console.log('Successfully loaded image for loadout:', selectedLoadout);
-		} else {
-			console.log('No image found for loadout:', selectedLoadout);
+			loadoutName = user_loadouts[current_loadout].name;
+			loadoutDescription = user_loadouts[current_loadout].description;
+			loadoutIcon = user_loadouts[current_loadout].icon;
+			loadoutImageBase64 = await getImageUrlFromDB(current_loadout);
 		}
 	});
 
@@ -372,8 +354,8 @@
 
 <SwitchLoadout
 	bind:open={switchLoadoutDialogOpen}
-	bind:loadouts
-	bind:selectedLoadout
+	bind:loadouts={user_loadouts}
+	bind:selectedLoadout={current_loadout}
 	onSwitchLoadout={switchLoadout}
 />
 

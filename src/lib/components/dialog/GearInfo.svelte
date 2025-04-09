@@ -7,6 +7,7 @@
 		open = $bindable(false),
 		gear = $bindable() as GearView | null,
 		user_gears = $bindable() as UserGear[],
+		gear_views = $bindable() as GearView[],
 		isMobile = $bindable(false),
 		onRemoveGear = (id: number) => {},
 		onEquipGear = (id: number) => {}
@@ -85,11 +86,11 @@
 					</button>
 					<button
 						class="gear-action"
-						class:no-pointer={user_gears[gear.id].isEquipped}
+						class:no-pointer={gear.isEquipped}
 						title="Equip Gear"
-						onclick={() => (user_gears[gear.id].isEquipped ? {} : equipGear(gear.id))}
+						onclick={() => (gear.isEquipped ? {} : equipGear(gear.id))}
 					>
-						<ShirtIcon opacity={user_gears[gear.id].isEquipped ? 0.5 : 1} />
+						<ShirtIcon opacity={gear.isEquipped ? 0.5 : 1} />
 					</button>
 				</div>
 			{:else}

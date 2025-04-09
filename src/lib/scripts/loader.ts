@@ -48,7 +48,6 @@ export const DEFAULT_STATS_MAIN = [
 	'10518',
 	'4892'
 ];
-
 export const DEFAULT_STYLES: Record<string, string> = {
 	'main-bg-color': '#2F2F37',
 	// Base colors
@@ -86,6 +85,28 @@ export const DEFAULT_STYLES: Record<string, string> = {
 	'warning-color': '#f9e2af',
 	'info-color': '#89dceb'
 };
+export const DEFAULT_LOADOUTS: AllLoadouts = {
+	main: {
+		name: 'main',
+		description: 'No description new',
+		icon: 'flame',
+		equipped_gear: {
+			H: null,
+			S: null,
+			A: null,
+			C: null,
+			B: null,
+			L: null,
+			G: null,
+			T: null,
+			V: null,
+			N: null,
+			X: null,
+			R: null,
+			U: null
+		}
+	}
+};
 
 export function openImageDB(): Promise<IDBDatabase> {
 	return new Promise((resolve, reject) => {
@@ -114,7 +135,7 @@ export function openImageDB(): Promise<IDBDatabase> {
 }
 
 export async function addImageToDB(id: string, image: File): Promise<void> {
-	console.log('Attempting to add/update file:', image);
+	// console.log('Attempting to add/update file:', image);
 
 	return new Promise((resolve, reject) => {
 		try {
@@ -142,7 +163,7 @@ export async function addImageToDB(id: string, image: File): Promise<void> {
 
 					// Set up transaction event handlers
 					transaction.oncomplete = () => {
-						console.log(`Transaction completed: Image added/updated successfully for ID: ${id}.`);
+						// console.log(`Transaction completed: Image added/updated successfully for ID: ${id}.`);
 						resolve();
 					};
 
@@ -154,7 +175,7 @@ export async function addImageToDB(id: string, image: File): Promise<void> {
 					const putRequest = imageStore.put(dataToAdd);
 
 					putRequest.onsuccess = () => {
-						console.log(`Put request successful for ID: ${id}`);
+						// console.log(`Put request successful for ID: ${id}`);
 					};
 
 					putRequest.onerror = () => {
@@ -173,7 +194,7 @@ export async function addImageToDB(id: string, image: File): Promise<void> {
 }
 
 export async function getImageFromDB(id: string): Promise<File | null> {
-	console.log(`Attempting to retrieve image with ID: ${id}`);
+	// console.log(`Attempting to retrieve image with ID: ${id}`);
 
 	try {
 		const db = await openImageDB();
@@ -188,13 +209,13 @@ export async function getImageFromDB(id: string): Promise<File | null> {
 				getRequest.onsuccess = () => {
 					const imageObject = getRequest.result;
 					if (imageObject) {
-						console.log(`Successfully retrieved image for ID: ${id}`);
+						// console.log(`Successfully retrieved image for ID: ${id}`);
 						// Convert ArrayBuffer to File
 						const blob = new Blob([imageObject.image], { type: 'image/jpeg' });
 						const file = new File([blob], `${id}.jpg`, { type: 'image/jpeg' });
 						resolve(file);
 					} else {
-						console.log(`Image not found in IndexedDB for ID: ${id}`);
+						// console.log(`Image not found in IndexedDB for ID: ${id}`);
 						resolve(null);
 					}
 				};
@@ -227,10 +248,10 @@ export async function getImageUrlFromDB(id: string): Promise<string> {
 
 		if (imageFile) {
 			const imageUrl = URL.createObjectURL(imageFile);
-			console.log(`Successfully created URL for image with ID: ${id}`);
+			// console.log(`Successfully created URL for image with ID: ${id}`);
 			return imageUrl;
 		} else {
-			console.log(`No image found for ID: ${id}`);
+			// console.log(`No image found for ID: ${id}`);
 			return '';
 		}
 	} catch (error) {
@@ -240,7 +261,7 @@ export async function getImageUrlFromDB(id: string): Promise<string> {
 }
 
 export async function deleteImageFromDB(id: string): Promise<void> {
-	console.log(`Attempting to delete image with ID: ${id}`);
+	// console.log(`Attempting to delete image with ID: ${id}`);
 
 	try {
 		const db = await openImageDB();
@@ -252,7 +273,7 @@ export async function deleteImageFromDB(id: string): Promise<void> {
 			const deleteRequest = imageStore.delete(id);
 
 			deleteRequest.onsuccess = () => {
-				console.log(`Successfully deleted image with ID: ${id}`);
+				// console.log(`Successfully deleted image with ID: ${id}`);
 				resolve();
 			};
 
@@ -320,7 +341,7 @@ export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadO
 			loadedObject = loadedObject as AllLoadouts;
 
 			if (!loadedObject) {
-				return {};
+				return DEFAULT_LOADOUTS;
 			}
 
 			try {
@@ -344,10 +365,8 @@ export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadO
 							getRequest.onsuccess = () => {
 								const imageObject = getRequest.result;
 								if (imageObject && loadoutsObj) {
-									// Create a URL from the image data
 									const blob = new Blob([imageObject.image], { type: 'image/jpeg' });
 									const imageUrl = URL.createObjectURL(blob);
-									// Set the image URL in the loadout object
 									loadoutsObj[loadout].image_url = imageUrl;
 								} else {
 									console.log(`Image not found in IndexedDB for loadout: ${loadout}`);
