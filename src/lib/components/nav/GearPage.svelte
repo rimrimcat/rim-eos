@@ -353,11 +353,12 @@
 			user_loadouts[current_loadout].equipped_gear[part] === null;
 		const dateAdded = new Date();
 
-		console.log('part text clean', partCleanedStr);
-		console.log('Titan', isTitan);
-		console.log('Equipped', equip);
-		console.log('Text has equip', txt[0].includes('equipped'));
-		console.log('Part is null', user_loadouts[current_loadout].equipped_gear[part] === null);
+		// console.log('part text clean', partCleanedStr);
+		// console.log('Titan', isTitan);
+		// console.log('Equipped', equip);
+		// console.log('Text has equip', txt[0].includes('equipped'));
+		// console.log('Part is null', user_loadouts[current_loadout].equipped_gear[part] === null);
+		// console.log('TEXT', txt);
 
 		const newGear: UserGear = {
 			id,

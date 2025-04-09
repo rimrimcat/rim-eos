@@ -29,7 +29,7 @@
 		getImageUrlFromDB,
 		saveObject
 	} from '$lib/scripts/loader';
-	import type { AllLoadouts } from '$lib/scripts/loadouts';
+	import type { AllLoadouts, LoadoutType } from '$lib/scripts/loadouts';
 	import { type StatGearUser } from '$lib/scripts/stats';
 	import SwitchLoadout from '../dialog/SwitchLoadout.svelte';
 
@@ -40,10 +40,6 @@
 	} = $props();
 
 	// State
-	// let user_loadouts = $state({} as AllLoadouts);
-
-	// let current_loadout = $state('');
-
 	let loadoutName = $state('');
 	let loadoutDescription = $state('');
 	let loadoutIcon = $state('');
@@ -57,7 +53,8 @@
 	let switchLoadoutDialogOpen = $state(false);
 
 	// Element options
-	const ELEMENTS = [
+	const ELEMENTS: { value: LoadoutType; label: string }[] = [
+		{ value: 'atk', label: 'Atk' },
 		{ value: 'flame', label: 'Flame' },
 		{ value: 'frost', label: 'Frost' },
 		{ value: 'volt', label: 'Volt' },

@@ -1,7 +1,8 @@
 <script lang="ts">
+	import type { LoadoutType } from '$lib/scripts/loadouts';
 	import { type StatGearUser } from '$lib/scripts/stats';
 
-	type StatOrElement = StatGearUser | 'flame' | 'frost' | 'volt' | 'phys' | 'alt';
+	type StatOrElement = StatGearUser | LoadoutType;
 
 	let { stat = 'atk' as StatOrElement, size = '100%' } = $props();
 
