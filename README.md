@@ -17,10 +17,10 @@ some webapp im making since no more content at TOF
 - [x] Gear: allow equipping gears (2025-04-07)
 - [x] Loadout: add way to switch and create loadouts (2025-04-09)
 - [x] Loadout: sync equipped gears to loadout (2025-04-09)
-- [ ] Gear: add element selection
+- [x] Loadout: add element selection (2025-04-09)
+- [ ] Gear: show equipped gears
 - [ ] Gear: add way to manually add gears
 - [ ] Gear: make more accessible for mobile users
-- [ ] Gear: show equipped gears
 - [ ] Gear: add loadouts per element
 - [ ] Gear: add more reponsive toasts for actions (?)
 - [ ] Gear: add my stats and gears as examples

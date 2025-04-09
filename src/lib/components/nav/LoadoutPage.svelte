@@ -325,21 +325,22 @@
 				</button>
 			</div>
 		</div>
+	</div>
 
-		<div class="loadout-settings">
-			<div class="weapon-preset-container">
-				<label for="weapon-preset">Weapon Preset:</label>
-				<select id="weapon-preset" bind:value={selectedWeaponPreset}>
-					{#each weaponPresets as preset}
-						<option value={preset}>{preset}</option>
-					{/each}
-				</select>
-			</div>
+	<div class="loadout-settings">
+		<h2>Weapon Presets</h2>
+		<div class="weapon-preset-container">
+			<label for="weapon-preset">Select a weapon preset:</label>
+			<select id="weapon-preset" bind:value={selectedWeaponPreset}>
+				{#each weaponPresets as preset}
+					<option value={preset}>{preset}</option>
+				{/each}
+			</select>
 		</div>
+
+		<p>Ignore this for now, not implemented yet.</p>
 	</div>
 </div>
-
-<div class="hidden-stuff"></div>
 
 <UploadScreenshot
 	bind:open={uploadDialogOpen}

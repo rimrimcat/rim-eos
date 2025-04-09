@@ -123,6 +123,13 @@
 		microreactor: GearPart.REACTOR
 	};
 
+	const RAINBOW_TITAN_STATS: TitanStat[] = [
+		'titan_flame_atk',
+		'titan_frost_atk',
+		'titan_volt_atk',
+		'titan_phys_atk'
+	];
+
 	function getRollValue(stat: Stat, value: number): number {
 		const stc = STAT_CONSTANTS[stat];
 		return ((value - stc.base) * 2) / (stc.high_roll + stc.low_roll);
@@ -130,7 +137,7 @@
 
 	function getTitanValue(stat: Stat, value: number): number {
 		const stc = STAT_CONSTANTS[stat];
-		return value + stc.titan_base + stc.titan_multiplier * (value - stc.base);
+		return stc.titan_base + stc.titan_multiplier * (value - stc.base);
 	}
 
 	function reverseTitanValue(stat: Stat, titanValue: number): number {
@@ -217,7 +224,7 @@
 
 						titan_key = 'titan_' + _stat;
 						titan_label = 'Titan ' + stat_label;
-						titan_value = getTitanValue(_stat, _stat_value);
+						titan_value = getTitanValue(_stat, _stat_value) + _stat_value;
 						titan_value_label = formatValue(value_format, titan_value.toString());
 					}
 
@@ -253,6 +260,36 @@
 			}
 		});
 		stats.sort((a, b) => (b.roll ?? 0) - (a.roll ?? 0));
+
+		// more derived stats
+		// get highest roll stat
+		const bestRoll = stats[0];
+
+		if (bestRoll.stat.includes('_atk') && !bestRoll.stat.includes('percent')) {
+			const eleAtkStats = stats.filter(
+				(stat) => stat.stat.includes('_atk') && !stat.stat.includes('percent')
+			);
+
+			if (eleAtkStats.length >= 2) {
+				// rainbow gear!
+
+				const rainbowTitanValue =
+					getTitanValue(bestRoll.stat, bestRoll.value) * 0.95 + bestRoll.value;
+				const rainbowTitanValueLabel = formatValue(Format.INTEGER, rainbowTitanValue.toString());
+				RAINBOW_TITAN_STATS.forEach((rainbowStat) => {
+					if (!derived.find((der) => der.stat === rainbowStat)) {
+						derived.push({
+							stat: rainbowStat,
+							stat_label: STAT_LABELS[rainbowStat],
+							value: rainbowTitanValue,
+							value_label: rainbowTitanValueLabel
+						});
+					}
+				});
+			}
+
+			// todo: the same for atk%
+		}
 
 		// TODO: add other derived stats
 
