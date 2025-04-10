@@ -64,7 +64,7 @@
 
 	let isShowingEquippedGears = $state(false);
 	let equipped_gears: number[] = $state([]);
-	let span_length = $derived(Math.ceil(Math.log10(gear_views.length)));
+	let span_length = $derived(Math.ceil(Math.log10(gear_views.length || 10)) + 1);
 
 	// Screenshot Dialog
 	let screenshotDialogOpen = $state(false);

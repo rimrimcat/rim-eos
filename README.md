@@ -21,7 +21,6 @@ some webapp im making since no more content at TOF
 - [x] Gear: show equipped gears (2025-04-10)
 - [ ] Gear: add way to manually add gears
 - [ ] Gear: make more accessible for mobile users
-- [ ] Gear: add loadouts per element
 - [ ] Gear: add more reponsive toasts for actions (?)
 - [ ] Gear: add my stats and gears as examples
 - [ ] Gear: add gear icons based on best stats
