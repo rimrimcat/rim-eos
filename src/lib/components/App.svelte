@@ -11,26 +11,26 @@
 	import Toolbar from './Toolbar.svelte';
 
 	// Toolbar
-	let isCollapsed = $state(true);
-	let mobileToolbarTransform = $state(0);
+	let is_collapsed = $state(true);
+	let mobile_toolbar_transform = $state(0);
 
 	// Detect if mobile
-	let fontSize = $state(0);
-	let innerWidth = $state(1000);
-	let isMobile = $derived((13.75 * fontSize) / innerWidth > 0.25);
+	let font_size = $state(0);
+	let inner_width = $state(1000);
+	let is_mobile = $derived((13.75 * font_size) / inner_width > 0.25);
 
 	// Active Nav
-	const navMap: Record<string, Component> = {
+	const NAV_MAP: Record<string, Component> = {
 		'main-page': MainPage,
 		'loadout-page': LoadoutPage,
 		'stat-page': StatPage,
 		'gear-page': GearPage
 	};
-	let activeComponent = $state('main-page');
-	let CurrentComponent: Component = $derived(navMap[activeComponent] || StatPage);
+	let active_component = $state('main-page');
+	let CurrentComponent: Component = $derived(NAV_MAP[active_component] || StatPage);
 
 	// Dialogs
-	let dialogOpen = $state(true);
+	let dialog_open = $state(true);
 
 	// color scheme
 	let styles = $state({});
@@ -44,7 +44,7 @@
 		// run once
 
 		// get font size
-		fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+		font_size = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
 		// setup imagedb
 		openImageDB();
@@ -67,10 +67,10 @@
 	// $inspect('innerWidth', innerWidth);
 </script>
 
-<svelte:window bind:innerWidth />
+<svelte:window bind:innerWidth={inner_width} />
 
 <Dialog
-	bind:open={dialogOpen}
+	bind:open={dialog_open}
 	title="Note"
 	blocking={true}
 	blur={true}
@@ -82,12 +82,12 @@
 </Dialog>
 
 <div class="app-container">
-	<Toolbar bind:isMobile bind:activeComponent bind:isCollapsed bind:mobileToolbarTransform />
+	<Toolbar bind:is_mobile bind:active_component bind:is_collapsed bind:mobile_toolbar_transform />
 
 	<div
 		class="content-container"
-		class:mobile={isMobile}
-		style="translate: 0 {isMobile ? mobileToolbarTransform : 0}px;"
+		class:mobile={is_mobile}
+		style="translate: 0 {is_mobile ? mobile_toolbar_transform : 0}px;"
 	>
 		<div style="display: none">
 			<MainPage />
@@ -96,7 +96,12 @@
 			<GearPage />
 		</div>
 
-		<CurrentComponent bind:isMobile bind:user_gears bind:user_loadouts bind:current_loadout />
+		<CurrentComponent
+			bind:isMobile={is_mobile}
+			bind:user_gears
+			bind:user_loadouts
+			bind:current_loadout
+		/>
 	</div>
 </div>
 

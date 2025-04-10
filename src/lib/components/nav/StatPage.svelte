@@ -18,7 +18,7 @@
 	import { createWorker } from 'tesseract.js';
 
 	let {
-		isMobile = $bindable(false),
+		is_mobile = $bindable(false),
 		user_gears = $bindable([] as UserGear[]),
 		user_loadouts = $bindable({} as AllLoadouts),
 		current_loadout = $bindable('')
@@ -27,11 +27,11 @@
 	// State
 	let user_attributes: AttributeItem[] = $state([]);
 	let validated_attributes: AttributeItem[] = $state([]);
-	let editValue: string = $state('');
-	let editingIndex: number | null = $state(null);
-	let screenshotDialogOpen = $state(false);
-	let uploadedImageURL: string = $state('');
-	let processText: string = $state('');
+	let edit_value: string = $state('');
+	let editing_index: number | null = $state(null);
+	let screenshot_dialog_open = $state(false);
+	let uploaded_image_url: string = $state('');
+	let process_text: string = $state('');
 
 	// Process and validate attributes
 	function processAttributes() {
@@ -55,9 +55,9 @@
 	}
 
 	function startEditCell(index: number) {
-		editingIndex = index;
+		editing_index = index;
 		const user_value = user_attributes[index].value;
-		editValue = user_value !== undefined ? user_value : '';
+		edit_value = user_value !== undefined ? user_value : '';
 
 		// Automatically select all content when starting to edit the cell
 		setTimeout(() => {
@@ -70,18 +70,18 @@
 
 	function saveEditCell(index: number) {
 		// Update the source attributes array
-		user_attributes[index].value = editValue;
+		user_attributes[index].value = edit_value;
 
 		saveAttributes(user_attributes);
 
 		// Update validated attributes
 		const __use_percent = index === 2 || index === 10;
 		validated_attributes[index].value = __use_percent
-			? validateValue(FLOAT_PERCENT_3D, editValue)
-			: validateValue(INTEGER, editValue);
+			? validateValue(FLOAT_PERCENT_3D, edit_value)
+			: validateValue(INTEGER, edit_value);
 
-		editingIndex = null;
-		editValue = '';
+		editing_index = null;
+		edit_value = '';
 	}
 
 	function handleKeyDown(e: any, index: number) {
@@ -91,7 +91,7 @@
 	}
 
 	// actions
-	function* boxIterator(w: number, h: number, off_x: number = 0, off_y: number = 0) {
+	function* iterateBoxes(w: number, h: number, off_x: number = 0, off_y: number = 0) {
 		const box_width = Math.round(0.23 * w);
 		const box_height = Math.round(0.047 * h);
 
@@ -153,7 +153,7 @@
 		try {
 			// Process boxes in sequence rather than spawning parallel promises
 			for (const [_i, _rect] of Array.from(
-				boxIterator(stat_p2.x - stat_p1.x, stat_p2.y - stat_p1.y, stat_p1.x, stat_p1.y)
+				iterateBoxes(stat_p2.x - stat_p1.x, stat_p2.y - stat_p1.y, stat_p1.x, stat_p1.y)
 			).entries()) {
 				// Update image visualization if callback provided
 				if (src_mat_edit && imageUpdateCallback) {
@@ -181,9 +181,10 @@
 			}
 			await worker.terminate();
 
+			// TODO: add a new prompt here asking if user wants to save stats
 			saveAttributes(user_attributes);
 			processAttributes();
-			processText = 'Done!';
+			process_text = 'Done!';
 		}
 	}
 
@@ -194,7 +195,7 @@
 	) {
 		let edit_src_mat: cv.Mat = new cv.Mat(); // for callback
 
-		processText = 'Cropping...';
+		process_text = 'Cropping...';
 		// remove possibly white pixels from top
 		const _W = src_mat.cols;
 		const _H = src_mat.rows;
@@ -224,7 +225,7 @@
 			imageUpdateCallback(edit_src_mat);
 		}
 
-		processText = 'Determining template size...';
+		process_text = 'Determining template size...';
 		// constants
 		const W = src_mat.size().width;
 		const H = src_mat.size().height;
@@ -250,7 +251,7 @@
 		);
 
 		async function smolMatching() {
-			processText = 'Matching template...';
+			process_text = 'Matching template...';
 
 			const search_center_x = W * (0.64 + some_factor);
 			const search_center_y = H * 0.52;
@@ -310,10 +311,10 @@
 			cropped_src.delete();
 
 			if (maxVal > minimumMatch) {
-				processText = 'Reading fields...';
+				process_text = 'Reading fields...';
 				await processBoxes(src_mat, stat_p1, stat_p2, edit_src_mat, imageUpdateCallback);
 			} else {
-				processText = 'No match found!';
+				process_text = 'No match found!';
 			}
 
 			return maxVal;
@@ -329,13 +330,13 @@
 	}
 
 	function onFileUpload(canvas: HTMLCanvasElement) {
-		if (uploadedImageURL && canvas) {
+		if (uploaded_image_url && canvas) {
 			const img = cv.imread(canvas); // cant read unless from canvas or img id
 
 			matchCharacterStats(img, async (img) => {
 				const canvas = document.createElement('canvas');
 				cv.imshow(canvas, img);
-				uploadedImageURL = canvas.toDataURL();
+				uploaded_image_url = canvas.toDataURL();
 			});
 		}
 	}
@@ -360,7 +361,7 @@
 				label: 'From Screenshot',
 				lucide: ImagePlus,
 				type: ActionType.BUTTON,
-				callback: () => (screenshotDialogOpen = true)
+				callback: () => (screenshot_dialog_open = true)
 			},
 			{ id: 'reset', label: 'Reset', lucide: Trash2, type: ActionType.BUTTON, callback: resetStats }
 			// { id: 'share', label: 'Share' }
@@ -392,11 +393,11 @@
 	<p>This page might undergo overhaul soon, just waiting for gear page to be completed.</p>
 
 	<FlexGrid
-		horizontalGap="0.9rem"
-		verticalGap="1rem"
-		minColumns={1}
-		maxColumns={2}
-		preferDivisible={false}
+		horizontal_gap="0.9rem"
+		vertical_gap="1rem"
+		min_cols={1}
+		max_cols={2}
+		prefer_divisible={false}
 	>
 		{#each validated_attributes as attribute}
 			<div class="stat-cell">
@@ -407,11 +408,11 @@
 					<div class="stat-info">
 						<div class="stat-name">{attribute.name}</div>
 						<div class="stat-value-container">
-							{#if editingIndex === attribute.index}
+							{#if editing_index === attribute.index}
 								<input
 									type="text"
 									class="stat-value"
-									bind:value={editValue}
+									bind:value={edit_value}
 									onblur={() => saveEditCell(attribute.index)}
 									onkeydown={(e) => handleKeyDown(e, attribute.index)}
 								/>
@@ -438,14 +439,14 @@
 
 <UploadScreenshot
 	{onFileUpload}
-	bind:open={screenshotDialogOpen}
-	bind:uploadedImageURL
-	bind:processText
-	uploadType="canvas"
-	promptOnOpen={true}
+	bind:open={screenshot_dialog_open}
+	bind:image={uploaded_image_url}
+	bind:text={process_text}
+	upload_type="canvas"
+	prompt_on_open={true}
 />
 
-<ActionToolbar actions={metadata.actions} bind:isMobile />
+<ActionToolbar actions={metadata.actions} bind:is_mobile />
 
 <style>
 	.stat-panel {

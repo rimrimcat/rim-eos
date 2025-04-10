@@ -447,7 +447,7 @@
 	</div>
 </div>
 
-<ActionToolbar actions={metadata.actions} {bound_objects} bind:isMobile />
+<ActionToolbar actions={metadata.actions} {bound_objects} bind:is_mobile={isMobile} />
 
 <style>
 	.opencv-test {

@@ -11,15 +11,15 @@
 	let {
 		actions = [] as ComponentAction[],
 		bound_objects = $bindable({}),
-		isMobile = $bindable(false)
+		is_mobile: is_mobile = $bindable(false)
 	} = $props();
 
-	let isCollapsed = $state(true);
+	let is_collapsed = $state(true);
 
-	const sliderCount = actions.filter((action) => action.type === ActionType.SLIDER).length;
+	const SLIDER_COUNT = actions.filter((action) => action.type === ActionType.SLIDER).length;
 
 	function toggleCollapse() {
-		isCollapsed = !isCollapsed;
+		is_collapsed = !is_collapsed;
 	}
 
 	function handleToggle(tool: ToggleAction) {
@@ -47,16 +47,17 @@
 
 <div
 	class="nav-tools"
-	class:collapsed={isCollapsed}
-	class:mobile={isMobile}
-	style="height:{5.5 + 3 * (actions.length - sliderCount) + 5 * sliderCount}rem"
+	class:collapsed={is_collapsed}
+	class:mobile={is_mobile}
+	style="height:{5.5 + 3 * (actions.length - SLIDER_COUNT) + 5 * SLIDER_COUNT}rem"
 >
 	<div class="tools-header">
 		<div class="header-content">
-			<span class="header-text" class:collapsed={isCollapsed}>{isCollapsed ? '' : 'Actions'}</span>
+			<span class="header-text" class:collapsed={is_collapsed}>{is_collapsed ? '' : 'Actions'}</span
+			>
 		</div>
 		<button class="collapse-toggle" onclick={toggleCollapse}>
-			{#if isCollapsed}
+			{#if is_collapsed}
 				<Menu />
 			{:else}
 				<ArrowRightToLine />
@@ -67,7 +68,7 @@
 		{#each actions as action}
 			{#if action.type === ActionType.TOGGLE}
 				<button class="toggle-button" onclick={() => handleToggle(action)}>
-					<div class="tool-item toggle-item" title={isCollapsed ? action.label : 'Unset'}>
+					<div class="tool-item toggle-item" title={is_collapsed ? action.label : 'Unset'}>
 						<div class="tool-icon">
 							{#if bound_objects[action.id]}
 								{#if action.lucide_on}
@@ -81,13 +82,13 @@
 								<ToggleLeft fill="brown" />
 							{/if}
 						</div>
-						{#if !isCollapsed}
+						{#if !is_collapsed}
 							<span class="tool-label">{action.label}</span>
 						{/if}
 					</div>
 				</button>
 			{:else if action.type === ActionType.SLIDER}
-				<div class="tool-item slider-item" title={isCollapsed ? action.label : 'Unset'}>
+				<div class="tool-item slider-item" title={is_collapsed ? action.label : 'Unset'}>
 					<div class="slider-icon-text">
 						<div class="tool-icon">
 							{#if action.lucide}
@@ -96,9 +97,9 @@
 								<CircleHelp />
 							{/if}
 						</div>
-						<span class="tool-label" class:collapsed={isCollapsed}>{action.label}</span>
+						<span class="tool-label" class:collapsed={is_collapsed}>{action.label}</span>
 					</div>
-					{#if !isCollapsed}
+					{#if !is_collapsed}
 						<div class="slider-controls">
 							<span class="slider-value">{bound_objects[action.id]}</span>
 							<input
@@ -117,7 +118,7 @@
 				<!-- Button -->
 				<button
 					class="tool-item button-item"
-					title={isCollapsed ? action.label : 'Unset'}
+					title={is_collapsed ? action.label : 'Unset'}
 					onclick={action.callback ?? (() => {})}
 				>
 					<div class="tool-icon">
@@ -127,7 +128,7 @@
 							<CircleHelp />
 						{/if}
 					</div>
-					<span class="tool-label" class:collapsed={isCollapsed}>{action.label}</span>
+					<span class="tool-label" class:collapsed={is_collapsed}>{action.label}</span>
 				</button>
 			{/if}
 		{/each}

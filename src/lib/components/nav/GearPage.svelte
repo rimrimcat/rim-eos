@@ -61,24 +61,24 @@
 	let prev_search_query: string = $state('');
 	let search_views: GearSearchView[] = $state([]);
 
-	let isShowingEquippedGears = $state(false);
+	let is_showing_equipped_gears = $state(false);
 	let equipped_gears: number[] = $state([]);
 	let span_length = $derived(Math.ceil(Math.log10(gear_views.length || 10)) + 1);
 
 	// Screenshot Dialog
-	let screenshotDialogOpen = $state(false);
-	let uploadedImageURL: string = $state('');
-	let processText: string = $state('');
+	let screenshot_dialog_open = $state(false);
+	let uploaded_image_url: string = $state('');
+	let process_text: string = $state('');
 
 	// Search Dialog
-	let searchDialogOpen = $state(false);
-	let isSearching = $state(false);
+	let search_dialog_open = $state(false);
+	let is_searching = $state(false);
 
 	// Gear Info Dialog
-	let gearInfoDialogOpen = $state(false);
-	let gearInfoGear: GearView | null = $state(null);
+	let gear_info_dialog_open = $state(false);
+	let gear_info_gear: GearView | null = $state(null);
 
-	let hasMeasured = $state(false); // for triggering flexGrid itemWidth update
+	let has_measured = $state(false); // for triggering flexGrid itemWidth update
 
 	// html
 	const GRID_ORDERING = [
@@ -341,7 +341,7 @@
 		createGearView(gear, equip).then((gearView) => {
 			if (gear_views.some((gv) => gv.hash === gearView.hash)) {
 				console.log('GearView already exists!');
-				processText = 'Duplicate gear!';
+				process_text = 'Duplicate gear!';
 				return;
 			}
 
@@ -355,7 +355,7 @@
 			// reset searching after adding gear
 			search_views = [];
 			prev_search_query = '';
-			isSearching = false;
+			is_searching = false;
 		});
 	}
 
@@ -423,7 +423,7 @@
 		const worker = await createWorker('eng');
 		const data_url = canvas.toDataURL();
 
-		processText = 'Detecting fields...';
+		process_text = 'Detecting fields...';
 		const ret = await worker.recognize(data_url);
 
 		await worker.terminate();
@@ -499,11 +499,11 @@
 		}
 
 		addNewGear(newGear, equip);
-		processText = 'Done!';
+		process_text = 'Done!';
 	}
 
 	function onFileUpload(canvas: HTMLCanvasElement) {
-		if (uploadedImageURL && canvas) {
+		if (uploaded_image_url && canvas) {
 			doGearOCR(canvas);
 		}
 	}
@@ -575,8 +575,8 @@
 	}
 
 	async function onGearSearch(query: string) {
-		isSearching = true;
-		searchDialogOpen = false;
+		is_searching = true;
+		search_dialog_open = false;
 
 		// disable these while in search mode
 		bound_objects.fourStatMode = false;
@@ -591,8 +591,8 @@
 	}
 
 	function showGearInfo(gear: GearView) {
-		gearInfoGear = gear;
-		gearInfoDialogOpen = true;
+		gear_info_gear = gear;
+		gear_info_dialog_open = true;
 	}
 
 	// register
@@ -629,11 +629,11 @@
 				label: 'Extended Stats',
 				type: ActionType.TOGGLE,
 				callback: () => {
-					if (isSearching) {
+					if (is_searching) {
 						return;
 					}
 					bound_objects.fourStatMode = !bound_objects.fourStatMode;
-					hasMeasured = false;
+					has_measured = false;
 				},
 				lucide_on: LayoutGridIcon,
 				lucide_off: SquareIcon
@@ -644,7 +644,7 @@
 				type: ActionType.TOGGLE,
 				callback: () => {
 					bound_objects.iconStats = !bound_objects.iconStats;
-					hasMeasured = false;
+					has_measured = false;
 				},
 				lucide_on: DiamondIcon,
 				lucide_off: CaseSensitiveIcon
@@ -654,12 +654,12 @@
 				label: 'Titan Stats',
 				type: ActionType.TOGGLE,
 				callback: () => {
-					if (isSearching) {
+					if (is_searching) {
 						return;
 					}
 
 					bound_objects.titanMode = !bound_objects.titanMode;
-					hasMeasured = false;
+					has_measured = false;
 				},
 				lucide_on: SparklesIcon,
 				lucide_off: SparkleIcon
@@ -749,22 +749,22 @@
 			</div>
 		{/if}
 
-		{#if isSearching}
+		{#if is_searching}
 			<p>Searching for: {prev_search_query}</p>
 
-			<button class="border red-bg" id="stop-search" onclick={() => (isSearching = false)}>
+			<button class="border red-bg" id="stop-search" onclick={() => (is_searching = false)}>
 				<SearchXIcon />
 				<label class="in-button" for="stop-search"> Stop Searching </label>
 			</button>
-		{:else if isShowingEquippedGears}
+		{:else if is_showing_equipped_gears}
 			<p>Showing equipped gears.</p>
 
 			<button
 				class="border red-bg"
 				id="stop-show"
 				onclick={() => {
-					isShowingEquippedGears = false;
-					hasMeasured = false;
+					is_showing_equipped_gears = false;
+					has_measured = false;
 				}}
 			>
 				<SearchXIcon />
@@ -772,11 +772,11 @@
 			</button>
 		{:else}
 			<div class="horizontal">
-				<button class="border" id="add-gear" onclick={() => (screenshotDialogOpen = true)}>
+				<button class="border" id="add-gear" onclick={() => (screenshot_dialog_open = true)}>
 					<ImagePlusIcon />
 					<label class="in-button" for="add-gear">Add Gear</label>
 				</button>
-				<button class="border" id="start-search" onclick={() => (searchDialogOpen = true)}>
+				<button class="border" id="start-search" onclick={() => (search_dialog_open = true)}>
 					<SearchIcon />
 					<label class="in-button" for="start-search">Search Gear</label>
 				</button>
@@ -785,8 +785,8 @@
 					id="show-equipped"
 					onclick={() => {
 						updateEquippedGears();
-						isShowingEquippedGears = true;
-						hasMeasured = false;
+						is_showing_equipped_gears = true;
+						has_measured = false;
 					}}
 				>
 					<ShirtIcon />
@@ -799,12 +799,12 @@
 	<div class="noslider-x gear-grid">
 		<FlexGrid
 			by_column={false}
-			maxColumns={isShowingEquippedGears ? 2 : 4}
-			verticalGap="0rem"
-			horizontalGap="5rem"
-			bind:hasMeasured
+			max_cols={is_showing_equipped_gears ? 2 : 4}
+			vertical_gap="0rem"
+			horizontal_gap="5rem"
+			bind:has_measured
 		>
-			{#if gear_views.length !== 0 && !isSearching && !isShowingEquippedGears}
+			{#if gear_views.length !== 0 && !is_searching && !is_showing_equipped_gears}
 				{#each gear_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
 						<span style="width: {span_length * 0.75}rem">{gear.id}</span>
@@ -858,7 +858,7 @@
 						{/if}
 					</div>
 				{/each}
-			{:else if search_views.length !== 0 && isSearching}
+			{:else if search_views.length !== 0 && is_searching}
 				{#each search_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
 						<span style="width: {span_length * 0.75}rem">{gear.id}</span>
@@ -880,7 +880,7 @@
 						{@render gear_actions(gear_views[gear.id])}
 					</div>
 				{/each}
-			{:else if isShowingEquippedGears}
+			{:else if is_showing_equipped_gears}
 				{#each equipped_gears as gearId, partIndex}
 					<div class="gear-cell gear-id-{gearId}">
 						<span style="max-width: {span_length * 0.75}rem; width: {span_length * 0.75}rem"
@@ -909,15 +909,15 @@
 
 <UploadScreenshot
 	{onFileUpload}
-	bind:open={screenshotDialogOpen}
-	bind:uploadedImageURL
-	bind:processText
+	bind:open={screenshot_dialog_open}
+	bind:image={uploaded_image_url}
+	bind:text={process_text}
 />
 
 <GearInfo
-	bind:open={gearInfoDialogOpen}
-	bind:gear={gearInfoGear}
-	bind:isMobile
+	bind:open={gear_info_dialog_open}
+	bind:gear={gear_info_gear}
+	bind:is_mobile={isMobile}
 	bind:user_gears
 	bind:gear_views
 	onRemoveGear={removeGear}
@@ -925,9 +925,9 @@
 	onUnequipGear={unequipGear}
 />
 
-<GearSearch bind:open={searchDialogOpen} bind:isMobile onConfirmSearch={onGearSearch} />
+<GearSearch bind:open={search_dialog_open} bind:isMobile onConfirmSearch={onGearSearch} />
 
-<ActionToolbar actions={metadata.actions} bind:bound_objects bind:isMobile />
+<ActionToolbar actions={metadata.actions} bind:bound_objects bind:is_mobile={isMobile} />
 
 <style>
 	.gear-grid {

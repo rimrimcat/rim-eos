@@ -32,23 +32,23 @@
 	import { onMount } from 'svelte';
 
 	let {
-		isMobile = $bindable(false),
+		is_mobile = $bindable(false),
 		user_loadouts = $bindable({} as AllLoadouts),
 		current_loadout = $bindable('')
 	} = $props();
 
 	// State
-	let loadoutName = $state('');
-	let loadoutDescription = $state('');
-	let loadoutIcon = $state('');
-	let loadoutImageBase64 = $state('');
+	let loadout_name = $state('');
+	let loadout_desc = $state('');
+	let loadout_icon = $state('');
+	let loadout_image = $state('');
 
-	let selectedWeaponPreset = $state('Preset 1');
-	let isEditing = $state(false);
+	let selected_weapon_preset = $state('Preset 1');
+	let is_editing = $state(false);
 
 	// Dialog
-	let uploadDialogOpen = $state(false);
-	let switchLoadoutDialogOpen = $state(false);
+	let upload_dialog_open = $state(false);
+	let switch_loadout_dialog_open = $state(false);
 
 	// Element options
 	const ELEMENTS: { value: LoadoutType; label: string }[] = [
@@ -61,16 +61,16 @@
 	];
 
 	// Weapon preset options
-	const weaponPresets = ['Preset 1', 'Preset 2', 'Preset 3', 'Custom Preset'];
+	const WEAPON_PRESETS = ['Preset 1', 'Preset 2', 'Preset 3', 'Custom Preset'];
 
 	function toggleEditing() {
-		if (isEditing) {
+		if (is_editing) {
 			const prevSelectedLoadout = current_loadout;
-			user_loadouts[prevSelectedLoadout].name = loadoutName;
-			user_loadouts[prevSelectedLoadout].description = loadoutDescription;
-			user_loadouts[prevSelectedLoadout].icon = loadoutIcon;
+			user_loadouts[prevSelectedLoadout].name = loadout_name;
+			user_loadouts[prevSelectedLoadout].description = loadout_desc;
+			user_loadouts[prevSelectedLoadout].icon = loadout_icon;
 
-			const sanitizedLoadoutName = sanitizeLoadoutKey(loadoutName);
+			const sanitizedLoadoutName = sanitizeLoadoutKey(loadout_name);
 
 			if (sanitizedLoadoutName !== prevSelectedLoadout) {
 				// copy image
@@ -94,14 +94,14 @@
 			saveObject('loadouts_v1', user_loadouts);
 		}
 
-		isEditing = !isEditing;
+		is_editing = !is_editing;
 	}
 
 	async function handleImageUpload(file: File) {
 		if (file) {
 			const reader = new FileReader();
 			reader.onload = (e) => {
-				loadoutImageBase64 = e.target?.result as string;
+				loadout_image = e.target?.result as string;
 			};
 			reader.readAsDataURL(file);
 
@@ -114,15 +114,15 @@
 	}
 
 	function duplicateLoadout(switchToDupe: boolean = true) {
-		let newLoadoutName = loadoutName;
+		let newLoadoutName = loadout_name;
 		let sanitizedLoadoutName = sanitizeLoadoutKey(newLoadoutName);
 		let counter = 1;
 
 		while (user_loadouts[sanitizedLoadoutName]) {
 			counter++;
-			newLoadoutName = loadoutName.match(/(.*)\s(\d+)$/)
-				? loadoutName.replace(/(\d+)$/, String(counter))
-				: `${loadoutName} ${counter}`;
+			newLoadoutName = loadout_name.match(/(.*)\s(\d+)$/)
+				? loadout_name.replace(/(\d+)$/, String(counter))
+				: `${loadout_name} ${counter}`;
 			sanitizedLoadoutName = sanitizeLoadoutKey(newLoadoutName);
 		}
 
@@ -131,7 +131,7 @@
 		user_loadouts[sanitizedLoadoutName] = cloneObject(user_loadouts[current_loadout]);
 		user_loadouts[sanitizedLoadoutName].name = newLoadoutName;
 		user_loadouts[sanitizedLoadoutName].description =
-			loadoutDescription + ` (duplicate from ${loadoutName})`;
+			loadout_desc + ` (duplicate from ${loadout_name})`;
 
 		// copy image, fetch from db then add to db
 		getImageFromDB(current_loadout).then((imageFile) => {
@@ -173,12 +173,12 @@
 
 		current_loadout = loadout;
 
-		loadoutName = user_loadouts[loadout].name;
-		loadoutDescription = user_loadouts[loadout].description;
-		loadoutIcon = user_loadouts[loadout].icon;
+		loadout_name = user_loadouts[loadout].name;
+		loadout_desc = user_loadouts[loadout].description;
+		loadout_icon = user_loadouts[loadout].icon;
 		getImageUrlFromDB(current_loadout).then((imageUrl) => {
 			if (imageUrl) {
-				loadoutImageBase64 = imageUrl;
+				loadout_image = imageUrl;
 			}
 		});
 	}
@@ -207,7 +207,7 @@
 				lucide: ArrowRightLeftIcon,
 				type: ActionType.BUTTON,
 				callback: () => {
-					switchLoadoutDialogOpen = true;
+					switch_loadout_dialog_open = true;
 				}
 			},
 			{
@@ -239,10 +239,10 @@
 		if (Object.keys(user_loadouts).length === 0) {
 			// skip if preload
 		} else {
-			loadoutName = user_loadouts[current_loadout].name;
-			loadoutDescription = user_loadouts[current_loadout].description;
-			loadoutIcon = user_loadouts[current_loadout].icon;
-			loadoutImageBase64 = await getImageUrlFromDB(current_loadout);
+			loadout_name = user_loadouts[current_loadout].name;
+			loadout_desc = user_loadouts[current_loadout].description;
+			loadout_icon = user_loadouts[current_loadout].icon;
+			loadout_image = await getImageUrlFromDB(current_loadout);
 		}
 	});
 
@@ -256,9 +256,9 @@
 		<div class="loadout-content">
 			<div class="loadout-info">
 				<div class="loadout-header">
-					{#if isEditing}
+					{#if is_editing}
 						<div class="element-selector">
-							<select id="element-select" bind:value={loadoutIcon}>
+							<select id="element-select" bind:value={loadout_icon}>
 								{#each ELEMENTS as element}
 									<option value={element.value}>{element.label}</option>
 								{/each}
@@ -268,12 +268,12 @@
 							<input
 								id="loadout-name"
 								type="text"
-								bind:value={loadoutName}
+								bind:value={loadout_name}
 								placeholder="Enter loadout name"
 							/>
 							<textarea
 								id="loadout-description"
-								bind:value={loadoutDescription}
+								bind:value={loadout_desc}
 								placeholder="Enter loadout description"
 								rows="3"
 							></textarea>
@@ -282,20 +282,20 @@
 						<div class="loadout-title-area">
 							<div class="element-display">
 								<div class="element-icon">
-									<StatIcon stat={loadoutIcon as StatGearUser} size="2rem" />
+									<StatIcon stat={loadout_icon as StatGearUser} size="2rem" />
 								</div>
 							</div>
 							<div class="loadout-name-display">
-								<span class="loadout-name">{loadoutName}</span>
+								<span class="loadout-name">{loadout_name}</span>
 							</div>
 						</div>
 						<div class="loadout-description-display">
-							<p>{loadoutDescription}</p>
+							<p>{loadout_desc}</p>
 						</div>
 					{/if}
 
 					<div class="edit-button-container">
-						{#if isEditing}
+						{#if is_editing}
 							<button class="edit-button" onclick={toggleEditing} title="Save changes">
 								<Save size={18} />
 							</button>
@@ -310,13 +310,13 @@
 
 			<div class="loadout-image-container">
 				<button
-					class={loadoutImageBase64 ? 'image' : 'image'}
-					onclick={() => (uploadDialogOpen = true)}
-					disabled={!isEditing}
+					class={loadout_image ? 'image' : 'image'}
+					onclick={() => (upload_dialog_open = true)}
+					disabled={!is_editing}
 					aria-label="Upload image"
 				>
-					{#if loadoutImageBase64}
-						<img class="user-upload" id="user-upload" src={loadoutImageBase64} alt="Loadout" />
+					{#if loadout_image}
+						<img class="user-upload" id="user-upload" src={loadout_image} alt="Loadout" />
 					{:else}
 						<ImagePlus size={64} class="upload-icon" />
 					{/if}
@@ -329,8 +329,8 @@
 		<h2>Weapon Presets</h2>
 		<div class="weapon-preset-container">
 			<label for="weapon-preset">Select a weapon preset:</label>
-			<select id="weapon-preset" bind:value={selectedWeaponPreset}>
-				{#each weaponPresets as preset}
+			<select id="weapon-preset" bind:value={selected_weapon_preset}>
+				{#each WEAPON_PRESETS as preset}
 					<option value={preset}>{preset}</option>
 				{/each}
 			</select>
@@ -341,21 +341,21 @@
 </div>
 
 <UploadScreenshot
-	bind:open={uploadDialogOpen}
+	bind:open={upload_dialog_open}
 	onFileUpload={handleImageUpload}
-	uploadType="file"
-	promptOnOpen={true}
-	closeOnUpload={true}
+	upload_type="file"
+	prompt_on_open={true}
+	close_on_upload={true}
 />
 
 <SwitchLoadout
-	bind:open={switchLoadoutDialogOpen}
+	bind:open={switch_loadout_dialog_open}
 	bind:loadouts={user_loadouts}
-	bind:selectedLoadout={current_loadout}
+	bind:selected_loadout={current_loadout}
 	onSwitchLoadout={switchLoadout}
 />
 
-<ActionToolbar actions={metadata.actions} bind:isMobile />
+<ActionToolbar actions={metadata.actions} bind:is_mobile />
 
 <style>
 	.loadout-page {

@@ -8,7 +8,7 @@
 		gear = $bindable() as GearView | null,
 		user_gears = $bindable() as UserGear[],
 		gear_views = $bindable() as GearView[],
-		isMobile = $bindable(false),
+		is_mobile = $bindable(false),
 		onRemoveGear = (id: number) => {},
 		onEquipGear = (id: number) => {},
 		onUnequipGear = (id: number) => {}

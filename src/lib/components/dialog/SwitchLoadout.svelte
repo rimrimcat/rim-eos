@@ -9,7 +9,7 @@
 	let {
 		open = $bindable(false),
 		loadouts = $bindable({} as AllLoadouts),
-		selectedLoadout = $bindable(''),
+		selected_loadout = $bindable(''),
 		onSwitchLoadout = (loadoutKey: string) => {}
 	} = $props();
 
@@ -21,17 +21,17 @@
 
 <Dialog title="Switch Loadout" bind:open>
 	<div class="switch-loadout-dialog">
-		<FlexGrid maxColumns={3} horizontalGap="1rem" verticalGap="1rem">
+		<FlexGrid max_cols={3} horizontal_gap="1rem" vertical_gap="1rem">
 			{#if Object.keys(loadouts).length > 0}
 				{#each Object.entries(loadouts) as [loadoutKey, loadout]}
 					<div
 						class="loadout-item"
-						class:selected={loadoutKey === selectedLoadout}
+						class:selected={loadoutKey === selected_loadout}
 						onclick={() => handleLoadoutClick(loadoutKey)}
 						onkeydown={(e) => e.key === 'Enter' && handleLoadoutClick(loadoutKey)}
 						tabindex="0"
 						role="button"
-						aria-pressed={loadoutKey === selectedLoadout}
+						aria-pressed={loadoutKey === selected_loadout}
 					>
 						<div class="loadout-icon">
 							<StatIcon stat={loadout.icon as StatGearUser} size="2rem" />
@@ -40,7 +40,7 @@
 							<div class="loadout-name">{loadout.name}</div>
 							<div class="loadout-description">{loadout.description}</div>
 						</div>
-						{#if loadoutKey === selectedLoadout}
+						{#if loadoutKey === selected_loadout}
 							<div class="current-indicator">
 								<ArrowRightIcon size="1.2rem" />
 							</div>

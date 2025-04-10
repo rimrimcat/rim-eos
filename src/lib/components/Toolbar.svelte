@@ -5,48 +5,48 @@
 	import { fade, fly, slide } from 'svelte/transition';
 
 	let {
-		isMobile = $bindable(false),
-		activeComponent = $bindable('stat-page'),
-		isCollapsed = $bindable(false),
-		mobileToolbarTransform = $bindable(0)
+		is_mobile = $bindable(false),
+		active_component = $bindable('stat-page'),
+		is_collapsed = $bindable(false),
+		mobile_toolbar_transform = $bindable(0)
 	} = $props();
 
 	const DEFAULT_ACTIVE_COMPONENT = 'stat-panel' as const;
-	let scrollY = $state(0);
-	let toolbarWidth = $state(0);
-	let offsetHeight = $state(0);
-	let collapsedHeight = $state(0);
+	let scroll_y = $state(0);
+	let toolbar_width = $state(0);
+	let offset_height = $state(0);
+	let collapsed_height = $state(0);
 
 	function toggleCollapse() {
-		isCollapsed = !isCollapsed;
+		is_collapsed = !is_collapsed;
 	}
 
 	function selectComponent(id: string) {
-		activeComponent = id;
-		if (isMobile && !isCollapsed) {
-			isCollapsed = true;
+		active_component = id;
+		if (is_mobile && !is_collapsed) {
+			is_collapsed = true;
 		}
 	}
 
 	function setCollapsedHeight() {
-		if (collapsedHeight === 0) {
-			collapsedHeight = offsetHeight;
+		if (collapsed_height === 0) {
+			collapsed_height = offset_height;
 		}
 	}
 
 	$effect(() => {
 		setCollapsedHeight();
-		mobileToolbarTransform = offsetHeight - collapsedHeight;
+		mobile_toolbar_transform = offset_height - collapsed_height;
 	});
 </script>
 
-<svelte:window bind:scrollY />
+<svelte:window bind:scrollY={scroll_y} />
 
-{#if isMobile}
-	<div class="mobile-toolbar" bind:offsetHeight>
+{#if is_mobile}
+	<div class="mobile-toolbar" bind:offsetHeight={offset_height}>
 		<div class="mobile-header">
 			<button class="collapse-toggle" onclick={toggleCollapse}>
-				{#if isCollapsed}
+				{#if is_collapsed}
 					<ChevronDown />
 				{:else}
 					<ChevronUp />
@@ -57,13 +57,13 @@
 			</div>
 		</div>
 
-		{#if !isCollapsed}
+		{#if !is_collapsed}
 			<div transition:slide={{ duration: 300, easing: cubicOut }}>
 				<nav class="mobile-nav">
 					{#each $navItems as item, i}
 						<button
 							class="nav-item mobile-item"
-							class:active={activeComponent === item.id}
+							class:active={active_component === item.id}
 							onclick={() => selectComponent(item.id ?? DEFAULT_ACTIVE_COMPONENT)}
 							in:fly={{ y: 20, delay: i * 50, duration: 250, easing: cubicOut }}
 							out:fade={{ duration: 150 }}
@@ -83,13 +83,13 @@
 {:else}
 	<div
 		class="toolbar"
-		class:collapsed={isCollapsed}
-		style="translate: 0 {scrollY}px; height: {5.5 + 4 * $navItems.length}rem;"
-		bind:offsetWidth={toolbarWidth}
+		class:collapsed={is_collapsed}
+		style="translate: 0 {scroll_y}px; height: {5.5 + 4 * $navItems.length}rem;"
+		bind:offsetWidth={toolbar_width}
 	>
 		<div class="toolbar-header">
 			<button class="collapse-toggle" onclick={toggleCollapse}>
-				{#if isCollapsed}
+				{#if is_collapsed}
 					<Menu />
 				{:else}
 					<ArrowLeftToLine />
@@ -97,7 +97,7 @@
 			</button>
 
 			<div class="logo">
-				{#if !isCollapsed}
+				{#if !is_collapsed}
 					<span class="logo-text" in:fade={{ duration: 200 }}>GearComp</span>
 				{/if}
 			</div>
@@ -107,7 +107,7 @@
 			{#each $navItems as item}
 				<button
 					class="nav-item"
-					class:active={activeComponent === item.id}
+					class:active={active_component === item.id}
 					onclick={() => selectComponent(item.id ?? DEFAULT_ACTIVE_COMPONENT)}
 				>
 					<div class="nav-icon">
@@ -115,7 +115,7 @@
 							<item.lucide />
 						{/if}
 					</div>
-					{#if !isCollapsed}
+					{#if !is_collapsed}
 						<span class="nav-label" in:fade={{ duration: 200 }}>
 							{item.label}
 						</span>
