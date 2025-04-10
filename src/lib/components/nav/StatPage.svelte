@@ -399,7 +399,7 @@
 		max_cols={2}
 		prefer_divisible={false}
 	>
-		{#each validated_attributes as attribute}
+		{#each validated_attributes as attribute, index}
 			<div class="stat-cell">
 				<div class="stat-content">
 					<div class="stat-icon">
@@ -408,21 +408,21 @@
 					<div class="stat-info">
 						<div class="stat-name">{attribute.name}</div>
 						<div class="stat-value-container">
-							{#if editing_index === attribute.index}
+							{#if editing_index === index}
 								<input
 									type="text"
 									class="stat-value"
 									bind:value={edit_value}
-									onblur={() => saveEditCell(attribute.index)}
-									onkeydown={(e) => handleKeyDown(e, attribute.index)}
+									onblur={() => saveEditCell(index)}
+									onkeydown={(e) => handleKeyDown(e, index)}
 								/>
 							{:else}
 								<div
 									class="stat-value-text"
 									style="font-size: 1.25rem"
 									role="textbox"
-									tabindex={10 + attribute.index}
-									ondblclick={() => startEditCell(attribute.index)}
+									tabindex={10 + index}
+									ondblclick={() => startEditCell(index)}
 								>
 									{attribute.value}
 								</div>

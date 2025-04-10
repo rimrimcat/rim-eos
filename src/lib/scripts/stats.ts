@@ -5,7 +5,6 @@ export type AttributeItem = {
 	name: string;
 	icon: string;
 	value: string;
-	index: number;
 };
 
 /**
