@@ -80,6 +80,10 @@
 
 	let has_measured = $state(false); // for triggering flexGrid itemWidth update
 
+	let any_dialog_open = $derived(
+		screenshot_dialog_open || search_dialog_open || gear_info_dialog_open
+	);
+
 	// html
 	const GRID_ORDERING = [
 		{ position: 'top-left', index: 0 },
@@ -734,7 +738,7 @@
 	</div>
 {/snippet}
 
-<div class="full-width">
+<div class="full-width" style={any_dialog_open ? 'overflow: hidden;' : ''}>
 	<div class="block">
 		<h1>Gear List</h1>
 

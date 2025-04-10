@@ -38,6 +38,8 @@
 
 	let stat_adjust_dialog_open = $state(false);
 
+	let any_dialog_open = $derived(screenshot_dialog_open || stat_adjust_dialog_open);
+
 	function processAttributes() {
 		validated_attributes = user_attributes.map((attr, index) => {
 			const __val = attr.value;
@@ -399,7 +401,7 @@
 	<img id="templateImage" src={'./template/template_crit.png'} alt="User uploaded screenshot" />
 </div>
 
-<div class="stat-panel">
+<div class="stat-panel" style={any_dialog_open ? 'overflow: hidden;' : ''}>
 	<h1 class="head">Character Stats</h1>
 	<p>This page might undergo overhaul soon, just waiting for gear page to be completed.</p>
 

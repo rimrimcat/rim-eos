@@ -50,6 +50,8 @@
 	let upload_dialog_open = $state(false);
 	let switch_loadout_dialog_open = $state(false);
 
+	let any_dialog_open = $derived(upload_dialog_open || switch_loadout_dialog_open);
+
 	// Element options
 	const ELEMENTS: { value: LoadoutType; label: string }[] = [
 		{ value: 'atk', label: 'Atk' },
@@ -249,7 +251,7 @@
 	// $inspect('image source', document.getElementById('user-upload')?.src);
 </script>
 
-<div class="loadout-page">
+<div class="loadout-page" style={any_dialog_open ? 'overflow: hidden;' : ''}>
 	<h1 class="Pro">Loadout</h1>
 
 	<div class="loadout-container">
