@@ -444,6 +444,46 @@ export const STAT_CONSTANTS: Record<StatGearUser, StatConstant> = {
 	}
 };
 
+export const USER_STATS_LIST: StatGearUser[] = [
+	'hp',
+	'hp_percent',
+	'atk',
+	'flame_atk',
+	'frost_atk',
+	'volt_atk',
+	'phys_atk',
+	'alt_atk',
+	'ele_atk',
+	'atk_percent',
+	'flame_atk_percent',
+	'frost_atk_percent',
+	'volt_atk_percent',
+	'phys_atk_percent',
+	'alt_atk_percent',
+	'ele_atk_percent',
+	'dmg_percent',
+	'flame_dmg_percent',
+	'frost_dmg_percent',
+	'volt_dmg_percent',
+	'phys_dmg_percent',
+	'alt_dmg_percent',
+	'ele_dmg_percent',
+	'crit',
+	'crit_percent',
+	'res',
+	'flame_res',
+	'frost_res',
+	'volt_res',
+	'alt_res',
+	'phys_res',
+	'res_percent',
+	'flame_res_percent',
+	'frost_res_percent',
+	'volt_res_percent',
+	'alt_res_percent',
+	'phys_res_percent'
+];
+
 export const ALL_STATS_LIST = [
 	'hp',
 	'hp_percent',

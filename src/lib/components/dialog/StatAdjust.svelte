@@ -1,11 +1,23 @@
 <script lang="ts">
+	import type { UserGear } from '$lib/scripts/gears';
+	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import type { AttributeItem } from '$lib/scripts/stats';
+	import { ShirtIcon, SlashIcon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
-	let { open = $bindable(false), raw_attributes = [] as AttributeItem[] } = $props();
+	let {
+		open = $bindable(false),
+		raw_attributes = $bindable([] as AttributeItem[]),
+		user_gears = $bindable([] as UserGear[]),
+		user_loadouts = $bindable({} as AllLoadouts),
+		current_loadout = $bindable('')
+	} = $props();
 
-	// Filter only attack stats from raw_attributes
+	//need to store raw attribute as seperate var on stat page
+
+	let is_stat_with_gear = $state(true);
+
 	let attack_stats = $derived(
 		raw_attributes.filter((attr) => {
 			return [
@@ -34,15 +46,34 @@
 						<img src={attribute.icon} alt={attribute.name + ' icon'} />
 					</div>
 					<div class="vertical-left">
-						<div class="stat-name">{attribute.name}</div>
-						<div class="stat-value-text">{attribute.value}</div>
+						<div class="stat-name">Base {attribute.name}</div>
+						<div class="stat-value-text">{attribute.value} {is_stat_with_gear ? '➜' : ''}</div>
 					</div>
 				</div>
 			{/each}
 		</FlexGrid>
 	</div>
 
-	<div></div>
+	<div class="horizontal center" style="margin-top: 1rem;">
+		<button
+			class="button border"
+			id="raw-toggle"
+			title={is_stat_with_gear ? 'Adjust for gear' : "Don't adjust for gear"}
+			onclick={() => (is_stat_with_gear = !is_stat_with_gear)}
+		>
+			<div style="position: relative; ">
+				<ShirtIcon />
+				{#if !is_stat_with_gear}
+					<div style="position: absolute; top: 0%; left: 0%;">
+						<SlashIcon />
+					</div>
+				{/if}
+			</div>
+			<label class="in-button" for="raw-toggle"
+				>{is_stat_with_gear ? 'Adjust for gear' : "Don't adjust for gear"}</label
+			>
+		</button>
+	</div>
 </Dialog>
 
 <style>

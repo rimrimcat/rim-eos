@@ -10,9 +10,10 @@ export type LoadoutType = 'flame' | 'frost' | 'volt' | 'phys' | 'alt' | 'atk';
 export type Loadout = {
 	name: string;
 	description: string;
-	icon: string;
+	element: LoadoutType;
 	equipped_gear: EquippedGear;
-	base_stats: string[]; // base stat without gear
+	raw_stats: string[]; // raw stat uploaded by user
+	stat_adj?: object;
 	image_url?: string;
 };
 

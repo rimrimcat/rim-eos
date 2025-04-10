@@ -89,7 +89,7 @@ export const DEFAULT_LOADOUTS_RIM: AllLoadouts = {
 	RimExampleLoadout: {
 		name: 'Rim Example Loadout',
 		description: 'f2p frost loadout',
-		icon: 'frost',
+		element: 'frost',
 		equipped_gear: {
 			H: 3,
 			S: 11,
@@ -104,7 +104,7 @@ export const DEFAULT_LOADOUTS_RIM: AllLoadouts = {
 			X: 6,
 			R: 1
 		},
-		base_stats: DEFAULT_STATS_RIM
+		raw_stats: DEFAULT_STATS_RIM
 	}
 };
 export const DEFAULT_GEARS_RIM: UserGear[] = [

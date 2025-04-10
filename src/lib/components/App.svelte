@@ -41,8 +41,6 @@
 	let current_loadout: string = $state('');
 
 	onMount(() => {
-		// run once
-
 		// get font size
 		font_size = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
@@ -55,6 +53,7 @@
 		Object.entries(_styles).forEach(([key, value]) => {
 			root.style.setProperty(`--${key}`, value);
 		});
+
 		styles = _styles;
 
 		// load synced
@@ -203,10 +202,14 @@
 		gap: 1rem;
 	} */
 
-	:global(div.horizontal) {
+	:global(.horizontal) {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 1rem;
+	}
+
+	:global(.horizontal.center) {
+		justify-content: center;
 	}
 
 	:global(div.hori-item) {
@@ -276,7 +279,11 @@
 
 	/* labels inside button */
 	:global(label.in-button) {
+		/* display: flex; */
 		cursor: pointer;
+		text-align: center;
+		vertical-align: middle;
+		pointer-events: none;
 	}
 
 	:global(*:focus-visible) {

@@ -745,7 +745,7 @@
 		{#if Object.keys(user_loadouts).length > 0 && current_loadout}
 			<div class="horizontal" style="gap: 1rem; margin: 1rem;">
 				<div class="hori-item">
-					<StatIcon stat={user_loadouts[current_loadout].icon as Stat} size="2rem" />
+					<StatIcon stat={user_loadouts[current_loadout].element as Stat} size="2rem" />
 				</div>
 				<div class="hori-item">
 					<span>{user_loadouts[current_loadout].name}</span>

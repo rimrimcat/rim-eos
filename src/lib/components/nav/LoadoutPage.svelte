@@ -70,7 +70,7 @@
 			const prevSelectedLoadout = current_loadout;
 			user_loadouts[prevSelectedLoadout].name = loadout_name;
 			user_loadouts[prevSelectedLoadout].description = loadout_desc;
-			user_loadouts[prevSelectedLoadout].icon = loadout_icon;
+			user_loadouts[prevSelectedLoadout].element = loadout_icon;
 
 			const sanitizedLoadoutName = sanitizeLoadoutKey(loadout_name);
 
@@ -177,7 +177,7 @@
 
 		loadout_name = user_loadouts[loadout].name;
 		loadout_desc = user_loadouts[loadout].description;
-		loadout_icon = user_loadouts[loadout].icon;
+		loadout_icon = user_loadouts[loadout].element;
 		getImageUrlFromDB(current_loadout).then((imageUrl) => {
 			if (imageUrl) {
 				loadout_image = imageUrl;
@@ -243,7 +243,7 @@
 		} else {
 			loadout_name = user_loadouts[current_loadout].name;
 			loadout_desc = user_loadouts[current_loadout].description;
-			loadout_icon = user_loadouts[current_loadout].icon;
+			loadout_icon = user_loadouts[current_loadout].element;
 			loadout_image = await getImageUrlFromDB(current_loadout);
 		}
 	});

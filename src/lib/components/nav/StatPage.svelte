@@ -26,8 +26,8 @@
 	} = $props();
 
 	// State
-	let user_attributes: AttributeItem[] = $state([]);
-	let validated_attributes: AttributeItem[] = $state([]);
+	let raw_attributes: AttributeItem[] = $state([]);
+	let attribute_view: AttributeItem[] = $state([]);
 	let edit_value: string = $state('');
 	let editing_index: number | null = $state(null);
 	let process_text: string = $state('');
@@ -41,7 +41,7 @@
 	let any_dialog_open = $derived(screenshot_dialog_open || stat_adjust_dialog_open);
 
 	function processAttributes() {
-		validated_attributes = user_attributes.map((attr, index) => {
+		attribute_view = raw_attributes.map((attr, index) => {
 			const __val = attr.value;
 			const __use_percent = index === 2 || index === 10;
 			return {
@@ -56,13 +56,13 @@
 	function saveAttributes(attributes: AttributeItem[]) {
 		// get stringified array of values
 		const base_stats = attributes.map((attr) => attr.value);
-		user_loadouts[current_loadout].base_stats = base_stats;
+		user_loadouts[current_loadout].raw_stats = base_stats;
 		saveObject('loadouts_v1', user_loadouts);
 	}
 
 	function startEditCell(index: number) {
 		editing_index = index;
-		const user_value = user_attributes[index].value;
+		const user_value = raw_attributes[index].value;
 		edit_value = user_value !== undefined ? user_value : '';
 
 		// Automatically select all content when starting to edit the cell
@@ -76,13 +76,13 @@
 
 	function saveEditCell(index: number) {
 		// Update the source attributes array
-		user_attributes[index].value = edit_value;
+		raw_attributes[index].value = edit_value;
 
-		saveAttributes(user_attributes);
+		saveAttributes(raw_attributes);
 
 		// Update validated attributes
 		const __use_percent = index === 2 || index === 10;
-		validated_attributes[index].value = __use_percent
+		attribute_view[index].value = __use_percent
 			? validateValue(FLOAT_PERCENT_3D, edit_value)
 			: validateValue(INTEGER, edit_value);
 
@@ -145,7 +145,7 @@
 			const data_url = canvas.toDataURL();
 
 			const ret = await worker.recognize(data_url);
-			user_attributes[attr_arr[index]].value = ret.data.text.replace('%', '').replace('/', '');
+			raw_attributes[attr_arr[index]].value = ret.data.text.replace('%', '').replace('/', '');
 
 			// Clean up resources
 			_crop.delete();
@@ -188,7 +188,7 @@
 			await worker.terminate();
 
 			// TODO: add a new prompt here asking if user wants to save stats
-			saveAttributes(user_attributes);
+			saveAttributes(raw_attributes);
 			processAttributes();
 			process_text = 'Done!';
 		}
@@ -386,10 +386,10 @@
 
 		// load and process attributes
 		if (Object.keys(user_loadouts).length > 0) {
-			user_attributes = TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
+			raw_attributes = TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
 				return {
 					...attr,
-					value: user_loadouts[current_loadout].base_stats[index]
+					value: user_loadouts[current_loadout].raw_stats[index]
 				};
 			});
 			processAttributes();
@@ -412,7 +412,7 @@
 		max_cols={2}
 		prefer_divisible={false}
 	>
-		{#each validated_attributes as attribute, index}
+		{#each attribute_view as attribute, index}
 			<div class="stat-cell">
 				<div class="stat-content">
 					<div class="stat-icon">
@@ -459,7 +459,13 @@
 	prompt_on_open={true}
 />
 
-<StatAdjust bind:open={stat_adjust_dialog_open} raw_attributes={user_attributes} />
+<StatAdjust
+	bind:open={stat_adjust_dialog_open}
+	bind:user_gears
+	bind:user_loadouts
+	bind:current_loadout
+	bind:raw_attributes
+/>
 
 <ActionToolbar actions={metadata.actions} bind:is_mobile />
 

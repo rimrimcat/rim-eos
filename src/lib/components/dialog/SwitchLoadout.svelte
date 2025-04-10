@@ -34,7 +34,7 @@
 						aria-pressed={loadoutKey === selected_loadout}
 					>
 						<div class="loadout-icon">
-							<StatIcon stat={loadout.icon as StatGearUser} size="2rem" />
+							<StatIcon stat={loadout.element as StatGearUser} size="2rem" />
 						</div>
 						<div class="loadout-details">
 							<div class="loadout-name">{loadout.name}</div>
