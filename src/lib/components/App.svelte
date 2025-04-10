@@ -7,7 +7,6 @@
 	import GearPage from './nav/GearPage.svelte';
 	import LoadoutPage from './nav/LoadoutPage.svelte';
 	import MainPage from './nav/MainPage.svelte';
-	import OpenCvTest from './nav/OpenCvTest.svelte';
 	import StatPage from './nav/StatPage.svelte';
 	import Toolbar from './Toolbar.svelte';
 
@@ -25,8 +24,7 @@
 		'main-page': MainPage,
 		'loadout-page': LoadoutPage,
 		'stat-page': StatPage,
-		'gear-page': GearPage,
-		'opencv-test': OpenCvTest
+		'gear-page': GearPage
 	};
 	let activeComponent = $state('main-page');
 	let CurrentComponent: Component = $derived(navMap[activeComponent] || StatPage);
@@ -96,7 +94,6 @@
 			<LoadoutPage />
 			<StatPage />
 			<GearPage />
-			<OpenCvTest />
 		</div>
 
 		<CurrentComponent bind:isMobile bind:user_gears bind:user_loadouts bind:current_loadout />
