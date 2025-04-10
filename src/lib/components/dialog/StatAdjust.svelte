@@ -29,7 +29,7 @@
 			prefer_divisible={false}
 		>
 			{#each attack_stats as attribute}
-				<div class="item">
+				<div class="item-flex">
 					<div class="attribute-icon">
 						<img src={attribute.icon} alt={attribute.name + ' icon'} />
 					</div>
