@@ -1,6 +1,7 @@
 <script lang="ts">
-	import type { UserGear } from '$lib/scripts/gears';
+	import type { GearView, UserGear, ValidGearPart } from '$lib/scripts/gears';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
+	import { StatCollection } from '$lib/scripts/stat_ops';
 	import type { AttributeItem } from '$lib/scripts/stats';
 	import { ShirtIcon, SlashIcon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
@@ -10,13 +11,12 @@
 		open = $bindable(false),
 		attribute_view = $bindable([] as AttributeItem[]),
 		user_gears = $bindable([] as UserGear[]),
+		gear_views = $bindable([] as GearView[]),
 		user_loadouts = $bindable({} as AllLoadouts),
 		current_loadout = $bindable('')
 	} = $props();
 
 	//need to store raw attribute as seperate var on stat page
-
-	let adjust_for_gear = $state(true);
 
 	let attack_stats = $derived(
 		attribute_view.filter((attr) => {
@@ -29,6 +29,31 @@
 			].includes(attr.name);
 		})
 	);
+
+	let adjust_for_gear = $state(true);
+	let gear_total = new StatCollection();
+
+	function getGearTotal() {
+		let stat_col = new StatCollection();
+
+		const equipped_gears = user_loadouts[current_loadout].equipped_gear;
+		for (const part in equipped_gears) {
+			const gear_id = equipped_gears[part as ValidGearPart];
+			if (gear_id !== null && gear_id !== -1) {
+				const new_stat = new StatCollection(gear_views[gear_id]);
+				stat_col = stat_col.add(new_stat);
+			}
+		}
+
+		gear_total = stat_col;
+	}
+
+	$effect(() => {
+		if (current_loadout && adjust_for_gear) {
+			getGearTotal();
+			$inspect('gear_total', gear_total.clone_data());
+		}
+	});
 </script>
 
 <Dialog title="Stat Adjustment" bind:open>

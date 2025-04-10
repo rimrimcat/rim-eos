@@ -33,7 +33,7 @@
 	let editing_index: number | null = $state(null);
 	let process_text: string = $state('');
 
-	//Dialogs
+	// Dialogs
 	let screenshot_dialog_open = $state(false);
 	let uploaded_image_url: string = $state('');
 
@@ -42,6 +42,7 @@
 	let any_dialog_open = $derived(screenshot_dialog_open || stat_adjust_dialog_open);
 
 	function processAttributes() {
+		// TODO: later on, this should adjust depending on the not-yet created Loadout.stat_adj object
 		attribute_view = TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
 			const __val = raw_attributes[index];
 			const __use_percent = index === 2 || index === 10;
@@ -457,6 +458,7 @@
 <StatAdjust
 	bind:open={stat_adjust_dialog_open}
 	bind:user_gears
+	bind:gear_views
 	bind:user_loadouts
 	bind:current_loadout
 	bind:attribute_view

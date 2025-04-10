@@ -25,7 +25,10 @@ export class StatCollection {
 				const gearView = stat as GearView;
 
 				gearView.derived.forEach((stat) => {
-					this.data[stat.stat.replace('titan_', '') as StatGearUser] = stat.value;
+					if (stat.stat.startsWith('titan_')) {
+						// console.log('adding titan stat', stat.stat, 'with value', stat.value);
+						this.data[stat.stat.replace('titan_', '') as StatGearUser] = stat.value;
+					}
 				});
 			} else {
 				this.data = stat;
@@ -47,8 +50,10 @@ export class StatCollection {
 		for (const key in other.data) {
 			const otherValue = other.data[key as StatGearUser] ?? 0;
 			if (!(key in new_data)) {
+				// console.log(key, 'assigning as', otherValue);
 				new_data[key as StatGearUser] = otherValue;
 			} else {
+				// console.log(key, new_data[key as StatGearUser], '+', otherValue);
 				new_data[key as StatGearUser] = (new_data[key as StatGearUser] ?? 0) + otherValue;
 			}
 		}
