@@ -22,11 +22,12 @@
 		is_mobile = $bindable(false),
 		user_gears = $bindable([] as UserGear[]),
 		user_loadouts = $bindable({} as AllLoadouts),
-		current_loadout = $bindable('')
+		current_loadout = $bindable(''),
+		gear_views = $bindable([] as UserGear[])
 	} = $props();
 
 	// State
-	let raw_attributes: AttributeItem[] = $state([]);
+	let raw_attributes: string[] = $state([]);
 	let attribute_view: AttributeItem[] = $state([]);
 	let edit_value: string = $state('');
 	let editing_index: number | null = $state(null);
@@ -41,9 +42,10 @@
 	let any_dialog_open = $derived(screenshot_dialog_open || stat_adjust_dialog_open);
 
 	function processAttributes() {
-		attribute_view = raw_attributes.map((attr, index) => {
-			const __val = attr.value;
+		attribute_view = TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
+			const __val = raw_attributes[index];
 			const __use_percent = index === 2 || index === 10;
+
 			return {
 				...attr,
 				value: __use_percent
@@ -53,16 +55,14 @@
 		});
 	}
 
-	function saveAttributes(attributes: AttributeItem[]) {
-		// get stringified array of values
-		const base_stats = attributes.map((attr) => attr.value);
-		user_loadouts[current_loadout].raw_stats = base_stats;
+	function saveAttributes() {
+		user_loadouts[current_loadout].raw_stats = raw_attributes;
 		saveObject('loadouts_v1', user_loadouts);
 	}
 
 	function startEditCell(index: number) {
 		editing_index = index;
-		const user_value = raw_attributes[index].value;
+		const user_value = raw_attributes[index];
 		edit_value = user_value !== undefined ? user_value : '';
 
 		// Automatically select all content when starting to edit the cell
@@ -76,9 +76,8 @@
 
 	function saveEditCell(index: number) {
 		// Update the source attributes array
-		raw_attributes[index].value = edit_value;
-
-		saveAttributes(raw_attributes);
+		raw_attributes[index] = edit_value;
+		saveAttributes();
 
 		// Update validated attributes
 		const __use_percent = index === 2 || index === 10;
@@ -145,7 +144,7 @@
 			const data_url = canvas.toDataURL();
 
 			const ret = await worker.recognize(data_url);
-			raw_attributes[attr_arr[index]].value = ret.data.text.replace('%', '').replace('/', '');
+			raw_attributes[attr_arr[index]] = ret.data.text.replace('%', '').replace('/', '');
 
 			// Clean up resources
 			_crop.delete();
@@ -188,7 +187,7 @@
 			await worker.terminate();
 
 			// TODO: add a new prompt here asking if user wants to save stats
-			saveAttributes(raw_attributes);
+			saveAttributes();
 			processAttributes();
 			process_text = 'Done!';
 		}
@@ -385,13 +384,9 @@
 		registerComponent(id, metadata);
 
 		// load and process attributes
+		// TODO: change the way of loading after setting up
 		if (Object.keys(user_loadouts).length > 0) {
-			raw_attributes = TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
-				return {
-					...attr,
-					value: user_loadouts[current_loadout].raw_stats[index]
-				};
-			});
+			raw_attributes = user_loadouts[current_loadout].raw_stats;
 			processAttributes();
 		}
 	});
@@ -402,7 +397,7 @@
 </div>
 
 <div class="stat-panel" style={any_dialog_open ? 'overflow: hidden;' : ''}>
-	<h1 class="head">Character Stats</h1>
+	<h1>Character Stats</h1>
 	<p>This page might undergo overhaul soon, just waiting for gear page to be completed.</p>
 
 	<FlexGrid
@@ -464,7 +459,7 @@
 	bind:user_gears
 	bind:user_loadouts
 	bind:current_loadout
-	bind:raw_attributes
+	bind:attribute_view
 />
 
 <ActionToolbar actions={metadata.actions} bind:is_mobile />
@@ -476,10 +471,6 @@
 		background-color: var(--bg-color);
 		width: 100%;
 		max-width: 100%;
-	}
-
-	.head {
-		color: var(--title-color);
 	}
 
 	.stat-cell {

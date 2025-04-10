@@ -8,7 +8,7 @@
 
 	let {
 		open = $bindable(false),
-		raw_attributes = $bindable([] as AttributeItem[]),
+		attribute_view = $bindable([] as AttributeItem[]),
 		user_gears = $bindable([] as UserGear[]),
 		user_loadouts = $bindable({} as AllLoadouts),
 		current_loadout = $bindable('')
@@ -19,7 +19,7 @@
 	let adjust_for_gear = $state(true);
 
 	let attack_stats = $derived(
-		raw_attributes.filter((attr) => {
+		attribute_view.filter((attr) => {
 			return [
 				'Physical Attack',
 				'Flame Attack',

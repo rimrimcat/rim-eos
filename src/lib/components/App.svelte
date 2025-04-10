@@ -54,7 +54,6 @@
 		Object.entries(_styles).forEach(([key, value]) => {
 			root.style.setProperty(`--${key}`, value);
 		});
-
 		styles = _styles;
 
 		// load synced
