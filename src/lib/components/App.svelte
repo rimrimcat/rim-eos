@@ -215,6 +215,23 @@
 		justify-content: center;
 	}
 
+	:global(div.vertical) {
+		display: flex;
+		flex-direction: column;
+	}
+
+	:global(div.vertical-left) {
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+	}
+
+	:global(div.item) {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
 	:global(div.equispace) {
 		justify-content: space-around;
 	}
@@ -294,5 +311,22 @@
 
 	.content-container.mobile {
 		margin-top: 3rem;
+	}
+
+	/* specific for attribute icons */
+	:global(.attribute-icon) {
+		width: 2.5rem;
+		height: 2.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	:global(.attribute-icon img) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: none;
+		filter: invert(75%);
 	}
 </style>

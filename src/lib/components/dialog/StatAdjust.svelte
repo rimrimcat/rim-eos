@@ -29,11 +29,11 @@
 			prefer_divisible={false}
 		>
 			{#each attack_stats as attribute}
-				<div class="stat-content">
-					<div class="stat-icon">
+				<div class="item">
+					<div class="attribute-icon">
 						<img src={attribute.icon} alt={attribute.name + ' icon'} />
 					</div>
-					<div class="stat-info">
+					<div class="vertical-left">
 						<div class="stat-name">{attribute.name}</div>
 						<div class="stat-value-text">{attribute.value}</div>
 					</div>
@@ -41,38 +41,11 @@
 			{/each}
 		</FlexGrid>
 	</div>
+
+	<div></div>
 </Dialog>
 
 <style>
-	.stat-content {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-
-	.stat-icon {
-		width: 2.5rem;
-		height: 2.5rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.stat-icon img {
-		display: block;
-		width: 100%;
-		height: 100%;
-		object-fit: none;
-		filter: invert(75%);
-	}
-
-	.stat-info {
-		flex-grow: 1;
-		display: flex;
-		flex-direction: column;
-		gap: 0.1rem;
-	}
-
 	.stat-name {
 		font-size: 1rem;
 		font-weight: bold;
