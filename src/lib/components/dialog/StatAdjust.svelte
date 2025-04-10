@@ -16,7 +16,7 @@
 
 	//need to store raw attribute as seperate var on stat page
 
-	let is_stat_with_gear = $state(true);
+	let adjust_for_gear = $state(true);
 
 	let attack_stats = $derived(
 		raw_attributes.filter((attr) => {
@@ -47,7 +47,7 @@
 					</div>
 					<div class="vertical-left">
 						<div class="stat-name">Base {attribute.name}</div>
-						<div class="stat-value-text">{attribute.value} {is_stat_with_gear ? '➜' : ''}</div>
+						<div class="stat-value-text">{attribute.value} {adjust_for_gear ? '➜' : ''}</div>
 					</div>
 				</div>
 			{/each}
@@ -58,19 +58,19 @@
 		<button
 			class="button border"
 			id="raw-toggle"
-			title={is_stat_with_gear ? 'Adjust for gear' : "Don't adjust for gear"}
-			onclick={() => (is_stat_with_gear = !is_stat_with_gear)}
+			title={adjust_for_gear ? 'Adjust for gear' : "Don't adjust for gear"}
+			onclick={() => (adjust_for_gear = !adjust_for_gear)}
 		>
 			<div style="position: relative; ">
 				<ShirtIcon />
-				{#if !is_stat_with_gear}
+				{#if !adjust_for_gear}
 					<div style="position: absolute; top: 0%; left: 0%;">
 						<SlashIcon />
 					</div>
 				{/if}
 			</div>
 			<label class="in-button" for="raw-toggle"
-				>{is_stat_with_gear ? 'Adjust for gear' : "Don't adjust for gear"}</label
+				>{adjust_for_gear ? 'Adjust for gear' : "Don't adjust for gear"}</label
 			>
 		</button>
 	</div>

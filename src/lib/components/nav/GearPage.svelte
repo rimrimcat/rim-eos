@@ -1,3 +1,175 @@
+<script module lang="ts">
+	export const RAINBOW_TITAN_STATS: TitanStat[] = [
+		'titan_flame_atk',
+		'titan_frost_atk',
+		'titan_volt_atk',
+		'titan_phys_atk'
+	];
+
+	export function getRollValue(stat: Stat, value: number): number {
+		const stc = STAT_CONSTANTS[stat];
+		return ((value - stc.base) * 2) / (stc.high_roll + stc.low_roll);
+	}
+
+	export function getTitanValue(stat: Stat, value: number): number {
+		const stc = STAT_CONSTANTS[stat];
+		return stc.titan_base + stc.titan_multiplier * (value - stc.base);
+	}
+
+	export function reverseTitanValue(stat: Stat, titanValue: number): number {
+		const stc = STAT_CONSTANTS[stat];
+		return (
+			(titanValue - stc.titan_base + stc.titan_multiplier * stc.base) / (1 + stc.titan_multiplier)
+		);
+	}
+
+	export async function createGearView(
+		gear: UserGear,
+		equip: boolean = false,
+		user_loadouts: AllLoadouts,
+		current_loadout: string
+	): Promise<GearView> {
+		const stats: GearViewStatLong[] = [];
+		const derived: GearViewStatShort[] = [];
+		let id: number = -1;
+		let part: GearPart = GearPart.UNKNOWN;
+		let hash = '';
+
+		Object.entries(gear).forEach(([key, value]) => {
+			switch (key) {
+				case 'id':
+					id = value as number;
+					break;
+				case 'part':
+					part = value as GearPart;
+					hash += value;
+					break;
+				case 'dateAdded':
+					break;
+				default:
+					const isTitan = key.startsWith('titan_');
+					const value_format = key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER;
+
+					let _stat: Stat;
+					let _stat_value: number;
+					let stat_label: string;
+					let stat_value_label: string;
+
+					let titan_key: TitanStat;
+					let titan_label: string;
+					let titan_value: number;
+					let titan_value_label: string;
+
+					if (isTitan) {
+						// derive normal stat from corresponding titan stat
+						titan_key = key as TitanStat;
+						titan_label = STAT_LABELS[titan_key] ?? key;
+						titan_value = Number(value);
+						titan_value_label = formatValue(value_format, value as string);
+
+						_stat = key.replace('titan_', '') as Stat;
+						_stat_value = reverseTitanValue(_stat, titan_value);
+						stat_label = STAT_LABELS[_stat] ?? key;
+						stat_value_label = formatValue(value_format, _stat_value.toString());
+					} else {
+						_stat = key as Stat;
+						_stat_value = Number(value);
+						stat_label = STAT_LABELS[_stat] ?? key;
+						stat_value_label = formatValue(value_format, _stat_value.toString());
+
+						titan_key = 'titan_' + _stat;
+						titan_label = 'Titan ' + stat_label;
+						titan_value = getTitanValue(_stat, _stat_value) + _stat_value;
+						titan_value_label = formatValue(value_format, titan_value.toString());
+					}
+
+					stats.push({
+						stat: _stat,
+						stat_label,
+						value: _stat_value,
+						value_label: stat_value_label,
+						roll: getRollValue(_stat, _stat_value),
+						titan_stat_label: titan_label,
+						titan_value_label: titan_value_label
+					});
+
+					// normal stat
+					derived.push({
+						stat: _stat,
+						stat_label,
+						value: _stat_value,
+						value_label: stat_value_label
+					});
+
+					// titan stat
+					derived.push({
+						stat: titan_key as TitanStat,
+						stat_label: titan_label,
+						value: titan_value,
+						value_label: titan_value_label
+					});
+
+					hash += _stat + stat_value_label;
+
+					break;
+			}
+		});
+		stats.sort((a, b) => (b.roll ?? 0) - (a.roll ?? 0));
+
+		// get highest roll stat
+		const bestRoll = stats[0];
+
+		if (bestRoll.stat.includes('_atk') && !bestRoll.stat.includes('percent')) {
+			const eleAtkStats = stats.filter(
+				(stat) => stat.stat.includes('_atk') && !stat.stat.includes('percent')
+			);
+
+			if (eleAtkStats.length >= 2) {
+				// rainbow gear!
+
+				const rainbowTitanValue =
+					getTitanValue(bestRoll.stat, bestRoll.value) * 0.95 + bestRoll.value;
+				const rainbowTitanValueLabel = formatValue(Format.INTEGER, rainbowTitanValue.toString());
+				RAINBOW_TITAN_STATS.forEach((rainbowStat) => {
+					const statIdx = derived.findIndex((der) => der.stat === rainbowStat);
+
+					if (statIdx === -1) {
+						// add rainbow stat if missing
+						derived.push({
+							stat: rainbowStat,
+							stat_label: STAT_LABELS[rainbowStat],
+							value: rainbowTitanValue,
+							value_label: rainbowTitanValueLabel
+						});
+					} else {
+						// replace value if rainbow is higher
+						if (rainbowTitanValue > derived[statIdx].value) {
+							derived[statIdx].value = rainbowTitanValue;
+							derived[statIdx].value_label = rainbowTitanValueLabel;
+						}
+					}
+				});
+			}
+
+			// todo: the same for atk%
+		}
+
+		const isEquipped =
+			equip ||
+			(part !== GearPart.UNKNOWN &&
+				user_loadouts[current_loadout].equipped_gear[gear.part as ValidGearPart] === gear.id);
+
+		return {
+			id,
+			part,
+			stats,
+			hash,
+			derived,
+			isEquipped
+		};
+	}
+</script>
+
 <script lang="ts">
 	import {
 		ALL_STATS_REGEX,
@@ -54,10 +226,10 @@
 		isMobile = $bindable(false),
 		user_gears = $bindable([] as UserGear[]),
 		user_loadouts = $bindable({} as AllLoadouts),
-		current_loadout = $bindable('')
+		current_loadout = $bindable(''),
+		gear_views = $bindable([] as GearView[])
 	} = $props();
 
-	let gear_views: GearView[] = $state([]);
 	let prev_search_query: string = $state('');
 	let search_views: GearSearchView[] = $state([]);
 
@@ -139,23 +311,6 @@
 		'titan_volt_atk',
 		'titan_phys_atk'
 	];
-
-	function getRollValue(stat: Stat, value: number): number {
-		const stc = STAT_CONSTANTS[stat];
-		return ((value - stc.base) * 2) / (stc.high_roll + stc.low_roll);
-	}
-
-	function getTitanValue(stat: Stat, value: number): number {
-		const stc = STAT_CONSTANTS[stat];
-		return stc.titan_base + stc.titan_multiplier * (value - stc.base);
-	}
-
-	function reverseTitanValue(stat: Stat, titanValue: number): number {
-		const stc = STAT_CONSTANTS[stat];
-		return (
-			(titanValue - stc.titan_base + stc.titan_multiplier * stc.base) / (1 + stc.titan_multiplier)
-		);
-	}
 
 	function decrementGearId(start: number = 0) {
 		if (start == user_gears.length) {
@@ -606,28 +761,14 @@
 		titanMode: false
 	});
 
-	const id = 'gear-page';
+	const ID = 'gear-page';
 
-	const metadata: ComponentMetadata = {
-		id,
+	const METADATA: ComponentMetadata = {
+		id: ID,
 		label: 'Gears',
 		lucide: Shirt,
 		showInNav: true,
 		actions: [
-			// {
-			// 	id: 'screenshot',
-			// 	label: 'From Screenshot',
-			// 	lucide: ImagePlusIcon,
-			// 	type: ActionType.BUTTON,
-			// 	callback: () => (screenshotDialogOpen = true)
-			// },
-			// {
-			// 	id: 'search',
-			// 	label: 'Search & Sort',
-			// 	lucide: SearchIcon,
-			// 	type: ActionType.BUTTON,
-			// 	callback: () => (searchDialogOpen = true)
-			// },
 			{
 				id: 'fourStatMode',
 				label: 'Extended Stats',
@@ -683,14 +824,8 @@
 	};
 
 	onMount(() => {
-		registerComponent(id, metadata);
-		Promise.all(user_gears.map((gear) => createGearView(gear))).then((gearViews) => {
-			gear_views = gearViews;
-			console.log('Done processing user_gears');
-		});
+		registerComponent(ID, METADATA);
 	});
-
-	$inspect('span length', span_length);
 </script>
 
 {#snippet gear_actions(gear: GearView)}
@@ -931,7 +1066,7 @@
 
 <GearSearch bind:open={search_dialog_open} bind:isMobile onConfirmSearch={onGearSearch} />
 
-<ActionToolbar actions={metadata.actions} bind:bound_objects bind:is_mobile={isMobile} />
+<ActionToolbar actions={METADATA.actions} bind:bound_objects bind:is_mobile={isMobile} />
 
 <style>
 	.gear-grid {

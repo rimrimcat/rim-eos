@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { UserGear } from '$lib/scripts/gears';
+	import type { GearView, UserGear } from '$lib/scripts/gears';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import { onMount, type Component } from 'svelte';
 	import Dialog from './Dialog.svelte';
-	import GearPage from './nav/GearPage.svelte';
+	import GearPage, { createGearView } from './nav/GearPage.svelte';
 	import LoadoutPage from './nav/LoadoutPage.svelte';
 	import MainPage from './nav/MainPage.svelte';
 	import StatPage from './nav/StatPage.svelte';
@@ -39,6 +39,7 @@
 	let user_gears: UserGear[] = $state([]);
 	let user_loadouts: AllLoadouts = $state({});
 	let current_loadout: string = $state('');
+	let gear_views: GearView[] = $state([]);
 
 	onMount(() => {
 		// get font size
@@ -60,6 +61,14 @@
 		user_gears = loadObject('gears_v1');
 		user_loadouts = loadObject('loadouts_v1');
 		current_loadout = Object.keys(user_loadouts)[0];
+
+		// processing
+		Promise.all(
+			user_gears.map((gear) => createGearView(gear, false, user_loadouts, current_loadout))
+		).then((gearViews) => {
+			gear_views = gearViews;
+			console.log('Done processing user_gears');
+		});
 	});
 
 	// $inspect('mobile detection:', isMobile);
@@ -100,6 +109,7 @@
 			bind:user_gears
 			bind:user_loadouts
 			bind:current_loadout
+			bind:gear_views
 		/>
 	</div>
 </div>
