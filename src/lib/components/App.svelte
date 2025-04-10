@@ -1,7 +1,12 @@
 <script lang="ts">
+	import type { UserGear } from '$lib/scripts/gears';
+	import { loadObject, openImageDB } from '$lib/scripts/loader';
+	import type { AllLoadouts } from '$lib/scripts/loadouts';
+	import type { AttributeItem } from '$lib/scripts/stats';
 	import { onMount, type Component } from 'svelte';
 	import Dialog from './Dialog.svelte';
 	import GearPage from './nav/GearPage.svelte';
+	import LoadoutPage from './nav/LoadoutPage.svelte';
 	import MainPage from './nav/MainPage.svelte';
 	import OpenCvTest from './nav/OpenCvTest.svelte';
 	import StatPage from './nav/StatPage.svelte';
@@ -19,6 +24,7 @@
 	// Active Nav
 	const navMap: Record<string, Component> = {
 		'main-page': MainPage,
+		'loadout-page': LoadoutPage,
 		'stat-page': StatPage,
 		'gear-page': GearPage,
 		'opencv-test': OpenCvTest
@@ -26,61 +32,44 @@
 	let activeComponent = $state('main-page');
 	let CurrentComponent: Component = $derived(navMap[activeComponent] || StatPage);
 
-	// Other stuff
+	// Dialogs
 	let dialogOpen = $state(true);
 
-	// COLOR SCHEMEEEEE
-	let styles = $state({
-		'main-bg-color': '#2F2F37',
-		// Base colors
-		'bg-color': '#38383E',
-		// 'bg-color': '#1e1e2e',
-		'text-color': '#cdd6f4',
-		'title-color': '#cba6f7',
-		'border-color': '#7A7B84',
+	// color scheme
+	let styles = $state({});
 
-		// Button colors
-		'button-bg': '#313244',
-		'button-text': '#cdd6f4',
-		'button-border': '#45475a',
-		'button-hover-bg': '#45475a',
-
-		// Primary button colors
-		'button-primary-bg': '#89b4fa',
-		'button-primary-text': '#1e1e2e',
-		'button-primary-border': '#74c7ec',
-		'button-primary-hover-bg': '#74c7ec',
-
-		// Interactive elements
-		'toolbar-border': '#FFFFFFA5',
-		'hover-bg': '#313244',
-		'active-bg': '#45475a',
-		'focus-outline': '#89b4fa',
-
-		// Overlay and shadows
-		'overlay-bg': 'rgba(0, 0, 0, 0.5)',
-		'shadow-color': 'rgba(0, 0, 0, 0.4)',
-
-		// Status colors
-		'error-color': '#f38ba8',
-		'success-color': '#a6e3a1',
-		'warning-color': '#f9e2af',
-		'info-color': '#89dceb'
-	});
+	// synced data across app
+	let user_gears: UserGear[] = $state([]);
+	let user_attributes: AttributeItem[] = $state([]);
+	let user_loadouts: AllLoadouts = $state({});
+	let current_loadout: string = $state('');
 
 	onMount(() => {
-		fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
-	});
+		// run once
 
-	$effect(() => {
+		// get font size
+		fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+
+		// setup imagedb
+		openImageDB();
+
+		// load styles
+		const _styles = loadObject('styles');
 		const root = document.documentElement;
-		Object.entries(styles).forEach(([key, value]) => {
+		Object.entries(_styles).forEach(([key, value]) => {
 			root.style.setProperty(`--${key}`, value);
 		});
+		styles = _styles;
+
+		// load synced
+		user_gears = loadObject('gears_v1');
+		user_attributes = loadObject('stats_main');
+		user_loadouts = loadObject('loadouts_v1');
+		current_loadout = Object.keys(user_loadouts)[0];
 	});
 
-	$inspect('mobile detection:', isMobile);
-	$inspect('innerWidth', innerWidth);
+	// $inspect('mobile detection:', isMobile);
+	// $inspect('innerWidth', innerWidth);
 </script>
 
 <svelte:window bind:innerWidth />
@@ -107,12 +96,19 @@
 	>
 		<div style="display: none">
 			<MainPage />
+			<LoadoutPage />
 			<StatPage />
 			<GearPage />
 			<OpenCvTest />
 		</div>
 
-		<CurrentComponent bind:isMobile />
+		<CurrentComponent
+			bind:isMobile
+			bind:user_gears
+			bind:user_attributes
+			bind:user_loadouts
+			bind:current_loadout
+		/>
 	</div>
 </div>
 
@@ -168,7 +164,7 @@
 		background-color: var(--button-primary-hover-bg);
 	}
 
-	/* for buttons that contain lucide icons */
+	/* for buttons that contain icons and responsive */
 	:global(button.icon) {
 		background-color: transparent;
 		border: none;
@@ -182,14 +178,95 @@
 		opacity: 1;
 	}
 
-	/* for buttons that contain images*/
+	/* for buttons that contain image */
 	:global(button.image) {
 		background-color: transparent;
 		border: none;
 		padding: 0;
 		cursor: pointer;
-		transition: opacity 0.3s ease;
 		opacity: 1;
+	}
+
+	/* buttons with border since they have label text */
+	:global(button.border) {
+		display: flex;
+		background: none;
+		border: 2px solid var(--border-color);
+		border-radius: 0.5rem;
+		cursor: pointer;
+		padding: 0.5rem;
+		height: 100%;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		cursor: pointer;
+	}
+
+	/* :global(div.column) {
+		display: grid;
+		flex-direction: column;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 1rem;
+	} */
+
+	:global(div.horizontal) {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+	}
+
+	:global(div.hori-item) {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	:global(div.equispace) {
+		justify-content: space-around;
+	}
+
+	:global(div.full) {
+		width: 100%;
+		height: 100%;
+	}
+
+	:global(div.full-width) {
+		width: 100%;
+	}
+
+	:global(div.full-height) {
+		height: 100%;
+	}
+
+	:global(div.block) {
+		display: block;
+		padding: 1rem;
+		width: 100%;
+	}
+
+	:global(div.noslider) {
+		overflow-x: hidden;
+		overflow-y: hidden;
+	}
+
+	:global(div.noslider-x) {
+		overflow-x: hidden;
+	}
+
+	/* add opacity transition when hovering */
+	:global(button.hover) {
+		opacity: 0.7;
+		transition: opacity 0.3s ease;
+	}
+
+	:global(button.hover:hover) {
+		opacity: 1;
+	}
+
+	/* labels inside button */
+	:global(label.in-button) {
+		cursor: pointer;
 	}
 
 	:global(*:focus-visible) {
@@ -218,7 +295,7 @@
 		overflow-y: scroll;
 		overflow-x: hidden;
 		padding-left: 1rem;
-		padding-right: 5rem;
+		padding-right: 6rem;
 		transition: translate 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 

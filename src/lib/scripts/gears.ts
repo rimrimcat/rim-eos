@@ -3,7 +3,7 @@ import { type StatGearTitan, type StatGearUser, ALL_STATS_LIST } from '$lib/scri
 /**
  * Enum for different gear slots
  */
-export enum GearParts {
+export enum GearPart {
 	HELMET = 'H',
 	SPAULDERS = 'S',
 	ARMOR = 'A',
@@ -22,6 +22,46 @@ export enum GearParts {
 	UNKNOWN = 'U'
 }
 
+export type ValidGearPart =
+	| 'H'
+	| 'S'
+	| 'A'
+	| 'C'
+	| 'B'
+	| 'L'
+	| 'G'
+	| 'T'
+	| 'V'
+	| 'N'
+	| 'X'
+	| 'R'
+	| GearPart.SPAULDERS
+	| GearPart.ARMOR
+	| GearPart.BRACERS
+	| GearPart.BELT
+	| GearPart.LEGGUARDS
+	| GearPart.GLOVES
+	| GearPart.BOOTS
+	| GearPart.VISOR
+	| GearPart.ENGINE
+	| GearPart.EXOSKELETON
+	| GearPart.REACTOR;
+
+export const VALID_GEAR_PARTS: ValidGearPart[] = [
+	'H',
+	'S',
+	'A',
+	'C',
+	'B',
+	'L',
+	'G',
+	'T',
+	'V',
+	'N',
+	'X',
+	'R'
+];
+
 /**
  * Identification for a gear piece
  * @property {number} id - Unique numerical identifier
@@ -29,7 +69,7 @@ export enum GearParts {
  */
 type GearId = {
 	id: number;
-	part: GearParts;
+	part: GearPart;
 };
 
 /**
@@ -38,13 +78,6 @@ type GearId = {
 type GearValidStats = {
 	[key in StatGearUser]?: string;
 };
-
-// /**
-//  * Derived titan statistics calculated from gear stats
-//  */
-// type GearDerivedTitanStats = {
-// 	[key in StatGearTitan]?: number;
-// };
 
 /**
  * Represents a single stat on a gear piece with its value
@@ -82,21 +115,26 @@ export type GearViewStatShort = {
 /**
  * Represents raw gear data as stored/input by the user
  */
-export type UserGear = GearId & GearValidStats & { isEquipped: boolean; dateAdded: Date };
+export type UserGear = GearId & GearValidStats & { dateAdded: Date };
 
 /**
  * Processed gear data for display and sorting
  * @property {GearViewStatLong[]} stats - Array of processed stat items
  * @property {GearViewStatShort[]} derived - Calculated stats for sorting purposes
+ * @property {string} hash - Unique identifier for the gear
+ * @property {boolean} isEquipped - Indicates if the gear is currently equipped, see also AllLoadouts
  */
 export type GearView = GearId & {
 	stats: GearViewStatLong[];
-	hash: string;
 	derived: GearViewStatShort[];
+	hash: string;
+	isEquipped: boolean;
 };
 
 /**
  * Gear data for search result
+ * @property {number} id - Sequential identifier
+ * @property {GearPart} part - Gear slot
  * @property {GearViewStatShort[]} stats - Array of processed stat items, references GearView's derived key
  */
 export type GearSearchView = GearId & {
@@ -117,7 +155,7 @@ const __allowedRegexLits = [
 	'\\d',
 	'\\!',
 	"'gear'",
-	...Object.values(GearParts).map((value) => `'${value}'`)
+	...Object.values(GearPart).map((value) => `'${value}'`)
 ].join('|');
 const __allowedRegexVars = [...ALL_STATS_LIST].join('|');
 

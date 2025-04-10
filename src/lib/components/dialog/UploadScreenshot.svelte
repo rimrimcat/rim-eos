@@ -4,27 +4,55 @@
 	import { onDestroy } from 'svelte';
 	import Dialog from '../Dialog.svelte';
 
+	type UploadCallbackType = 'canvas' | 'url' | 'file';
+
 	let {
 		open = $bindable(false),
-		onFileUpload = (canvas: HTMLCanvasElement) => {},
+		onFileUpload = (out: HTMLCanvasElement | string | File) => {},
 		uploadedImageURL = $bindable(''),
-		processText = $bindable('')
+		processText = $bindable(''),
+		uploadType = 'canvas' as UploadCallbackType,
+		promptOnOpen = true,
+		closeOnUpload = false
 	} = $props();
 
-	function uploadImage(file: File | undefined) {
+	function uploadImageCanvas(file: File | undefined) {
 		processText = 'Uploading...';
+
 		if (file) {
 			uploadedImageURL = URL.createObjectURL(file);
+			switch (uploadType) {
+				case 'canvas': {
+					setTimeout(() => {
+						const canvas = document.createElement('canvas');
+						const img = cv.imread('user-upload-full');
+						cv.imshow(canvas, img);
 
-			setTimeout(() => {
-				const canvas = document.createElement('canvas');
-				const img = cv.imread('user-upload-full');
-				cv.imshow(canvas, img);
+						onFileUpload(canvas);
 
-				onFileUpload(canvas);
+						img.delete();
+					}, 1000);
 
-				img.delete();
-			}, 1000);
+					break;
+				}
+				case 'url': {
+					onFileUpload(uploadedImageURL);
+					break;
+				}
+
+				case 'file': {
+					onFileUpload(file);
+					break;
+				}
+
+				default:
+					console.error('Unknown upload type:', uploadType);
+					break;
+			}
+		}
+
+		if (closeOnUpload) {
+			open = false;
 		}
 	}
 
@@ -38,17 +66,31 @@
 
 		const file = event.clipboardData.files[0];
 		if (file.type.startsWith('image/')) {
-			uploadImage(file);
+			uploadImageCanvas(file);
 		}
 	}
 
 	function onchange(event: Event) {
-		uploadImage((event.target as HTMLInputElement).files?.[0]);
+		uploadImageCanvas((event.target as HTMLInputElement).files?.[0]);
 	}
 
 	onDestroy(() => {
 		if (uploadedImageURL) {
 			URL.revokeObjectURL(uploadedImageURL);
+		}
+	});
+
+	$effect(() => {
+		if (open && promptOnOpen) {
+			// navigator.clipboard.read().then((items) => {
+			// 	if (items.length > 0) {
+			// 		items[0].getType('image/png').then((blob) => {
+			// 			uploadImage(blob);
+			// 		});
+			// 	}
+			// });
+
+			document.getElementById('srcInput')?.click();
 		}
 	});
 </script>

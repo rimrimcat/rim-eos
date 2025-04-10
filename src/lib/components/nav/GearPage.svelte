@@ -1,14 +1,16 @@
 <script lang="ts">
 	import {
 		ALL_STATS_REGEX,
-		GearParts,
+		GearPart,
+		VALID_GEAR_PARTS,
 		type GearSearchView,
 		type GearView,
 		type GearViewStatLong,
 		type GearViewStatShort,
-		type UserGear
+		type UserGear,
+		type ValidGearPart
 	} from '$lib/scripts/gears.ts';
-	import { loadObject, saveObject, StorageKey } from '$lib/scripts/loader.ts';
+	import { saveObject } from '$lib/scripts/loader.ts';
 	import {
 		STAT_CONSTANTS,
 		STAT_LABELS,
@@ -24,6 +26,7 @@
 	} from '$lib/scripts/navMetadata.svelte.ts';
 	import { Format, formatValue } from '$lib/scripts/validation.ts';
 
+	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import {
 		CaseSensitiveIcon,
 		DiamondIcon,
@@ -33,6 +36,7 @@
 		SearchXIcon,
 		Shirt,
 		ShirtIcon,
+		SlashIcon,
 		SparkleIcon,
 		SparklesIcon,
 		SquareIcon,
@@ -47,13 +51,20 @@
 	import FlexGrid from '../FlexGrid.svelte';
 	import StatIcon from '../StatIcon.svelte';
 
-	let { isMobile = $bindable(false) } = $props();
+	let {
+		isMobile = $bindable(false),
+		user_gears = $bindable([] as UserGear[]),
+		user_loadouts = $bindable({} as AllLoadouts),
+		current_loadout = $bindable('')
+	} = $props();
 
-	let user_gears: UserGear[] = $state(loadObject(StorageKey.GEARS_V1));
 	let gear_views: GearView[] = $state([]);
-
 	let prev_search_query: string = $state('');
 	let search_views: GearSearchView[] = $state([]);
+
+	let isShowingEquippedGears = $state(false);
+	let equipped_gears: number[] = $state([]);
+	let span_length = $derived(Math.ceil(Math.log10(gear_views.length || 10)) + 1);
 
 	// Screenshot Dialog
 	let screenshotDialogOpen = $state(false);
@@ -100,24 +111,31 @@
 		'alt resistance': 'alt_res'
 	} as const;
 
-	const OCR_PART_MAP: Record<string, GearParts> = {
-		helm: GearParts.HELMET,
-		helmet: GearParts.HELMET,
-		spaulders: GearParts.SPAULDERS,
-		armor: GearParts.ARMOR,
-		bracers: GearParts.BRACERS,
-		armbands: GearParts.BRACERS,
-		belt: GearParts.BELT,
-		legguards: GearParts.LEGGUARDS,
+	const OCR_PART_MAP: Record<string, GearPart> = {
+		helm: GearPart.HELMET,
+		helmet: GearPart.HELMET,
+		spaulders: GearPart.SPAULDERS,
+		armor: GearPart.ARMOR,
+		bracers: GearPart.BRACERS,
+		armbands: GearPart.BRACERS,
+		belt: GearPart.BELT,
+		legguards: GearPart.LEGGUARDS,
 		//
-		handguards: GearParts.GLOVES,
-		sabatons: GearParts.BOOTS,
+		handguards: GearPart.GLOVES,
+		sabatons: GearPart.BOOTS,
 		//
-		eyepiece: GearParts.VISOR,
-		engine: GearParts.ENGINE,
-		exoskeleton: GearParts.EXOSKELETON,
-		microreactor: GearParts.REACTOR
+		eyepiece: GearPart.VISOR,
+		engine: GearPart.ENGINE,
+		exoskeleton: GearPart.EXOSKELETON,
+		microreactor: GearPart.REACTOR
 	};
+
+	const RAINBOW_TITAN_STATS: TitanStat[] = [
+		'titan_flame_atk',
+		'titan_frost_atk',
+		'titan_volt_atk',
+		'titan_phys_atk'
+	];
 
 	function getRollValue(stat: Stat, value: number): number {
 		const stc = STAT_CONSTANTS[stat];
@@ -126,7 +144,7 @@
 
 	function getTitanValue(stat: Stat, value: number): number {
 		const stc = STAT_CONSTANTS[stat];
-		return value + stc.titan_base + stc.titan_multiplier * (value - stc.base);
+		return stc.titan_base + stc.titan_multiplier * (value - stc.base);
 	}
 
 	function reverseTitanValue(stat: Stat, titanValue: number): number {
@@ -159,15 +177,30 @@
 				search_views[i].id--;
 			}
 		}
+
+		// same with user_loadouts
+		for (const key in user_loadouts) {
+			for (const gearKey in user_loadouts[key].equipped_gear) {
+				if (
+					user_loadouts[key].equipped_gear[gearKey as ValidGearPart] !== null &&
+					// @ts-expect-error
+					user_loadouts[key].equipped_gear[gearKey as ValidGearPart] > start
+				) {
+					// @ts-expect-error
+					user_loadouts[key].equipped_gear[gearKey as ValidGearPart]--;
+				}
+			}
+		}
+
+		saveObject('loadouts_v1', user_loadouts);
 	}
 
-	async function createGearView(gear: UserGear): Promise<GearView> {
+	async function createGearView(gear: UserGear, equip: boolean = false): Promise<GearView> {
 		const stats: GearViewStatLong[] = [];
 		const derived: GearViewStatShort[] = [];
 		let id: number = -1;
-		let part: GearParts = GearParts.UNKNOWN;
+		let part: GearPart = GearPart.UNKNOWN;
 		let hash = '';
-		let isEquipped = false;
 
 		Object.entries(gear).forEach(([key, value]) => {
 			switch (key) {
@@ -175,11 +208,8 @@
 					id = value as number;
 					break;
 				case 'part':
-					part = value as GearParts;
+					part = value as GearPart;
 					hash += value;
-					break;
-				case 'isEquipped':
-					isEquipped = value as boolean;
 					break;
 				case 'dateAdded':
 					break;
@@ -216,7 +246,7 @@
 
 						titan_key = 'titan_' + _stat;
 						titan_label = 'Titan ' + stat_label;
-						titan_value = getTitanValue(_stat, _stat_value);
+						titan_value = getTitanValue(_stat, _stat_value) + _stat_value;
 						titan_value_label = formatValue(value_format, titan_value.toString());
 					}
 
@@ -253,27 +283,63 @@
 		});
 		stats.sort((a, b) => (b.roll ?? 0) - (a.roll ?? 0));
 
+		// get highest roll stat
+		const bestRoll = stats[0];
+
+		if (bestRoll.stat.includes('_atk') && !bestRoll.stat.includes('percent')) {
+			const eleAtkStats = stats.filter(
+				(stat) => stat.stat.includes('_atk') && !stat.stat.includes('percent')
+			);
+
+			if (eleAtkStats.length >= 2) {
+				// rainbow gear!
+
+				const rainbowTitanValue =
+					getTitanValue(bestRoll.stat, bestRoll.value) * 0.95 + bestRoll.value;
+				const rainbowTitanValueLabel = formatValue(Format.INTEGER, rainbowTitanValue.toString());
+				RAINBOW_TITAN_STATS.forEach((rainbowStat) => {
+					const statIdx = derived.findIndex((der) => der.stat === rainbowStat);
+
+					if (statIdx === -1) {
+						// add rainbow stat if missing
+						derived.push({
+							stat: rainbowStat,
+							stat_label: STAT_LABELS[rainbowStat],
+							value: rainbowTitanValue,
+							value_label: rainbowTitanValueLabel
+						});
+					} else {
+						// replace value if rainbow is higher
+						if (rainbowTitanValue > derived[statIdx].value) {
+							derived[statIdx].value = rainbowTitanValue;
+							derived[statIdx].value_label = rainbowTitanValueLabel;
+						}
+					}
+				});
+			}
+
+			// todo: the same for atk%
+		}
+
 		// TODO: add other derived stats
 
-		// console.log('Created GearView for ', id, ':', {
-		// 	id,
-		// 	part,
-		// 	isEquipped,
-		// 	stats,
-		// 	hash,
-		// 	derived
-		// });
+		const isEquipped =
+			equip ||
+			(part !== GearPart.UNKNOWN &&
+				user_loadouts[current_loadout].equipped_gear[gear.part as ValidGearPart] === gear.id);
+
 		return {
 			id,
 			part,
 			stats,
 			hash,
-			derived
+			derived,
+			isEquipped
 		};
 	}
 
-	function addNewGear(gear: UserGear) {
-		createGearView(gear).then((gearView) => {
+	function addNewGear(gear: UserGear, equip: boolean = false) {
+		createGearView(gear, equip).then((gearView) => {
 			if (gear_views.some((gv) => gv.hash === gearView.hash)) {
 				console.log('GearView already exists!');
 				processText = 'Duplicate gear!';
@@ -282,7 +348,10 @@
 
 			user_gears.push(gear);
 			gear_views.push(gearView);
-			saveObject(StorageKey.GEARS_V1, user_gears);
+			if (equip) {
+				equipGear(gear.id);
+			}
+			saveObject('gears_v1', user_gears);
 
 			// reset searching after adding gear
 			search_views = [];
@@ -293,19 +362,40 @@
 
 	function equipGear(id: number) {
 		// search for equipped gear with same part
-		gear_views.forEach((gear) => {
-			if (gear.part === gear_views[id].part && gear.isEquipped) {
-				gear.isEquipped = false;
-				user_gears[gear.id].isEquipped = false;
-			}
-		});
+		const part = gear_views[id].part;
+		if (part === GearPart.UNKNOWN) {
+			console.error('Cannot equip UNKNOWN gear!');
+			return;
+		}
 
+		const prevEquippedGearId = user_loadouts[current_loadout].equipped_gear[part];
+		if (prevEquippedGearId !== null) {
+			unequipGear(prevEquippedGearId, false);
+		}
+
+		user_loadouts[current_loadout].equipped_gear[part] = id;
 		gear_views[id].isEquipped = true;
-		user_gears[id].isEquipped = true;
-		saveObject(StorageKey.GEARS_V1, user_gears);
+		saveObject('loadouts_v1', user_loadouts);
+	}
+
+	function unequipGear(id: number, saveAfter: boolean = true) {
+		const part = gear_views[id].part;
+		if (part === GearPart.UNKNOWN || id === -1) {
+			return;
+		}
+
+		user_loadouts[current_loadout].equipped_gear[part] = null;
+		gear_views[id].isEquipped = false;
+
+		if (saveAfter) {
+			saveObject('loadouts_v1', user_loadouts);
+		}
 	}
 
 	function removeGear(id: number) {
+		if (gear_views[id].part !== GearPart.UNKNOWN) {
+			user_loadouts[current_loadout].equipped_gear[gear_views[id].part] = null;
+		}
 		user_gears = user_gears.filter((gear) => gear.id !== id);
 		gear_views = gear_views.filter((gear) => gear.id !== id);
 		search_views = search_views.filter((gear) => gear.id !== id);
@@ -313,7 +403,20 @@
 		// simple renumbering
 		decrementGearId(id);
 
-		saveObject(StorageKey.GEARS_V1, user_gears);
+		saveObject('gears_v1', user_gears);
+		saveObject('loadouts_v1', user_loadouts);
+	}
+
+	function updateEquippedGears() {
+		equipped_gears = [];
+		for (const part in VALID_GEAR_PARTS) {
+			const gearId = user_loadouts[current_loadout].equipped_gear[VALID_GEAR_PARTS[part]];
+			if (gearId !== null) {
+				equipped_gears.push(gearId);
+			} else {
+				equipped_gears.push(-1);
+			}
+		}
 	}
 
 	// OCR
@@ -339,21 +442,24 @@
 			.replace('tactics ', '')
 			.replace('combat ', '')
 			.split(' ')[0];
-		const part = OCR_PART_MAP[partCleanedStr] ?? GearParts.UNKNOWN;
+		const part = OCR_PART_MAP[partCleanedStr] ?? GearPart.UNKNOWN;
 		const isTitan = txt[0].includes('titan');
-		const isEquipped =
-			txt[0].includes('equipped') &&
-			!gear_views.some((gear_v) => gear_v.part === part && user_gears[gear_v.id].isEquipped);
+		const equip =
+			txt[0].includes('equipped') && // check if any gear is equipped in current loadout
+			part !== GearPart.UNKNOWN &&
+			user_loadouts[current_loadout].equipped_gear[part] === null;
 		const dateAdded = new Date();
 
-		console.log('part text clean', partCleanedStr);
-		console.log('Titan', isTitan);
-		console.log('Equipped', isEquipped);
+		// console.log('part text clean', partCleanedStr);
+		// console.log('Titan', isTitan);
+		// console.log('Equipped', equip);
+		// console.log('Text has equip', txt[0].includes('equipped'));
+		// console.log('Part is null', user_loadouts[current_loadout].equipped_gear[part] === null);
+		// console.log('TEXT', txt);
 
 		const newGear: UserGear = {
 			id,
 			part,
-			isEquipped,
 			dateAdded
 		};
 
@@ -393,7 +499,7 @@
 			return;
 		}
 
-		addNewGear(newGear);
+		addNewGear(newGear, equip);
 		processText = 'Done!';
 	}
 
@@ -434,7 +540,7 @@
 		const extractedVars = [...new Set(query.match(ALL_STATS_REGEX))] as AllStats[];
 
 		function doFiltering(gear: GearView) {
-			const variables: { [key in AllStats]?: number } & { gear?: GearParts } = {};
+			const variables: { [key in AllStats]?: number } & { gear?: GearPart } = {};
 
 			extractedVars.forEach((varName) => {
 				variables[varName] = gear.derived.find((stat) => stat.stat === varName)?.value ?? 0;
@@ -502,20 +608,20 @@
 		lucide: Shirt,
 		showInNav: true,
 		actions: [
-			{
-				id: 'screenshot',
-				label: 'From Screenshot',
-				lucide: ImagePlusIcon,
-				type: ActionType.BUTTON,
-				callback: () => (screenshotDialogOpen = true)
-			},
-			{
-				id: 'search',
-				label: 'Search & Sort',
-				lucide: SearchIcon,
-				type: ActionType.BUTTON,
-				callback: () => (searchDialogOpen = true)
-			},
+			// {
+			// 	id: 'screenshot',
+			// 	label: 'From Screenshot',
+			// 	lucide: ImagePlusIcon,
+			// 	type: ActionType.BUTTON,
+			// 	callback: () => (screenshotDialogOpen = true)
+			// },
+			// {
+			// 	id: 'search',
+			// 	label: 'Search & Sort',
+			// 	lucide: SearchIcon,
+			// 	type: ActionType.BUTTON,
+			// 	callback: () => (searchDialogOpen = true)
+			// },
 			{
 				id: 'fourStatMode',
 				label: 'Extended Stats',
@@ -564,7 +670,7 @@
 				callback: () => {
 					user_gears = [];
 					gear_views = [];
-					saveObject(StorageKey.GEARS_V1, user_gears);
+					saveObject('gears_v1', user_gears);
 				}
 			}
 		]
@@ -577,47 +683,130 @@
 			console.log('Done processing user_gears');
 		});
 	});
+
+	$inspect('span length', span_length);
 </script>
 
-<div class="gear-page">
-	<div class="gear-settings">
-		<h1 class="Pro">Gear List</h1>
+{#snippet gear_actions(gear: GearView)}
+	{#if gear}
+		<div class="gear-actions">
+			<button class="gear-action" title="Remove Gear" onclick={() => removeGear(gear.id)}>
+				<Trash2Icon />
+			</button>
+			<button
+				class="gear-action"
+				title={gear.isEquipped ? 'Unequip Gear' : 'Equip Gear'}
+				onclick={() => (gear.isEquipped ? unequipGear(gear.id) : equipGear(gear.id))}
+			>
+				<div style="position: relative; height: 24px;">
+					<ShirtIcon />
+					{#if gear.isEquipped}
+						<div style="position: absolute; top: 0%; left: 0%;">
+							<SlashIcon />
+						</div>
+					{/if}
+				</div>
+			</button>
+		</div>
+	{/if}
+{/snippet}
+
+{#snippet gear_icon(gear: GearView, partIfNoGear: ValidGearPart = GearPart.HELMET)}
+	<div class="gear-icon">
+		<div class="icon-container">
+			{#if gear}
+				<button class="gear-button icon" onclick={() => showGearInfo(gear)} style="opacity: 1">
+					<img
+						src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
+						alt="Gear"
+					/>
+				</button>
+			{:else}
+				<img
+					src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{partIfNoGear}.png"
+					alt="Gear"
+					style="filter:grayscale(100%)"
+				/>
+			{/if}
+		</div>
+	</div>
+{/snippet}
+
+<div class="full-width">
+	<div class="block">
+		<h1>Gear List</h1>
+
+		{#if Object.keys(user_loadouts).length > 0 && current_loadout}
+			<div class="horizontal" style="gap: 1rem; margin: 1rem;">
+				<div class="hori-item">
+					<StatIcon stat={user_loadouts[current_loadout].icon as Stat} size="2rem" />
+				</div>
+				<div class="hori-item">
+					<span>{user_loadouts[current_loadout].name}</span>
+				</div>
+			</div>
+		{/if}
+
 		{#if isSearching}
 			<p>Searching for: {prev_search_query}</p>
 
-			<button class="stop-search" title="Cancel Search" onclick={() => (isSearching = false)}>
-				<SearchXIcon /> Stop Searching
+			<button class="border red-bg" id="stop-search" onclick={() => (isSearching = false)}>
+				<SearchXIcon />
+				<label class="in-button" for="stop-search"> Stop Searching </label>
 			</button>
+		{:else if isShowingEquippedGears}
+			<p>Showing equipped gears.</p>
+
+			<button
+				class="border red-bg"
+				id="stop-show"
+				onclick={() => {
+					isShowingEquippedGears = false;
+					hasMeasured = false;
+				}}
+			>
+				<SearchXIcon />
+				<label class="in-button" for="stop-show"> Stop Showing </label>
+			</button>
+		{:else}
+			<div class="horizontal">
+				<button class="border" id="add-gear" onclick={() => (screenshotDialogOpen = true)}>
+					<ImagePlusIcon />
+					<label class="in-button" for="add-gear">Add Gear</label>
+				</button>
+				<button class="border" id="start-search" onclick={() => (searchDialogOpen = true)}>
+					<SearchIcon />
+					<label class="in-button" for="start-search">Search Gear</label>
+				</button>
+				<button
+					class="border"
+					id="show-equipped"
+					onclick={() => {
+						updateEquippedGears();
+						isShowingEquippedGears = true;
+						hasMeasured = false;
+					}}
+				>
+					<ShirtIcon />
+					<label class="in-button" for="show-equipped">Show Equipped</label>
+				</button>
+			</div>
 		{/if}
 	</div>
 
-	<div class="gear-grid">
+	<div class="noslider-x gear-grid">
 		<FlexGrid
 			by_column={false}
-			maxColumns={4}
+			maxColumns={isShowingEquippedGears ? 2 : 4}
 			verticalGap="0rem"
 			horizontalGap="5rem"
 			bind:hasMeasured
 		>
-			{#if gear_views.length !== 0 && !isSearching}
+			{#if gear_views.length !== 0 && !isSearching && !isShowingEquippedGears}
 				{#each gear_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
-						<span>{gear.id}</span>
-						<div class="gear-icon">
-							<div class="icon-container">
-								<!-- TODO: dialog for this button -->
-								<button
-									class="gear-button icon"
-									onclick={() => showGearInfo(gear)}
-									style="opacity: 1"
-								>
-									<img
-										src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
-										alt="Gear"
-									/>
-								</button>
-							</div>
-						</div>
+						<span style="width: {span_length * 0.75}rem">{gear.id}</span>
+						{@render gear_icon(gear)}
 
 						{#if bound_objects.fourStatMode}
 							<div class="stats-container">
@@ -663,34 +852,15 @@
 						{/if}
 
 						{#if !isMobile}
-							<div class="gear-actions">
-								<button class="gear-action" title="Remove Gear" onclick={() => removeGear(gear.id)}>
-									<Trash2Icon />
-								</button>
-								<button
-									class="gear-action"
-									class:no-pointer={user_gears[gear.id].isEquipped}
-									title="Equip Gear"
-									onclick={() => (user_gears[gear.id].isEquipped ? {} : equipGear(gear.id))}
-								>
-									<ShirtIcon opacity={user_gears[gear.id].isEquipped ? 0.5 : 1} />
-								</button>
-							</div>
+							{@render gear_actions(gear)}
 						{/if}
 					</div>
 				{/each}
 			{:else if search_views.length !== 0 && isSearching}
 				{#each search_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
-						<span>{gear.id}</span>
-						<div class="gear-icon">
-							<div class="icon-container">
-								<img
-									src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
-									alt="Gear"
-								/>
-							</div>
-						</div>
+						<span style="width: {span_length * 0.75}rem">{gear.id}</span>
+						{@render gear_icon(gear_views[gear.id])}
 
 						<div class="single-stat">
 							<div class="stat-content" class:icon={bound_objects.iconStats}>
@@ -705,19 +875,18 @@
 							</div>
 						</div>
 
-						<div class="gear-actions">
-							<button class="gear-action" title="Remove Gear" onclick={() => removeGear(gear.id)}>
-								<Trash2Icon />
-							</button>
-							<button
-								class="gear-action"
-								class:no-pointer={user_gears[gear.id].isEquipped}
-								title="Equip Gear"
-								onclick={() => (user_gears[gear.id].isEquipped ? {} : equipGear(gear.id))}
-							>
-								<ShirtIcon opacity={user_gears[gear.id].isEquipped ? 0.5 : 1} />
-							</button>
-						</div>
+						{@render gear_actions(gear_views[gear.id])}
+					</div>
+				{/each}
+			{:else if isShowingEquippedGears}
+				{#each equipped_gears as gearId, partIndex}
+					<div class="gear-cell gear-id-{gearId}">
+						<span style="max-width: {span_length * 0.75}rem; width: {span_length * 0.75}rem"
+							>{gearId}</span
+						>
+						{@render gear_icon(gear_views[gearId], VALID_GEAR_PARTS[partIndex])}
+
+						{@render gear_actions(gear_views[gearId])}
 					</div>
 				{/each}
 			{:else}
@@ -748,8 +917,10 @@
 	bind:gear={gearInfoGear}
 	bind:isMobile
 	bind:user_gears
+	bind:gear_views
 	onRemoveGear={removeGear}
 	onEquipGear={equipGear}
+	onUnequipGear={unequipGear}
 />
 
 <GearSearch bind:open={searchDialogOpen} bind:isMobile onConfirmSearch={onGearSearch} />
@@ -757,36 +928,12 @@
 <ActionToolbar actions={metadata.actions} bind:bound_objects bind:isMobile />
 
 <style>
-	.gear-page {
-		color: var(--text-color);
-		background-color: var(--bg-color);
-		width: 100%;
-		max-width: 100%;
-		margin-right: 3vw;
-	}
-
-	.gear-settings {
-		display: block;
-		padding: 1rem;
-		color: var(--text-color);
-		background-color: var(--bg-color);
-		width: 100%;
-		max-width: 100%;
-	}
-
 	.gear-grid {
 		margin-top: 1rem;
-		color: var(--text-color);
-		background-color: var(--bg-color);
-		width: 100%;
-		max-width: 100%;
-		/* overflow-y: scroll; */
-		overflow-x: hidden;
 		border-top: 4px solid var(--border-color);
 	}
 
 	.gear-cell {
-		background-color: var(--bg-color);
 		display: flex;
 		flex-direction: row;
 		/* width: 80%; */
@@ -859,7 +1006,6 @@
 	}
 
 	.stat-content {
-		/* padding: 5px; */
 		font-size: large;
 		text-align: center;
 	}
@@ -907,7 +1053,7 @@
 		cursor: auto;
 	}
 
-	.stop-search {
+	.red-bg {
 		display: flex;
 		background: none;
 		border: 2px solid var(--border-color);

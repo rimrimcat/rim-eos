@@ -1,15 +1,17 @@
 <script lang="ts">
 	import type { GearView, UserGear } from '$lib/scripts/gears';
-	import { ShirtIcon, Trash2Icon } from '@lucide/svelte';
+	import { ShirtIcon, SlashIcon, Trash2Icon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
 
 	let {
 		open = $bindable(false),
 		gear = $bindable() as GearView | null,
 		user_gears = $bindable() as UserGear[],
+		gear_views = $bindable() as GearView[],
 		isMobile = $bindable(false),
 		onRemoveGear = (id: number) => {},
-		onEquipGear = (id: number) => {}
+		onEquipGear = (id: number) => {},
+		onUnequipGear = (id: number) => {}
 	} = $props();
 
 	const GRID_ORDERING = [
@@ -52,6 +54,10 @@
 	function equipGear(id: number) {
 		onEquipGear(id);
 	}
+
+	function unequipGear(id: number) {
+		onUnequipGear(id);
+	}
 </script>
 
 <Dialog title="Gear Info" bind:open>
@@ -85,11 +91,17 @@
 					</button>
 					<button
 						class="gear-action"
-						class:no-pointer={user_gears[gear.id].isEquipped}
-						title="Equip Gear"
-						onclick={() => (user_gears[gear.id].isEquipped ? {} : equipGear(gear.id))}
+						title={gear.isEquipped ? 'Unequip Gear' : 'Equip Gear'}
+						onclick={() => (gear.isEquipped ? unequipGear(gear.id) : equipGear(gear.id))}
 					>
-						<ShirtIcon opacity={user_gears[gear.id].isEquipped ? 0.5 : 1} />
+						<div style="position: relative;">
+							<ShirtIcon />
+							{#if gear.isEquipped}
+								<div style="position: absolute; top: 0%; left: 0%;">
+									<SlashIcon />
+								</div>
+							{/if}
+						</div>
 					</button>
 				</div>
 			{:else}

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { StorageKey, loadObject, saveObject } from '$lib/scripts/loader.ts';
+	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader.ts';
 	import {
 		ActionType,
 		registerComponent,
@@ -8,7 +8,9 @@
 	import { type AttributeItem } from '$lib/scripts/stats';
 	import { FLOAT_PERCENT_3D, INTEGER, validateValue } from '$lib/scripts/validation.ts';
 
-	import { ChartNoAxesColumn, Download, FilePlus2, ImagePlus, Trash2 } from '@lucide/svelte';
+	import type { UserGear } from '$lib/scripts/gears';
+	import type { AllLoadouts } from '$lib/scripts/loadouts';
+	import { ChartNoAxesColumn, ImagePlus, Trash2 } from '@lucide/svelte';
 	import cv from '@techstark/opencv-js';
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
@@ -16,10 +18,15 @@
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
-	let { isMobile = $bindable(false) } = $props();
+	let {
+		isMobile = $bindable(false),
+		user_gears = $bindable([] as UserGear[]),
+		user_loadouts = $bindable({} as AllLoadouts),
+		current_loadout = $bindable('')
+	} = $props();
 
 	// State
-	let user_attributes: AttributeItem[] = $state(loadObject(StorageKey.STATS));
+	let user_attributes: AttributeItem[] = $state([]);
 	let validated_attributes: AttributeItem[] = $state([]);
 	let editValue: string = $state('');
 	let editingIndex: number | null = $state(null);
@@ -41,6 +48,13 @@
 		});
 	}
 
+	function saveAttributes(attributes: AttributeItem[]) {
+		// get stringified array of values
+		const base_stats = attributes.map((attr) => attr.value);
+		user_loadouts[current_loadout].base_stats = base_stats;
+		saveObject('loadouts_v1', user_loadouts);
+	}
+
 	function startEditCell(index: number) {
 		editingIndex = index;
 		const user_value = user_attributes[index].value;
@@ -59,7 +73,7 @@
 		// Update the source attributes array
 		user_attributes[index].value = editValue;
 
-		saveObject(StorageKey.STATS, user_attributes);
+		saveAttributes(user_attributes);
 
 		// Update validated attributes
 		const __use_percent = index === 2 || index === 10;
@@ -126,13 +140,14 @@
 			const data_url = canvas.toDataURL();
 
 			const ret = await worker.recognize(data_url);
-			user_attributes[attr_arr[index]].value = ret.data.text.replace('%', '');
+			user_attributes[attr_arr[index]].value = ret.data.text.replace('%', '').replace('/', '');
 
 			// Clean up resources
 			_crop.delete();
 			canvas.remove();
 
 			done_tasks++;
+			console.log('OCR Text:', ret.data.text);
 			console.info('Done tasks:', done_tasks);
 		}
 
@@ -166,7 +181,8 @@
 				src_mat_edit.delete();
 			}
 			await worker.terminate();
-			saveObject(StorageKey.STATS, user_attributes);
+
+			saveAttributes(user_attributes);
 			processAttributes();
 			processText = 'Done!';
 		}
@@ -326,9 +342,9 @@
 	}
 
 	function resetStats() {
-		user_attributes = loadObject(StorageKey.STATS, true);
-		saveObject(StorageKey.STATS, user_attributes);
-		processAttributes();
+		// user_attributes = loadObject('stats_main', true);
+		// saveObject('stats_main', user_attributes);
+		// processAttributes();
 	}
 
 	// register
@@ -347,8 +363,6 @@
 				type: ActionType.BUTTON,
 				callback: () => (screenshotDialogOpen = true)
 			},
-			{ id: 'import', label: 'Import (NO WORK)', lucide: FilePlus2 },
-			{ id: 'export', label: 'Export (NO WORK)', lucide: Download },
 			{ id: 'reset', label: 'Reset', lucide: Trash2, type: ActionType.BUTTON, callback: resetStats }
 			// { id: 'share', label: 'Share' }
 		]
@@ -356,7 +370,17 @@
 
 	onMount(() => {
 		registerComponent(id, metadata);
-		processAttributes();
+
+		// load and process attributes
+		if (Object.keys(user_loadouts).length > 0) {
+			user_attributes = TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
+				return {
+					...attr,
+					value: user_loadouts[current_loadout].base_stats[index]
+				};
+			});
+			processAttributes();
+		}
 	});
 </script>
 

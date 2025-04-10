@@ -1,14 +1,17 @@
 <script lang="ts">
+	import type { LoadoutType } from '$lib/scripts/loadouts';
 	import { type StatGearUser } from '$lib/scripts/stats';
-	import { onMount } from 'svelte';
 
-	let { stat = 'atk' as StatGearUser, size = '100%' } = $props();
+	type StatOrElement = StatGearUser | LoadoutType;
+
+	let { stat = 'atk' as StatOrElement, size = '100%' } = $props();
 
 	let img = $state('phys');
+	let previous_stat = $state('atk');
 	let unit = $state('none');
 	let atk_kind = $state('');
 
-	onMount(() => {
+	function getImage() {
 		if (stat.includes('atk')) {
 			atk_kind = 'atk';
 		} else if (stat.includes('dmg')) {
@@ -20,7 +23,7 @@
 		} else if (stat.includes('hp')) {
 			img = 'hp';
 		} else {
-			img = 'none';
+			atk_kind = 'atk';
 		}
 
 		if (atk_kind) {
@@ -57,6 +60,13 @@
 			unit = 'percent';
 		} else {
 			unit = 'none';
+		}
+	}
+
+	$effect(() => {
+		if (stat !== previous_stat) {
+			getImage();
+			previous_stat = stat;
 		}
 	});
 </script>

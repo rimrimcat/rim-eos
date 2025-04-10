@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ALLOWED_REGEX_OPS, ALLOWED_REGEX_VARS, GearParts } from '$lib/scripts/gears.ts';
+	import { ALLOWED_REGEX_OPS, ALLOWED_REGEX_VARS, GearPart } from '$lib/scripts/gears.ts';
 	import { SvelteSet } from 'svelte/reactivity';
 	import Dialog from '../Dialog.svelte';
 
@@ -51,7 +51,7 @@
 			? '(( !flame_atk + !frost_atk + !volt_atk + !phys_atk ) <= 2 ) * '
 			: '';
 		const gear = _selectedGear // @ts-expect-error
-			? `( 'gear' === '${GearParts[_selectedGear.toUpperCase()]}' ) * `
+			? `( 'gear' === '${GearPart[_selectedGear.toUpperCase()]}' ) * `
 			: '';
 		const titan = selectedOthers.has('Titan') ? 'titan_' : '';
 		const stat = _selectedStat.toLowerCase();
