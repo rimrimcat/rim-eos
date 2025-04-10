@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ActionToolbar from '$lib/components/ActionToolbar.svelte';
+	import StatAdjust from '$lib/components/dialog/StatAdjust.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
 	import type { UserGear } from '$lib/scripts/gears';
@@ -29,11 +30,14 @@
 	let validated_attributes: AttributeItem[] = $state([]);
 	let edit_value: string = $state('');
 	let editing_index: number | null = $state(null);
-	let screenshot_dialog_open = $state(false);
-	let uploaded_image_url: string = $state('');
 	let process_text: string = $state('');
 
-	// Process and validate attributes
+	//Dialogs
+	let screenshot_dialog_open = $state(false);
+	let uploaded_image_url: string = $state('');
+
+	let stat_adjust_dialog_open = $state(false);
+
 	function processAttributes() {
 		validated_attributes = user_attributes.map((attr, index) => {
 			const __val = attr.value;
@@ -363,6 +367,13 @@
 				type: ActionType.BUTTON,
 				callback: () => (screenshot_dialog_open = true)
 			},
+			{
+				id: 'adjust',
+				label: 'Adjust Attack Stats',
+				lucide: ChartNoAxesColumn,
+				type: ActionType.BUTTON,
+				callback: () => (stat_adjust_dialog_open = true)
+			},
 			{ id: 'reset', label: 'Reset', lucide: Trash2, type: ActionType.BUTTON, callback: resetStats }
 			// { id: 'share', label: 'Share' }
 		]
@@ -445,6 +456,8 @@
 	upload_type="canvas"
 	prompt_on_open={true}
 />
+
+<StatAdjust bind:open={stat_adjust_dialog_open} raw_attributes={user_attributes} />
 
 <ActionToolbar actions={metadata.actions} bind:is_mobile />
 
