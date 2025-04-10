@@ -384,11 +384,7 @@
 </script>
 
 <div style="display: none">
-	<img
-		id="uploadedImg"
-		src={uploadedImageURL ?? './template/template_crit.png'}
-		alt="User uploaded screenshot"
-	/>
+	<img id="templateImage" src={'./template/template_crit.png'} alt="User uploaded screenshot" />
 </div>
 
 <div class="stat-panel">
@@ -445,6 +441,8 @@
 	bind:open={screenshotDialogOpen}
 	bind:uploadedImageURL
 	bind:processText
+	uploadType="canvas"
+	promptOnOpen={true}
 />
 
 <ActionToolbar actions={metadata.actions} bind:isMobile />
