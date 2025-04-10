@@ -1,5 +1,10 @@
 <script lang="ts">
+	import ActionToolbar from '$lib/components/ActionToolbar.svelte';
+	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
+	import FlexGrid from '$lib/components/FlexGrid.svelte';
+	import type { UserGear } from '$lib/scripts/gears';
 	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader.ts';
+	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import {
 		ActionType,
 		registerComponent,
@@ -7,16 +12,10 @@
 	} from '$lib/scripts/navMetadata.svelte.ts';
 	import { type AttributeItem } from '$lib/scripts/stats';
 	import { FLOAT_PERCENT_3D, INTEGER, validateValue } from '$lib/scripts/validation.ts';
-
-	import type { UserGear } from '$lib/scripts/gears';
-	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import { ChartNoAxesColumn, ImagePlus, Trash2 } from '@lucide/svelte';
 	import cv from '@techstark/opencv-js';
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
-	import ActionToolbar from '../ActionToolbar.svelte';
-	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
-	import FlexGrid from '../FlexGrid.svelte';
 
 	let {
 		isMobile = $bindable(false),

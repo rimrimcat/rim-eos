@@ -1,10 +1,23 @@
 <script lang="ts">
+	import ActionToolbar from '$lib/components/ActionToolbar.svelte';
+	import SwitchLoadout from '$lib/components/dialog/SwitchLoadout.svelte';
+	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
+	import StatIcon from '$lib/components/StatIcon.svelte';
+	import {
+		addImageToDB,
+		cloneObject,
+		deleteImageFromDB,
+		getImageFromDB,
+		getImageUrlFromDB,
+		saveObject
+	} from '$lib/scripts/loader';
+	import type { AllLoadouts, LoadoutType } from '$lib/scripts/loadouts';
 	import {
 		ActionType,
 		registerComponent,
 		type ComponentMetadata
 	} from '$lib/scripts/navMetadata.svelte.ts';
-
+	import { type StatGearUser } from '$lib/scripts/stats';
 	import {
 		ArrowRightLeftIcon,
 		BoxIcon,
@@ -17,21 +30,6 @@
 		Trash2
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
-	import ActionToolbar from '../ActionToolbar.svelte';
-	import StatIcon from '../StatIcon.svelte';
-	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
-
-	import {
-		addImageToDB,
-		cloneObject,
-		deleteImageFromDB,
-		getImageFromDB,
-		getImageUrlFromDB,
-		saveObject
-	} from '$lib/scripts/loader';
-	import type { AllLoadouts, LoadoutType } from '$lib/scripts/loadouts';
-	import { type StatGearUser } from '$lib/scripts/stats';
-	import SwitchLoadout from '../dialog/SwitchLoadout.svelte';
 
 	let {
 		isMobile = $bindable(false),

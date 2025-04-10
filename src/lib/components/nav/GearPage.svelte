@@ -12,20 +12,25 @@
 	} from '$lib/scripts/gears.ts';
 	import { saveObject } from '$lib/scripts/loader.ts';
 	import {
+		ActionType,
+		registerComponent,
+		type ComponentMetadata
+	} from '$lib/scripts/navMetadata.svelte.ts';
+	import {
 		STAT_CONSTANTS,
 		STAT_LABELS,
 		type AllStats,
 		type StatGearUser as Stat,
 		type StatGearTitan as TitanStat
 	} from '$lib/scripts/stats.ts';
-
-	import {
-		ActionType,
-		registerComponent,
-		type ComponentMetadata
-	} from '$lib/scripts/navMetadata.svelte.ts';
 	import { Format, formatValue } from '$lib/scripts/validation.ts';
 
+	import ActionToolbar from '$lib/components/ActionToolbar.svelte';
+	import GearInfo from '$lib/components/dialog/GearInfo.svelte';
+	import GearSearch from '$lib/components/dialog/GearSearch.svelte';
+	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
+	import FlexGrid from '$lib/components/FlexGrid.svelte';
+	import StatIcon from '$lib/components/StatIcon.svelte';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import {
 		CaseSensitiveIcon,
@@ -44,12 +49,6 @@
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
-	import ActionToolbar from '../ActionToolbar.svelte';
-	import GearInfo from '../dialog/GearInfo.svelte';
-	import GearSearch from '../dialog/GearSearch.svelte';
-	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
-	import FlexGrid from '../FlexGrid.svelte';
-	import StatIcon from '../StatIcon.svelte';
 
 	let {
 		isMobile = $bindable(false),
