@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { loadObject, saveObject } from '$lib/scripts/loader.ts';
+	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader.ts';
 	import {
 		ActionType,
 		registerComponent,
@@ -8,6 +8,8 @@
 	import { type AttributeItem } from '$lib/scripts/stats';
 	import { FLOAT_PERCENT_3D, INTEGER, validateValue } from '$lib/scripts/validation.ts';
 
+	import type { UserGear } from '$lib/scripts/gears';
+	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import { ChartNoAxesColumn, ImagePlus, Trash2 } from '@lucide/svelte';
 	import cv from '@techstark/opencv-js';
 	import { onMount } from 'svelte';
@@ -16,10 +18,15 @@
 	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
-	let { isMobile = $bindable(false), user_attributes = $bindable([] as AttributeItem[]) } =
-		$props();
+	let {
+		isMobile = $bindable(false),
+		user_gears = $bindable([] as UserGear[]),
+		user_loadouts = $bindable({} as AllLoadouts),
+		current_loadout = $bindable('')
+	} = $props();
 
 	// State
+	let user_attributes: AttributeItem[] = $state([]);
 	let validated_attributes: AttributeItem[] = $state([]);
 	let editValue: string = $state('');
 	let editingIndex: number | null = $state(null);
@@ -41,6 +48,13 @@
 		});
 	}
 
+	function saveAttributes(attributes: AttributeItem[]) {
+		// get stringified array of values
+		const base_stats = attributes.map((attr) => attr.value);
+		user_loadouts[current_loadout].base_stats = base_stats;
+		saveObject('loadouts_v1', user_loadouts);
+	}
+
 	function startEditCell(index: number) {
 		editingIndex = index;
 		const user_value = user_attributes[index].value;
@@ -59,7 +73,7 @@
 		// Update the source attributes array
 		user_attributes[index].value = editValue;
 
-		saveObject('stats_main', user_attributes);
+		saveAttributes(user_attributes);
 
 		// Update validated attributes
 		const __use_percent = index === 2 || index === 10;
@@ -167,7 +181,8 @@
 				src_mat_edit.delete();
 			}
 			await worker.terminate();
-			saveObject('stats_main', user_attributes);
+
+			saveAttributes(user_attributes);
 			processAttributes();
 			processText = 'Done!';
 		}
@@ -327,9 +342,9 @@
 	}
 
 	function resetStats() {
-		user_attributes = loadObject('stats_main', true);
-		saveObject('stats_main', user_attributes);
-		processAttributes();
+		// user_attributes = loadObject('stats_main', true);
+		// saveObject('stats_main', user_attributes);
+		// processAttributes();
 	}
 
 	// register
@@ -355,7 +370,17 @@
 
 	onMount(() => {
 		registerComponent(id, metadata);
-		processAttributes();
+
+		// load and process attributes
+		if (Object.keys(user_loadouts).length > 0) {
+			user_attributes = TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
+				return {
+					...attr,
+					value: user_loadouts[current_loadout].base_stats[index]
+				};
+			});
+			processAttributes();
+		}
 	});
 </script>
 

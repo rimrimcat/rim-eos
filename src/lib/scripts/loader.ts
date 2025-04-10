@@ -10,7 +10,7 @@ const DB_VERSION = 2;
 const IMAGE_STORE = 'images';
 
 // Templates
-const TEMPLATE_USER_ATTRIBUTES = [
+export const TEMPLATE_USER_ATTRIBUTES = [
 	{ name: 'HP', icon: './stat/hp.webp', index: 0 },
 	{ name: 'Crit', icon: './stat/crit.webp', index: 1 },
 	{ name: 'Crit Rate', icon: './stat/crit.webp', index: 2 },
@@ -88,7 +88,7 @@ export const DEFAULT_STYLES: Record<string, string> = {
 export const DEFAULT_LOADOUTS: AllLoadouts = {
 	main: {
 		name: 'main',
-		description: 'No description new',
+		description: 'No description',
 		icon: 'flame',
 		equipped_gear: {
 			H: null,
@@ -103,7 +103,8 @@ export const DEFAULT_LOADOUTS: AllLoadouts = {
 			N: null,
 			X: null,
 			R: null
-		}
+		},
+		base_stats: DEFAULT_STATS_MAIN
 	}
 };
 

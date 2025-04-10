@@ -12,6 +12,7 @@ export type Loadout = {
 	description: string;
 	icon: string;
 	equipped_gear: EquippedGear;
+	base_stats: string[]; // base stat without gear
 	image_url?: string;
 };
 

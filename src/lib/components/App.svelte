@@ -202,18 +202,24 @@
 		cursor: pointer;
 	}
 
-	:global(div.column) {
+	/* :global(div.column) {
 		display: grid;
 		flex-direction: column;
 		justify-content: center;
 		flex-wrap: wrap;
 		gap: 1rem;
-	}
+	} */
 
 	:global(div.horizontal) {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 1rem;
+	}
+
+	:global(div.hori-item) {
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	:global(div.equispace) {

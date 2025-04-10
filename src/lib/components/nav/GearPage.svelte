@@ -735,10 +735,22 @@
 <div class="full-width">
 	<div class="block">
 		<h1>Gear List</h1>
+
+		{#if Object.keys(user_loadouts).length > 0 && current_loadout}
+			<div class="horizontal" style="gap: 1rem; margin: 1rem;">
+				<div class="hori-item">
+					<StatIcon stat={user_loadouts[current_loadout].icon as Stat} size="2rem" />
+				</div>
+				<div class="hori-item">
+					<span>{user_loadouts[current_loadout].name}</span>
+				</div>
+			</div>
+		{/if}
+
 		{#if isSearching}
 			<p>Searching for: {prev_search_query}</p>
 
-			<button class="border stop-search" id="stop-search" onclick={() => (isSearching = false)}>
+			<button class="border red-bg" id="stop-search" onclick={() => (isSearching = false)}>
 				<SearchXIcon />
 				<label class="in-button" for="stop-search"> Stop Searching </label>
 			</button>
@@ -746,7 +758,7 @@
 			<p>Showing equipped gears.</p>
 
 			<button
-				class="border stop-search"
+				class="border red-bg"
 				id="stop-show"
 				onclick={() => {
 					isShowingEquippedGears = false;
@@ -1041,7 +1053,7 @@
 		cursor: auto;
 	}
 
-	.stop-search {
+	.red-bg {
 		display: flex;
 		background: none;
 		border: 2px solid var(--border-color);

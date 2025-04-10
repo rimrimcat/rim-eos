@@ -19,6 +19,8 @@ some webapp im making since no more content at TOF
 - [x] Loadout: sync equipped gears to loadout (2025-04-09)
 - [x] Loadout: add element selection (2025-04-09)
 - [x] Gear: show equipped gears (2025-04-10)
+- [x] Stat: sync with loadout (2025-04-10)
+- [ ] Stat: select between uploading base stats or uploading stats with gears
 - [ ] Gear: add way to manually add gears
 - [ ] Gear: make more accessible for mobile users
 - [ ] Gear: add more reponsive toasts for actions (?)
