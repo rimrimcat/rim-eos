@@ -64,6 +64,7 @@
 
 	let isShowingEquippedGears = $state(false);
 	let equipped_gears: number[] = $state([]);
+	let span_length = $derived(Math.ceil(Math.log10(gear_views.length)));
 
 	// Screenshot Dialog
 	let screenshotDialogOpen = $state(false);
@@ -682,6 +683,8 @@
 			console.log('Done processing user_gears');
 		});
 	});
+
+	$inspect('span length', span_length);
 </script>
 
 {#snippet gear_actions(gear: GearView)}
@@ -790,7 +793,7 @@
 			{#if gear_views.length !== 0 && !isSearching && !isShowingEquippedGears}
 				{#each gear_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
-						<span>{gear.id}</span>
+						<span style="width: {span_length * 0.75}rem">{gear.id}</span>
 						{@render gear_icon(gear)}
 
 						{#if bound_objects.fourStatMode}
@@ -844,7 +847,7 @@
 			{:else if search_views.length !== 0 && isSearching}
 				{#each search_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
-						<span>{gear.id}</span>
+						<span style="width: {span_length * 0.75}rem">{gear.id}</span>
 						{@render gear_icon(gear_views[gear.id])}
 
 						<div class="single-stat">
@@ -866,18 +869,9 @@
 			{:else if isShowingEquippedGears}
 				{#each equipped_gears as gearId, partIndex}
 					<div class="gear-cell gear-id-{gearId}">
-						<span>{gearId}</span>
-						<!-- <div class="gear-icon">
-							<div class="icon-container">
-								<img
-									src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{VALID_GEAR_PARTS[
-										partIndex
-									]}.png"
-									alt="Gear"
-									style={gearId === -1 ? 'filter:grayscale(100%)' : ''}
-								/>
-							</div>
-						</div> -->
+						<span style="max-width: {span_length * 0.75}rem; width: {span_length * 0.75}rem"
+							>{gearId}</span
+						>
 						{@render gear_icon(gear_views[gearId], VALID_GEAR_PARTS[partIndex])}
 
 						{@render gear_actions(gear_views[gearId])}
