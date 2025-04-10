@@ -2,7 +2,6 @@
 	import type { UserGear } from '$lib/scripts/gears';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
-	import type { AttributeItem } from '$lib/scripts/stats';
 	import { onMount, type Component } from 'svelte';
 	import Dialog from './Dialog.svelte';
 	import GearPage from './nav/GearPage.svelte';
@@ -40,7 +39,6 @@
 
 	// synced data across app
 	let user_gears: UserGear[] = $state([]);
-	let user_attributes: AttributeItem[] = $state([]);
 	let user_loadouts: AllLoadouts = $state({});
 	let current_loadout: string = $state('');
 
@@ -63,7 +61,6 @@
 
 		// load synced
 		user_gears = loadObject('gears_v1');
-		user_attributes = loadObject('stats_main');
 		user_loadouts = loadObject('loadouts_v1');
 		current_loadout = Object.keys(user_loadouts)[0];
 	});
@@ -102,13 +99,7 @@
 			<OpenCvTest />
 		</div>
 
-		<CurrentComponent
-			bind:isMobile
-			bind:user_gears
-			bind:user_attributes
-			bind:user_loadouts
-			bind:current_loadout
-		/>
+		<CurrentComponent bind:isMobile bind:user_gears bind:user_loadouts bind:current_loadout />
 	</div>
 </div>
 

@@ -447,7 +447,7 @@
 			txt[0].includes('equipped') && // check if any gear is equipped in current loadout
 			part !== GearPart.UNKNOWN &&
 			user_loadouts[current_loadout].equipped_gear[part] === null;
-		const dateAdded = new Date();
+		const dateAdded = new Date().toISOString();
 
 		// console.log('part text clean', partCleanedStr);
 		// console.log('Titan', isTitan);
@@ -539,12 +539,15 @@
 		const extractedVars = [...new Set(query.match(ALL_STATS_REGEX))] as AllStats[];
 
 		function doFiltering(gear: GearView) {
-			const variables: { [key in AllStats]?: number } & { gear?: GearPart } = {};
+			const variables: { [key in AllStats]?: number } & { gear?: ValidGearPart } = {};
 
 			extractedVars.forEach((varName) => {
 				variables[varName] = gear.derived.find((stat) => stat.stat === varName)?.value ?? 0;
 			});
 			// override for gear
+			if (gear.part === GearPart.UNKNOWN) {
+				return;
+			}
 			variables.gear = gear.part;
 
 			// @ts-expect-error
@@ -1034,7 +1037,7 @@
 		align-items: center;
 		justify-content: flex-end;
 		flex-shrink: 0;
-		gap: 0.5rem;
+		gap: 1.5rem;
 	}
 
 	.gear-action {

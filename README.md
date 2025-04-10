@@ -20,11 +20,11 @@ some webapp im making since no more content at TOF
 - [x] Loadout: add element selection (2025-04-09)
 - [x] Gear: show equipped gears (2025-04-10)
 - [x] Stat: sync with loadout (2025-04-10)
+- [x] Loadout: add my loadout as examples (2025-04-10)
 - [ ] Stat: select between uploading base stats or uploading stats with gears
 - [ ] Gear: add way to manually add gears
 - [ ] Gear: make more accessible for mobile users
 - [ ] Gear: add more reponsive toasts for actions (?)
-- [ ] Gear: add my stats and gears as examples
 - [ ] Gear: add gear icons based on best stats
 - [ ] Gear: add tutorial on how gear image should be uploaded
 - [ ] Gear: add side by side comparison (not sure if this will actually be useful since I'll be adding a value that helps you decide which gear is better)
