@@ -70,7 +70,7 @@
 			const prevSelectedLoadout = current_loadout;
 			user_loadouts[prevSelectedLoadout].name = loadout_name;
 			user_loadouts[prevSelectedLoadout].description = loadout_desc;
-			user_loadouts[prevSelectedLoadout].element = loadout_icon;
+			user_loadouts[prevSelectedLoadout].element = loadout_icon as LoadoutType;
 
 			const sanitizedLoadoutName = sanitizeLoadoutKey(loadout_name);
 
