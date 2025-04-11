@@ -8,7 +8,10 @@
 	import LoadoutPage from './nav/LoadoutPage.svelte';
 	import MainPage from './nav/MainPage.svelte';
 	import StatPage from './nav/StatPage.svelte';
+	import ReadySignal from './ReadySignal.svelte';
 	import Toolbar from './Toolbar.svelte';
+
+	let { signal = $bindable(false) } = $props();
 
 	// Toolbar
 	let is_collapsed = $state(true);
@@ -40,6 +43,8 @@
 	let user_loadouts: AllLoadouts = $state({});
 	let current_loadout: string = $state('');
 	let gear_views: GearView[] = $state([]);
+
+	// check if ready
 
 	onMount(() => {
 		// get font size
@@ -112,6 +117,8 @@
 		/>
 	</div>
 </div>
+
+<ReadySignal bind:signal />
 
 <style>
 	:global(body) {
