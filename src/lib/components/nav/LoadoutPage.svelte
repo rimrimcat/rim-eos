@@ -18,12 +18,11 @@
 		ArrowRightLeftIcon,
 		BoxIcon,
 		CopyPlusIcon,
-		Download,
-		FilePlus2,
 		ImagePlus,
 		PencilIcon,
+		RotateCcwIcon,
 		Save,
-		Trash2
+		Trash2Icon
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
 
@@ -217,15 +216,26 @@
 					duplicateLoadout(true);
 				}
 			},
-			{ id: 'import', label: 'Import', lucide: FilePlus2 },
-			{ id: 'export', label: 'Export', lucide: Download },
 			{
 				id: 'delete',
 				label: 'Delete Loadout',
-				lucide: Trash2,
+				lucide: Trash2Icon,
 				type: ActionType.BUTTON,
 				callback: () => {
 					deleteCurrentLoadout();
+				}
+			},
+			{
+				id: 'reset',
+				label: 'Reset to defaults',
+				lucide: RotateCcwIcon,
+				type: ActionType.BUTTON,
+				callback: () => {
+					// delete keys in localStorage
+					localStorage.removeItem('loadouts_v1');
+					localStorage.removeItem('gears_v1');
+					// reload page
+					window.location.reload();
 				}
 			}
 		]
