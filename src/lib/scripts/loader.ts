@@ -30,6 +30,7 @@ export const TEMPLATE_USER_ATTRIBUTES: { key: StatGearFinal; icon: string }[] = 
 ];
 
 // Defaults
+// TODO: replace this
 export const DEFAULT_STATS_RIM = [
 	'1955732',
 	'20384',
@@ -104,7 +105,7 @@ export const DEFAULT_LOADOUTS_RIM: AllLoadouts = {
 			X: 6,
 			R: 1
 		},
-		raw_stats: DEFAULT_STATS_RIM
+		base_stats: DEFAULT_STATS_RIM
 	}
 };
 export const DEFAULT_GEARS_RIM: UserGear[] = [

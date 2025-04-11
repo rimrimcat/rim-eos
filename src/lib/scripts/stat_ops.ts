@@ -1,6 +1,15 @@
 import type { GearView } from './gears';
 import type { StatGearTitan, StatGearUser, StatNonGear } from './stats';
 
+const KEYS_ATK: StatGearUser[] = ['phys_atk', 'flame_atk', 'frost_atk', 'volt_atk', 'alt_atk'];
+const KEYS_ATK_PERCENT: StatGearUser[] = [
+	'phys_atk_percent',
+	'flame_atk_percent',
+	'frost_atk_percent',
+	'volt_atk_percent',
+	'alt_atk_percent'
+];
+
 export type StatData = {
 	[key in StatGearUser | StatNonGear]?: number;
 };
@@ -76,6 +85,11 @@ export class StatCollection {
 		return new StatCollection(new_data);
 	}
 
+	/**
+	 * Calculates the base stat assuming that this (StatCollection) encompasses all buffs.
+	 * @param {string[]} final_stats - Stats as seen on the character screen.
+	 * @returns Calculated base stats
+	 */
 	calc_base_from(final_stats: string[]): number[] {
 		if (Object.keys(this.data).length === 0) {
 			return final_stats.map((value) => parseFloat(value));
@@ -159,5 +173,25 @@ export class StatCollection {
 		}
 
 		return base_stats;
+	}
+
+	/**
+	 * Calculates the extra atk percent stats required to reach the final stats, given the base_atk_stats.
+	 * @param {string[]} final_stats - Final stats as seen on the character screen.
+	 * @param {number[]} base_atk_stats - Base atk stats as seen on the character screen.
+	 * @returns Calculated extra stats.
+	 */
+	calc_extra_atk_from(final_stats: string[], base_atk_stats: number[]): StatCollection {
+		// iterate through base_atk_stats
+		const new_data: StatData = {};
+
+		for (let i = 0; i < base_atk_stats.length - 1; i++) {
+			new_data[KEYS_ATK_PERCENT[i]] =
+				(parseInt(final_stats[i + 3]) / (base_atk_stats[i] + this.get(KEYS_ATK[i])) -
+					(1 + this.get(KEYS_ATK_PERCENT[i]) / 100)) *
+				100;
+		}
+
+		return new StatCollection(new_data);
 	}
 }

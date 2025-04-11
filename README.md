@@ -22,6 +22,10 @@ some webapp im making since no more content at TOF
 - [x] Stat: sync with loadout (2025-04-10)
 - [x] Loadout: add my loadout as example (2025-04-10)
 - [ ] Stat: select between uploading base stats or uploading stats with gears
+- [ ] Stat: toggle to show only attack stats
+- [ ] Stat: toggle to show attack percent or (base attack + attack percent)
+- [ ] Stat: toggle to show damage percent
+- [ ] Stat: toggle to adjust stat based on buffs
 - [ ] Loading: add something to the loading screen
 - [ ] Gear: add way to manually add gears
 - [ ] Gear: make more accessible for mobile users

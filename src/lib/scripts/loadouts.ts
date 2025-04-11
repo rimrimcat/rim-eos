@@ -12,7 +12,7 @@ export type Loadout = {
 	description: string;
 	element: LoadoutType;
 	equipped_gear: EquippedGear;
-	raw_stats: string[]; // raw stat uploaded by user
+	base_stats: string[]; // raw stat uploaded by user
 	stat_adj?: object;
 	image_url?: string;
 };

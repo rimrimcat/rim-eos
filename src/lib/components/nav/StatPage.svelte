@@ -27,25 +27,24 @@
 	} = $props();
 
 	// State
-	let raw_attributes: string[] = $state([]);
+	let base_stats: string[] = $state([]);
 	let attribute_view: CharacterStat[] = $state([]);
 
-	let edit_value: string = $state('');
-	let editing_index: number | null = $state(null);
-	let process_text: string = $state('');
-
-	// Dialogs
+	// Screenshot Dialog
 	let screenshot_dialog_open = $state(false);
 	let uploaded_image_url: string = $state('');
+	let process_text: string = $state('');
 
+	// Stat Adjust Dialog
 	let stat_adjust_dialog_open = $state(false);
+	let unadjusted_stats: string[] = $state([]);
 
 	let any_dialog_open = $derived(screenshot_dialog_open || stat_adjust_dialog_open);
 
 	function processAttributes() {
 		// TODO: later on, this should adjust depending on the not-yet created Loadout.stat_adj object
 		attribute_view = TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
-			const __val = raw_attributes[index];
+			const __val = base_stats[index];
 			const __use_percent = index === 2 || index === 10;
 
 			return {
@@ -59,43 +58,8 @@
 	}
 
 	function saveAttributes() {
-		user_loadouts[current_loadout].raw_stats = raw_attributes;
+		user_loadouts[current_loadout].base_stats = base_stats;
 		saveObject('loadouts_v1', user_loadouts);
-	}
-
-	function startEditCell(index: number) {
-		editing_index = index;
-		const user_value = raw_attributes[index];
-		edit_value = user_value !== undefined ? user_value : '';
-
-		// Automatically select all content when starting to edit the cell
-		setTimeout(() => {
-			const input = document.getElementsByClassName('stat-value')[0] as HTMLInputElement;
-			if (input) {
-				input.select();
-			}
-		}, 0);
-	}
-
-	function saveEditCell(index: number) {
-		// Update the source attributes array
-		raw_attributes[index] = edit_value;
-		saveAttributes();
-
-		// Update validated attributes
-		const __use_percent = index === 2 || index === 10;
-		attribute_view[index].value = __use_percent
-			? validateValue(FLOAT_PERCENT_3D, edit_value)
-			: validateValue(INTEGER, edit_value);
-
-		editing_index = null;
-		edit_value = '';
-	}
-
-	function handleKeyDown(e: any, index: number) {
-		if (e.key === 'Enter') {
-			saveEditCell(index);
-		}
 	}
 
 	// actions
@@ -147,7 +111,7 @@
 			const data_url = canvas.toDataURL();
 
 			const ret = await worker.recognize(data_url);
-			raw_attributes[attr_arr[index]] = ret.data.text.replace('%', '').replace('/', '');
+			unadjusted_stats[attr_arr[index]] = ret.data.text.replace('%', '').replace('/', '');
 			console.log('OCR Text:', ret.data.text);
 
 			// Clean up resources
@@ -388,7 +352,8 @@
 		// load and process attributes
 		// TODO: change the way of loading after setting up
 		if (Object.keys(user_loadouts).length > 0) {
-			raw_attributes = user_loadouts[current_loadout].raw_stats;
+			base_stats = user_loadouts[current_loadout].base_stats;
+			unadjusted_stats = base_stats; // TEMPORARY!!!
 			processAttributes();
 		}
 	});
@@ -418,33 +383,20 @@
 					<div class="stat-info">
 						<div class="stat-name">{attribute.name}</div>
 						<div class="stat-value-container">
-							{#if editing_index === index}
-								<input
-									type="text"
-									class="stat-value"
-									bind:value={edit_value}
-									onblur={() => saveEditCell(index)}
-									onkeydown={(e) => handleKeyDown(e, index)}
-								/>
-							{:else}
-								<div
-									class="stat-value-text"
-									style="font-size: 1.25rem"
-									role="textbox"
-									tabindex={10 + index}
-									ondblclick={() => startEditCell(index)}
-								>
-									{attribute.value}
-								</div>
-							{/if}
+							<span
+								class="stat-value-text"
+								style="font-size: 1.25rem"
+								role="textbox"
+								tabindex={10 + index}
+							>
+								{attribute.value}
+							</span>
 						</div>
 					</div>
 				</div>
 			</div>
 		{/each}
 	</FlexGrid>
-
-	<h1 class="Pro">Character Stats</h1>
 </div>
 
 <UploadScreenshot
@@ -462,7 +414,7 @@
 	bind:gear_views
 	bind:user_loadouts
 	bind:current_loadout
-	bind:raw_attributes
+	bind:unadjusted_stats
 />
 
 <ActionToolbar actions={metadata.actions} bind:is_mobile />
@@ -522,19 +474,8 @@
 		border-radius: 2rem;
 	}
 
-	.stat-value {
-		background-color: var(--button-bg);
-		border: 1px solid var(--button-border);
-		border-radius: 0.1rem;
-		color: var(--button-text);
-		padding: 2px 6px;
-		width: 100%;
-		font-size: 1rem;
-	}
-
 	.stat-value-text {
 		padding: 2px 6px;
 		color: var(--text-color);
-		cursor: pointer;
 	}
 </style>
