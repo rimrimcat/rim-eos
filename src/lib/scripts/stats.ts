@@ -87,7 +87,7 @@ export type StatGearFinal =
 	| 'alt_atk'
 	| 'end'
 	| 'end_regen'
-	| 'crit_damage'
+	| 'crit_dmg'
 	| 'phys_res'
 	| 'flame_res'
 	| 'frost_res'
@@ -113,7 +113,8 @@ export type StatNonGear =
 	| 'dmg_percent'
 	| 'ele_atk'
 	| 'ele_atk_percent'
-	| 'ele_dmg_percent';
+	| 'ele_dmg_percent'
+	| 'crit_dmg';
 
 export type AllStats = StatGearUser | StatGearTitan | StatNonGear | StatGearFinal;
 
@@ -192,7 +193,7 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	// other stat screen stuff
 	end: 'Endurance',
 	end_regen: 'Endurance Regen',
-	crit_damage: 'Crit Dmg'
+	crit_dmg: 'Crit Dmg'
 };
 
 type StatConstant = {

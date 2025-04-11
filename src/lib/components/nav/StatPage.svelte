@@ -29,6 +29,7 @@
 	// State
 	let raw_attributes: string[] = $state([]);
 	let attribute_view: CharacterStat[] = $state([]);
+
 	let edit_value: string = $state('');
 	let editing_index: number | null = $state(null);
 	let process_text: string = $state('');
@@ -147,14 +148,13 @@
 
 			const ret = await worker.recognize(data_url);
 			raw_attributes[attr_arr[index]] = ret.data.text.replace('%', '').replace('/', '');
+			console.log('OCR Text:', ret.data.text);
 
 			// Clean up resources
 			_crop.delete();
 			canvas.remove();
 
 			done_tasks++;
-			console.log('OCR Text:', ret.data.text);
-			console.info('Done tasks:', done_tasks);
 		}
 
 		try {
@@ -462,7 +462,7 @@
 	bind:gear_views
 	bind:user_loadouts
 	bind:current_loadout
-	bind:attribute_view
+	bind:raw_attributes
 />
 
 <ActionToolbar actions={metadata.actions} bind:is_mobile />

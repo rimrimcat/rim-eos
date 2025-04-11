@@ -1,37 +1,39 @@
 <script lang="ts">
 	import type { GearView, UserGear, ValidGearPart } from '$lib/scripts/gears';
+	import { TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import { StatCollection } from '$lib/scripts/stat_ops';
-	import type { CharacterStat } from '$lib/scripts/stats';
+	import { STAT_LABELS, type CharacterStat } from '$lib/scripts/stats';
 	import { ShirtIcon, SlashIcon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
 	let {
 		open = $bindable(false),
-		attribute_view = $bindable([] as CharacterStat[]),
+		raw_attributes = $bindable([] as string[]),
+		// TODO: variable that controls adjustment
 		user_gears = $bindable([] as UserGear[]),
 		gear_views = $bindable([] as GearView[]),
 		user_loadouts = $bindable({} as AllLoadouts),
 		current_loadout = $bindable('')
 	} = $props();
 
-	//need to store raw attribute as seperate var on stat page
+	let adjusted_raw_attributes: number[] = $state([]);
+	let adjusted_raw_attributes_view: string[] = $derived(
+		adjusted_raw_attributes.map((value) => value.toFixed(0).toString())
+	);
 
-	let attack_stats = $derived(
-		attribute_view.filter((attr) => {
-			return [
-				'Physical Attack',
-				'Flame Attack',
-				'Frost Attack',
-				'Volt Attack',
-				'Altered Attack'
-			].includes(attr.name);
+	let raw_attribute_view: CharacterStat[] = $derived(
+		TEMPLATE_USER_ATTRIBUTES.slice(3, 8).map((attr, index) => {
+			return {
+				...attr,
+				name: STAT_LABELS[attr.key],
+				value: raw_attributes[index + 3]
+			};
 		})
 	);
 
 	let adjust_for_gear = $state(true);
-	let gear_total = new StatCollection();
 
 	function getGearTotal() {
 		let stat_col = new StatCollection();
@@ -44,15 +46,21 @@
 				stat_col = stat_col.add(new_stat);
 			}
 		}
-
-		gear_total = stat_col;
+		return stat_col;
 	}
 
 	$effect(() => {
-		if (current_loadout && adjust_for_gear) {
-			getGearTotal();
-			$inspect('gear_total', gear_total.clone_data());
+		if (!current_loadout) {
+			return;
 		}
+
+		let stat_col = new StatCollection();
+
+		if (adjust_for_gear) {
+			stat_col = stat_col.add(getGearTotal());
+		}
+
+		adjusted_raw_attributes = stat_col.calc_base_from(raw_attributes);
 	});
 </script>
 
@@ -65,14 +73,17 @@
 			max_cols={1}
 			prefer_divisible={false}
 		>
-			{#each attack_stats as attribute}
+			{#each raw_attribute_view as attribute, index}
 				<div class="item-flex">
 					<div class="attribute-icon">
 						<img src={attribute.icon} alt={attribute.name + ' icon'} />
 					</div>
 					<div class="vertical-left">
 						<div class="stat-name">Base {attribute.name}</div>
-						<div class="stat-value-text">{attribute.value} {adjust_for_gear ? '➜' : ''}</div>
+						<div class="stat-value-text">
+							{attribute.value}
+							{adjust_for_gear ? '➜ ' + adjusted_raw_attributes_view[index + 3] : ''}
+						</div>
 					</div>
 				</div>
 			{/each}
