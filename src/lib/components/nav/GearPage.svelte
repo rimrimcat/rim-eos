@@ -1,4 +1,6 @@
 <script module lang="ts">
+	await loadStatConstants();
+
 	export const RAINBOW_TITAN_STATS: TitanStat[] = [
 		'titan_flame_atk',
 		'titan_frost_atk',
@@ -48,7 +50,7 @@
 					break;
 				default:
 					const isTitan = key.startsWith('titan_');
-					const value_format = key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER;
+					const value_format = key.includes('_percent') ? 'float3d' : 'int';
 
 					let _stat: Stat;
 					let _stat_value: number;
@@ -129,7 +131,7 @@
 
 				const rainbowTitanValue =
 					getTitanValue(bestRoll.stat, bestRoll.value) * 0.95 + bestRoll.value;
-				const rainbowTitanValueLabel = formatValue(Format.INTEGER, rainbowTitanValue.toString());
+				const rainbowTitanValueLabel = formatValue('int', rainbowTitanValue.toString());
 				RAINBOW_TITAN_STATS.forEach((rainbowStat) => {
 					const statIdx = derived.findIndex((der) => der.stat === rainbowStat);
 
@@ -183,19 +185,14 @@
 		type ValidGearPart
 	} from '$lib/scripts/gears.ts';
 	import { saveObject } from '$lib/scripts/loader.ts';
+	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
 	import {
-		ActionType,
-		registerComponent,
-		type ComponentMetadata
-	} from '$lib/scripts/navMetadata.svelte.ts';
-	import {
-		STAT_CONSTANTS,
 		STAT_LABELS,
 		type AllStats,
 		type StatGearUser as Stat,
 		type StatGearTitan as TitanStat
 	} from '$lib/scripts/stats.ts';
-	import { Format, formatValue } from '$lib/scripts/validation.ts';
+	import { formatValue } from '$lib/scripts/validation.ts';
 
 	import ActionToolbar from '$lib/components/ActionToolbar.svelte';
 	import GearInfo from '$lib/components/dialog/GearInfo.svelte';
@@ -203,6 +200,7 @@
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
 	import StatIcon from '$lib/components/StatIcon.svelte';
+	import { loadStatConstants, STAT_CONSTANTS } from '$lib/scripts/json-loader';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import {
 		CaseSensitiveIcon,
@@ -373,7 +371,7 @@
 					break;
 				default:
 					const isTitan = key.startsWith('titan_');
-					const value_format = key.includes('_percent') ? Format.FLOAT_PERCENT_3D : Format.INTEGER;
+					const value_format = key.includes('_percent') ? 'float3d' : 'int';
 
 					let _stat: Stat;
 					let _stat_value: number;
@@ -454,7 +452,7 @@
 
 				const rainbowTitanValue =
 					getTitanValue(bestRoll.stat, bestRoll.value) * 0.95 + bestRoll.value;
-				const rainbowTitanValueLabel = formatValue(Format.INTEGER, rainbowTitanValue.toString());
+				const rainbowTitanValueLabel = formatValue('int', rainbowTitanValue.toString());
 				RAINBOW_TITAN_STATS.forEach((rainbowStat) => {
 					const statIdx = derived.findIndex((der) => der.stat === rainbowStat);
 

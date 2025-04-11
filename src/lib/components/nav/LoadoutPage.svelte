@@ -12,11 +12,7 @@
 		saveObject
 	} from '$lib/scripts/loader';
 	import type { AllLoadouts, LoadoutType } from '$lib/scripts/loadouts';
-	import {
-		ActionType,
-		registerComponent,
-		type ComponentMetadata
-	} from '$lib/scripts/navMetadata.svelte.ts';
+	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
 	import { type StatGearUser } from '$lib/scripts/stats';
 	import {
 		ArrowRightLeftIcon,

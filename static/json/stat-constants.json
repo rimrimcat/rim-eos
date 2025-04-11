@@ -1,0 +1,226 @@
+{
+	"hp": {
+		"base": 4125,
+		"low_roll": 7480,
+		"high_roll": 18700,
+		"titan_base": 19937,
+		"titan_multiplier": 0.1
+	},
+	"hp_percent": {
+		"base": 0.94,
+		"low_roll": 1.08,
+		"high_roll": 1.08,
+		"titan_base": 0.681,
+		"titan_multiplier": 0.05
+	},
+	"atk": {
+		"base": 52,
+		"low_roll": 93,
+		"high_roll": 234,
+		"titan_base": 249,
+		"titan_multiplier": 0.1
+	},
+	"crit": {
+		"base": 258,
+		"low_roll": 468,
+		"high_roll": 1169,
+		"titan_base": 1246,
+		"titan_multiplier": 0.1
+	},
+	"crit_percent": {
+		"base": 1.05,
+		"low_roll": 1.19,
+		"high_roll": 1.19,
+		"titan_base": 0,
+		"titan_multiplier": 0
+	},
+	"res": {
+		"base": 64,
+		"low_roll": 117,
+		"high_roll": 292,
+		"titan_base": 272,
+		"titan_multiplier": 0.1
+	},
+	"alt_atk": {
+		"base": 137,
+		"low_roll": 249,
+		"high_roll": 623,
+		"titan_base": 0,
+		"titan_multiplier": 0
+	},
+	"alt_res": {
+		"base": 215,
+		"low_roll": 390,
+		"high_roll": 974,
+		"titan_base": 0,
+		"titan_multiplier": 0
+	},
+	"alt_res_percent": {
+		"base": 7.87,
+		"low_roll": 9,
+		"high_roll": 9,
+		"titan_base": 0,
+		"titan_multiplier": 0
+	},
+	"flame_atk": {
+		"base": 69,
+		"low_roll": 125,
+		"high_roll": 312,
+		"titan_base": 332,
+		"titan_multiplier": 0.1
+	},
+	"frost_atk": {
+		"base": 69,
+		"low_roll": 125,
+		"high_roll": 312,
+		"titan_base": 332,
+		"titan_multiplier": 0.1
+	},
+	"volt_atk": {
+		"base": 69,
+		"low_roll": 125,
+		"high_roll": 312,
+		"titan_base": 332,
+		"titan_multiplier": 0.1
+	},
+	"phys_atk": {
+		"base": 69,
+		"low_roll": 125,
+		"high_roll": 312,
+		"titan_base": 332,
+		"titan_multiplier": 0.1
+	},
+	"flame_atk_percent": {
+		"base": 1.26,
+		"low_roll": 1.44,
+		"high_roll": 1.44,
+		"titan_base": 0.909,
+		"titan_multiplier": 0.05
+	},
+	"frost_atk_percent": {
+		"base": 1.26,
+		"low_roll": 1.44,
+		"high_roll": 1.44,
+		"titan_base": 0.909,
+		"titan_multiplier": 0.05
+	},
+	"volt_atk_percent": {
+		"base": 1.26,
+		"low_roll": 1.44,
+		"high_roll": 1.44,
+		"titan_base": 0.909,
+		"titan_multiplier": 0.05
+	},
+	"phys_atk_percent": {
+		"base": 1.26,
+		"low_roll": 1.44,
+		"high_roll": 1.44,
+		"titan_base": 0.909,
+		"titan_multiplier": 0.05
+	},
+	"alt_atk_percent": {
+		"base": 1.26,
+		"low_roll": 1.44,
+		"high_roll": 1.44,
+		"titan_base": 0,
+		"titan_multiplier": 0
+	},
+	"flame_dmg_percent": {
+		"base": 0.65,
+		"low_roll": 0.72,
+		"high_roll": 0.72,
+		"titan_base": 0.422,
+		"titan_multiplier": 0.05
+	},
+	"frost_dmg_percent": {
+		"base": 0.65,
+		"low_roll": 0.72,
+		"high_roll": 0.72,
+		"titan_base": 0.422,
+		"titan_multiplier": 0.05
+	},
+	"volt_dmg_percent": {
+		"base": 0.65,
+		"low_roll": 0.72,
+		"high_roll": 0.72,
+		"titan_base": 0.422,
+		"titan_multiplier": 0.05
+	},
+	"phys_dmg_percent": {
+		"base": 0.65,
+		"low_roll": 0.72,
+		"high_roll": 0.72,
+		"titan_base": 0.422,
+		"titan_multiplier": 0.05
+	},
+	"alt_dmg_percent": {
+		"base": 0.65,
+		"low_roll": 0.72,
+		"high_roll": 0.72,
+		"titan_base": 0,
+		"titan_multiplier": 0
+	},
+	"flame_res": {
+		"base": 215,
+		"low_roll": 390,
+		"high_roll": 974,
+		"titan_base": 1038,
+		"titan_multiplier": 0.1
+	},
+	"frost_res": {
+		"base": 215,
+		"low_roll": 390,
+		"high_roll": 974,
+		"titan_base": 1038,
+		"titan_multiplier": 0.1
+	},
+	"volt_res": {
+		"base": 215,
+		"low_roll": 390,
+		"high_roll": 974,
+		"titan_base": 1038,
+		"titan_multiplier": 0.1
+	},
+	"phys_res": {
+		"base": 215,
+		"low_roll": 390,
+		"high_roll": 974,
+		"titan_base": 1038,
+		"titan_multiplier": 0.1
+	},
+	"res_percent": {
+		"base": 7.87,
+		"low_roll": 9,
+		"high_roll": 9,
+		"titan_base": 5.681,
+		"titan_multiplier": 0.05
+	},
+	"flame_res_percent": {
+		"base": 7.87,
+		"low_roll": 9,
+		"high_roll": 9,
+		"titan_base": 5.681,
+		"titan_multiplier": 0.05
+	},
+	"frost_res_percent": {
+		"base": 7.87,
+		"low_roll": 9,
+		"high_roll": 9,
+		"titan_base": 5.681,
+		"titan_multiplier": 0.05
+	},
+	"volt_res_percent": {
+		"base": 7.87,
+		"low_roll": 9,
+		"high_roll": 9,
+		"titan_base": 5.681,
+		"titan_multiplier": 0.05
+	},
+	"phys_res_percent": {
+		"base": 7.87,
+		"low_roll": 9,
+		"high_roll": 9,
+		"titan_base": 5.681,
+		"titan_multiplier": 0.05
+	}
+}

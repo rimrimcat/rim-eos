@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { navItems } from '$lib/scripts/navMetadata.svelte.ts';
+	import { navItems } from '$lib/scripts/nav-metadata';
 	import { ArrowLeftToLine, ChevronDown, ChevronUp, Menu } from '@lucide/svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { fade, fly, slide } from 'svelte/transition';

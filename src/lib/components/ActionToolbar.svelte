@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { ArrowRightToLine, CircleHelp, Menu, ToggleLeft, ToggleRight } from '@lucide/svelte';
-
 	import {
 		ActionType,
 		type ComponentAction,
 		type SliderAction,
 		type ToggleAction
-	} from '$lib/scripts/navMetadata.svelte.ts';
+	} from '$lib/scripts/nav-metadata';
+	import { ArrowRightToLine, CircleHelp, Menu, ToggleLeft, ToggleRight } from '@lucide/svelte';
 
 	let {
 		actions = [] as ComponentAction[],

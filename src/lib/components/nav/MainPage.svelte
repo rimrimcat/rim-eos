@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { registerComponent, type ComponentMetadata } from '$lib/scripts/navMetadata.svelte.ts';
+	import { registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
 	import { AppWindowIcon } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 

@@ -6,13 +6,9 @@
 	import type { GearView, UserGear } from '$lib/scripts/gears';
 	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader.ts';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
-	import {
-		ActionType,
-		registerComponent,
-		type ComponentMetadata
-	} from '$lib/scripts/navMetadata.svelte.ts';
+	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
 	import { STAT_LABELS, type CharacterStat } from '$lib/scripts/stats';
-	import { FLOAT_PERCENT_3D, INTEGER, validateValue } from '$lib/scripts/validation.ts';
+	import { formatValue } from '$lib/scripts/validation.ts';
 	import { ChartNoAxesColumn, ImagePlus, Trash2 } from '@lucide/svelte';
 	import cv from '@techstark/opencv-js';
 	import { onMount } from 'svelte';
@@ -50,9 +46,7 @@
 			return {
 				...attr,
 				name: STAT_LABELS[attr.key],
-				value: __use_percent
-					? validateValue(FLOAT_PERCENT_3D, __val)
-					: validateValue(INTEGER, __val)
+				value: __use_percent ? formatValue('float3d', __val) : formatValue('int', __val)
 			};
 		});
 	}
