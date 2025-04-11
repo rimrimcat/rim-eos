@@ -22,6 +22,7 @@ some webapp im making since no more content at TOF
 - [x] Stat: sync with loadout (2025-04-10)
 - [x] Loadout: add my loadout as example (2025-04-10)
 - [ ] Stat: select between uploading base stats or uploading stats with gears
+- [ ] Loading: add something to the loading screen
 - [ ] Gear: add way to manually add gears
 - [ ] Gear: make more accessible for mobile users
 - [ ] Gear: add more reponsive toasts for actions (?)

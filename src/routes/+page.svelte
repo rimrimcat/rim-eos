@@ -13,7 +13,7 @@
 </script>
 
 {#if !signal}
-	<div class="loading" transition:fade={{ duration: 1000 }}>
+	<div class="loading" transition:fade={{ duration: 1000, delay: 1000 }}>
 		<p>This is supposed to be a loading page...</p>
 	</div>
 {/if}
