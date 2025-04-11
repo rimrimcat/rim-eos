@@ -211,6 +211,15 @@
 		gap: 1rem;
 	} */
 
+	:global(input) {
+		background-color: var(--button-bg);
+		border: 1px solid var(--button-border);
+		border-radius: 0.5rem;
+		color: var(--button-text);
+		padding: 2px 6px;
+		font-size: large;
+	}
+
 	:global(.horizontal) {
 		display: flex;
 		flex-wrap: wrap;

@@ -4,7 +4,7 @@
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import { StatCollection } from '$lib/scripts/stat_ops';
 	import { STAT_LABELS, type CharacterStat } from '$lib/scripts/stats';
-	import { ShirtIcon, SlashIcon } from '@lucide/svelte';
+	import { ShirtIcon, SlashIcon, TextCursorInputIcon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
@@ -18,20 +18,26 @@
 		current_loadout = $bindable('')
 	} = $props();
 
-	let adjusted_raw_attributes: number[] = $state([]);
-	let adjusted_raw_attributes_view: string[] = $derived(
-		adjusted_raw_attributes.map((value) => value.toFixed(0).toString())
-	);
-
+	// raw user-uploaded attribute
 	let raw_attribute_view: CharacterStat[] = $derived(
-		TEMPLATE_USER_ATTRIBUTES.slice(3, 8).map((attr, index) => {
+		TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
 			return {
 				...attr,
 				name: STAT_LABELS[attr.key],
-				value: raw_attributes[index + 3]
+				value: raw_attributes[index]
 			};
 		})
 	);
+
+	// all adjusted stats
+	let adj_raw_attributes: number[] = $state([]);
+	let adj_raw_attributes_view: string[] = $derived(
+		adj_raw_attributes.map((value) => value.toFixed(0).toString())
+	);
+
+	// adjustment only for base atk!
+	let manual_base_atk = $state(true);
+	let manual_base_atk_inputs: string[] = $state([]);
 
 	let adjust_for_gear = $state(true);
 
@@ -50,6 +56,10 @@
 	}
 
 	$effect(() => {
+		manual_base_atk_inputs = adj_raw_attributes_view.slice(3, 7);
+	});
+
+	$effect(() => {
 		if (!current_loadout) {
 			return;
 		}
@@ -60,11 +70,11 @@
 			stat_col = stat_col.add(getGearTotal());
 		}
 
-		adjusted_raw_attributes = stat_col.calc_base_from(raw_attributes);
+		adj_raw_attributes = stat_col.calc_base_from(raw_attributes);
 	});
 </script>
 
-<Dialog title="Stat Adjustment" bind:open>
+<Dialog title="Stat Adjustment" bind:open buttons={['Finalize', 'Cancel']} primary="Finalize">
 	<div style="padding: 0.5rem;">
 		<FlexGrid
 			horizontal_gap="0.9rem"
@@ -73,7 +83,7 @@
 			max_cols={1}
 			prefer_divisible={false}
 		>
-			{#each raw_attribute_view as attribute, index}
+			{#each raw_attribute_view.slice(3, 8) as attribute, index}
 				<div class="item-flex">
 					<div class="attribute-icon">
 						<img src={attribute.icon} alt={attribute.name + ' icon'} />
@@ -82,7 +92,25 @@
 						<div class="stat-name">Base {attribute.name}</div>
 						<div class="stat-value-text">
 							{attribute.value}
-							{adjust_for_gear ? '➜ ' + adjusted_raw_attributes_view[index + 3] : ''}
+
+							{#if manual_base_atk && index <= 3}
+								{'➜ '}
+								<input
+									type="text"
+									class="stat-value"
+									bind:value={manual_base_atk_inputs[index]}
+									style="width: 8ch"
+								/>
+							{:else if manual_base_atk && index === 4}
+								{'➜ '}
+								{Math.max(
+									...manual_base_atk_inputs.map((value) => {
+										return parseInt(value) ?? 0;
+									})
+								)}
+							{:else if adjust_for_gear}
+								{'➜ ' + adj_raw_attributes_view[index + 3]}
+							{/if}
 						</div>
 					</div>
 				</div>
@@ -90,11 +118,28 @@
 		</FlexGrid>
 	</div>
 
-	<div class="horizontal center" style="margin-top: 1rem;">
+	<div class="horizontal" style="margin-top: 1rem;">
+		<button
+			class="button border"
+			id="manual-toggle"
+			onclick={() => (manual_base_atk = !manual_base_atk)}
+		>
+			<div style="position: relative; ">
+				<TextCursorInputIcon />
+				{#if !manual_base_atk}
+					<div style="position: absolute; top: 0%; left: 0%;">
+						<SlashIcon />
+					</div>
+				{/if}
+			</div>
+			<label class="in-button" for="manual-toggle"
+				>{manual_base_atk ? 'Input base stats manually' : 'Only calculate base stats'}</label
+			>
+		</button>
+
 		<button
 			class="button border"
 			id="raw-toggle"
-			title={adjust_for_gear ? 'Adjust for gear' : "Don't adjust for gear"}
 			onclick={() => (adjust_for_gear = !adjust_for_gear)}
 		>
 			<div style="position: relative; ">
@@ -123,5 +168,12 @@
 	.stat-value-text {
 		font-size: 1.25rem;
 		padding-left: 0.4rem;
+	}
+
+	.attribute-icon img {
+		/* make smaller */
+		width: 100%;
+		height: 100%;
+		object-fit: contain;
 	}
 </style>
