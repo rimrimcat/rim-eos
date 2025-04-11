@@ -79,7 +79,7 @@ export type Weapon = {
 	name: string;
 	base_stat: BaseStatType;
 	resonances: Resonance[];
-	onfieldness: number; // priority for onfielding, need to determine this later on
+	onfieldness?: number; // priority for onfielding, need to determine this later on
 	advancement?: Advancement; // default 6
 	effects: Effect[];
 };
@@ -93,7 +93,6 @@ export const ALL_WEAPONS: AllWeapons = {
 		name: 'Grayfox',
 		base_stat: 'crit-med',
 		resonances: ['bene', 'frost', 'volt', 'frost-volt-fusion'],
-		onfieldness: 5,
 		effects: [
 			{
 				id: 'gf-skill',
@@ -132,7 +131,6 @@ export const ALL_WEAPONS: AllWeapons = {
 		name: 'Nola Frost',
 		base_stat: 'crit-med',
 		resonances: ['atk', 'frost', 'volt', 'frost-volt-fusion'],
-		onfieldness: 5,
 		effects: [
 			{
 				id: 'nola-frost-skill',
@@ -162,7 +160,6 @@ export const ALL_WEAPONS: AllWeapons = {
 		name: 'Nan Yin',
 		base_stat: 'crit-low',
 		resonances: ['atk', 'ny-alt'],
-		onfieldness: 5,
 		effects: [
 			{
 				id: 'nanyin-inhabit',
