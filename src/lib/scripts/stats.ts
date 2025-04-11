@@ -19,21 +19,16 @@ export type StatGearUser =
 	| 'volt_atk'
 	| 'phys_atk'
 	| 'alt_atk'
-	| 'ele_atk'
-	| 'atk_percent'
 	| 'flame_atk_percent'
 	| 'frost_atk_percent'
 	| 'volt_atk_percent'
 	| 'phys_atk_percent'
 	| 'alt_atk_percent'
-	| 'ele_atk_percent'
-	| 'dmg_percent'
 	| 'flame_dmg_percent'
 	| 'frost_dmg_percent'
 	| 'volt_dmg_percent'
 	| 'phys_dmg_percent'
 	| 'alt_dmg_percent'
-	| 'ele_dmg_percent'
 	| 'crit'
 	| 'crit_percent'
 	| 'res'
@@ -61,21 +56,17 @@ export type StatGearTitan =
 	| 'titan_volt_atk'
 	| 'titan_phys_atk'
 	| 'titan_alt_atk'
-	| 'titan_ele_atk'
 	| 'titan_atk_percent'
 	| 'titan_flame_atk_percent'
 	| 'titan_frost_atk_percent'
 	| 'titan_volt_atk_percent'
 	| 'titan_phys_atk_percent'
 	| 'titan_alt_atk_percent'
-	| 'titan_ele_atk_percent'
-	| 'titan_dmg_percent'
 	| 'titan_flame_dmg_percent'
 	| 'titan_frost_dmg_percent'
 	| 'titan_volt_dmg_percent'
 	| 'titan_phys_dmg_percent'
 	| 'titan_alt_dmg_percent'
-	| 'titan_ele_dmg_percent'
 	| 'titan_crit'
 	| 'titan_crit_percent'
 	| 'titan_res'
@@ -91,7 +82,38 @@ export type StatGearTitan =
 	| 'titan_alt_res_percent'
 	| 'titan_phys_res_percent';
 
-export type AllStats = StatGearUser | StatGearTitan;
+/**
+ * Stats that are finalized on character screen
+ */
+export type StatGearFinal =
+	| 'hp'
+	| 'crit'
+	| 'crit_percent'
+	| 'crit_damage'
+	| 'phys_atk'
+	| 'flame_atk'
+	| 'frost_atk'
+	| 'volt_atk'
+	| 'alt_atk'
+	| 'res'
+	| 'phys_res'
+	| 'flame_res'
+	| 'frost_res'
+	| 'volt_res'
+	| 'alt_res';
+
+/**
+ * Stats that are not present on gear
+ * TODO: subdivide dmg_percent to different multipliers
+ */
+export type StatNonGear =
+	| 'atk_percent'
+	| 'dmg_percent'
+	| 'ele_atk'
+	| 'ele_atk_percent'
+	| 'ele_dmg_percent';
+
+export type AllStats = StatGearUser | StatGearTitan | StatNonGear;
 
 export const STAT_LABELS: Record<AllStats, string> = {
 	hp: 'HP',
@@ -140,21 +162,17 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	titan_volt_atk: 'Titan Volt Atk',
 	titan_phys_atk: 'Titan Phys Atk',
 	titan_alt_atk: 'Titan Alt Atk',
-	titan_ele_atk: 'Titan Ele Atk',
 	titan_atk_percent: 'Titan ATK',
 	titan_flame_atk_percent: 'Titan Flame Atk',
 	titan_frost_atk_percent: 'Titan Frost Atk',
 	titan_volt_atk_percent: 'Titan Volt Atk',
 	titan_phys_atk_percent: 'Titan Phys Atk',
 	titan_alt_atk_percent: 'Titan Alt Atk',
-	titan_ele_atk_percent: 'Titan Ele Atk',
-	titan_dmg_percent: 'Titan Dmg',
 	titan_flame_dmg_percent: 'Titan Flame Dmg',
 	titan_frost_dmg_percent: 'Titan Frost Dmg',
 	titan_volt_dmg_percent: 'Titan Volt Dmg',
 	titan_phys_dmg_percent: 'Titan Phys Dmg',
 	titan_alt_dmg_percent: 'Titan Alt Dmg',
-	titan_ele_dmg_percent: 'Titan Ele Dmg',
 	titan_crit: 'Titan Crit',
 	titan_crit_percent: 'Titan Crit',
 	titan_res: 'Titan Res',
@@ -171,7 +189,7 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	titan_phys_res_percent: 'Titan Phys Res'
 };
 
-export type StatConstant = {
+type StatConstant = {
 	base: number;
 	low_roll: number;
 	high_roll: number;
@@ -274,20 +292,6 @@ export const STAT_CONSTANTS: Record<StatGearUser, StatConstant> = {
 		titan_base: 332,
 		titan_multiplier: 0.1
 	},
-	ele_atk: {
-		base: 69,
-		low_roll: 125,
-		high_roll: 312,
-		titan_base: 332,
-		titan_multiplier: 0.1
-	},
-	atk_percent: {
-		base: 1.26,
-		low_roll: 1.44,
-		high_roll: 1.44,
-		titan_base: 0.909,
-		titan_multiplier: 0.05
-	},
 	flame_atk_percent: {
 		base: 1.26,
 		low_roll: 1.44,
@@ -323,20 +327,6 @@ export const STAT_CONSTANTS: Record<StatGearUser, StatConstant> = {
 		titan_base: 0,
 		titan_multiplier: 0
 	},
-	ele_atk_percent: {
-		base: 1.26,
-		low_roll: 1.44,
-		high_roll: 1.44,
-		titan_base: 0.909,
-		titan_multiplier: 0.05
-	},
-	dmg_percent: {
-		base: 0.65,
-		low_roll: 0.72,
-		high_roll: 0.72,
-		titan_base: 0.422,
-		titan_multiplier: 0.05
-	},
 	flame_dmg_percent: {
 		base: 0.65,
 		low_roll: 0.72,
@@ -371,13 +361,6 @@ export const STAT_CONSTANTS: Record<StatGearUser, StatConstant> = {
 		high_roll: 0.72,
 		titan_base: 0,
 		titan_multiplier: 0
-	},
-	ele_dmg_percent: {
-		base: 0.65,
-		low_roll: 0.72,
-		high_roll: 0.72,
-		titan_base: 0.422,
-		titan_multiplier: 0.05
 	},
 	flame_res: {
 		base: 215,
@@ -453,21 +436,16 @@ export const USER_STATS_LIST: StatGearUser[] = [
 	'volt_atk',
 	'phys_atk',
 	'alt_atk',
-	'ele_atk',
-	'atk_percent',
 	'flame_atk_percent',
 	'frost_atk_percent',
 	'volt_atk_percent',
 	'phys_atk_percent',
 	'alt_atk_percent',
-	'ele_atk_percent',
-	'dmg_percent',
 	'flame_dmg_percent',
 	'frost_dmg_percent',
 	'volt_dmg_percent',
 	'phys_dmg_percent',
 	'alt_dmg_percent',
-	'ele_dmg_percent',
 	'crit',
 	'crit_percent',
 	'res',
@@ -493,21 +471,18 @@ export const ALL_STATS_LIST = [
 	'volt_atk',
 	'phys_atk',
 	'alt_atk',
-	'ele_atk',
 	'atk_percent',
 	'flame_atk_percent',
 	'frost_atk_percent',
 	'volt_atk_percent',
 	'phys_atk_percent',
 	'alt_atk_percent',
-	'ele_atk_percent',
 	'dmg_percent',
 	'flame_dmg_percent',
 	'frost_dmg_percent',
 	'volt_dmg_percent',
 	'phys_dmg_percent',
 	'alt_dmg_percent',
-	'ele_dmg_percent',
 	'crit',
 	'crit_percent',
 	'res',
@@ -530,21 +505,18 @@ export const ALL_STATS_LIST = [
 	'titan_volt_atk',
 	'titan_phys_atk',
 	'titan_alt_atk',
-	'titan_ele_atk',
 	'titan_atk_percent',
 	'titan_flame_atk_percent',
 	'titan_frost_atk_percent',
 	'titan_volt_atk_percent',
 	'titan_phys_atk_percent',
 	'titan_alt_atk_percent',
-	'titan_ele_atk_percent',
 	'titan_dmg_percent',
 	'titan_flame_dmg_percent',
 	'titan_frost_dmg_percent',
 	'titan_volt_dmg_percent',
 	'titan_phys_dmg_percent',
 	'titan_alt_dmg_percent',
-	'titan_ele_dmg_percent',
 	'titan_crit',
 	'titan_crit_percent',
 	'titan_res',
