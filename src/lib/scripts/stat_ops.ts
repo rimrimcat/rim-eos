@@ -1,8 +1,8 @@
 import type { GearView } from './gears';
-import type { StatGearTitan, StatGearUser } from './stats';
+import type { StatGearTitan, StatGearUser, StatNonGear } from './stats';
 
 export type StatData = {
-	[key in StatGearUser]?: number;
+	[key in StatGearUser | StatNonGear]?: number;
 };
 
 export class StatCollection {
@@ -75,4 +75,6 @@ export class StatCollection {
 
 		return new StatCollection(new_data);
 	}
+
+	calc_base_from(final_stats: StatData) {}
 }

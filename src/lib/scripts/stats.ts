@@ -1,12 +1,3 @@
-/*
- * Temporary typing for character stat screen
- */
-export type AttributeItem = {
-	name: string;
-	icon: string;
-	value: string;
-};
-
 /**
  * Gear stats that can be added by the user
  */
@@ -89,18 +80,29 @@ export type StatGearFinal =
 	| 'hp'
 	| 'crit'
 	| 'crit_percent'
-	| 'crit_damage'
 	| 'phys_atk'
 	| 'flame_atk'
 	| 'frost_atk'
 	| 'volt_atk'
 	| 'alt_atk'
-	| 'res'
+	| 'end'
+	| 'end_regen'
+	| 'crit_damage'
 	| 'phys_res'
 	| 'flame_res'
 	| 'frost_res'
 	| 'volt_res'
 	| 'alt_res';
+
+/*
+ * Temporary typing for character stat screen
+ */
+export type CharacterStat = {
+	key: StatGearFinal;
+	name: string;
+	icon: string;
+	value: string;
+};
 
 /**
  * Stats that are not present on gear
@@ -113,7 +115,7 @@ export type StatNonGear =
 	| 'ele_atk_percent'
 	| 'ele_dmg_percent';
 
-export type AllStats = StatGearUser | StatGearTitan | StatNonGear;
+export type AllStats = StatGearUser | StatGearTitan | StatNonGear | StatGearFinal;
 
 export const STAT_LABELS: Record<AllStats, string> = {
 	hp: 'HP',
@@ -186,7 +188,11 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	titan_frost_res_percent: 'Titan Frost Res',
 	titan_volt_res_percent: 'Titan Volt Res',
 	titan_alt_res_percent: 'Titan Alt Res',
-	titan_phys_res_percent: 'Titan Phys Res'
+	titan_phys_res_percent: 'Titan Phys Res',
+	// other stat screen stuff
+	end: 'Endurance',
+	end_regen: 'Endurance Regen',
+	crit_damage: 'Crit Dmg'
 };
 
 type StatConstant = {

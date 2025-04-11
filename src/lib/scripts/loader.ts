@@ -1,5 +1,5 @@
 import { type UserGear } from '$lib/scripts/gears';
-import { type AttributeItem } from '$lib/scripts/stats';
+import { type CharacterStat, type StatGearFinal } from '$lib/scripts/stats';
 import { type AllLoadouts } from './loadouts';
 
 // Keys
@@ -10,23 +10,23 @@ const DB_VERSION = 2;
 const IMAGE_STORE = 'images';
 
 // Templates
-export const TEMPLATE_USER_ATTRIBUTES = [
-	{ name: 'HP', icon: './stat/hp.webp', index: 0 },
-	{ name: 'Crit', icon: './stat/crit.webp', index: 1 },
-	{ name: 'Crit Rate', icon: './stat/crit.webp', index: 2 },
-	{ name: 'Physical Attack', icon: './stat/physatk.webp', index: 3 },
-	{ name: 'Flame Attack', icon: './stat/flameatk.webp', index: 4 },
-	{ name: 'Frost Attack', icon: './stat/frostatk.webp', index: 5 },
-	{ name: 'Volt Attack', icon: './stat/voltatk.webp', index: 6 },
-	{ name: 'Altered Attack', icon: './stat/placeholder.webp', index: 7 },
-	{ name: 'Endurance', icon: './stat/placeholder.webp', index: 8 },
-	{ name: 'Endurance Regen Speed', icon: './stat/placeholder.webp', index: 9 },
-	{ name: 'Crit Damage', icon: './stat/placeholder.webp', index: 10 },
-	{ name: 'Physical Resistance', icon: './stat/physres.webp', index: 11 },
-	{ name: 'Flame Resistance', icon: './stat/flameres.webp', index: 12 },
-	{ name: 'Frost Resistance', icon: './stat/frostres.webp', index: 13 },
-	{ name: 'Volt Resistance', icon: './stat/voltres.webp', index: 14 },
-	{ name: 'Altered Resistance', icon: './stat/placeholder.webp', index: 15 }
+export const TEMPLATE_USER_ATTRIBUTES: { key: StatGearFinal; icon: string }[] = [
+	{ key: 'hp', icon: './stat/hp.webp' },
+	{ key: 'crit', icon: './stat/crit.webp' },
+	{ key: 'crit_percent', icon: './stat/crit.webp' },
+	{ key: 'phys_atk', icon: './stat/physatk.webp' },
+	{ key: 'flame_atk', icon: './stat/flameatk.webp' },
+	{ key: 'frost_atk', icon: './stat/frostatk.webp' },
+	{ key: 'volt_atk', icon: './stat/voltatk.webp' },
+	{ key: 'alt_atk', icon: './stat/placeholder.webp' },
+	{ key: 'end', icon: './stat/placeholder.webp' },
+	{ key: 'end_regen', icon: './stat/placeholder.webp' },
+	{ key: 'crit_damage', icon: './stat/placeholder.webp' },
+	{ key: 'phys_res', icon: './stat/physres.webp' },
+	{ key: 'flame_res', icon: './stat/flameres.webp' },
+	{ key: 'frost_res', icon: './stat/frostres.webp' },
+	{ key: 'volt_res', icon: './stat/voltres.webp' },
+	{ key: 'alt_res', icon: './stat/placeholder.webp' }
 ];
 
 // Defaults
@@ -499,7 +499,7 @@ export async function saveObject(key: 'gears_v1', value: UserGear[]): Promise<vo
 export async function saveObject(key: 'loadouts_v1', value: AllLoadouts): Promise<void>;
 export async function saveObject(
 	key: LocalStorageKey,
-	value: AttributeItem[] | UserGear[] | AllLoadouts
+	value: CharacterStat[] | UserGear[] | AllLoadouts
 ): Promise<void> {
 	switch (key) {
 		case 'gears_v1': {

@@ -2,14 +2,14 @@
 	import type { GearView, UserGear, ValidGearPart } from '$lib/scripts/gears';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import { StatCollection } from '$lib/scripts/stat_ops';
-	import type { AttributeItem } from '$lib/scripts/stats';
+	import type { CharacterStat } from '$lib/scripts/stats';
 	import { ShirtIcon, SlashIcon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
 	let {
 		open = $bindable(false),
-		attribute_view = $bindable([] as AttributeItem[]),
+		attribute_view = $bindable([] as CharacterStat[]),
 		user_gears = $bindable([] as UserGear[]),
 		gear_views = $bindable([] as GearView[]),
 		user_loadouts = $bindable({} as AllLoadouts),

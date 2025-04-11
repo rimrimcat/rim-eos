@@ -3,7 +3,7 @@
 	import StatAdjust from '$lib/components/dialog/StatAdjust.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
-	import type { UserGear } from '$lib/scripts/gears';
+	import type { GearView, UserGear } from '$lib/scripts/gears';
 	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader.ts';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import {
@@ -11,7 +11,7 @@
 		registerComponent,
 		type ComponentMetadata
 	} from '$lib/scripts/navMetadata.svelte.ts';
-	import { type AttributeItem } from '$lib/scripts/stats';
+	import { STAT_LABELS, type CharacterStat } from '$lib/scripts/stats';
 	import { FLOAT_PERCENT_3D, INTEGER, validateValue } from '$lib/scripts/validation.ts';
 	import { ChartNoAxesColumn, ImagePlus, Trash2 } from '@lucide/svelte';
 	import cv from '@techstark/opencv-js';
@@ -23,12 +23,12 @@
 		user_gears = $bindable([] as UserGear[]),
 		user_loadouts = $bindable({} as AllLoadouts),
 		current_loadout = $bindable(''),
-		gear_views = $bindable([] as UserGear[])
+		gear_views = $bindable([] as GearView[])
 	} = $props();
 
 	// State
 	let raw_attributes: string[] = $state([]);
-	let attribute_view: AttributeItem[] = $state([]);
+	let attribute_view: CharacterStat[] = $state([]);
 	let edit_value: string = $state('');
 	let editing_index: number | null = $state(null);
 	let process_text: string = $state('');
@@ -49,6 +49,7 @@
 
 			return {
 				...attr,
+				name: STAT_LABELS[attr.key],
 				value: __use_percent
 					? validateValue(FLOAT_PERCENT_3D, __val)
 					: validateValue(INTEGER, __val)
