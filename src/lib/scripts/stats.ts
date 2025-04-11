@@ -111,12 +111,16 @@ export type CharacterStat = {
 export type StatNonGear =
 	| 'atk_percent'
 	| 'dmg_percent'
+	| 'normal_dmg_percent'
+	| 'final_dmg_percent'
 	| 'ele_atk'
 	| 'ele_atk_percent'
 	| 'ele_dmg_percent'
 	| 'crit_dmg';
 
-export type AllStats = StatGearUser | StatGearTitan | StatNonGear | StatGearFinal;
+export type StatDebuffs = 'crit_res_reduction_percent' | 'res_ignore_percent';
+
+export type AllStats = StatGearUser | StatGearTitan | StatNonGear | StatDebuffs | StatGearFinal;
 
 export const STAT_LABELS: Record<AllStats, string> = {
 	hp: 'HP',
@@ -193,7 +197,11 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	// other stat screen stuff
 	end: 'Endurance',
 	end_regen: 'Endurance Regen',
-	crit_dmg: 'Crit Dmg'
+	crit_dmg: 'Crit Dmg',
+	normal_dmg_percent: 'Normal Dmg',
+	final_dmg_percent: 'Final Dmg',
+	crit_res_reduction_percent: 'Crit Res Red',
+	res_ignore_percent: 'Res Ignore'
 };
 
 export type StatConstant = {

@@ -91,7 +91,7 @@ export const DEFAULT_LOADOUTS_RIM: AllLoadouts = {
 		name: 'Rim Example Loadout',
 		description: 'f2p frost loadout',
 		element: 'frost',
-		equipped_gear: {
+		equipped_gears: {
 			H: 3,
 			S: 11,
 			A: 9,

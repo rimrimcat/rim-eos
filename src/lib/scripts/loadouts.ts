@@ -11,7 +11,7 @@ export type Loadout = {
 	name: string;
 	description: string;
 	element: LoadoutType;
-	equipped_gear: EquippedGear;
+	equipped_gears: EquippedGear;
 	base_stats: string[]; // raw stat uploaded by user
 	stat_adj?: object;
 	image_url?: string;

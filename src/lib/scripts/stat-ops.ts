@@ -1,5 +1,5 @@
 import type { GearView } from './gears';
-import type { StatGearTitan, StatGearUser, StatNonGear } from './stats';
+import type { StatDebuffs, StatGearTitan, StatGearUser, StatNonGear } from './stats';
 
 const KEYS_ATK: StatGearUser[] = ['phys_atk', 'flame_atk', 'frost_atk', 'volt_atk', 'alt_atk'];
 const KEYS_ATK_PERCENT: StatGearUser[] = [
@@ -11,7 +11,7 @@ const KEYS_ATK_PERCENT: StatGearUser[] = [
 ];
 
 export type StatData = {
-	[key in StatGearUser | StatNonGear]?: number;
+	[key in StatGearUser | StatNonGear | StatDebuffs]?: number;
 };
 
 export class StatCollection {

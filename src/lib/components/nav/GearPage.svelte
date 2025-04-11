@@ -159,7 +159,7 @@
 		const isEquipped =
 			equip ||
 			(part !== GearPart.UNKNOWN &&
-				user_loadouts[current_loadout].equipped_gear[gear.part as ValidGearPart] === gear.id);
+				user_loadouts[current_loadout].equipped_gears[gear.part as ValidGearPart] === gear.id);
 
 		return {
 			id,
@@ -336,14 +336,14 @@
 
 		// same with user_loadouts
 		for (const key in user_loadouts) {
-			for (const gearKey in user_loadouts[key].equipped_gear) {
+			for (const gearKey in user_loadouts[key].equipped_gears) {
 				if (
-					user_loadouts[key].equipped_gear[gearKey as ValidGearPart] !== null &&
+					user_loadouts[key].equipped_gears[gearKey as ValidGearPart] !== null &&
 					// @ts-expect-error
-					user_loadouts[key].equipped_gear[gearKey as ValidGearPart] > start
+					user_loadouts[key].equipped_gears[gearKey as ValidGearPart] > start
 				) {
 					// @ts-expect-error
-					user_loadouts[key].equipped_gear[gearKey as ValidGearPart]--;
+					user_loadouts[key].equipped_gears[gearKey as ValidGearPart]--;
 				}
 			}
 		}
@@ -482,7 +482,7 @@
 		const isEquipped =
 			equip ||
 			(part !== GearPart.UNKNOWN &&
-				user_loadouts[current_loadout].equipped_gear[gear.part as ValidGearPart] === gear.id);
+				user_loadouts[current_loadout].equipped_gears[gear.part as ValidGearPart] === gear.id);
 
 		return {
 			id,
@@ -524,12 +524,12 @@
 			return;
 		}
 
-		const prevEquippedGearId = user_loadouts[current_loadout].equipped_gear[part];
+		const prevEquippedGearId = user_loadouts[current_loadout].equipped_gears[part];
 		if (prevEquippedGearId !== null) {
 			unequipGear(prevEquippedGearId, false);
 		}
 
-		user_loadouts[current_loadout].equipped_gear[part] = id;
+		user_loadouts[current_loadout].equipped_gears[part] = id;
 		gear_views[id].isEquipped = true;
 		saveObject('loadouts_v1', user_loadouts);
 	}
@@ -540,7 +540,7 @@
 			return;
 		}
 
-		user_loadouts[current_loadout].equipped_gear[part] = null;
+		user_loadouts[current_loadout].equipped_gears[part] = null;
 		gear_views[id].isEquipped = false;
 
 		if (saveAfter) {
@@ -550,7 +550,7 @@
 
 	function removeGear(id: number) {
 		if (gear_views[id].part !== GearPart.UNKNOWN) {
-			user_loadouts[current_loadout].equipped_gear[gear_views[id].part] = null;
+			user_loadouts[current_loadout].equipped_gears[gear_views[id].part] = null;
 		}
 		user_gears = user_gears.filter((gear) => gear.id !== id);
 		gear_views = gear_views.filter((gear) => gear.id !== id);
@@ -566,7 +566,7 @@
 	function updateEquippedGears() {
 		equipped_gears = [];
 		for (const part in VALID_GEAR_PARTS) {
-			const gearId = user_loadouts[current_loadout].equipped_gear[VALID_GEAR_PARTS[part]];
+			const gearId = user_loadouts[current_loadout].equipped_gears[VALID_GEAR_PARTS[part]];
 			if (gearId !== null) {
 				equipped_gears.push(gearId);
 			} else {
@@ -603,7 +603,7 @@
 		const equip =
 			txt[0].includes('equipped') && // check if any gear is equipped in current loadout
 			part !== GearPart.UNKNOWN &&
-			user_loadouts[current_loadout].equipped_gear[part] === null;
+			user_loadouts[current_loadout].equipped_gears[part] === null;
 		const dateAdded = new Date().toISOString();
 
 		// console.log('part text clean', partCleanedStr);

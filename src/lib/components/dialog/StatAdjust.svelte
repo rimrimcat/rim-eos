@@ -46,7 +46,7 @@
 	function getGearTotal() {
 		let stat_col = new StatCollection();
 
-		const equipped_gears = user_loadouts[current_loadout].equipped_gear;
+		const equipped_gears = user_loadouts[current_loadout].equipped_gears;
 		for (const part in equipped_gears) {
 			const gear_id = equipped_gears[part as ValidGearPart];
 			if (gear_id !== null && gear_id !== -1) {
