@@ -1016,7 +1016,9 @@
 							</div>
 						</div>
 
-						{@render gear_actions(gear_views[gear.id])}
+						{#if !isMobile}
+							{@render gear_actions(gear_views[gear.id])}
+						{/if}
 					</div>
 				{/each}
 			{:else if is_showing_equipped_gears}
