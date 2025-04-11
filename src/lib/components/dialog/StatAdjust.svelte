@@ -2,7 +2,7 @@
 	import type { GearView, UserGear, ValidGearPart } from '$lib/scripts/gears';
 	import { TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
-	import { StatCollection } from '$lib/scripts/stat_ops';
+	import { StatCollection } from '$lib/scripts/stat-ops';
 	import { STAT_LABELS, type CharacterStat } from '$lib/scripts/stats';
 	import { ShirtIcon, SlashIcon, SwordIcon } from '@lucide/svelte';
 	import { type Component } from 'svelte';
