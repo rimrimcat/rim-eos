@@ -28,7 +28,7 @@ export type Effect = BaseEffect & {
 };
 
 export type ResoEffect = BaseEffect & {
-	id: string;
+	id: ResoEffectsIds;
 	stats: StatData;
 	require_reso: ResoTriggers;
 };
