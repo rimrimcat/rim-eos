@@ -19,43 +19,6 @@ export type Effect = {
 	notes?: string;
 };
 
-export type Resonance =
-	| 'atk'
-	| 'fort'
-	| 'bene'
-	| 'phys'
-	| 'flame'
-	| 'frost'
-	| 'volt'
-	| 'alt'
-	| 'frost-volt-fusion'
-	| 'flame-phys-fusion'
-	| 'ny-alt';
-
-export const RESONANCE_SOLO: Record<Resonance, StatData> = {
-	atk: {
-		atk_percent: 10
-	},
-	fort: {},
-	bene: {},
-	phys: {
-		phys_atk_percent: 15
-	},
-	flame: {
-		flame_atk_percent: 15
-	},
-	frost: {
-		frost_atk_percent: 15
-	},
-	volt: {
-		volt_atk_percent: 15
-	},
-	alt: {},
-	'frost-volt-fusion': {},
-	'flame-phys-fusion': {},
-	'ny-alt': {}
-};
-
 /**
  * BaseStatType naming convetion:
  *   [third stat]-[atk value]
@@ -121,7 +84,7 @@ export type UserWeapon = {
 export type WeaponView = {
 	id: WeaponsIds;
 	name: string;
-	resonances: Resonance[];
+	resonances: ResoTriggers[];
 	onfieldness?: number;
 
 	base_stat: StatCollection;
