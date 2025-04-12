@@ -71,7 +71,8 @@ type Effect = {
 	duration?: number; // cooldown and duration only matter if not 100% uptime or if onfield
 	cooldown?: number;
 	target: Target;
-	required_resonances?: Resonance[];
+	required_reso?: Resonance[];
+	required_adv?: Advancement;
 	notes?: string;
 };
 
@@ -80,15 +81,21 @@ export type Weapon = {
 	base_stat: BaseStatType;
 	resonances: Resonance[];
 	onfieldness?: number; // priority for onfielding, need to determine this later on
-	advancement?: Advancement; // default 6
 	effects: Effect[];
 };
 
-export type AllWeapons = {
-	[key: string]: Weapon;
+export type UserWeapon = {
+	id: string;
+	advancement?: Advancement;
 };
 
-export const ALL_WEAPONS: AllWeapons = {
+export type WeaponView = Weapon & {
+	advancement: Advancement;
+};
+
+export const ALL_WEAPONS: {
+	[key: string]: Weapon;
+} = {
 	invalid: {
 		name: 'Invalid',
 		base_stat: 'crit-med',
@@ -113,7 +120,8 @@ export const ALL_WEAPONS: AllWeapons = {
 					final_dmg_percent: 25
 				},
 				target: 'team',
-				required_resonances: ['bene']
+				required_adv: 3,
+				required_reso: ['bene']
 			},
 			{
 				id: 'gf-a3-debuff',
@@ -121,7 +129,8 @@ export const ALL_WEAPONS: AllWeapons = {
 					crit_res_reduction_percent: 10
 				},
 				target: 'enemy',
-				required_resonances: ['bene'],
+				required_adv: 3,
+				required_reso: ['bene'],
 				notes: 'Stacking effect'
 			},
 			{
@@ -129,6 +138,7 @@ export const ALL_WEAPONS: AllWeapons = {
 				stats: {
 					frost_dmg_percent: 30
 				},
+				required_adv: 6,
 				target: 'self'
 			}
 		]
@@ -151,6 +161,7 @@ export const ALL_WEAPONS: AllWeapons = {
 				stats: {
 					res_ignore_percent: 15
 				},
+				required_adv: 3,
 				target: 'enemy'
 			},
 			{
@@ -158,6 +169,7 @@ export const ALL_WEAPONS: AllWeapons = {
 				stats: {
 					final_dmg_percent: 35
 				},
+				required_adv: 6,
 				target: 'self'
 			}
 		]
@@ -180,14 +192,16 @@ export const ALL_WEAPONS: AllWeapons = {
 				stats: {
 					res_ignore_percent: 30
 				},
-				target: 'enemy'
+				target: 'enemy',
+				required_adv: 5
 			},
 			{
 				id: 'nanyin-a6',
 				stats: {
 					final_dmg_percent: 35
 				},
-				target: 'self'
+				target: 'self',
+				required_adv: 6
 			}
 		]
 	}

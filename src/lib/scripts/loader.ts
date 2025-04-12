@@ -106,7 +106,7 @@ export const DEFAULT_LOADOUTS_RIM: AllLoadouts = {
 			R: 1
 		},
 		base_stats: DEFAULT_STATS_RIM,
-		equipped_weapons: ['grayfox', 'nola_frost', 'nanyin']
+		equipped_weapons: [{ id: 'grayfox' }, { id: 'nola_frost' }, { id: 'nanyin' }]
 	}
 };
 export const DEFAULT_GEARS_RIM: UserGear[] = [

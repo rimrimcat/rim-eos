@@ -14,7 +14,7 @@
 	import type { AllLoadouts, LoadoutType } from '$lib/scripts/loadouts';
 	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
 	import { type StatGearUser } from '$lib/scripts/stats';
-	import { ALL_WEAPONS, type Weapon } from '$lib/scripts/weapons';
+	import { ALL_WEAPONS, type UserWeapon, type WeaponView } from '$lib/scripts/weapons';
 	import {
 		ArrowRightLeftIcon,
 		BoxIcon,
@@ -39,14 +39,8 @@
 	let loadout_desc = $state('');
 	let loadout_icon = $state('');
 	let loadout_image = $state('');
-	let loadout_weapons = $state(['', '', ''] as [string, string, string]);
-	let loadout_weapon_views = $derived(
-		loadout_weapons.map((weapon) => ALL_WEAPONS[weapon] ?? ALL_WEAPONS.invalid) as [
-			Weapon,
-			Weapon,
-			Weapon
-		]
-	);
+	let loadout_weapons = $state([{}, {}, {}] as [UserWeapon, UserWeapon, UserWeapon]);
+	let loadout_weapon_views = $derived(createWeaponViews(loadout_weapons));
 
 	let is_editing = $state(false);
 
@@ -65,6 +59,18 @@
 		{ value: 'phys', label: 'Physical' },
 		{ value: 'alt', label: 'Altered' }
 	];
+
+	function createWeaponViews(_loadout_weapons: [UserWeapon, UserWeapon, UserWeapon]) {
+		return _loadout_weapons.map((weapon) => {
+			const baseWeapon = ALL_WEAPONS[weapon.id] ?? ALL_WEAPONS.invalid;
+			const weaponView: WeaponView = {
+				...baseWeapon,
+				advancement: weapon.advancement ?? 6
+			};
+
+			return weaponView;
+		});
+	}
 
 	function toggleEditing() {
 		if (is_editing) {
@@ -356,7 +362,7 @@
 								alt="Weapon"
 								style="height: 8rem; width:8rem;"
 							/>
-							{#each [0, 1, 2, 3, 4, 5, 6] as ii, advIndex}
+							{#each [0, 1, 2, 3, 4, 5, 6] as _, advIndex}
 								<div class="compose-above" style="top: 6.5rem; left:{0.5 + advIndex}rem">
 									<StarIcon size={16} />
 								</div>
