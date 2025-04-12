@@ -1,0 +1,8 @@
+{
+	"id": "nola-frost",
+	"name": "Nola Frost",
+	"base_stat": "crit-med",
+	"resonances": ["atk", "frost", "volt", "frost-volt-fusion"],
+	"effects": ["nola-frost-skill", "nola-a3", "nola-a6"],
+	"reso_effects": ["frost-reso", "volt-reso"]
+}

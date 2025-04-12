@@ -7,6 +7,10 @@
 		{
 			"fileMatch": ["**/reso_effects/*.json"],
 			"url": "./src/lib/schemas/reso_effects.schema.json"
+		},
+		{
+			"fileMatch": ["**/weapons/*.json"],
+			"url": "./src/lib/schemas/weapons.schema.json"
 		}
 	]
 }

@@ -1,4 +1,4 @@
-import type { ResoEffectsIds } from '../generated/ids';
+import type { EffectsIds, ResoEffectsIds } from '../generated/ids';
 import type { StatCollection, StatData } from './stat-ops';
 import type { StatGearUser, StatNonGear } from './stats';
 
@@ -109,7 +109,7 @@ export type Weapon = {
 	base_stat: BaseStatType;
 	resonances: Resonance[];
 	onfieldness?: number; // priority for onfielding, need to determine this later on
-	effects: Effect[];
+	effects: EffectsIds[];
 	reso_effects?: ResoEffectsIds[];
 };
 
@@ -130,7 +130,7 @@ export const ALL_WEAPONS: {
 		id: 'invalid',
 		name: 'Invalid',
 		base_stat: 'crit-med',
-		resonances: ['atk'],
+		resonances: [],
 		effects: []
 	},
 	grayfox: {
@@ -138,42 +138,7 @@ export const ALL_WEAPONS: {
 		name: 'Grayfox',
 		base_stat: 'crit-med',
 		resonances: ['bene', 'frost', 'volt', 'frost-volt-fusion'],
-		effects: [
-			{
-				id: 'grayfox-skill',
-				stats: {
-					frost_dmg_percent: 12
-				},
-				target: 'self'
-			},
-			{
-				id: 'grayfox-a3-buff',
-				stats: {
-					final_dmg_percent: 25
-				},
-				target: 'team',
-				required_adv: 3,
-				required_reso: 'bene'
-			},
-			{
-				id: 'grayfox-a3-debuff',
-				stats: {
-					crit_res_reduction_percent: 10
-				},
-				target: 'enemy',
-				required_adv: 3,
-				required_reso: 'bene',
-				notes: 'Stacking effect'
-			},
-			{
-				id: 'grayfox-a6',
-				stats: {
-					frost_dmg_percent: 30
-				},
-				required_adv: 6,
-				target: 'self'
-			}
-		],
+		effects: ['grayfox-skill', 'grayfox-a3-buff', 'grayfox-a3-debuff', 'grayfox-a6'],
 		reso_effects: ['frost-reso', 'volt-reso']
 	},
 	nola_frost: {
@@ -181,32 +146,7 @@ export const ALL_WEAPONS: {
 		name: 'Nola Frost',
 		base_stat: 'crit-med',
 		resonances: ['atk', 'frost', 'volt', 'frost-volt-fusion'],
-		effects: [
-			{
-				id: 'nola-frost-skill',
-				stats: {
-					frost_dmg_percent: 6
-				},
-				target: 'self',
-				notes: '100% uptime due to Liquid Nitrogen passive'
-			},
-			{
-				id: 'nola-a3',
-				stats: {
-					res_ignore_percent: 15
-				},
-				required_adv: 3,
-				target: 'enemy'
-			},
-			{
-				id: 'nola-a6',
-				stats: {
-					final_dmg_percent: 35
-				},
-				required_adv: 6,
-				target: 'self'
-			}
-		],
+		effects: ['nola-frost-skill', 'nola-a3', 'nola-a6'],
 		reso_effects: ['frost-reso', 'volt-reso']
 	},
 	nanyin: {
@@ -214,32 +154,7 @@ export const ALL_WEAPONS: {
 		name: 'Nan Yin',
 		base_stat: 'crit-low',
 		resonances: ['atk', 'ny-alt'],
-		effects: [
-			{
-				id: 'nanyin-inhabit',
-				stats: {
-					normal_dmg_percent: 15
-				},
-				target: 'self',
-				duration: 0
-			},
-			{
-				id: 'nanyin-a5',
-				stats: {
-					res_ignore_percent: 30
-				},
-				target: 'enemy',
-				required_adv: 5
-			},
-			{
-				id: 'nanyin-a6',
-				stats: {
-					final_dmg_percent: 35
-				},
-				target: 'self',
-				required_adv: 6
-			}
-		],
+		effects: ['nanyin-inhabit', 'nanyin-a5', 'nanyin-a6'],
 		reso_effects: ['nanyin-reso']
 	}
 };
