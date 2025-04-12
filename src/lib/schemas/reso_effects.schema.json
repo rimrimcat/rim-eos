@@ -19,22 +19,9 @@
         "$ref": "#/definitions/Target"
       },
       "required_reso": {
-        "enum": [
-          "alt",
-          "atk",
-          "bene",
-          "flame",
-          "fort",
-          "frost",
-          "phys",
-          "volt"
-        ],
-        "type": "string"
+        "$ref": "#/definitions/ResoTriggers"
       },
       "required_reso_count": {
-        "type": "number"
-      },
-      "required_adv": {
         "type": "number"
       },
       "require_teamplay": {
@@ -47,6 +34,7 @@
     "additionalProperties": false,
     "required": [
       "id",
+      "required_reso",
       "stats",
       "target"
     ]
@@ -190,6 +178,19 @@
         "enemy",
         "self",
         "team"
+      ],
+      "type": "string"
+    },
+    "ResoTriggers": {
+      "enum": [
+        "alt",
+        "atk",
+        "bene",
+        "flame",
+        "fort",
+        "frost",
+        "phys",
+        "volt"
       ],
       "type": "string"
     }

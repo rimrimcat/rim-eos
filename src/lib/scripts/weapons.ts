@@ -7,7 +7,7 @@ type Target = 'self' | 'ally' | 'team' | 'enemy';
 export type ResoTriggerCounts = { [key in ResoTriggers]?: number };
 
 export type Effect = {
-	id: string;
+	id: EffectsIds;
 	stats: StatData;
 	duration?: number; // cooldown and duration only matter if not 100% uptime or if onfield
 	cooldown?: number;
@@ -15,6 +15,18 @@ export type Effect = {
 	required_reso?: ResoTriggers;
 	required_reso_count?: number; // defaults to 2
 	required_adv?: number;
+	require_teamplay?: boolean;
+	notes?: string;
+};
+
+export type ResoEffect = {
+	id: string;
+	stats: StatData;
+	duration?: number;
+	cooldown?: number;
+	target: Target;
+	required_reso: ResoTriggers;
+	required_reso_count?: number; // defaults to 2
 	require_teamplay?: boolean;
 	notes?: string;
 };

@@ -2,7 +2,7 @@
   "type": "object",
   "properties": {
     "id": {
-      "type": "string"
+      "$ref": "#/definitions/EffectsIds"
     },
     "stats": {
       "$ref": "#/definitions/StatData"
@@ -49,6 +49,21 @@
     "target"
   ],
   "definitions": {
+    "EffectsIds": {
+      "enum": [
+        "grayfox-a3-buff",
+        "grayfox-a3-debuff",
+        "grayfox-a6",
+        "grayfox-skill",
+        "nanyin-a5",
+        "nanyin-a6",
+        "nanyin-inhabit",
+        "nola-a3",
+        "nola-a6",
+        "nola-frost-skill"
+      ],
+      "type": "string"
+    },
     "StatData": {
       "type": "object",
       "properties": {
