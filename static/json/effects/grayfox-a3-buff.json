@@ -1,0 +1,9 @@
+{
+	"id": "grayfox-a3-buff",
+	"stats": {
+		"final_dmg_percent": 25
+	},
+	"target": "team",
+	"required_adv": 3,
+	"required_reso": "bene"
+}

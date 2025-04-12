@@ -1,0 +1,8 @@
+{
+	"id": "nanyin-a6",
+	"stats": {
+		"final_dmg_percent": 35
+	},
+	"target": "self",
+	"required_adv": 6
+}
