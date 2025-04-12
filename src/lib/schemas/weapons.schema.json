@@ -1,0 +1,277 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "base_stat": {
+      "$ref": "#/definitions/BaseStatType"
+    },
+    "resonances": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Resonance"
+      }
+    },
+    "onfieldness": {
+      "type": "number"
+    },
+    "effects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "stats": {
+            "$ref": "#/definitions/StatData"
+          },
+          "duration": {
+            "type": "number"
+          },
+          "cooldown": {
+            "type": "number"
+          },
+          "target": {
+            "$ref": "#/definitions/Target"
+          },
+          "required_reso": {
+            "enum": [
+              "alt",
+              "atk",
+              "bene",
+              "flame",
+              "fort",
+              "frost",
+              "phys",
+              "volt"
+            ],
+            "type": "string"
+          },
+          "required_reso_count": {
+            "type": "number"
+          },
+          "required_adv": {
+            "type": "number"
+          },
+          "require_teamplay": {
+            "type": "boolean"
+          },
+          "notes": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "stats",
+          "target"
+        ]
+      }
+    },
+    "reso_effects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/WeaponResonanceIds"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "base_stat",
+    "effects",
+    "id",
+    "name",
+    "resonances"
+  ],
+  "definitions": {
+    "BaseStatType": {
+      "description": "BaseStatType naming convetion:\n  [third stat]-[atk value]\n  third stat: crit, res\n  atk value: low, med, high",
+      "enum": [
+        "crit-high",
+        "crit-low",
+        "crit-med",
+        "res-high",
+        "res-low",
+        "res-med"
+      ],
+      "type": "string"
+    },
+    "Resonance": {
+      "enum": [
+        "alt",
+        "atk",
+        "bene",
+        "flame",
+        "flame-phys-fusion",
+        "fort",
+        "frost",
+        "frost-volt-fusion",
+        "ny-alt",
+        "phys",
+        "volt"
+      ],
+      "type": "string"
+    },
+    "StatData": {
+      "type": "object",
+      "properties": {
+        "hp": {
+          "type": "number"
+        },
+        "hp_percent": {
+          "type": "number"
+        },
+        "atk": {
+          "type": "number"
+        },
+        "flame_atk": {
+          "type": "number"
+        },
+        "frost_atk": {
+          "type": "number"
+        },
+        "volt_atk": {
+          "type": "number"
+        },
+        "phys_atk": {
+          "type": "number"
+        },
+        "alt_atk": {
+          "type": "number"
+        },
+        "flame_atk_percent": {
+          "type": "number"
+        },
+        "frost_atk_percent": {
+          "type": "number"
+        },
+        "volt_atk_percent": {
+          "type": "number"
+        },
+        "phys_atk_percent": {
+          "type": "number"
+        },
+        "alt_atk_percent": {
+          "type": "number"
+        },
+        "flame_dmg_percent": {
+          "type": "number"
+        },
+        "frost_dmg_percent": {
+          "type": "number"
+        },
+        "volt_dmg_percent": {
+          "type": "number"
+        },
+        "phys_dmg_percent": {
+          "type": "number"
+        },
+        "alt_dmg_percent": {
+          "type": "number"
+        },
+        "crit": {
+          "type": "number"
+        },
+        "crit_percent": {
+          "type": "number"
+        },
+        "res": {
+          "type": "number"
+        },
+        "flame_res": {
+          "type": "number"
+        },
+        "frost_res": {
+          "type": "number"
+        },
+        "volt_res": {
+          "type": "number"
+        },
+        "alt_res": {
+          "type": "number"
+        },
+        "phys_res": {
+          "type": "number"
+        },
+        "res_percent": {
+          "type": "number"
+        },
+        "flame_res_percent": {
+          "type": "number"
+        },
+        "frost_res_percent": {
+          "type": "number"
+        },
+        "volt_res_percent": {
+          "type": "number"
+        },
+        "alt_res_percent": {
+          "type": "number"
+        },
+        "phys_res_percent": {
+          "type": "number"
+        },
+        "crit_dmg": {
+          "type": "number"
+        },
+        "atk_percent": {
+          "type": "number"
+        },
+        "dmg_percent": {
+          "type": "number"
+        },
+        "normal_dmg_percent": {
+          "type": "number"
+        },
+        "final_dmg_percent": {
+          "type": "number"
+        },
+        "ele_atk": {
+          "type": "number"
+        },
+        "ele_atk_percent": {
+          "type": "number"
+        },
+        "ele_dmg_percent": {
+          "type": "number"
+        },
+        "crit_res_reduction_percent": {
+          "type": "number"
+        },
+        "res_ignore_percent": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
+    "Target": {
+      "enum": [
+        "ally",
+        "enemy",
+        "self",
+        "team"
+      ],
+      "type": "string"
+    },
+    "WeaponResonanceIds": {
+      "enum": [
+        "atk_reso",
+        "bene_reso",
+        "fiona_reso",
+        "flame_reso",
+        "fort_reso",
+        "frost_reso",
+        "nanyin_reso",
+        "phys_reso",
+        "volt_reso"
+      ],
+      "type": "string"
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
