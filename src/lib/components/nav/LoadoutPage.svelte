@@ -3,6 +3,7 @@
 	import SwitchLoadout from '$lib/components/dialog/SwitchLoadout.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import StatIcon from '$lib/components/StatIcon.svelte';
+	import { getEffect, getResoEffects, getWeapon } from '$lib/scripts/json-loader';
 	import {
 		addImageToDB,
 		cloneObject,
@@ -15,7 +16,14 @@
 	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
 	import { StatCollection } from '$lib/scripts/stat-ops';
 	import { type StatGearUser } from '$lib/scripts/stats';
-	import { ALL_WEAPONS, type UserWeapon, type WeaponView } from '$lib/scripts/weapons';
+	import {
+		WEAPON_BASE_STATS,
+		type Effect,
+		type ResoTriggerCounts,
+		type UserWeapon,
+		type Weapon,
+		type WeaponView
+	} from '$lib/scripts/weapons';
 	import {
 		ArrowRightLeftIcon,
 		BoxIcon,
@@ -40,8 +48,8 @@
 	let loadout_desc = $state('');
 	let loadout_icon = $state('');
 	let loadout_image = $state('');
-	let user_weapons = $state([{}, {}, {}] as [UserWeapon, UserWeapon, UserWeapon]);
-	let loadout_weapon_views = $derived(createWeaponViews(user_weapons));
+	let user_weapons = $state([{}, {}, {}] as UserWeapon[]);
+	let loadout_weapon_views = $state([{}, {}, {}] as WeaponView[]);
 	let loadout_resonance_stat = $state(new StatCollection());
 
 	let is_editing = $state(false);
@@ -63,59 +71,96 @@
 	];
 
 	// creates gearView and updates loadout_resonance_stat
-	function createWeaponViews(_loadout_weapons: [UserWeapon, UserWeapon, UserWeapon]) {
-		const base_weapons = _loadout_weapons.map(
-			(weapon) => ALL_WEAPONS[weapon.id] ?? ALL_WEAPONS.invalid
+	async function updateWeaponViews() {
+		console.log('Called updateWeaponViews.');
+		const base_weapons = (await Promise.all(
+			user_weapons.map((weapon) => getWeapon(weapon.id))
+		)) as [Weapon, Weapon, Weapon];
+
+		// create counts of resonance triggers
+		const reso_counts = base_weapons.reduce((counts, weapon) => {
+			weapon.resonances.forEach((resonance) => {
+				counts[resonance] = (counts[resonance] ?? 0) + 1;
+			});
+			return counts;
+		}, {} as ResoTriggerCounts);
+
+		console.log('reso_counts', reso_counts);
+
+		// create a set of resonance effects (no filtering, no duplication for now)
+		const reso_effects: Effect[] = [];
+		await Promise.all(
+			base_weapons.map(async (weapon) => {
+				if (weapon.reso_effects) {
+					await Promise.all(
+						weapon.reso_effects.map(async (eff) => {
+							const effs = await getResoEffects(eff);
+							// iterate through effs and check if id exists in reso_effects
+							effs.forEach((eff) => {
+								if (!reso_effects.some((eff2) => eff2.id === eff.id)) {
+									reso_effects.push(eff);
+								}
+							});
+						})
+					);
+				}
+			})
 		);
 
-		// // count the number of each resonance item
-		// const resonance_counts: { [key in Resonance]?: number } = {};
-		// base_weapons.forEach((weapon) => {
-		// 	weapon.resonances.forEach((resonance) => {
-		// 		resonance_counts[resonance] = (resonance_counts[resonance] ?? 0) + 1;
-		// 	});
-		// });
-
-		// // activate resonance when count >= 2
-		// const activated_resonances: Resonance[] = [];
-		// loadout_resonance_stat = new StatCollection();
-		// Object.entries(resonance_counts).forEach(([resonance, count]) => {
-		// 	if (count < 2) {
-		// 		return;
-		// 	} else if (resonance === 'ny-alt' && count < 3) {
-		// 		return;
-		// 	}
-
-		// 	activated_resonances.push(resonance as Resonance);
-
-		// 	loadout_resonance_stat = loadout_resonance_stat.add(
-		// 		new StatCollection(RESONANCE_SOLO[resonance as Resonance])
-		// 	);
-		// });
-
-		// resonance effects
-		return base_weapons.map((weapon, index) => {
-			// iterate through effects
-			let stat_col = new StatCollection();
-			weapon.effects.forEach((effect) => {
-				// if (effect.required_reso && !activated_resonances.includes(effect.required_reso)) {
-				// 	return;
-				// } else if (
-				// 	effect.required_adv &&
-				// 	effect.required_adv > (_loadout_weapons[index].advancement ?? 6)
-				// ) {
-				// 	return;
-				// }
-				// console.log(effect.stats);
-				// stat_col = stat_col.add(new StatCollection(effect.stats));
-			});
-
-			return {
-				...weapon,
-				advancement: _loadout_weapons[index].advancement ?? 6,
-				stats: stat_col
-			} as WeaponView;
+		// apply resonance effects
+		loadout_resonance_stat = new StatCollection();
+		reso_effects.forEach((eff) => {
+			if (eff.required_reso) {
+				const required_reso_count = eff.required_reso_count ?? 2;
+				if (reso_counts[eff.required_reso] ?? 0 >= required_reso_count) {
+					loadout_resonance_stat = loadout_resonance_stat.add(new StatCollection(eff.stats));
+				}
+			}
 		});
+
+		// iterate through weapons
+		loadout_weapon_views = await Promise.all(
+			base_weapons.map(async (weapon, index) => {
+				const advancement = user_weapons[index].advancement ?? 6;
+
+				// get base stat of weapon
+				const _base_stat = {};
+				Object.entries(WEAPON_BASE_STATS[weapon.base_stat]).forEach(([stat, value]) => {
+					// @ts-expect-error
+					_base_stat[stat] = value[0] + ((value[1] - value[0]) * (advancement - 1)) / 5;
+				});
+				const base_stat = new StatCollection(_base_stat);
+
+				const wpn_effects = await Promise.all(weapon.effects.map((eff) => getEffect(eff)));
+				let effect_stat = new StatCollection();
+				wpn_effects.forEach((eff) => {
+					if (eff.required_reso) {
+						const required_reso_count = eff.required_reso_count ?? 2;
+						if (reso_counts[eff.required_reso] ?? 0 < required_reso_count) {
+							return;
+						}
+					}
+
+					if (eff.required_adv) {
+						if (advancement < eff.required_adv) {
+							return;
+						}
+					}
+					effect_stat = effect_stat.add(new StatCollection(eff.stats));
+				});
+
+				return {
+					id: weapon.id,
+					name: weapon.name,
+					resonances: weapon.resonances,
+					onfieldness: weapon.onfieldness,
+					effects: wpn_effects,
+					base_stat,
+					advancement,
+					effect_stat
+				} as WeaponView;
+			})
+		);
 	}
 
 	function saveWeaponMatrixLoadout() {
@@ -317,6 +362,7 @@
 			loadout_icon = user_loadouts[current_loadout].element;
 			user_weapons = user_loadouts[current_loadout].equipped_weapons;
 			loadout_image = await getImageUrlFromDB(current_loadout);
+			updateWeaponViews();
 		}
 	});
 
