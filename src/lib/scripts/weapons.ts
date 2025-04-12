@@ -4,7 +4,7 @@ import type { StatGearUser, StatNonGear } from './stats';
 
 export type ResoTriggers = 'atk' | 'fort' | 'bene' | 'phys' | 'flame' | 'frost' | 'volt' | 'alt';
 type Target = 'self' | 'ally' | 'team' | 'enemy';
-export type ResoTriggerCounts = Record<ResoTriggers, number>;
+export type ResoTriggerCounts = { [key in ResoTriggers]?: number };
 
 export type Effect = {
 	id: string;
@@ -107,7 +107,7 @@ export type Weapon = {
 	id: WeaponsIds;
 	name: string;
 	base_stat: BaseStatType;
-	resonances: Resonance[];
+	resonances: ResoTriggers[];
 	onfieldness?: number; // priority for onfielding, need to determine this later on
 	effects: EffectsIds[];
 	reso_effects?: ResoEffectsIds[];
