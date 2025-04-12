@@ -21,7 +21,7 @@ export type BaseEffect = {
 	notes?: string;
 };
 
-export type Effect = BaseEffect & {
+export type WeaponEffect = BaseEffect & {
 	id: EffectsIds;
 	stats: StatData;
 	require_adv?: number; // required advancement (esp. for weapons)
@@ -109,7 +109,7 @@ export type WeaponView = {
 	base_stat: StatCollection;
 	stat: StatCollection;
 
-	effects: Effect[];
+	effects: WeaponEffect[];
 
 	advancement: number;
 };

@@ -1,5 +1,5 @@
-import { type Effect, type ResoEffect, type Weapon } from '../scripts/weapons';
+import { type ResoEffect, type Weapon, type WeaponEffect } from '../scripts/weapons';
 
-export type Effects = Effect;
+export type Effects = WeaponEffect;
 export type ResoEffects = ResoEffect;
 export type Weapons = Weapon;

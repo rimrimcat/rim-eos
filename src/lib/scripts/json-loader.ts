@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
 import type { EffectsIds, ResoEffectsIds, WeaponsIds } from '../generated/ids';
 import type { StatConstants } from './stats';
-import type { Effect, Weapon } from './weapons';
+import type { Weapon, WeaponEffect } from './weapons';
 
 // load once before using
 export let STAT_CONSTANTS: StatConstants;
@@ -33,11 +33,11 @@ export async function loadStatConstants(): Promise<void> {
 }
 
 // loaded when needed
-const RESO_EFFECTS: { [key in ResoEffectsIds]?: Effect } = {};
-const EFFECTS: { [key in EffectsIds]?: Effect } = {};
+const RESO_EFFECTS: { [key in ResoEffectsIds]?: WeaponEffect } = {};
+const EFFECTS: { [key in EffectsIds]?: WeaponEffect } = {};
 const WEAPONS: { [key in WeaponsIds]?: Weapon } = {};
 
-export async function getResoEffects(reso: ResoEffectsIds): Promise<Effect> {
+export async function getResoEffects(reso: ResoEffectsIds): Promise<WeaponEffect> {
 	if (RESO_EFFECTS[reso]) {
 		return RESO_EFFECTS[reso];
 	}
@@ -49,7 +49,7 @@ export async function getResoEffects(reso: ResoEffectsIds): Promise<Effect> {
 		}
 
 		const data = await response.json();
-		RESO_EFFECTS[reso] = data as Effect;
+		RESO_EFFECTS[reso] = data as WeaponEffect;
 		return RESO_EFFECTS[reso];
 	} catch (error) {
 		console.error(`Error loading resonance effects for ${reso}:`, error);
@@ -57,7 +57,7 @@ export async function getResoEffects(reso: ResoEffectsIds): Promise<Effect> {
 	}
 }
 
-export async function getEffect(effect: EffectsIds): Promise<Effect> {
+export async function getEffect(effect: EffectsIds): Promise<WeaponEffect> {
 	if (EFFECTS[effect]) {
 		return EFFECTS[effect];
 	}
@@ -69,7 +69,7 @@ export async function getEffect(effect: EffectsIds): Promise<Effect> {
 		}
 
 		const data = await response.json();
-		EFFECTS[effect] = data as Effect;
+		EFFECTS[effect] = data as WeaponEffect;
 		return EFFECTS[effect];
 	} catch (error) {
 		console.error(`Error loading effect ${effect}:`, error);

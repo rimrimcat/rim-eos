@@ -18,10 +18,10 @@
 	import { type StatGearUser } from '$lib/scripts/stats';
 	import {
 		WEAPON_BASE_STATS,
-		type Effect,
 		type ResoTriggerCounts,
 		type UserWeapon,
 		type Weapon,
+		type WeaponEffect,
 		type WeaponView
 	} from '$lib/scripts/weapons';
 	import {
@@ -55,7 +55,7 @@
 
 	let loadout_weapon_views = $state([{}, {}, {}] as WeaponView[]);
 
-	let loadout_resonance_effects = $state([] as Effect[]);
+	let loadout_resonance_effects = $state([] as WeaponEffect[]);
 	let loadout_resonance_stat = $state(new StatCollection());
 
 	let is_editing = $state(false);
@@ -86,7 +86,7 @@
 	}
 
 	async function updateResoEffects() {
-		const reso_effects: Effect[] = [];
+		const reso_effects: WeaponEffect[] = [];
 		await Promise.all(
 			loadout_base_weapons.map(async (weapon) => {
 				if (weapon.reso_effects) {
@@ -135,7 +135,7 @@
 				});
 				const base_stat = new StatCollection(_base_stat);
 
-				const effects: Effect[] = []; // active effects
+				const effects: WeaponEffect[] = []; // active effects
 				const wpn_effects = await Promise.all(weapon.effects.map((eff) => getEffect(eff)));
 				let stat = new StatCollection();
 				wpn_effects.forEach((eff) => {
