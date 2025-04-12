@@ -160,7 +160,7 @@
 					}
 
 					// TEMPORARILY DISABLE ONFIELD EFFECTS
-					if (eff.target === 'self') {
+					if (eff.duration !== undefined && eff.duration === 0) {
 						return;
 					}
 
