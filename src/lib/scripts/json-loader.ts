@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
+import type { ResoEffectsIds } from '../generated/ids';
 import type { StatConstants } from './stats';
-import type { Effect, WeaponResonanceIds } from './weapons';
+import type { Effect } from './weapons';
 
 // load once before using
 export let STAT_CONSTANTS: StatConstants;
@@ -32,9 +33,9 @@ export async function loadStatConstants(): Promise<void> {
 }
 
 // loaded when needed
-const RESO_EFFECTS: { [key in WeaponResonanceIds]?: Effect[] } = {};
+const RESO_EFFECTS: { [key in ResoEffectsIds]?: Effect[] } = {};
 
-export async function getResoEffects(reso: WeaponResonanceIds): Promise<Effect[]> {
+export async function getResoEffects(reso: ResoEffectsIds): Promise<Effect[]> {
 	if (RESO_EFFECTS[reso]) {
 		return RESO_EFFECTS[reso];
 	}

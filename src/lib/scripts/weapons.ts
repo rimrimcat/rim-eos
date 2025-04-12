@@ -1,3 +1,4 @@
+import type { ResoEffectsIds } from '../generated/ids';
 import type { StatCollection, StatData } from './stat-ops';
 import type { StatGearUser, StatNonGear } from './stats';
 
@@ -16,107 +17,6 @@ export type Effect = {
 	required_adv?: number;
 	require_teamplay?: boolean;
 	notes?: string;
-};
-
-export type WeaponResonanceIds =
-	| 'atk_reso'
-	| 'fort_reso'
-	| 'bene_reso'
-	| 'phys_reso'
-	| 'flame_reso'
-	| 'frost_reso'
-	| 'volt_reso'
-	| 'fiona_reso'
-	| 'nanyin_reso';
-
-export const WEAPON_RESONANCES: Record<WeaponResonanceIds, Effect[]> = {
-	atk_reso: [
-		{
-			id: 'atk_reso',
-			stats: {
-				final_dmg_percent: 10
-			},
-			target: 'self',
-			required_reso: 'atk'
-		},
-		{
-			id: 'atk_reso_teamplay',
-			stats: {
-				final_dmg_percent: 40
-			},
-			target: 'self',
-			required_reso: 'atk',
-			require_teamplay: true
-		}
-	],
-	fort_reso: [],
-	bene_reso: [],
-	phys_reso: [
-		{
-			id: 'phys_reso',
-			stats: {
-				phys_atk_percent: 15,
-				phys_dmg_percent: 25
-			},
-			target: 'self',
-			required_reso: 'phys'
-		}
-	],
-	flame_reso: [
-		{
-			id: 'flame_reso',
-			stats: {
-				flame_atk_percent: 15,
-				flame_dmg_percent: 25
-			},
-			target: 'self',
-			required_reso: 'flame'
-		}
-	],
-	frost_reso: [
-		{
-			id: 'frost_reso',
-			stats: {
-				frost_atk_percent: 15,
-				frost_dmg_percent: 25
-			},
-			target: 'self',
-			required_reso: 'frost'
-		}
-	],
-	volt_reso: [
-		{
-			id: 'volt_reso',
-			stats: {
-				volt_atk_percent: 15,
-				volt_dmg_percent: 25
-			},
-			target: 'self',
-			required_reso: 'volt'
-		}
-	],
-	fiona_reso: [
-		{
-			id: 'fiona_reso',
-			stats: {
-				atk_percent: 20,
-				alt_res_percent: 30
-			},
-			target: 'self',
-			required_reso: 'alt'
-		}
-	],
-	nanyin_reso: [
-		{
-			id: 'nanyin_reso',
-			stats: {
-				alt_atk_percent: 30
-			},
-			target: 'self',
-			required_reso: 'alt',
-			required_reso_count: 3
-		}
-	]
 };
 
 export type Resonance =
@@ -210,7 +110,7 @@ export type Weapon = {
 	resonances: Resonance[];
 	onfieldness?: number; // priority for onfielding, need to determine this later on
 	effects: Effect[];
-	reso_effects?: WeaponResonanceIds[];
+	reso_effects?: ResoEffectsIds[];
 };
 
 export type UserWeapon = {
@@ -274,7 +174,7 @@ export const ALL_WEAPONS: {
 				target: 'self'
 			}
 		],
-		reso_effects: ['frost_reso', 'volt_reso']
+		reso_effects: ['frost-reso', 'volt-reso']
 	},
 	nola_frost: {
 		id: 'nola-frost',
@@ -307,7 +207,7 @@ export const ALL_WEAPONS: {
 				target: 'self'
 			}
 		],
-		reso_effects: ['frost_reso', 'volt_reso']
+		reso_effects: ['frost-reso', 'volt-reso']
 	},
 	nanyin: {
 		id: 'nanyin',
@@ -340,6 +240,6 @@ export const ALL_WEAPONS: {
 				required_adv: 6
 			}
 		],
-		reso_effects: ['nanyin_reso']
+		reso_effects: ['nanyin-reso']
 	}
 };
