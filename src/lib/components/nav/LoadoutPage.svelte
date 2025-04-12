@@ -54,6 +54,8 @@
 	let loadout_reso_counts = $state({} as ResoTriggerCounts);
 
 	let loadout_weapon_views = $state([{}, {}, {}] as WeaponView[]);
+
+	let loadout_resonance_effects = $state([] as Effect[]);
 	let loadout_resonance_stat = $state(new StatCollection());
 
 	let is_editing = $state(false);
@@ -112,6 +114,7 @@
 		});
 
 		loadout_resonance_stat = new StatCollection();
+		loadout_resonance_effects = [];
 		reso_effects.forEach((eff) => {
 			if (eff.required_reso) {
 				const required_reso_count = eff.required_reso_count ?? 2;
@@ -121,9 +124,9 @@
 
 				// TODO: check for teamplay
 				loadout_resonance_stat = loadout_resonance_stat.add(new StatCollection(eff.stats));
+				loadout_resonance_effects.push(eff);
 			}
 		});
-		console.log('reso stats', loadout_resonance_stat.clone_data());
 	}
 
 	async function updateWeaponViews() {
