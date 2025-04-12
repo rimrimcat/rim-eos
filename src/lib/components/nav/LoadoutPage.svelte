@@ -92,26 +92,19 @@
 				if (weapon.reso_effects) {
 					await Promise.all(
 						weapon.reso_effects.map(async (eff) => {
-							const effs = await getResoEffects(eff);
-							// iterate through effs and check if id exists in reso_effects
-							effs.forEach((eff) => {
-								if (!reso_effects.some((eff2) => eff2.id === eff.id)) {
-									reso_effects.push(eff);
-								}
-							});
+							const effect = await getResoEffects(eff);
+							// Check if effect exists and has an id
+							if (effect && effect.id && !reso_effects.some((eff2) => eff2.id === effect.id)) {
+								reso_effects.push(effect);
+							}
 						})
 					);
 				}
 			})
 		);
 		// add default reso
-		await getResoEffects('atk-reso').then((effs) => {
-			effs.forEach((eff) => {
-				if (!reso_effects.some((eff2) => eff2.id === eff.id)) {
-					reso_effects.push(eff);
-				}
-			});
-		});
+		reso_effects.push(await getResoEffects('atk-reso'));
+		reso_effects.push(await getResoEffects('atk-reso-teamplay'));
 
 		loadout_resonance_stat = new StatCollection();
 		loadout_resonance_effects = [];

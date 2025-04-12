@@ -12,6 +12,7 @@ export type EffectsIds =
 	| 'nola-a6'
 	| 'nola-frost-skill';
 export type ResoEffectsIds =
+	| 'atk-reso-teamplay'
 	| 'atk-reso'
 	| 'bene-reso'
 	| 'fiona-reso'

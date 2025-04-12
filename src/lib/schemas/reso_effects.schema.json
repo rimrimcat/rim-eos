@@ -1,53 +1,47 @@
 {
-  "type": "array",
-  "items": {
-    "$ref": "#/definitions/ResoEffect"
-  },
-  "definitions": {
-    "ResoEffect": {
-      "additionalProperties": false,
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string"
-        },
-        "target": {
-          "enum": [
-            "ally",
-            "enemy",
-            "self",
-            "team"
-          ],
-          "type": "string"
-        },
-        "duration": {
-          "type": "number"
-        },
-        "cooldown": {
-          "type": "number"
-        },
-        "require_reso": {
-          "$ref": "#/definitions/ResoTriggers"
-        },
-        "require_reso_count": {
-          "type": "number"
-        },
-        "require_teamplay": {
-          "type": "boolean"
-        },
-        "notes": {
-          "type": "string"
-        },
-        "stats": {
-          "$ref": "#/definitions/StatData"
-        }
-      },
-      "required": [
-        "id",
-        "require_reso",
-        "stats"
-      ]
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
     },
+    "target": {
+      "enum": [
+        "ally",
+        "enemy",
+        "self",
+        "team"
+      ],
+      "type": "string"
+    },
+    "duration": {
+      "type": "number"
+    },
+    "cooldown": {
+      "type": "number"
+    },
+    "require_reso": {
+      "$ref": "#/definitions/ResoTriggers"
+    },
+    "require_reso_count": {
+      "type": "number"
+    },
+    "require_teamplay": {
+      "type": "boolean"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "stats": {
+      "$ref": "#/definitions/StatData"
+    }
+  },
+  "required": [
+    "id",
+    "require_reso",
+    "stats"
+  ],
+  "definitions": {
     "StatData": {
       "type": "object",
       "properties": {

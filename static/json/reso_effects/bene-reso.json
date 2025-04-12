@@ -1,1 +1,5 @@
-[]
+{
+	"id": "bene-reso",
+	"stats": {},
+	"require_reso": "bene"
+}

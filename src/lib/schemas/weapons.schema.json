@@ -93,6 +93,7 @@
     "ResoEffectsIds": {
       "enum": [
         "atk-reso",
+        "atk-reso-teamplay",
         "bene-reso",
         "fiona-reso",
         "flame-reso",

@@ -33,11 +33,11 @@ export async function loadStatConstants(): Promise<void> {
 }
 
 // loaded when needed
-const RESO_EFFECTS: { [key in ResoEffectsIds]?: Effect[] } = {};
+const RESO_EFFECTS: { [key in ResoEffectsIds]?: Effect } = {};
 const EFFECTS: { [key in EffectsIds]?: Effect } = {};
 const WEAPONS: { [key in WeaponsIds]?: Weapon } = {};
 
-export async function getResoEffects(reso: ResoEffectsIds): Promise<Effect[]> {
+export async function getResoEffects(reso: ResoEffectsIds): Promise<Effect> {
 	if (RESO_EFFECTS[reso]) {
 		return RESO_EFFECTS[reso];
 	}
@@ -49,7 +49,7 @@ export async function getResoEffects(reso: ResoEffectsIds): Promise<Effect[]> {
 		}
 
 		const data = await response.json();
-		RESO_EFFECTS[reso] = data as Effect[];
+		RESO_EFFECTS[reso] = data as Effect;
 		return RESO_EFFECTS[reso];
 	} catch (error) {
 		console.error(`Error loading resonance effects for ${reso}:`, error);

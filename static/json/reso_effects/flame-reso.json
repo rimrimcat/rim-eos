@@ -1,11 +1,9 @@
-[
-	{
-		"id": "flame-reso",
-		"stats": {
-			"flame_atk_percent": 15,
-			"flame_res_percent": 25
-		},
-		"target": "self",
-		"require_reso": "flame"
-	}
-]
+{
+	"id": "flame-reso",
+	"stats": {
+		"flame_atk_percent": 15,
+		"flame_res_percent": 25
+	},
+	"target": "self",
+	"require_reso": "flame"
+}

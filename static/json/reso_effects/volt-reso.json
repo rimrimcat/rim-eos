@@ -1,11 +1,9 @@
-[
-	{
-		"id": "volt-reso",
-		"stats": {
-			"volt_atk_percent": 15,
-			"volt_res_percent": 25
-		},
-		"target": "self",
-		"require_reso": "volt"
-	}
-]
+{
+	"id": "volt-reso",
+	"stats": {
+		"volt_atk_percent": 15,
+		"volt_res_percent": 25
+	},
+	"target": "self",
+	"require_reso": "volt"
+}
