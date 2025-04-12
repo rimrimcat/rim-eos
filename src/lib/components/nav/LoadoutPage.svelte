@@ -142,6 +142,7 @@
 				});
 				const base_stat = new StatCollection(_base_stat);
 
+				const effects: Effect[] = []; // active effects
 				const wpn_effects = await Promise.all(weapon.effects.map((eff) => getEffect(eff)));
 				let stat = new StatCollection();
 				wpn_effects.forEach((eff) => {
@@ -157,6 +158,13 @@
 							return;
 						}
 					}
+
+					// TEMPORARILY DISABLE ONFIELD EFFECTS
+					if (eff.target === 'self') {
+						return;
+					}
+
+					effects.push(eff);
 					stat = stat.add(new StatCollection(eff.stats));
 				});
 
@@ -165,7 +173,7 @@
 					name: weapon.name,
 					resonances: weapon.resonances,
 					onfieldness: weapon.onfieldness,
-					effects: wpn_effects,
+					effects,
 					base_stat,
 					advancement,
 					stat
@@ -435,6 +443,7 @@
 
 	// $inspect('image source', document.getElementById('user-upload')?.src);
 	$inspect('loadout wepaons', user_weapons);
+	$inspect('weapon views', loadout_weapon_views);
 </script>
 
 <div class="loadout-page" style={any_dialog_open ? 'overflow: hidden;' : ''}>
