@@ -240,14 +240,14 @@ export const ALL_WEAPONS: {
 		resonances: ['bene', 'frost', 'volt', 'frost-volt-fusion'],
 		effects: [
 			{
-				id: 'gf-skill',
+				id: 'grayfox-skill',
 				stats: {
 					frost_dmg_percent: 12
 				},
 				target: 'self'
 			},
 			{
-				id: 'gf-a3-buff',
+				id: 'grayfox-a3-buff',
 				stats: {
 					final_dmg_percent: 25
 				},
@@ -256,7 +256,7 @@ export const ALL_WEAPONS: {
 				required_reso: 'bene'
 			},
 			{
-				id: 'gf-a3-debuff',
+				id: 'grayfox-a3-debuff',
 				stats: {
 					crit_res_reduction_percent: 10
 				},
@@ -266,7 +266,7 @@ export const ALL_WEAPONS: {
 				notes: 'Stacking effect'
 			},
 			{
-				id: 'gf-a6',
+				id: 'grayfox-a6',
 				stats: {
 					frost_dmg_percent: 30
 				},
