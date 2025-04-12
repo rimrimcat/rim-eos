@@ -102,16 +102,28 @@
 				}
 			})
 		);
+		// add default reso
+		await getResoEffects('atk-reso').then((effs) => {
+			effs.forEach((eff) => {
+				if (!reso_effects.some((eff2) => eff2.id === eff.id)) {
+					reso_effects.push(eff);
+				}
+			});
+		});
 
 		loadout_resonance_stat = new StatCollection();
 		reso_effects.forEach((eff) => {
 			if (eff.required_reso) {
 				const required_reso_count = eff.required_reso_count ?? 2;
-				if (loadout_reso_counts[eff.required_reso] ?? 0 >= required_reso_count) {
-					loadout_resonance_stat = loadout_resonance_stat.add(new StatCollection(eff.stats));
+				if ((loadout_reso_counts[eff.required_reso] ?? 0) < required_reso_count) {
+					return;
 				}
+
+				// TODO: check for teamplay
+				loadout_resonance_stat = loadout_resonance_stat.add(new StatCollection(eff.stats));
 			}
 		});
+		console.log('reso stats', loadout_resonance_stat.clone_data());
 	}
 
 	async function updateWeaponViews() {
