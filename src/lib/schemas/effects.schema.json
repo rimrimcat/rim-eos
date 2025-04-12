@@ -1,20 +1,24 @@
 {
+  "additionalProperties": false,
   "type": "object",
   "properties": {
     "id": {
       "$ref": "#/definitions/EffectsIds"
     },
-    "stats": {
-      "$ref": "#/definitions/StatData"
+    "target": {
+      "enum": [
+        "ally",
+        "enemy",
+        "self",
+        "team"
+      ],
+      "type": "string"
     },
     "duration": {
       "type": "number"
     },
     "cooldown": {
       "type": "number"
-    },
-    "target": {
-      "$ref": "#/definitions/Target"
     },
     "require_reso": {
       "enum": [
@@ -32,21 +36,22 @@
     "require_reso_count": {
       "type": "number"
     },
-    "require_adv": {
-      "type": "number"
-    },
     "require_teamplay": {
       "type": "boolean"
     },
     "notes": {
       "type": "string"
+    },
+    "stats": {
+      "$ref": "#/definitions/StatData"
+    },
+    "require_adv": {
+      "type": "number"
     }
   },
-  "additionalProperties": false,
   "required": [
     "id",
-    "stats",
-    "target"
+    "stats"
   ],
   "definitions": {
     "EffectsIds": {
@@ -195,15 +200,6 @@
         }
       },
       "additionalProperties": false
-    },
-    "Target": {
-      "enum": [
-        "ally",
-        "enemy",
-        "self",
-        "team"
-      ],
-      "type": "string"
     }
   },
   "$schema": "http://json-schema.org/draft-07/schema#"
