@@ -1,7 +1,7 @@
-import type { StatData } from './stat-ops';
+import type { StatCollection, StatData } from './stat-ops';
 import type { StatGearUser, StatNonGear } from './stats';
 
-type Resonance =
+export type Resonance =
 	| 'atk'
 	| 'fort'
 	| 'bene'
@@ -14,6 +14,31 @@ type Resonance =
 	| 'frost-volt-fusion'
 	| 'flame-phys-fusion'
 	| 'ny-alt';
+
+export const RESONANCE_SOLO: Record<Resonance, StatData> = {
+	atk: {
+		atk_percent: 10
+	},
+	fort: {},
+	bene: {},
+	phys: {
+		phys_atk_percent: 15
+	},
+	flame: {
+		flame_atk_percent: 15
+	},
+	frost: {
+		frost_atk_percent: 15
+	},
+	volt: {
+		volt_atk_percent: 15
+	},
+	alt: {},
+	'frost-volt-fusion': {},
+	'flame-phys-fusion': {},
+	'ny-alt': {}
+};
+
 export type Advancement = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 /**
@@ -71,7 +96,7 @@ type Effect = {
 	duration?: number; // cooldown and duration only matter if not 100% uptime or if onfield
 	cooldown?: number;
 	target: Target;
-	required_reso?: Resonance[];
+	required_reso?: Resonance;
 	required_adv?: Advancement;
 	notes?: string;
 };
@@ -91,6 +116,7 @@ export type UserWeapon = {
 
 export type WeaponView = Weapon & {
 	advancement: Advancement;
+	stats: StatCollection;
 };
 
 export const ALL_WEAPONS: {
@@ -121,7 +147,7 @@ export const ALL_WEAPONS: {
 				},
 				target: 'team',
 				required_adv: 3,
-				required_reso: ['bene']
+				required_reso: 'bene'
 			},
 			{
 				id: 'gf-a3-debuff',
@@ -130,7 +156,7 @@ export const ALL_WEAPONS: {
 				},
 				target: 'enemy',
 				required_adv: 3,
-				required_reso: ['bene'],
+				required_reso: 'bene',
 				notes: 'Stacking effect'
 			},
 			{

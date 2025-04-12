@@ -13,10 +13,13 @@
 	} from '$lib/scripts/loader';
 	import type { AllLoadouts, LoadoutType } from '$lib/scripts/loadouts';
 	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
+	import { StatCollection } from '$lib/scripts/stat-ops';
 	import { type StatGearUser } from '$lib/scripts/stats';
 	import {
 		ALL_WEAPONS,
+		RESONANCE_SOLO,
 		type Advancement,
+		type Resonance,
 		type UserWeapon,
 		type WeaponView
 	} from '$lib/scripts/weapons';
@@ -46,6 +49,7 @@
 	let loadout_image = $state('');
 	let user_weapons = $state([{}, {}, {}] as [UserWeapon, UserWeapon, UserWeapon]);
 	let loadout_weapon_views = $derived(createWeaponViews(user_weapons));
+	let loadout_resonance_stat = $state(new StatCollection());
 
 	let is_editing = $state(false);
 
@@ -65,15 +69,59 @@
 		{ value: 'alt', label: 'Altered' }
 	];
 
+	// creates gearView and updates loadout_resonance_stat
 	function createWeaponViews(_loadout_weapons: [UserWeapon, UserWeapon, UserWeapon]) {
-		return _loadout_weapons.map((weapon) => {
-			const baseWeapon = ALL_WEAPONS[weapon.id] ?? ALL_WEAPONS.invalid;
-			const weaponView: WeaponView = {
-				...baseWeapon,
-				advancement: weapon.advancement ?? 6
-			};
+		const base_weapons = _loadout_weapons.map(
+			(weapon) => ALL_WEAPONS[weapon.id] ?? ALL_WEAPONS.invalid
+		);
 
-			return weaponView;
+		// count the number of each resonance item
+		const resonance_counts: { [key in Resonance]?: number } = {};
+		base_weapons.forEach((weapon) => {
+			weapon.resonances.forEach((resonance) => {
+				resonance_counts[resonance] = (resonance_counts[resonance] ?? 0) + 1;
+			});
+		});
+
+		// activate resonance when count >= 2
+		const activated_resonances: Resonance[] = [];
+		loadout_resonance_stat = new StatCollection();
+		Object.entries(resonance_counts).forEach(([resonance, count]) => {
+			if (count < 2) {
+				return;
+			} else if (resonance === 'ny-alt' && count < 3) {
+				return;
+			}
+
+			activated_resonances.push(resonance as Resonance);
+
+			loadout_resonance_stat = loadout_resonance_stat.add(
+				new StatCollection(RESONANCE_SOLO[resonance as Resonance])
+			);
+		});
+
+		return base_weapons.map((weapon, index) => {
+			// iterate through effects
+			let stat_col = new StatCollection();
+			weapon.effects.forEach((effect) => {
+				if (effect.required_reso && !activated_resonances.includes(effect.required_reso)) {
+					return;
+				} else if (
+					effect.required_adv &&
+					effect.required_adv > (_loadout_weapons[index].advancement ?? 6)
+				) {
+					return;
+				}
+
+				console.log(effect.stats);
+				stat_col = stat_col.add(new StatCollection(effect.stats));
+			});
+
+			return {
+				...weapon,
+				advancement: _loadout_weapons[index].advancement ?? 6,
+				stats: stat_col
+			} as WeaponView;
 		});
 	}
 
@@ -401,9 +449,9 @@
 					</div>
 				</div>
 			{/each}
-		</div>
 
-		<p>Ignore this for now, not implemented yet.</p>
+			<p>Suggest good bg color pls...</p>
+		</div>
 	</div>
 </div>
 
