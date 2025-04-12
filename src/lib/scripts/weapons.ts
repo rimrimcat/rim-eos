@@ -121,49 +121,13 @@ export type UserWeapon = {
 export type WeaponView = {
 	id: WeaponsIds;
 	name: string;
-	base_stat: BaseStatType;
 	resonances: Resonance[];
 	onfieldness?: number;
 
+	base_stat: StatCollection;
+	effect_stat: StatCollection;
+
 	effects: Effect[];
-	reso_effects?: Effect[];
 
 	advancement: number;
-	stats: StatCollection;
-};
-
-export const ALL_WEAPONS: {
-	[key: string]: Weapon;
-} = {
-	invalid: {
-		id: 'invalid',
-		name: 'Invalid',
-		base_stat: 'crit-med',
-		resonances: [],
-		effects: []
-	},
-	grayfox: {
-		id: 'grayfox',
-		name: 'Grayfox',
-		base_stat: 'crit-med',
-		resonances: ['bene', 'frost', 'volt', 'frost-volt-fusion'],
-		effects: ['grayfox-skill', 'grayfox-a3-buff', 'grayfox-a3-debuff', 'grayfox-a6'],
-		reso_effects: ['frost-reso', 'volt-reso']
-	},
-	nola_frost: {
-		id: 'nola-frost',
-		name: 'Nola Frost',
-		base_stat: 'crit-med',
-		resonances: ['atk', 'frost', 'volt', 'frost-volt-fusion'],
-		effects: ['nola-frost-skill', 'nola-a3', 'nola-a6'],
-		reso_effects: ['frost-reso', 'volt-reso']
-	},
-	nanyin: {
-		id: 'nanyin',
-		name: 'Nan Yin',
-		base_stat: 'crit-low',
-		resonances: ['atk', 'ny-alt'],
-		effects: ['nanyin-inhabit', 'nanyin-a5', 'nanyin-a6'],
-		reso_effects: ['nanyin-reso']
-	}
 };
