@@ -6,6 +6,6 @@
 			"volt_res_percent": 25
 		},
 		"target": "self",
-		"required_reso": "volt"
+		"require_reso": "volt"
 	}
 ]

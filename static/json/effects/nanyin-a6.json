@@ -4,5 +4,5 @@
 		"final_dmg_percent": 35
 	},
 	"target": "self",
-	"required_adv": 6
+	"require_adv": 6
 }

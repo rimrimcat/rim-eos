@@ -4,7 +4,7 @@
 		"crit_res_reduction_percent": 10
 	},
 	"target": "enemy",
-	"required_adv": 3,
-	"required_reso": "bene",
+	"require_adv": 3,
+	"require_reso": "bene",
 	"notes": "Stacking effect"
 }

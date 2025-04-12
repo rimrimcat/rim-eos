@@ -5,7 +5,7 @@
 			"final_dmg_percent": 10
 		},
 		"target": "self",
-		"required_reso": "atk"
+		"require_reso": "atk"
 	},
 	{
 		"id": "atk-reso-teamplay",
@@ -13,7 +13,7 @@
 			"final_dmg_percent": 40
 		},
 		"target": "self",
-		"required_reso": "atk",
+		"require_reso": "atk",
 		"require_teamplay": true
 	}
 ]

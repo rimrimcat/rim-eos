@@ -1,10 +1,26 @@
 import type { EffectsIds, ResoEffectsIds, WeaponsIds } from '../generated/ids';
 import type { StatCollection, StatData } from './stat-ops';
-import type { StatGearUser, StatNonGear } from './stats';
+import type { StatDebuffs, StatGearUser, StatNonGear } from './stats';
 
 export type ResoTriggers = 'atk' | 'fort' | 'bene' | 'phys' | 'flame' | 'frost' | 'volt' | 'alt';
 type Target = 'self' | 'ally' | 'team' | 'enemy';
 export type ResoTriggerCounts = { [key in ResoTriggers]?: number };
+
+export type MatrixStatData = {
+	[key in StatGearUser | StatNonGear | StatDebuffs]?: [number, number, number, number];
+};
+
+// effect and resoeffect will extend this later
+export type BaseEffect = {
+	id: string;
+	target?: Target; // defaults to self
+	duration?: number;
+	cooldown?: number;
+	require_reso?: ResoTriggers;
+	required_reso_count?: number;
+	require_teamplay?: boolean;
+	notes?: string;
+};
 
 export type Effect = {
 	id: EffectsIds;
@@ -12,9 +28,9 @@ export type Effect = {
 	duration?: number; // cooldown and duration only matter if not 100% uptime or if onfield
 	cooldown?: number;
 	target: Target;
-	required_reso?: ResoTriggers;
-	required_reso_count?: number; // defaults to 2
-	required_adv?: number;
+	require_reso?: ResoTriggers;
+	require_reso_count?: number; // defaults to 2
+	require_adv?: number;
 	require_teamplay?: boolean;
 	notes?: string;
 };
@@ -25,8 +41,20 @@ export type ResoEffect = {
 	duration?: number;
 	cooldown?: number;
 	target: Target;
-	required_reso: ResoTriggers;
-	required_reso_count?: number; // defaults to 2
+	require_reso: ResoTriggers;
+	require_reso_count?: number; // defaults to 2
+	require_teamplay?: boolean;
+	notes?: string;
+};
+
+export type MatrixEffect = {
+	id: string;
+	stats: MatrixStatData;
+	duration?: number;
+	cooldown?: number;
+	target: Target;
+	require_reso?: ResoTriggers;
+	require_reso_count?: number; // defaults to 2
 	require_teamplay?: boolean;
 	notes?: string;
 };

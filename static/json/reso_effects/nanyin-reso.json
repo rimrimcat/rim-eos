@@ -5,7 +5,7 @@
 			"alt_atk_percent": 30
 		},
 		"target": "self",
-		"required_reso": "alt",
-		"required_reso_count": 3
+		"require_reso": "alt",
+		"require_reso_count": 3
 	}
 ]

@@ -6,6 +6,6 @@
 			"frost_res_percent": 25
 		},
 		"target": "self",
-		"required_reso": "frost"
+		"require_reso": "frost"
 	}
 ]

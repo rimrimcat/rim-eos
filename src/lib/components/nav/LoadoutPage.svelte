@@ -116,9 +116,9 @@
 		loadout_resonance_stat = new StatCollection();
 		loadout_resonance_effects = [];
 		reso_effects.forEach((eff) => {
-			if (eff.required_reso) {
-				const required_reso_count = eff.required_reso_count ?? 2;
-				if ((loadout_reso_counts[eff.required_reso] ?? 0) < required_reso_count) {
+			if (eff.require_reso) {
+				const required_reso_count = eff.require_reso_count ?? 2;
+				if ((loadout_reso_counts[eff.require_reso] ?? 0) < required_reso_count) {
 					return;
 				}
 
@@ -146,15 +146,15 @@
 				const wpn_effects = await Promise.all(weapon.effects.map((eff) => getEffect(eff)));
 				let stat = new StatCollection();
 				wpn_effects.forEach((eff) => {
-					if (eff.required_reso) {
-						const required_reso_count = eff.required_reso_count ?? 2;
-						if (loadout_reso_counts[eff.required_reso] ?? 0 < required_reso_count) {
+					if (eff.require_reso) {
+						const required_reso_count = eff.require_reso_count ?? 2;
+						if (loadout_reso_counts[eff.require_reso] ?? 0 < required_reso_count) {
 							return;
 						}
 					}
 
-					if (eff.required_adv) {
-						if (advancement < eff.required_adv) {
+					if (eff.require_adv) {
+						if (advancement < eff.require_adv) {
 							return;
 						}
 					}
@@ -197,15 +197,15 @@
 		const wpn_effects = await Promise.all(weapon.effects.map((eff) => getEffect(eff)));
 		let effect_stat = new StatCollection();
 		wpn_effects.forEach((eff) => {
-			if (eff.required_reso) {
-				const required_reso_count = eff.required_reso_count ?? 2;
-				if (loadout_reso_counts[eff.required_reso] ?? 0 < required_reso_count) {
+			if (eff.require_reso) {
+				const required_reso_count = eff.require_reso_count ?? 2;
+				if (loadout_reso_counts[eff.require_reso] ?? 0 < required_reso_count) {
 					return;
 				}
 			}
 
-			if (eff.required_adv) {
-				if (advancement < eff.required_adv) {
+			if (eff.require_adv) {
+				if (advancement < eff.require_adv) {
 					return;
 				}
 			}

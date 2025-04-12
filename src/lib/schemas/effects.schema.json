@@ -16,7 +16,7 @@
     "target": {
       "$ref": "#/definitions/Target"
     },
-    "required_reso": {
+    "require_reso": {
       "enum": [
         "alt",
         "atk",
@@ -29,10 +29,10 @@
       ],
       "type": "string"
     },
-    "required_reso_count": {
+    "require_reso_count": {
       "type": "number"
     },
-    "required_adv": {
+    "require_adv": {
       "type": "number"
     },
     "require_teamplay": {

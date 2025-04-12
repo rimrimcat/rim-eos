@@ -4,5 +4,5 @@
 		"res_ignore_percent": 30
 	},
 	"target": "enemy",
-	"required_adv": 5
+	"require_adv": 5
 }

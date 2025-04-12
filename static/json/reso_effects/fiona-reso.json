@@ -6,6 +6,6 @@
 			"alt_res_percent": 30
 		},
 		"target": "self",
-		"required_reso": "alt"
+		"require_reso": "alt"
 	}
 ]

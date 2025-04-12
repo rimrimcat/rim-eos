@@ -6,6 +6,6 @@
 			"phys_res_percent": 25
 		},
 		"target": "self",
-		"required_reso": "phys"
+		"require_reso": "phys"
 	}
 ]

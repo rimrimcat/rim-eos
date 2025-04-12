@@ -18,10 +18,10 @@
       "target": {
         "$ref": "#/definitions/Target"
       },
-      "required_reso": {
+      "require_reso": {
         "$ref": "#/definitions/ResoTriggers"
       },
-      "required_reso_count": {
+      "require_reso_count": {
         "type": "number"
       },
       "require_teamplay": {
@@ -34,7 +34,7 @@
     "additionalProperties": false,
     "required": [
       "id",
-      "required_reso",
+      "require_reso",
       "stats",
       "target"
     ]

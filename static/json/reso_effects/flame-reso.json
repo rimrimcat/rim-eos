@@ -6,6 +6,6 @@
 			"flame_res_percent": 25
 		},
 		"target": "self",
-		"required_reso": "flame"
+		"require_reso": "flame"
 	}
 ]
