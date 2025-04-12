@@ -1,0 +1,12 @@
+{
+	"json.schemas": [
+		{
+			"fileMatch": ["**/effects/*.json"],
+			"url": "./src/lib/schemas/effects.schema.json"
+		},
+		{
+			"fileMatch": ["**/reso_effects/*.json"],
+			"url": "./src/lib/schemas/reso_effects.schema.json"
+		}
+	]
+}
