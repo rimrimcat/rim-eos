@@ -15,14 +15,7 @@
 	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
 	import { StatCollection } from '$lib/scripts/stat-ops';
 	import { type StatGearUser } from '$lib/scripts/stats';
-	import {
-		ALL_WEAPONS,
-		RESONANCE_SOLO,
-		type Advancement,
-		type Resonance,
-		type UserWeapon,
-		type WeaponView
-	} from '$lib/scripts/weapons';
+	import { ALL_WEAPONS, type UserWeapon, type WeaponView } from '$lib/scripts/weapons';
 	import {
 		ArrowRightLeftIcon,
 		BoxIcon,
@@ -75,46 +68,46 @@
 			(weapon) => ALL_WEAPONS[weapon.id] ?? ALL_WEAPONS.invalid
 		);
 
-		// count the number of each resonance item
-		const resonance_counts: { [key in Resonance]?: number } = {};
-		base_weapons.forEach((weapon) => {
-			weapon.resonances.forEach((resonance) => {
-				resonance_counts[resonance] = (resonance_counts[resonance] ?? 0) + 1;
-			});
-		});
+		// // count the number of each resonance item
+		// const resonance_counts: { [key in Resonance]?: number } = {};
+		// base_weapons.forEach((weapon) => {
+		// 	weapon.resonances.forEach((resonance) => {
+		// 		resonance_counts[resonance] = (resonance_counts[resonance] ?? 0) + 1;
+		// 	});
+		// });
 
-		// activate resonance when count >= 2
-		const activated_resonances: Resonance[] = [];
-		loadout_resonance_stat = new StatCollection();
-		Object.entries(resonance_counts).forEach(([resonance, count]) => {
-			if (count < 2) {
-				return;
-			} else if (resonance === 'ny-alt' && count < 3) {
-				return;
-			}
+		// // activate resonance when count >= 2
+		// const activated_resonances: Resonance[] = [];
+		// loadout_resonance_stat = new StatCollection();
+		// Object.entries(resonance_counts).forEach(([resonance, count]) => {
+		// 	if (count < 2) {
+		// 		return;
+		// 	} else if (resonance === 'ny-alt' && count < 3) {
+		// 		return;
+		// 	}
 
-			activated_resonances.push(resonance as Resonance);
+		// 	activated_resonances.push(resonance as Resonance);
 
-			loadout_resonance_stat = loadout_resonance_stat.add(
-				new StatCollection(RESONANCE_SOLO[resonance as Resonance])
-			);
-		});
+		// 	loadout_resonance_stat = loadout_resonance_stat.add(
+		// 		new StatCollection(RESONANCE_SOLO[resonance as Resonance])
+		// 	);
+		// });
 
+		// resonance effects
 		return base_weapons.map((weapon, index) => {
 			// iterate through effects
 			let stat_col = new StatCollection();
 			weapon.effects.forEach((effect) => {
-				if (effect.required_reso && !activated_resonances.includes(effect.required_reso)) {
-					return;
-				} else if (
-					effect.required_adv &&
-					effect.required_adv > (_loadout_weapons[index].advancement ?? 6)
-				) {
-					return;
-				}
-
-				console.log(effect.stats);
-				stat_col = stat_col.add(new StatCollection(effect.stats));
+				// if (effect.required_reso && !activated_resonances.includes(effect.required_reso)) {
+				// 	return;
+				// } else if (
+				// 	effect.required_adv &&
+				// 	effect.required_adv > (_loadout_weapons[index].advancement ?? 6)
+				// ) {
+				// 	return;
+				// }
+				// console.log(effect.stats);
+				// stat_col = stat_col.add(new StatCollection(effect.stats));
 			});
 
 			return {
@@ -427,7 +420,7 @@
 										if (weapon.advancement === advSet) {
 											user_weapons[index].advancement = 0;
 										} else {
-											user_weapons[index].advancement = advSet as Advancement;
+											user_weapons[index].advancement = advSet;
 										}
 										saveWeaponMatrixLoadout();
 									}}

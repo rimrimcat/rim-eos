@@ -1,0 +1,8 @@
+{
+	"id": "nola-a6",
+	"stats": {
+		"final_dmg_percent": 35
+	},
+	"required_adv": 6,
+	"target": "self"
+}

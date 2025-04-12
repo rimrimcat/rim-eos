@@ -1,0 +1,19 @@
+[
+	{
+		"id": "atk_reso",
+		"stats": {
+			"final_dmg_percent": 10
+		},
+		"target": "self",
+		"required_reso": "atk"
+	},
+	{
+		"id": "atk_reso_teamplay",
+		"stats": {
+			"final_dmg_percent": 40
+		},
+		"target": "self",
+		"required_reso": "atk",
+		"require_teamplay": true
+	}
+]

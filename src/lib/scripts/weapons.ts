@@ -1,11 +1,128 @@
 import type { StatCollection, StatData } from './stat-ops';
 import type { StatGearUser, StatNonGear } from './stats';
 
+export type ResoTriggers = 'atk' | 'fort' | 'bene' | 'phys' | 'flame' | 'frost' | 'volt' | 'alt';
+type Target = 'self' | 'ally' | 'team' | 'enemy';
+export type ResoTriggerCounts = Record<ResoTriggers, number>;
+
+export type Effect = {
+	id: string;
+	stats: StatData;
+	duration?: number; // cooldown and duration only matter if not 100% uptime or if onfield
+	cooldown?: number;
+	target: Target;
+	required_reso?: ResoTriggers;
+	required_reso_count?: number; // defaults to 2
+	required_adv?: number;
+	require_teamplay?: boolean;
+	notes?: string;
+};
+
+export type WeaponResonanceIds =
+	| 'atk_reso'
+	| 'fort_reso'
+	| 'bene_reso'
+	| 'phys_reso'
+	| 'flame_reso'
+	| 'frost_reso'
+	| 'volt_reso'
+	| 'fiona_reso'
+	| 'nanyin_reso';
+
+export const WEAPON_RESONANCES: Record<WeaponResonanceIds, Effect[]> = {
+	atk_reso: [
+		{
+			id: 'atk_reso',
+			stats: {
+				final_dmg_percent: 10
+			},
+			target: 'self',
+			required_reso: 'atk'
+		},
+		{
+			id: 'atk_reso_teamplay',
+			stats: {
+				final_dmg_percent: 40
+			},
+			target: 'self',
+			required_reso: 'atk',
+			require_teamplay: true
+		}
+	],
+	fort_reso: [],
+	bene_reso: [],
+	phys_reso: [
+		{
+			id: 'phys_reso',
+			stats: {
+				phys_atk_percent: 15,
+				phys_dmg_percent: 25
+			},
+			target: 'self',
+			required_reso: 'phys'
+		}
+	],
+	flame_reso: [
+		{
+			id: 'flame_reso',
+			stats: {
+				flame_atk_percent: 15,
+				flame_dmg_percent: 25
+			},
+			target: 'self',
+			required_reso: 'flame'
+		}
+	],
+	frost_reso: [
+		{
+			id: 'frost_reso',
+			stats: {
+				frost_atk_percent: 15,
+				frost_dmg_percent: 25
+			},
+			target: 'self',
+			required_reso: 'frost'
+		}
+	],
+	volt_reso: [
+		{
+			id: 'volt_reso',
+			stats: {
+				volt_atk_percent: 15,
+				volt_dmg_percent: 25
+			},
+			target: 'self',
+			required_reso: 'volt'
+		}
+	],
+	fiona_reso: [
+		{
+			id: 'fiona_reso',
+			stats: {
+				atk_percent: 20,
+				alt_res_percent: 30
+			},
+			target: 'self',
+			required_reso: 'alt'
+		}
+	],
+	nanyin_reso: [
+		{
+			id: 'nanyin_reso',
+			stats: {
+				alt_atk_percent: 30
+			},
+			target: 'self',
+			required_reso: 'alt',
+			required_reso_count: 3
+		}
+	]
+};
+
 export type Resonance =
 	| 'atk'
 	| 'fort'
 	| 'bene'
-	| 'phys'
 	| 'phys'
 	| 'flame'
 	| 'frost'
@@ -38,8 +155,6 @@ export const RESONANCE_SOLO: Record<Resonance, StatData> = {
 	'flame-phys-fusion': {},
 	'ny-alt': {}
 };
-
-export type Advancement = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 /**
  * BaseStatType naming convetion:
@@ -88,34 +203,23 @@ export const WEAPON_BASE_STATS: Record<BaseStatType, BaseStatValue> = {
 	}
 };
 
-type Target = 'self' | 'ally' | 'team' | 'enemy';
-
-type Effect = {
-	id: string;
-	stats: StatData;
-	duration?: number; // cooldown and duration only matter if not 100% uptime or if onfield
-	cooldown?: number;
-	target: Target;
-	required_reso?: Resonance;
-	required_adv?: Advancement;
-	notes?: string;
-};
-
 export type Weapon = {
+	id: string;
 	name: string;
 	base_stat: BaseStatType;
 	resonances: Resonance[];
 	onfieldness?: number; // priority for onfielding, need to determine this later on
 	effects: Effect[];
+	reso_effects?: WeaponResonanceIds[];
 };
 
 export type UserWeapon = {
 	id: string;
-	advancement?: Advancement;
+	advancement?: number;
 };
 
 export type WeaponView = Weapon & {
-	advancement: Advancement;
+	advancement: number;
 	stats: StatCollection;
 };
 
@@ -123,12 +227,14 @@ export const ALL_WEAPONS: {
 	[key: string]: Weapon;
 } = {
 	invalid: {
+		id: 'invalid',
 		name: 'Invalid',
 		base_stat: 'crit-med',
 		resonances: ['atk'],
 		effects: []
 	},
 	grayfox: {
+		id: 'grayfox',
 		name: 'Grayfox',
 		base_stat: 'crit-med',
 		resonances: ['bene', 'frost', 'volt', 'frost-volt-fusion'],
@@ -167,9 +273,11 @@ export const ALL_WEAPONS: {
 				required_adv: 6,
 				target: 'self'
 			}
-		]
+		],
+		reso_effects: ['frost_reso', 'volt_reso']
 	},
 	nola_frost: {
+		id: 'nola_frost',
 		name: 'Nola Frost',
 		base_stat: 'crit-med',
 		resonances: ['atk', 'frost', 'volt', 'frost-volt-fusion'],
@@ -198,9 +306,11 @@ export const ALL_WEAPONS: {
 				required_adv: 6,
 				target: 'self'
 			}
-		]
+		],
+		reso_effects: ['frost_reso', 'volt_reso']
 	},
 	nanyin: {
+		id: 'nanyin',
 		name: 'Nan Yin',
 		base_stat: 'crit-low',
 		resonances: ['atk', 'ny-alt'],
@@ -229,6 +339,7 @@ export const ALL_WEAPONS: {
 				target: 'self',
 				required_adv: 6
 			}
-		]
+		],
+		reso_effects: ['nanyin_reso']
 	}
 };

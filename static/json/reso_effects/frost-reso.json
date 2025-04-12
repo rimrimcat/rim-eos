@@ -1,0 +1,11 @@
+[
+	{
+		"id": "frost_reso",
+		"stats": {
+			"frost_atk_percent": 15,
+			"frost_dmg_percent": 25
+		},
+		"target": "self",
+		"required_reso": "frost"
+	}
+]

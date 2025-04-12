@@ -1,0 +1,6 @@
+{
+	"id": "nola-frost-skill",
+	"stats": { "frost_dmg_percent": 6 },
+	"target": "self",
+	"notes": "100% uptime due to Liquid Nitrogen passive"
+}

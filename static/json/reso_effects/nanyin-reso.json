@@ -1,0 +1,11 @@
+[
+	{
+		"id": "nanyin_reso",
+		"stats": {
+			"alt_atk_percent": 30
+		},
+		"target": "self",
+		"required_reso": "alt",
+		"required_reso_count": 3
+	}
+]
