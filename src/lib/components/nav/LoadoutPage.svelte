@@ -49,6 +49,10 @@
 	let loadout_icon = $state('');
 	let loadout_image = $state('');
 	let user_weapons = $state([{}, {}, {}] as UserWeapon[]);
+
+	let loadout_base_weapons = $state([] as Weapon[]);
+	let loadout_reso_counts = $state({} as ResoTriggerCounts);
+
 	let loadout_weapon_views = $state([{}, {}, {}] as WeaponView[]);
 	let loadout_resonance_stat = $state(new StatCollection());
 
@@ -70,27 +74,19 @@
 		{ value: 'alt', label: 'Altered' }
 	];
 
-	// creates gearView and updates loadout_resonance_stat
-	async function initWeaponViews() {
-		console.log('Called updateWeaponViews.');
-		const base_weapons = (await Promise.all(
-			user_weapons.map((weapon) => getWeapon(weapon.id))
-		)) as [Weapon, Weapon, Weapon];
-
-		// create counts of resonance triggers
-		const reso_counts = base_weapons.reduce((counts, weapon) => {
+	async function updateResoCounts() {
+		loadout_reso_counts = loadout_base_weapons.reduce((counts, weapon) => {
 			weapon.resonances.forEach((resonance) => {
 				counts[resonance] = (counts[resonance] ?? 0) + 1;
 			});
 			return counts;
 		}, {} as ResoTriggerCounts);
+	}
 
-		console.log('reso_counts', reso_counts);
-
-		// create a set of resonance effects (no filtering, no duplication for now)
+	async function updateResoEffects() {
 		const reso_effects: Effect[] = [];
 		await Promise.all(
-			base_weapons.map(async (weapon) => {
+			loadout_base_weapons.map(async (weapon) => {
 				if (weapon.reso_effects) {
 					await Promise.all(
 						weapon.reso_effects.map(async (eff) => {
@@ -107,20 +103,20 @@
 			})
 		);
 
-		// apply resonance effects
 		loadout_resonance_stat = new StatCollection();
 		reso_effects.forEach((eff) => {
 			if (eff.required_reso) {
 				const required_reso_count = eff.required_reso_count ?? 2;
-				if (reso_counts[eff.required_reso] ?? 0 >= required_reso_count) {
+				if (loadout_reso_counts[eff.required_reso] ?? 0 >= required_reso_count) {
 					loadout_resonance_stat = loadout_resonance_stat.add(new StatCollection(eff.stats));
 				}
 			}
 		});
+	}
 
-		// iterate through weapons
+	async function updateWeaponViews() {
 		loadout_weapon_views = await Promise.all(
-			base_weapons.map(async (weapon, index) => {
+			loadout_base_weapons.map(async (weapon, index) => {
 				const advancement = user_weapons[index].advancement ?? 6;
 
 				// get base stat of weapon
@@ -136,7 +132,7 @@
 				wpn_effects.forEach((eff) => {
 					if (eff.required_reso) {
 						const required_reso_count = eff.required_reso_count ?? 2;
-						if (reso_counts[eff.required_reso] ?? 0 < required_reso_count) {
+						if (loadout_reso_counts[eff.required_reso] ?? 0 < required_reso_count) {
 							return;
 						}
 					}
@@ -161,6 +157,62 @@
 				} as WeaponView;
 			})
 		);
+	}
+
+	async function updateSingleWeaponView(index: number) {
+		const weapon = loadout_base_weapons[index];
+		const advancement = user_weapons[index].advancement ?? 6;
+
+		// get base stat of weapon
+		const _base_stat = {};
+		Object.entries(WEAPON_BASE_STATS[weapon.base_stat]).forEach(([stat, value]) => {
+			// @ts-expect-error
+			_base_stat[stat] = value[0] + ((value[1] - value[0]) * (advancement - 1)) / 5;
+		});
+		const base_stat = new StatCollection(_base_stat);
+
+		const wpn_effects = await Promise.all(weapon.effects.map((eff) => getEffect(eff)));
+		let effect_stat = new StatCollection();
+		wpn_effects.forEach((eff) => {
+			if (eff.required_reso) {
+				const required_reso_count = eff.required_reso_count ?? 2;
+				if (loadout_reso_counts[eff.required_reso] ?? 0 < required_reso_count) {
+					return;
+				}
+			}
+
+			if (eff.required_adv) {
+				if (advancement < eff.required_adv) {
+					return;
+				}
+			}
+			effect_stat = effect_stat.add(new StatCollection(eff.stats));
+		});
+
+		loadout_weapon_views[index] = {
+			id: weapon.id,
+			name: weapon.name,
+			resonances: weapon.resonances,
+			onfieldness: weapon.onfieldness,
+			effects: wpn_effects,
+			base_stat,
+			advancement,
+			effect_stat
+		};
+	}
+
+	// creates gearView and updates loadout_resonance_stat
+	async function updateAll() {
+		loadout_base_weapons = await Promise.all(user_weapons.map((weapon) => getWeapon(weapon.id)));
+
+		// create counts of resonance triggers
+		await updateResoCounts();
+
+		// apply resonance effects
+		await updateResoEffects();
+
+		// iterate through weapons
+		await updateWeaponViews();
 	}
 
 	function saveWeaponMatrixLoadout() {
@@ -362,7 +414,7 @@
 			loadout_icon = user_loadouts[current_loadout].element;
 			user_weapons = user_loadouts[current_loadout].equipped_weapons;
 			loadout_image = await getImageUrlFromDB(current_loadout);
-			initWeaponViews();
+			updateAll();
 		}
 	});
 
@@ -459,20 +511,24 @@
 								alt="Weapon"
 								style="height: 8rem; width:8rem;"
 							/>
-							{#each [1, 2, 3, 4, 5, 6] as advSet, advIndex}
+							{#each [1, 2, 3, 4, 5, 6] as advSetValue, advIndex}
 								<button
 									class="image"
 									onclick={() => {
-										if (weapon.advancement === advSet) {
+										if (weapon.advancement === advSetValue) {
 											user_weapons[index].advancement = 0;
 										} else {
-											user_weapons[index].advancement = advSet;
+											user_weapons[index].advancement = advSetValue;
 										}
 										saveWeaponMatrixLoadout();
+										updateSingleWeaponView(index);
 									}}
 								>
 									<div class="compose-above" style="top: 6.5rem; left:{1 + advIndex}rem">
-										<StarIcon size={16} fill={weapon.advancement >= advSet ? 'white' : 'none'} />
+										<StarIcon
+											size={16}
+											fill={weapon.advancement >= advSetValue ? 'white' : 'none'}
+										/>
 									</div>
 								</button>
 							{/each}
