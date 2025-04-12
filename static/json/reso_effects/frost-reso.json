@@ -3,7 +3,7 @@
 		"id": "frost-reso",
 		"stats": {
 			"frost_atk_percent": 15,
-			"frost_dmg_percent": 25
+			"frost_res_percent": 25
 		},
 		"target": "self",
 		"required_reso": "frost"

@@ -3,7 +3,7 @@
 		"id": "volt-reso",
 		"stats": {
 			"volt_atk_percent": 15,
-			"volt_dmg_percent": 25
+			"volt_res_percent": 25
 		},
 		"target": "self",
 		"required_reso": "volt"

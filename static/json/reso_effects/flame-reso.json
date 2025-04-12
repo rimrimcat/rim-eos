@@ -3,7 +3,7 @@
 		"id": "flame-reso",
 		"stats": {
 			"flame_atk_percent": 15,
-			"flame_dmg_percent": 25
+			"flame_res_percent": 25
 		},
 		"target": "self",
 		"required_reso": "flame"
