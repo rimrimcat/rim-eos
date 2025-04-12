@@ -13,7 +13,7 @@ export type Loadout = {
 	description: string;
 	element: LoadoutType;
 	equipped_gears: EquippedGear;
-	equipped_weapons: [UserWeapon, UserWeapon, UserWeapon];
+	equipped_weapons: UserWeapon[];
 	base_stats: string[]; // raw stat uploaded by user
 	stat_adj?: object;
 	image_url?: string;
