@@ -316,6 +316,13 @@
 		outline-offset: 2px;
 	}
 
+	:global(img.border) {
+		border-radius: 1rem;
+		background-color: rgb(99 99 99);
+		width: 8rem;
+		height: 8rem;
+	}
+
 	:global(img.user-upload) {
 		max-width: 80vw;
 		max-height: 60vh;
@@ -360,5 +367,16 @@
 		height: 100%;
 		object-fit: none;
 		filter: invert(75%);
+	}
+
+	/* for composing icons */
+	:global(.compose-below) {
+		position: relative;
+	}
+
+	:global(.compose-above) {
+		position: absolute;
+		top: 0;
+		left: 0;
 	}
 </style>

@@ -14,6 +14,7 @@
 	import type { AllLoadouts, LoadoutType } from '$lib/scripts/loadouts';
 	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
 	import { type StatGearUser } from '$lib/scripts/stats';
+	import { ALL_WEAPONS, type Weapon } from '$lib/scripts/weapons';
 	import {
 		ArrowRightLeftIcon,
 		BoxIcon,
@@ -22,6 +23,7 @@
 		PencilIcon,
 		RotateCcwIcon,
 		Save,
+		StarIcon,
 		Trash2Icon
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
@@ -37,8 +39,15 @@
 	let loadout_desc = $state('');
 	let loadout_icon = $state('');
 	let loadout_image = $state('');
+	let loadout_weapons = $state(['', '', ''] as [string, string, string]);
+	let loadout_weapon_views = $derived(
+		loadout_weapons.map((weapon) => ALL_WEAPONS[weapon] ?? ALL_WEAPONS.invalid) as [
+			Weapon,
+			Weapon,
+			Weapon
+		]
+	);
 
-	let selected_weapon_preset = $state('Preset 1');
 	let is_editing = $state(false);
 
 	// Dialog
@@ -56,9 +65,6 @@
 		{ value: 'phys', label: 'Physical' },
 		{ value: 'alt', label: 'Altered' }
 	];
-
-	// Weapon preset options
-	const WEAPON_PRESETS = ['Preset 1', 'Preset 2', 'Preset 3', 'Custom Preset'];
 
 	function toggleEditing() {
 		if (is_editing) {
@@ -234,6 +240,8 @@
 					// delete keys in localStorage
 					localStorage.removeItem('loadouts_v1');
 					localStorage.removeItem('gears_v1');
+					// delete database
+					indexedDB.deleteDatabase('tof-gear');
 					// reload page
 					window.location.reload();
 				}
@@ -250,11 +258,13 @@
 			loadout_name = user_loadouts[current_loadout].name;
 			loadout_desc = user_loadouts[current_loadout].description;
 			loadout_icon = user_loadouts[current_loadout].element;
+			loadout_weapons = user_loadouts[current_loadout].equipped_weapons;
 			loadout_image = await getImageUrlFromDB(current_loadout);
 		}
 	});
 
 	// $inspect('image source', document.getElementById('user-upload')?.src);
+	$inspect('loadout wepaons', loadout_weapons);
 </script>
 
 <div class="loadout-page" style={any_dialog_open ? 'overflow: hidden;' : ''}>
@@ -335,13 +345,34 @@
 
 	<div class="loadout-settings">
 		<h2>Weapon Presets</h2>
-		<div class="weapon-preset-container">
-			<label for="weapon-preset">Select a weapon preset:</label>
-			<select id="weapon-preset" bind:value={selected_weapon_preset}>
-				{#each WEAPON_PRESETS as preset}
-					<option value={preset}>{preset}</option>
-				{/each}
-			</select>
+		<div class="vertical weapon-matrix-cell">
+			{#each loadout_weapon_views as weapon, index}
+				<div class="horizontal weapon-matrix-row">
+					<div class="weapon-icon-container">
+						<div class="compose-below">
+							<img
+								class="border"
+								src="./weapons/{weapon.name}.webp"
+								alt="Weapon"
+								style="height: 8rem; width:8rem;"
+							/>
+							{#each [0, 1, 2, 3, 4, 5, 6] as ii, advIndex}
+								<div class="compose-above" style="top: 6.5rem; left:{0.5 + advIndex}rem">
+									<StarIcon size={16} />
+								</div>
+							{/each}
+						</div>
+					</div>
+
+					<div class="vertical weapon-name-matrix-col">
+						<span class="weapon-name">{weapon.name}</span>
+						<div class="horizontalmatrix-container">
+							<img src="" alt="Matrix" />
+							<span>Matrix {index + 1}</span>
+						</div>
+					</div>
+				</div>
+			{/each}
 		</div>
 
 		<p>Ignore this for now, not implemented yet.</p>
@@ -540,20 +571,9 @@
 		margin-top: 0.5rem;
 	}
 
-	.weapon-preset-container {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		max-width: 300px;
-	}
-
-	.weapon-preset-container select {
-		padding: 0.5rem;
-		border-radius: 0.25rem;
-		border: 1px solid var(--border-color);
-		background-color: var(--button-bg);
-		color: var(--text-color);
-		font-size: 1rem;
+	.weapon-name {
+		font-size: 1.5rem;
+		font-weight: bolder;
 	}
 
 	/* Responsive adjustments */

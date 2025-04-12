@@ -89,6 +89,12 @@ export type AllWeapons = {
 };
 
 export const ALL_WEAPONS: AllWeapons = {
+	invalid: {
+		name: 'Invalid',
+		base_stat: 'crit-med',
+		resonances: ['atk'],
+		effects: []
+	},
 	grayfox: {
 		name: 'Grayfox',
 		base_stat: 'crit-med',
