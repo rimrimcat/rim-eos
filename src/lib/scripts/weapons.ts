@@ -14,7 +14,7 @@ type Resonance =
 	| 'frost-volt-fusion'
 	| 'flame-phys-fusion'
 	| 'ny-alt';
-type Advancement = 0 | 1 | 2 | 3 | 4 | 5 | 6;
+export type Advancement = 0 | 1 | 2 | 3 | 4 | 5 | 6;
 
 /**
  * BaseStatType naming convetion:

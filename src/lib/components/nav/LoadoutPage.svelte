@@ -14,7 +14,12 @@
 	import type { AllLoadouts, LoadoutType } from '$lib/scripts/loadouts';
 	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
 	import { type StatGearUser } from '$lib/scripts/stats';
-	import { ALL_WEAPONS, type UserWeapon, type WeaponView } from '$lib/scripts/weapons';
+	import {
+		ALL_WEAPONS,
+		type Advancement,
+		type UserWeapon,
+		type WeaponView
+	} from '$lib/scripts/weapons';
 	import {
 		ArrowRightLeftIcon,
 		BoxIcon,
@@ -39,8 +44,8 @@
 	let loadout_desc = $state('');
 	let loadout_icon = $state('');
 	let loadout_image = $state('');
-	let loadout_weapons = $state([{}, {}, {}] as [UserWeapon, UserWeapon, UserWeapon]);
-	let loadout_weapon_views = $derived(createWeaponViews(loadout_weapons));
+	let user_weapons = $state([{}, {}, {}] as [UserWeapon, UserWeapon, UserWeapon]);
+	let loadout_weapon_views = $derived(createWeaponViews(user_weapons));
 
 	let is_editing = $state(false);
 
@@ -70,6 +75,11 @@
 
 			return weaponView;
 		});
+	}
+
+	function saveWeaponMatrixLoadout() {
+		user_loadouts[current_loadout].equipped_weapons = user_weapons;
+		saveObject('loadouts_v1', user_loadouts);
 	}
 
 	function toggleEditing() {
@@ -264,13 +274,13 @@
 			loadout_name = user_loadouts[current_loadout].name;
 			loadout_desc = user_loadouts[current_loadout].description;
 			loadout_icon = user_loadouts[current_loadout].element;
-			loadout_weapons = user_loadouts[current_loadout].equipped_weapons;
+			user_weapons = user_loadouts[current_loadout].equipped_weapons;
 			loadout_image = await getImageUrlFromDB(current_loadout);
 		}
 	});
 
 	// $inspect('image source', document.getElementById('user-upload')?.src);
-	$inspect('loadout wepaons', loadout_weapons);
+	$inspect('loadout wepaons', user_weapons);
 </script>
 
 <div class="loadout-page" style={any_dialog_open ? 'overflow: hidden;' : ''}>
@@ -362,10 +372,22 @@
 								alt="Weapon"
 								style="height: 8rem; width:8rem;"
 							/>
-							{#each [0, 1, 2, 3, 4, 5, 6] as _, advIndex}
-								<div class="compose-above" style="top: 6.5rem; left:{0.5 + advIndex}rem">
-									<StarIcon size={16} />
-								</div>
+							{#each [1, 2, 3, 4, 5, 6] as advSet, advIndex}
+								<button
+									class="image"
+									onclick={() => {
+										if (weapon.advancement === advSet) {
+											user_weapons[index].advancement = 0;
+										} else {
+											user_weapons[index].advancement = advSet as Advancement;
+										}
+										saveWeaponMatrixLoadout();
+									}}
+								>
+									<div class="compose-above" style="top: 6.5rem; left:{1 + advIndex}rem">
+										<StarIcon size={16} fill={weapon.advancement >= advSet ? 'white' : 'none'} />
+									</div>
+								</button>
 							{/each}
 						</div>
 					</div>
