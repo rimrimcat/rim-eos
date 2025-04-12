@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
-import type { ResoEffectsIds } from '../generated/ids';
+import type { EffectsIds, ResoEffectsIds, WeaponsIds } from '../generated/ids';
 import type { StatConstants } from './stats';
-import type { Effect } from './weapons';
+import type { Effect, Weapon } from './weapons';
 
 // load once before using
 export let STAT_CONSTANTS: StatConstants;
@@ -34,6 +34,8 @@ export async function loadStatConstants(): Promise<void> {
 
 // loaded when needed
 const RESO_EFFECTS: { [key in ResoEffectsIds]?: Effect[] } = {};
+const EFFECTS: { [key in EffectsIds]?: Effect } = {};
+const WEAPONS: { [key in WeaponsIds]?: Weapon } = {};
 
 export async function getResoEffects(reso: ResoEffectsIds): Promise<Effect[]> {
 	if (RESO_EFFECTS[reso]) {
@@ -51,6 +53,46 @@ export async function getResoEffects(reso: ResoEffectsIds): Promise<Effect[]> {
 		return RESO_EFFECTS[reso];
 	} catch (error) {
 		console.error(`Error loading resonance effects for ${reso}:`, error);
+		throw error;
+	}
+}
+
+export async function getEffect(effect: EffectsIds): Promise<Effect> {
+	if (EFFECTS[effect]) {
+		return EFFECTS[effect];
+	}
+
+	try {
+		const response = await fetch(`./json/effects/${effect}.json`);
+		if (!response.ok) {
+			throw new Error(`Failed to load effect ${effect}: ${response.statusText}`);
+		}
+
+		const data = await response.json();
+		EFFECTS[effect] = data as Effect;
+		return EFFECTS[effect];
+	} catch (error) {
+		console.error(`Error loading effect ${effect}:`, error);
+		throw error;
+	}
+}
+
+export async function getWeapon(weapon: WeaponsIds): Promise<Weapon> {
+	if (WEAPONS[weapon]) {
+		return WEAPONS[weapon];
+	}
+
+	try {
+		const response = await fetch(`./json/weapons/${weapon}.json`);
+		if (!response.ok) {
+			throw new Error(`Failed to load weapon ${weapon}: ${response.statusText}`);
+		}
+
+		const data = await response.json();
+		WEAPONS[weapon] = data as Weapon;
+		return WEAPONS[weapon];
+	} catch (error) {
+		console.error(`Error loading weapon ${weapon}:`, error);
 		throw error;
 	}
 }

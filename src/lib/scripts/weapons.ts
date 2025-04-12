@@ -1,4 +1,4 @@
-import type { EffectsIds, ResoEffectsIds } from '../generated/ids';
+import type { EffectsIds, ResoEffectsIds, WeaponsIds } from '../generated/ids';
 import type { StatCollection, StatData } from './stat-ops';
 import type { StatGearUser, StatNonGear } from './stats';
 
@@ -104,7 +104,7 @@ export const WEAPON_BASE_STATS: Record<BaseStatType, BaseStatValue> = {
 };
 
 export type Weapon = {
-	id: string;
+	id: WeaponsIds;
 	name: string;
 	base_stat: BaseStatType;
 	resonances: Resonance[];
@@ -114,11 +114,20 @@ export type Weapon = {
 };
 
 export type UserWeapon = {
-	id: string;
+	id: WeaponsIds;
 	advancement?: number;
 };
 
-export type WeaponView = Weapon & {
+export type WeaponView = {
+	id: WeaponsIds;
+	name: string;
+	base_stat: BaseStatType;
+	resonances: Resonance[];
+	onfieldness?: number;
+
+	effects: Effect[];
+	reso_effects?: Effect[];
+
 	advancement: number;
 	stats: StatCollection;
 };
