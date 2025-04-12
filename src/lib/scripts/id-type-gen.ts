@@ -25,8 +25,9 @@ const typeDef = `// Auto-generated file
 
 export type EffectsIds = ${effects_ids.map((id) => `"${id}"`).join(' | ')};
 export type ResoEffectsIds = ${reso_effects_ids.map((id) => `"${id}"`).join(' | ')};
+export type WeaponsIds = ${weapons_ids.map((id) => `"${id}"`).join(' | ')};
 
 `;
 
 fs.writeFileSync(out_file, typeDef);
-console.log('Id types generated.');
+console.log('✅ Id types generated successfully.');

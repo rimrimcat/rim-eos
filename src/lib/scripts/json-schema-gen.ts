@@ -37,4 +37,4 @@ fs.writeFileSync(
 	JSON.stringify(schema_weapons, null, 2)
 );
 
-console.log('JSON schemas generated successfully.');
+console.log('✅ JSON schemas generated successfully.');

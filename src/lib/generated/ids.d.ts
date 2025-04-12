@@ -21,3 +21,4 @@ export type ResoEffectsIds =
 	| 'nanyin-reso'
 	| 'phys-reso'
 	| 'volt-reso';
+export type WeaponsIds = 'grayfox' | 'invalid' | 'nanyin' | 'nola-frost';
