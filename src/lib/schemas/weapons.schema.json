@@ -2,7 +2,7 @@
   "type": "object",
   "properties": {
     "id": {
-      "type": "string"
+      "$ref": "#/definitions/WeaponsIds"
     },
     "name": {
       "type": "string"
@@ -41,6 +41,15 @@
     "resonances"
   ],
   "definitions": {
+    "WeaponsIds": {
+      "enum": [
+        "grayfox",
+        "invalid",
+        "nanyin",
+        "nola-frost"
+      ],
+      "type": "string"
+    },
     "BaseStatType": {
       "description": "BaseStatType naming convetion:\n  [third stat]-[atk value]\n  third stat: crit, res\n  atk value: low, med, high",
       "enum": [
