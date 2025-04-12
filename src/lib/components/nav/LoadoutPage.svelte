@@ -143,7 +143,7 @@
 				const base_stat = new StatCollection(_base_stat);
 
 				const wpn_effects = await Promise.all(weapon.effects.map((eff) => getEffect(eff)));
-				let effect_stat = new StatCollection();
+				let stat = new StatCollection();
 				wpn_effects.forEach((eff) => {
 					if (eff.required_reso) {
 						const required_reso_count = eff.required_reso_count ?? 2;
@@ -157,7 +157,7 @@
 							return;
 						}
 					}
-					effect_stat = effect_stat.add(new StatCollection(eff.stats));
+					stat = stat.add(new StatCollection(eff.stats));
 				});
 
 				return {
@@ -168,7 +168,7 @@
 					effects: wpn_effects,
 					base_stat,
 					advancement,
-					effect_stat
+					stat
 				} as WeaponView;
 			})
 		);
@@ -212,7 +212,7 @@
 			effects: wpn_effects,
 			base_stat,
 			advancement,
-			effect_stat
+			stat: effect_stat
 		};
 	}
 
