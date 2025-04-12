@@ -71,7 +71,7 @@
 	];
 
 	// creates gearView and updates loadout_resonance_stat
-	async function updateWeaponViews() {
+	async function initWeaponViews() {
 		console.log('Called updateWeaponViews.');
 		const base_weapons = (await Promise.all(
 			user_weapons.map((weapon) => getWeapon(weapon.id))
@@ -362,7 +362,7 @@
 			loadout_icon = user_loadouts[current_loadout].element;
 			user_weapons = user_loadouts[current_loadout].equipped_weapons;
 			loadout_image = await getImageUrlFromDB(current_loadout);
-			updateWeaponViews();
+			initWeaponViews();
 		}
 	});
 
