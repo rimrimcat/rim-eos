@@ -277,7 +277,7 @@ export const ALL_WEAPONS: {
 		reso_effects: ['frost_reso', 'volt_reso']
 	},
 	nola_frost: {
-		id: 'nola_frost',
+		id: 'nola-frost',
 		name: 'Nola Frost',
 		base_stat: 'crit-med',
 		resonances: ['atk', 'frost', 'volt', 'frost-volt-fusion'],
