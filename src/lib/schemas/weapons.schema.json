@@ -13,7 +13,7 @@
     "resonances": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/Resonance"
+        "$ref": "#/definitions/ResoTriggers"
       }
     },
     "onfieldness": {
@@ -62,17 +62,14 @@
       ],
       "type": "string"
     },
-    "Resonance": {
+    "ResoTriggers": {
       "enum": [
         "alt",
         "atk",
         "bene",
         "flame",
-        "flame-phys-fusion",
         "fort",
         "frost",
-        "frost-volt-fusion",
-        "ny-alt",
         "phys",
         "volt"
       ],

@@ -2,7 +2,7 @@
 	"id": "nanyin",
 	"name": "Nan Yin",
 	"base_stat": "crit-low",
-	"resonances": ["atk", "ny-alt"],
+	"resonances": ["atk", "alt"],
 	"effects": ["nanyin-inhabit", "nanyin-a5", "nanyin-a6"],
 	"reso_effects": ["nanyin-reso"]
 }
