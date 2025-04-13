@@ -434,15 +434,6 @@
 		});
 	}
 
-	// function resetLoadout() {
-	// 	loadoutName = 'Default Loadout';
-	// 	loadoutDescription = 'A balanced loadout for all situations';
-	// 	loadoutImageBase64 = '';
-	// 	selectedWeaponPreset = 'Preset 1';
-	// 	selectedElement = 'flame';
-	// 	isEditing = false;
-	// }
-
 	// register
 	const id = 'loadout-page';
 
