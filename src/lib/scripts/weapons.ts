@@ -91,13 +91,17 @@ export const WEAPON_BASE_STATS: Record<BaseStatType, BaseStatValue> = {
 	}
 };
 
-export type WeaponSettingEffect = BaseEffect & {
-	id: string;
-	stats: StatData;
+type WeaponSettingChoices = {
+	[key: string]: {
+		resonances?: ResoTriggers[];
+		effects?: WeaponEffectsIds[];
+		reso_effects?: ResoEffectsIds[]; // would merge with weapon
+		notes?: string;
+	};
 };
 
 export type WeaponSetting = {
-	choices: string[]; // must be greater than length of default!
+	choices: WeaponSettingChoices; // must be greater than length of default!
 	default: string[];
 };
 
@@ -128,7 +132,7 @@ export type WeaponView = {
 	base_stat: StatCollection;
 
 	effects: WeaponEffect[];
-	setting_effects: WeaponSettingEffect[];
+	setting_effects: WeaponEffect[];
 	stat: StatCollection;
 
 	advancement: number;

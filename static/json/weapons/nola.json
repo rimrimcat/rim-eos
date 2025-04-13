@@ -2,12 +2,18 @@
 	"id": "nola",
 	"name": "Nola Frost",
 	"base_stat": "crit-med",
-	"resonances": ["atk", "frost", "volt"],
-	"effects": ["nola-frost-skill", "nola-a3", "nola-a6"],
-	"reso_effects": ["frost-reso", "volt-reso"],
+	"resonances": ["atk"],
+	"effects": ["nola-a3", "nola-a6"],
+	"reso_effects": [],
 
 	"setting": {
-		"choices": ["nola-frost"],
-		"default": ["nola-frost"]
+		"choices": {
+			"frost": {
+				"resonances": ["frost", "volt"],
+				"effects": ["nola-frost-skill"],
+				"reso_effects": ["frost-reso", "volt-reso"]
+			}
+		},
+		"default": ["frost"]
 	}
 }

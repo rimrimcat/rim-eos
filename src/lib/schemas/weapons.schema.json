@@ -35,9 +35,33 @@
       "type": "object",
       "properties": {
         "choices": {
-          "type": "array",
-          "items": {
-            "type": "string"
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "resonances": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/ResoTriggers"
+                }
+              },
+              "effects": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/WeaponEffectsIds"
+                }
+              },
+              "reso_effects": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/ResoEffectsIds"
+                }
+              },
+              "notes": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
           }
         },
         "default": {
