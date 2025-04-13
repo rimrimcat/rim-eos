@@ -11,6 +11,12 @@ export type WeaponEffectsIds =
 	| 'nola-a3'
 	| 'nola-a6'
 	| 'nola-frost-skill';
+export type MatrixEffectsIds =
+	| 'grayfox-2p-bene'
+	| 'grayfox-2p'
+	| 'grayfox-4p-bene'
+	| 'grayfox-4p-nonbene'
+	| 'grayfox-4p';
 export type ResoEffectsIds =
 	| 'atk-reso-teamplay'
 	| 'atk-reso'
@@ -23,9 +29,4 @@ export type ResoEffectsIds =
 	| 'phys-reso'
 	| 'volt-reso';
 export type WeaponsIds = 'grayfox' | 'invalid' | 'nanyin' | 'nola';
-export type MatrixEffectsIds =
-	| 'grayfox-2p-bene'
-	| 'grayfox-2p'
-	| 'grayfox-4p-bene'
-	| 'grayfox-4p-nonbene'
-	| 'grayfox-4p';
+export type MatrixIds = 'grayfox-4p';
