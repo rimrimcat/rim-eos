@@ -3,7 +3,6 @@
 	"stats": {
 		"alt_atk_percent": 30
 	},
-	"target": "self",
 	"require_reso": "alt",
 	"require_reso_count": 3
 }

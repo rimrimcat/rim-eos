@@ -3,6 +3,5 @@
 	"stats": {
 		"normal_dmg_percent": 15
 	},
-	"target": "self",
 	"duration": 0
 }

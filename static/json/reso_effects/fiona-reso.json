@@ -4,6 +4,5 @@
 		"atk_percent": 20,
 		"alt_res_percent": 30
 	},
-	"target": "self",
 	"require_reso": "alt"
 }

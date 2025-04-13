@@ -3,6 +3,5 @@
 	"stats": {
 		"final_dmg_percent": 35
 	},
-	"require_adv": 6,
-	"target": "self"
+	"require_adv": 6
 }

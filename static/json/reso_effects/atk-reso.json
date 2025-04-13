@@ -3,6 +3,5 @@
 	"stats": {
 		"final_dmg_percent": 10
 	},
-	"target": "self",
 	"require_reso": "atk"
 }

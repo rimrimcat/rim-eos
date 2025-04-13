@@ -3,6 +3,5 @@
 	"stats": {
 		"frost_dmg_percent": 30
 	},
-	"require_adv": 6,
-	"target": "self"
+	"require_adv": 6
 }
