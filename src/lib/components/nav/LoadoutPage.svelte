@@ -718,7 +718,7 @@
 		<div class="vertical weapon-matrix-cell">
 			{#each loadout_weapmat_combined as [weapon, matrix], index}
 				<div class="horizontal cell-row" style="margin: 0.5rem;">
-					<div class="vertical center weapon-icon-name" style="width: 30vw;">
+					<div class="vertical center weapon-icon-name" style="width: 10rem;">
 						<span class="weapon-name"> {weapon.name} </span>
 						<div class="weapon-icon-container">
 							<div
@@ -802,7 +802,7 @@
 						</div>
 					</div>
 
-					<div class="vertical center-vert center-hori matrix-col" style="width: 30vw;">
+					<div class="vertical center matrix-col" style="width: 10rem;">
 						<span class="weapon-name">{matrix.name}</span>
 						<div class="horizontal matrix-container">
 							<div
