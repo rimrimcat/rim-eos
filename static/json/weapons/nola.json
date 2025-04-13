@@ -8,24 +8,34 @@
 
 	"setting": {
 		"choices": {
+			"phys": {
+				"id": "phys",
+				"icon": "./stat_icon/phys.webp",
+				"resonances": ["phys", "volt"],
+				"reso_effects": ["phys-reso", "flame-reso"]
+			},
+			"flame": {
+				"id": "flame",
+				"icon": "./stat_icon/flame.webp",
+				"resonances": ["flame", "volt"],
+				"reso_effects": ["flame-reso", "phys-reso"]
+			},
 			"frost": {
+				"id": "frost",
+				"icon": "./stat_icon/frost.webp",
 				"resonances": ["frost", "volt"],
 				"effects": ["nola-frost-skill"],
 				"reso_effects": ["frost-reso", "volt-reso"]
 			},
-			"phys": {
-				"resonances": ["phys", "volt"],
-				"reso_effects": ["phys-reso", "flame-reso"]
-			},
 			"volt": {
+				"id": "volt",
+				"icon": "./stat_icon/volt.webp",
 				"resonances": ["volt", "phys"],
 				"reso_effects": ["volt-reso", "frost-reso"]
 			},
-			"flame": {
-				"resonances": ["flame", "volt"],
-				"reso_effects": ["flame-reso", "phys-reso"]
-			},
 			"alt": {
+				"id": "alt",
+				"icon": "./stat_icon/alt.webp",
 				"resonances": ["alt"]
 			}
 		},
