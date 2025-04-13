@@ -1,7 +1,13 @@
 import { browser } from '$app/environment';
-import type { ResoEffectsIds, WeaponEffectsIds, WeaponsIds } from '../generated/ids';
+import type {
+	MatrixEffectsIds,
+	MatrixIds,
+	ResoEffectsIds,
+	WeaponEffectsIds,
+	WeaponsIds
+} from '../generated/ids';
 import type { StatConstants } from './stats';
-import type { ResoEffect, Weapon, WeaponEffect } from './weapons';
+import type { Matrix, MatrixEffect, ResoEffect, Weapon, WeaponEffect } from './weapons';
 
 // load once before using
 export let STAT_CONSTANTS: StatConstants;
@@ -35,7 +41,9 @@ export async function loadStatConstants(): Promise<void> {
 // loaded when needed
 const RESO_EFFECTS: { [key in ResoEffectsIds]?: ResoEffect } = {};
 const WEAPON_EFFECTS: { [key in WeaponEffectsIds]?: WeaponEffect } = {};
+const MATRIX_EFFECTS: { [key in MatrixEffectsIds]?: MatrixEffect } = {};
 const WEAPONS: { [key in WeaponsIds]?: Weapon } = {};
+const MATRIX: { [key in MatrixIds]?: Matrix } = {};
 
 export async function getResoEffects(reso: ResoEffectsIds): Promise<ResoEffect> {
 	if (RESO_EFFECTS[reso]) {
@@ -77,6 +85,26 @@ export async function getWeaponEffect(effect: WeaponEffectsIds): Promise<WeaponE
 	}
 }
 
+export async function getMatrixEffect(effect: MatrixEffectsIds): Promise<MatrixEffect> {
+	if (MATRIX_EFFECTS[effect]) {
+		return MATRIX_EFFECTS[effect];
+	}
+
+	try {
+		const response = await fetch(`./json/matrix_effect/${effect}.json`);
+		if (!response.ok) {
+			throw new Error(`Failed to load effect ${effect}: ${response.statusText}`);
+		}
+
+		const data = await response.json();
+		MATRIX_EFFECTS[effect] = data as MatrixEffect;
+		return MATRIX_EFFECTS[effect];
+	} catch (error) {
+		console.error(`Error loading effect ${effect}:`, error);
+		throw error;
+	}
+}
+
 export async function getWeapon(weapon: WeaponsIds): Promise<Weapon> {
 	if (WEAPONS[weapon]) {
 		return WEAPONS[weapon];
@@ -93,6 +121,26 @@ export async function getWeapon(weapon: WeaponsIds): Promise<Weapon> {
 		return WEAPONS[weapon];
 	} catch (error) {
 		console.error(`Error loading weapon ${weapon}:`, error);
+		throw error;
+	}
+}
+
+export async function getMatrix(matrix: MatrixIds): Promise<Matrix> {
+	if (MATRIX[matrix]) {
+		return MATRIX[matrix];
+	}
+
+	try {
+		const response = await fetch(`./json/matrix/${matrix}.json`);
+		if (!response.ok) {
+			throw new Error(`Failed to load matrix ${matrix}: ${response.statusText}`);
+		}
+
+		const data = await response.json();
+		MATRIX[matrix] = data as Matrix;
+		return MATRIX[matrix];
+	} catch (error) {
+		console.error(`Error loading matrix ${matrix}:`, error);
 		throw error;
 	}
 }
