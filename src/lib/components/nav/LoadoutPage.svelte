@@ -784,7 +784,7 @@
 								{:else}
 									<div class="compose above" style="top: 0.5rem; left: 0.5rem">
 										<StatIcon
-											stat={loadout_icon as StatGearUser}
+											stat={weapon.resonances[0] as LoadoutType}
 											size="1.5rem"
 											style="background-color: var(--button-bg); border-radius: 50%;"
 										/>
@@ -852,8 +852,6 @@
 					</div>
 				</div>
 			{/each}
-
-			<p>Suggest good bg color pls...</p>
 		</div>
 	</div>
 </div>
