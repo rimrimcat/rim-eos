@@ -31,7 +31,6 @@
 		ArrowRightLeftIcon,
 		BoxIcon,
 		CopyPlusIcon,
-		ImagePlus,
 		PencilIcon,
 		RotateCcwIcon,
 		Save,
@@ -577,20 +576,18 @@
 				</div>
 			</div>
 
-			<div class="loadout-image-container">
-				<button
-					class={loadout_image ? 'image' : 'image'}
-					onclick={() => (upload_dialog_open = true)}
-					disabled={!is_editing}
-					aria-label="Upload image"
-				>
-					{#if loadout_image}
+			{#if loadout_image}
+				<div class="loadout-image-container">
+					<button
+						class={loadout_image ? 'image' : 'image'}
+						onclick={() => (upload_dialog_open = true)}
+						disabled={!is_editing}
+						aria-label="Upload image"
+					>
 						<img class="user-upload" id="user-upload" src={loadout_image} alt="Loadout" />
-					{:else}
-						<ImagePlus size={64} class="upload-icon" />
-					{/if}
-				</button>
-			</div>
+					</button>
+				</div>
+			{/if}
 		</div>
 	</div>
 
