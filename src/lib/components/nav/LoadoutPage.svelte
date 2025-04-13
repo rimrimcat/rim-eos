@@ -414,6 +414,7 @@
 
 	function saveWeaponMatrixLoadout() {
 		user_loadouts[current_loadout].equipped_weapons = user_weapons;
+		user_loadouts[current_loadout].equipped_matrices = user_matrices;
 		saveObject('loadouts_v1', user_loadouts);
 	}
 
