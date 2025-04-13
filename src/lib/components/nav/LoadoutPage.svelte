@@ -208,12 +208,11 @@
 				const stat_ = [new StatCollection()];
 
 				await pushAllValidWeaponEffects(weapon.effects ?? [], advancement, effects, stat_);
+				const setting = user_weapons[index].setting ?? weapon.setting?.default ?? [];
 
 				if (weapon.setting) {
-					const selected_settings = user_weapons[index].setting ?? weapon.setting.default;
-
 					await Promise.all(
-						selected_settings.map(async (setting) => {
+						setting.map(async (setting) => {
 							// @ts-expect-error
 							const setting_data = weapon.setting.choices[setting];
 							if (setting_data.effects) {
@@ -235,6 +234,7 @@
 					resonances: weapon.resonances,
 					onfieldness: weapon.onfieldness,
 					advancement,
+					setting,
 
 					base_stat,
 					effects,
@@ -261,12 +261,11 @@
 		const stat_ = [new StatCollection()];
 
 		await pushAllValidWeaponEffects(weapon.effects ?? [], advancement, effects, stat_);
+		const setting = user_weapons[index].setting ?? weapon.setting?.default ?? [];
 
 		if (weapon.setting) {
-			const selected_settings = user_weapons[index].setting ?? weapon.setting.default;
-
 			await Promise.all(
-				selected_settings.map(async (setting) => {
+				setting.map(async (setting) => {
 					// @ts-expect-error
 					const setting_data = weapon.setting.choices[setting];
 					if (setting_data.effects) {
@@ -288,6 +287,7 @@
 			resonances: weapon.resonances,
 			onfieldness: weapon.onfieldness,
 			advancement,
+			setting,
 
 			base_stat,
 			effects,
@@ -598,6 +598,7 @@
 								alt="Weapon"
 								style="height: 8rem; width:8rem;"
 							/>
+
 							{#each [1, 2, 3, 4, 5, 6] as advSetValue, advIndex}
 								<button
 									class="image"

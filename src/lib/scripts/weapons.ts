@@ -128,6 +128,7 @@ export type WeaponView = {
 	name: string;
 	resonances: ResoTriggers[];
 	onfieldness?: number;
+	setting: string[];
 
 	base_stat: StatCollection;
 	effects: WeaponEffect[];
