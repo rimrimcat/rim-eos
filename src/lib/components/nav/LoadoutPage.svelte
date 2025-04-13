@@ -603,7 +603,7 @@
 						<div class="compose-below">
 							<img
 								class="border"
-								src="./weapons/{weapon.id}.webp"
+								src="./weapon/{weapon.id}.webp"
 								alt="Weapon"
 								style="height: 8rem; width:8rem;"
 							/>
