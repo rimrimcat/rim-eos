@@ -143,3 +143,9 @@ export type WeaponView = {
 
 	advancement: number;
 };
+
+export type Matrix = {
+	id: string;
+	name: string;
+	effects: MatrixEffectsIds[];
+};
