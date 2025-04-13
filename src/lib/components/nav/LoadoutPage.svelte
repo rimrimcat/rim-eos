@@ -59,6 +59,7 @@
 	let loadout_desc = $state('');
 	let loadout_icon = $state('');
 	let loadout_image = $state('');
+
 	let user_weapons = $state([{}, {}, {}] as UserWeapon[]);
 	let user_matrices = $state([{}, {}, {}] as UserMatrix[]);
 
@@ -67,6 +68,7 @@
 
 	let loadout_weapon_views = $state([{}, {}, {}] as WeaponView[]);
 	let loadout_matrix_views = $state([] as MatrixView[]);
+	let loadout_weapmat_combined: [WeaponView, MatrixView][] = $state([]);
 
 	let loadout_resonance_effects = $state([] as ResoEffect[]);
 	let loadout_resonance_stat = $state(new StatCollection());
@@ -310,8 +312,8 @@
 				const stat = stat_[0];
 
 				return {
-					id: matrix.id,
-					name: loadout_base_weapons[index].name,
+					id: matrix_.id,
+					name: matrix_.name,
 					advancement,
 					effects,
 					stat
@@ -373,6 +375,8 @@
 			effects,
 			stat
 		} as WeaponView;
+
+		loadout_weapmat_combined[index][0] = loadout_weapon_views[index];
 	}
 
 	async function updateSingleMatrixView(index: number) {
@@ -393,6 +397,8 @@
 			effects,
 			stat
 		} as MatrixView;
+
+		loadout_weapmat_combined[index][1] = loadout_matrix_views[index];
 	}
 
 	// creates gearView and updates loadout_resonance_stat
@@ -410,6 +416,11 @@
 
 		// ... and matrices
 		await updateMatrixViews();
+
+		loadout_weapmat_combined = loadout_weapon_views.map((item, i) => [
+			item,
+			loadout_matrix_views[i]
+		]);
 	}
 
 	function saveWeaponMatrixLoadout() {
@@ -613,7 +624,20 @@
 	$inspect('loadout weapons', user_weapons);
 	$inspect('weapon views', loadout_weapon_views);
 	$inspect('matrix views', loadout_matrix_views);
+	$inspect('weapmat', loadout_weapmat_combined);
 </script>
+
+{#snippet matrix4p(matrix: MatrixView)}
+	{#each [0, 1, 2, 3] as index}
+		<div class="compose-above" style="top: -0.5rem; left: {-0.75 + 0.5 * index}rem">
+			<img
+				src="./matrix/{matrix.id.replace('-4p', '')}.webp"
+				alt="Matrix"
+				style="height: 6rem; width:6rem;"
+			/>
+		</div>
+	{/each}
+{/snippet}
 
 <div class="loadout-page" style={any_dialog_open ? 'overflow: hidden;' : ''}>
 	<h1 class="Pro">Loadout</h1>
@@ -692,18 +716,19 @@
 	<div class="loadout-settings">
 		<h2>Weapon Presets</h2>
 		<div class="vertical weapon-matrix-cell">
-			{#each loadout_weapon_views as weapon, index}
-				<div class="horizontal weapon-matrix-row">
+			{#each loadout_weapmat_combined as [weapon, matrix], index}
+				<div class="horizontal weapon-matrix-row" style="margin: 1rem;">
 					<div class="weapon-icon-container">
-						<div class="compose-below">
-							<img
-								class="border"
-								src="./weapon/{weapon.id}.webp"
-								alt="Weapon"
-								style="height: 8rem; width:8rem;"
-							/>
+						<div class="compose below border" style="width: 8rem; height: 8rem;">
+							<div class="compose above" style="top:-0.5rem">
+								<img
+									src="./weapon/{weapon.id}.webp"
+									alt="Weapon"
+									style="height:8rem; width:8rem;"
+								/>
+							</div>
 							{#if weapon.setting && weapon.setting.length > 0}
-								<div class="compose-above" style="top: 0.5rem; left: 0.5rem">
+								<div class="compose above" style="top: 0.5rem; left: 0.5rem">
 									{#each weapon.setting as setting, settingIndex}
 										<button
 											class="image"
@@ -772,9 +797,37 @@
 
 					<div class="vertical weapon-name-matrix-col">
 						<span class="weapon-name">{weapon.name}</span>
-						<div class="horizontalmatrix-container">
-							<img src="" alt="Matrix" />
-							<span>Matrix {index + 1}</span>
+						<div class="horizontal matrix-container">
+							<div
+								class="compose below border"
+								style="width: 6rem; height: 6rem; margin-top: 0.4rem;"
+							>
+								{#if matrix.id.includes('4p')}
+									{@render matrix4p(matrix)}
+								{/if}
+								{#each [1, 2, 3] as advSetValue, advIndex}
+									<button
+										class="image"
+										onclick={() => {
+											if (matrix.advancement === advSetValue) {
+												user_matrices[index].advancement = 0;
+											} else {
+												user_matrices[index].advancement = advSetValue;
+											}
+											saveWeaponMatrixLoadout();
+											updateSingleMatrixView(index);
+										}}
+									>
+										<div class="compose above" style="top: 4.5rem; left:{1.5 + advIndex}rem">
+											<StarIcon
+												size={16}
+												fill={matrix.advancement >= advSetValue ? 'white' : 'none'}
+											/>
+										</div>
+									</button>
+								{/each}
+							</div>
+							<span class="weapon-name">{matrix.name}</span>
 						</div>
 					</div>
 				</div>
