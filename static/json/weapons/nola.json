@@ -1,6 +1,6 @@
 {
 	"id": "nola",
-	"name": "Nola Frost",
+	"name": "Nola",
 	"base_stat": "crit-med",
 	"resonances": ["atk"],
 	"effects": ["nola-a3", "nola-a6"],
