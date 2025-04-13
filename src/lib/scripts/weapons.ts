@@ -150,3 +150,18 @@ export type Matrix = {
 	name: string;
 	effects: MatrixEffectsIds[];
 };
+
+export type UserMatrix = {
+	id: MatrixIds;
+	advancement?: number;
+};
+
+export type MatrixView = {
+	id: MatrixIds;
+	name: string;
+
+	effects: MatrixEffect[];
+	stat: StatCollection;
+
+	advancement: number;
+};

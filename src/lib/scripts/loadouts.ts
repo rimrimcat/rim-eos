@@ -1,5 +1,5 @@
 import type { ValidGearPart } from './gears';
-import type { UserWeapon } from './weapons';
+import type { UserMatrix, UserWeapon } from './weapons';
 
 type EquippedGear = {
 	[key in ValidGearPart]: number | null;
@@ -14,6 +14,7 @@ export type Loadout = {
 	element: LoadoutType;
 	equipped_gears: EquippedGear;
 	equipped_weapons: UserWeapon[];
+	equipped_matrices: UserMatrix[];
 	base_stats: string[]; // raw stat uploaded by user
 	stat_adj?: object;
 	image_url?: string;
