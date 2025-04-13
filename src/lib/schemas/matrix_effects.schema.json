@@ -52,6 +52,15 @@
     "require_teamplay": {
       "type": "boolean"
     },
+    "require_weapon": {
+      "enum": [
+        "grayfox",
+        "invalid",
+        "nanyin",
+        "nola-frost"
+      ],
+      "type": "string"
+    },
     "notes": {
       "type": "string"
     },
