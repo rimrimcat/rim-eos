@@ -116,7 +116,8 @@ export type StatNonGear =
 	| 'ele_atk'
 	| 'ele_atk_percent'
 	| 'ele_dmg_percent'
-	| 'crit_dmg';
+	| 'crit_dmg'
+	| 'healing_percent';
 
 export type StatDebuffs = 'crit_res_reduction_percent' | 'res_ignore_percent';
 
@@ -201,7 +202,8 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	normal_dmg_percent: 'Normal Dmg',
 	final_dmg_percent: 'Final Dmg',
 	crit_res_reduction_percent: 'Crit Res Red',
-	res_ignore_percent: 'Res Ignore'
+	res_ignore_percent: 'Res Ignore',
+	healing_percent: 'Healing'
 };
 
 export type StatConstant = {
