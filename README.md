@@ -42,6 +42,7 @@ some webapp im making since no more content at TOF
 - [ ] Design: allow user to choose webpage style?
 - [ ] Design: fix animations
 - [ ] Design: fix my css
+- [ ] Design: animate weapon changing advancement/element
 - [ ] Misc: add image that you can click and it switches so you have something to look and play with ig
 - [ ] Misc: disable some buttons when mid animation
 - [ ] Misc: add prompts when performing destructive actions

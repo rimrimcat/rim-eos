@@ -733,7 +733,7 @@
 									/>
 								</div>
 								{#if weapon.setting && weapon.setting.length > 0}
-									<div class="compose above" style="top: 0.5rem; left: 0.5rem">
+									<div class="compose above" style="top: 0.5rem; left: 0.5rem;">
 										{#each weapon.setting as setting, settingIndex}
 											<button
 												class="image"
@@ -771,9 +771,23 @@
 													updateAll();
 												}}
 											>
-												<img src={setting.icon} alt={setting.icon} style="height: 1.5rem" />
+												<div class="vertical center">
+													<img
+														src={setting.icon}
+														alt={setting.icon}
+														style="height: 1.5rem; width: 1.5rem; background-color: var(--button-bg); border-radius: 50%;"
+													/>
+												</div>
 											</button>
 										{/each}
+									</div>
+								{:else}
+									<div class="compose above" style="top: 0.5rem; left: 0.5rem">
+										<StatIcon
+											stat={loadout_icon as StatGearUser}
+											size="1.5rem"
+											style="background-color: var(--button-bg); border-radius: 50%;"
+										/>
 									</div>
 								{/if}
 

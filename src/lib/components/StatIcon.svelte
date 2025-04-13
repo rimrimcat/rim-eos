@@ -4,7 +4,7 @@
 
 	type StatOrElement = StatGearUser | LoadoutType;
 
-	let { stat = 'atk' as StatOrElement, size = '100%' } = $props();
+	let { stat = 'atk' as StatOrElement, size = '100%', style = '' } = $props();
 
 	let img = $state('phys');
 	let previous_stat = $state('atk');
@@ -72,7 +72,11 @@
 </script>
 
 <div style="position: relative; display: inline-block;">
-	<img src="./stat_icon/{img}.webp" alt="Stat Icon" style="width: {size}; height: {size};" />
+	<img
+		src="./stat_icon/{img}.webp"
+		alt="Stat Icon"
+		style="width: {size}; height: {size}; {style}"
+	/>
 
 	<!-- Symbol on top of the base -->
 	<div style="position: absolute; top: 50%; left: 25%;">
@@ -80,7 +84,7 @@
 			<img
 				src="./stat_icon/{atk_kind}.webp"
 				alt="Stat Icon"
-				style="width: {size}; height: {size};"
+				style="width: {size}; height: {size}; "
 			/>
 		{/if}
 	</div>
