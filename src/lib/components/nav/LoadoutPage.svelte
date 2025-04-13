@@ -222,8 +222,14 @@
 			})
 		);
 		// add default reso
-		reso_effects.push(await getResoEffects('atk-reso'));
-		reso_effects.push(await getResoEffects('atk-reso-teamplay'));
+		reso_effects.push(await getResoEffects('atk'));
+		reso_effects.push(await getResoEffects('atk-teamplay'));
+		reso_effects.push(await getResoEffects('bene'));
+		reso_effects.push(await getResoEffects('bene-teamplay'));
+		reso_effects.push(await getResoEffects('armor-dissolve'));
+		reso_effects.push(await getResoEffects('armor-dissolve-teamplay'));
+		reso_effects.push(await getResoEffects('force-impact'));
+		reso_effects.push(await getResoEffects('force-impact-teamplay'));
 
 		loadout_resonance_stat = new StatCollection();
 		loadout_resonance_effects = [];
