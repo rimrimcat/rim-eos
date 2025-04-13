@@ -15,7 +15,7 @@ export type StatData = {
 };
 
 export class StatCollection {
-	private data: StatData = {};
+	public data: StatData = {};
 
 	constructor();
 	constructor(stat: StatData);
