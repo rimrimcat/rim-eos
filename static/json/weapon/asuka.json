@@ -2,7 +2,7 @@
 	"id": "asuka",
 	"name": "Asuka",
 	"base_stat": "crit-med",
-	"resonances": ["phys", "fort", "flame"],
+	"resonances": ["phys", "fort", "flame", "armor-dissolve"],
 	"effects": ["asuka-a6", "asuka-a6-fort", "asuka-skill"],
 	"reso_effects": ["phys-reso", "flame-reso"]
 }
