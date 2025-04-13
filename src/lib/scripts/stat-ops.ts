@@ -152,7 +152,7 @@ export class StatCollection {
 					base_stats.push(parseFloat(final_stats[i]));
 					break;
 				case 10: // crit_damage
-					base_stats.push(parseFloat(final_stats[i]) - this.get('crit_dmg'));
+					base_stats.push(parseFloat(final_stats[i]) - this.get('crit_dmg_percent'));
 					break;
 				case 11: // phys_res
 					base_stats.push(parseInt(final_stats[i]) - this.get('phys_res') - this.get('res'));

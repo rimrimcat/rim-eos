@@ -706,7 +706,7 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "crit_dmg": {
+        "crit_dmg_percent": {
           "type": "array",
           "items": [
             {

@@ -187,7 +187,7 @@
         "phys_res_percent": {
           "type": "number"
         },
-        "crit_dmg": {
+        "crit_dmg_percent": {
           "type": "number"
         },
         "atk_percent": {
