@@ -1,0 +1,5 @@
+{
+	"id": "nola-4p",
+	"name": "Nola 4P",
+	"effects": ["nola-2p", "nola-4p", "nola-4p-skill"]
+}

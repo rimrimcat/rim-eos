@@ -16,7 +16,10 @@ export type MatrixEffectsIds =
 	| 'grayfox-2p'
 	| 'grayfox-4p-bene'
 	| 'grayfox-4p-nonbene'
-	| 'grayfox-4p';
+	| 'grayfox-4p'
+	| 'nola-2p'
+	| 'nola-4p-skill'
+	| 'nola-4p';
 export type ResoEffectsIds =
 	| 'atk-reso-teamplay'
 	| 'atk-reso'
@@ -29,4 +32,4 @@ export type ResoEffectsIds =
 	| 'phys-reso'
 	| 'volt-reso';
 export type WeaponsIds = 'grayfox' | 'invalid' | 'nanyin' | 'nola';
-export type MatrixIds = 'grayfox-4p';
+export type MatrixIds = 'grayfox-4p' | 'nola-4p';

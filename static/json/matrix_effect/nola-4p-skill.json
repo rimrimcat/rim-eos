@@ -1,0 +1,7 @@
+{
+	"id": "nola-4p-skill",
+	"stats": {
+		"ele_dmg_percent": [10, 10, 10, 10]
+	},
+	"require_weapon": "nola"
+}

@@ -79,7 +79,10 @@
         "grayfox-2p-bene",
         "grayfox-4p",
         "grayfox-4p-bene",
-        "grayfox-4p-nonbene"
+        "grayfox-4p-nonbene",
+        "nola-2p",
+        "nola-4p",
+        "nola-4p-skill"
       ],
       "type": "string"
     },
