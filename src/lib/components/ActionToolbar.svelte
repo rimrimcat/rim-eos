@@ -6,6 +6,7 @@
 		type ToggleAction
 	} from '$lib/scripts/nav-metadata';
 	import { ArrowRightToLine, CircleHelp, Menu, ToggleLeft, ToggleRight } from '@lucide/svelte';
+	import { scrollY } from './App.svelte';
 
 	let {
 		actions = [] as ComponentAction[],
@@ -48,7 +49,9 @@
 	class="nav-tools"
 	class:collapsed={is_collapsed}
 	class:mobile={is_mobile}
-	style="height:{5.5 + 3 * (actions.length - SLIDER_COUNT) + 5 * SLIDER_COUNT}rem"
+	style="height:{5.5 +
+		3 * (actions.length - SLIDER_COUNT) +
+		5 * SLIDER_COUNT}rem; translate: 0 {$scrollY}px;"
 >
 	<div class="tools-header">
 		<div class="header-content">

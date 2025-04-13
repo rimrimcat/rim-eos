@@ -1,8 +1,13 @@
+<script module>
+	export let scrollY = $state(writable(0));
+</script>
+
 <script lang="ts">
 	import type { GearView, UserGear } from '$lib/scripts/gears';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import { onMount, type Component } from 'svelte';
+	import { writable } from 'svelte/store';
 	import Dialog from './Dialog.svelte';
 	import GearPage, { createGearView } from './nav/GearPage.svelte';
 	import LoadoutPage from './nav/LoadoutPage.svelte';
@@ -74,9 +79,6 @@
 			console.log('Done processing user_gears');
 		});
 	});
-
-	// $inspect('mobile detection:', isMobile);
-	// $inspect('innerWidth', innerWidth);
 </script>
 
 <svelte:window bind:innerWidth={inner_width} />
@@ -100,6 +102,9 @@
 		class="content-container"
 		class:mobile={is_mobile}
 		style="translate: 0 {is_mobile ? mobile_toolbar_transform : 0}px;"
+		onscroll={(e: any) => {
+			$scrollY = e.target.scrollTop;
+		}}
 	>
 		<div style="display: none">
 			<MainPage />
