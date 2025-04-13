@@ -193,6 +193,9 @@
         "ele_dmg_percent": {
           "type": "number"
         },
+        "healing_percent": {
+          "type": "number"
+        },
         "crit_res_reduction_percent": {
           "type": "number"
         },
