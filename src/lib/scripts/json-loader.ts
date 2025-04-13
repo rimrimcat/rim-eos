@@ -43,7 +43,7 @@ export async function getResoEffects(reso: ResoEffectsIds): Promise<ResoEffect> 
 	}
 
 	try {
-		const response = await fetch(`./json/reso_effects/${reso}.json`);
+		const response = await fetch(`./json/reso_effect/${reso}.json`);
 		if (!response.ok) {
 			throw new Error(`Failed to load resonance effects for ${reso}: ${response.statusText}`);
 		}
@@ -63,7 +63,7 @@ export async function getWeaponEffect(effect: WeaponEffectsIds): Promise<WeaponE
 	}
 
 	try {
-		const response = await fetch(`./json/weapon_effects/${effect}.json`);
+		const response = await fetch(`./json/weapon_effect/${effect}.json`);
 		if (!response.ok) {
 			throw new Error(`Failed to load effect ${effect}: ${response.statusText}`);
 		}
@@ -83,7 +83,7 @@ export async function getWeapon(weapon: WeaponsIds): Promise<Weapon> {
 	}
 
 	try {
-		const response = await fetch(`./json/weapons/${weapon}.json`);
+		const response = await fetch(`./json/weapon/${weapon}.json`);
 		if (!response.ok) {
 			throw new Error(`Failed to load weapon ${weapon}: ${response.statusText}`);
 		}
