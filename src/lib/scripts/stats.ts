@@ -129,12 +129,12 @@ export type StatDebuffs =
 	// dmg increase debuff
 	| 'final_dmg_increase_percent' // separate from ele
 	// ele dmg increase debuffs
-	| 'ele_dmg_increase_percent'
-	| 'phys_dmg_increase_percent'
-	| 'flame_dmg_increase_percent'
-	| 'frost_dmg_increase_percent'
-	| 'volt_dmg_increase_percent'
-	| 'alt_dmg_increase_percent'
+	| 'ele_dmg_taken_percent'
+	| 'phys_dmg_taken_percent'
+	| 'flame_dmg_taken_percent'
+	| 'frost_dmg_taken_percent'
+	| 'volt_dmg_taken_percent'
+	| 'alt_dmg_taken_percent'
 	// others
 	| 'res_reduction_percent'
 	| 'crit_res_reduction_percent'
@@ -230,12 +230,12 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	volt_res_ignore_percent: 'Volt Res Ignore',
 	alt_res_ignore_percent: 'Alt Res Ignore',
 	final_dmg_increase_percent: 'Final Dmg Increase',
-	ele_dmg_increase_percent: 'Ele Dmg Increase',
-	phys_dmg_increase_percent: 'Phys Dmg Increase',
-	flame_dmg_increase_percent: 'Flame Dmg Increase',
-	frost_dmg_increase_percent: 'Frost Dmg Increase',
-	volt_dmg_increase_percent: 'Volt Dmg Increase',
-	alt_dmg_increase_percent: 'Alt Dmg Increase'
+	ele_dmg_taken_percent: 'Ele Dmg Taken',
+	phys_dmg_taken_percent: 'Phys Dmg Taken',
+	flame_dmg_taken_percent: 'Flame Dmg Taken',
+	frost_dmg_taken_percent: 'Frost Dmg Taken',
+	volt_dmg_taken_percent: 'Volt Dmg Taken',
+	alt_dmg_taken_percent: 'Alt Dmg Taken'
 };
 
 export type StatConstant = {
