@@ -1,8 +1,8 @@
 {
 	"json.schemas": [
 		{
-			"fileMatch": ["**/effects/*.json"],
-			"url": "./src/lib/schemas/effects.schema.json"
+			"fileMatch": ["**/weapon_effects/*.json"],
+			"url": "./src/lib/schemas/weapon_effects.schema.json"
 		},
 		{
 			"fileMatch": ["**/reso_effects/*.json"],
