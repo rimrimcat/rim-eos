@@ -119,6 +119,8 @@
 			bind:user_loadouts
 			bind:current_loadout
 			bind:gear_views
+			bind:font_size
+			bind:inner_width
 		/>
 	</div>
 </div>
