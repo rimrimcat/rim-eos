@@ -22,7 +22,7 @@
     "effects": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/EffectsIds"
+        "$ref": "#/definitions/WeaponEffectsIds"
       }
     },
     "reso_effects": {
@@ -75,7 +75,7 @@
       ],
       "type": "string"
     },
-    "EffectsIds": {
+    "WeaponEffectsIds": {
       "enum": [
         "grayfox-a3-buff",
         "grayfox-a3-debuff",

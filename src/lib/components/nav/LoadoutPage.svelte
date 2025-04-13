@@ -3,7 +3,7 @@
 	import SwitchLoadout from '$lib/components/dialog/SwitchLoadout.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import StatIcon from '$lib/components/StatIcon.svelte';
-	import { getEffect, getResoEffects, getWeapon } from '$lib/scripts/json-loader';
+	import { getResoEffects, getWeapon, getWeaponEffect } from '$lib/scripts/json-loader';
 	import {
 		addImageToDB,
 		cloneObject,
@@ -136,7 +136,7 @@
 				const base_stat = new StatCollection(_base_stat);
 
 				const effects: WeaponEffect[] = []; // active effects
-				const wpn_effects = await Promise.all(weapon.effects.map((eff) => getEffect(eff)));
+				const wpn_effects = await Promise.all(weapon.effects.map((eff) => getWeaponEffect(eff)));
 				let stat = new StatCollection();
 				wpn_effects.forEach((eff) => {
 					if (eff.require_reso) {
@@ -187,7 +187,7 @@
 		});
 		const base_stat = new StatCollection(_base_stat);
 
-		const wpn_effects = await Promise.all(weapon.effects.map((eff) => getEffect(eff)));
+		const wpn_effects = await Promise.all(weapon.effects.map((eff) => getWeaponEffect(eff)));
 		let effect_stat = new StatCollection();
 		wpn_effects.forEach((eff) => {
 			if (eff.require_reso) {

@@ -1,4 +1,4 @@
-import type { EffectsIds, ResoEffectsIds, WeaponsIds } from '../generated/ids';
+import type { ResoEffectsIds, WeaponEffectsIds, WeaponsIds } from '../generated/ids';
 import type { StatCollection, StatData } from './stat-ops';
 import type { StatDebuffs, StatGearUser, StatNonGear } from './stats';
 
@@ -22,7 +22,7 @@ export type BaseEffect = {
 };
 
 export type WeaponEffect = BaseEffect & {
-	id: EffectsIds;
+	id: WeaponEffectsIds;
 	stats: StatData;
 	require_adv?: number; // required advancement (esp. for weapons)
 };
@@ -91,7 +91,7 @@ export type Weapon = {
 	base_stat: BaseStatType;
 	resonances: ResoTriggers[];
 	onfieldness?: number; // priority for onfielding, need to determine this later on
-	effects: EffectsIds[];
+	effects: WeaponEffectsIds[];
 	reso_effects?: ResoEffectsIds[];
 };
 

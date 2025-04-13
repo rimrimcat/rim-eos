@@ -1,6 +1,6 @@
 // Auto-generated file
 
-export type EffectsIds =
+export type WeaponEffectsIds =
 	| 'grayfox-a3-buff'
 	| 'grayfox-a3-debuff'
 	| 'grayfox-a6'

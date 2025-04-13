@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import type { EffectsIds, ResoEffectsIds, WeaponsIds } from '../generated/ids';
+import type { ResoEffectsIds, WeaponEffectsIds, WeaponsIds } from '../generated/ids';
 import type { StatConstants } from './stats';
 import type { Weapon, WeaponEffect } from './weapons';
 
@@ -34,7 +34,7 @@ export async function loadStatConstants(): Promise<void> {
 
 // loaded when needed
 const RESO_EFFECTS: { [key in ResoEffectsIds]?: WeaponEffect } = {};
-const EFFECTS: { [key in EffectsIds]?: WeaponEffect } = {};
+const WEAPON_EFFECTS: { [key in WeaponEffectsIds]?: WeaponEffect } = {};
 const WEAPONS: { [key in WeaponsIds]?: Weapon } = {};
 
 export async function getResoEffects(reso: ResoEffectsIds): Promise<WeaponEffect> {
@@ -57,20 +57,20 @@ export async function getResoEffects(reso: ResoEffectsIds): Promise<WeaponEffect
 	}
 }
 
-export async function getEffect(effect: EffectsIds): Promise<WeaponEffect> {
-	if (EFFECTS[effect]) {
-		return EFFECTS[effect];
+export async function getWeaponEffect(effect: WeaponEffectsIds): Promise<WeaponEffect> {
+	if (WEAPON_EFFECTS[effect]) {
+		return WEAPON_EFFECTS[effect];
 	}
 
 	try {
-		const response = await fetch(`./json/effects/${effect}.json`);
+		const response = await fetch(`./json/weapon_effects/${effect}.json`);
 		if (!response.ok) {
 			throw new Error(`Failed to load effect ${effect}: ${response.statusText}`);
 		}
 
 		const data = await response.json();
-		EFFECTS[effect] = data as WeaponEffect;
-		return EFFECTS[effect];
+		WEAPON_EFFECTS[effect] = data as WeaponEffect;
+		return WEAPON_EFFECTS[effect];
 	} catch (error) {
 		console.error(`Error loading effect ${effect}:`, error);
 		throw error;
