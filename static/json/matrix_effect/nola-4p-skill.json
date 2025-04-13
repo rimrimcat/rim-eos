@@ -3,5 +3,6 @@
 	"stats": {
 		"ele_dmg_percent": [10, 10, 10, 10]
 	},
-	"require_weapon": "nola"
+	"require_weapon": "nola",
+	"notes": "Activated after superspeed mode (skill)"
 }
