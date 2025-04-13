@@ -28,6 +28,7 @@
         "flame",
         "fort",
         "frost",
+        "none",
         "phys",
         "volt"
       ],
@@ -41,6 +42,7 @@
         "flame",
         "fort",
         "frost",
+        "none",
         "phys",
         "volt"
       ],

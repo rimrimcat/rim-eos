@@ -8,7 +8,11 @@ import type {
 import type { StatCollection, StatData } from './stat-ops';
 import type { StatDebuffs, StatGearUser, StatNonGear } from './stats';
 
-export type ResoTriggers = 'atk' | 'fort' | 'bene' | 'phys' | 'flame' | 'frost' | 'volt' | 'alt';
+export type ResoElement = 'phys' | 'flame' | 'frost' | 'volt' | 'alt' | 'none';
+export type ResoRole = 'atk' | 'fort' | 'bene' | 'none';
+export type ResoTriggers = ResoElement | ResoRole;
+export type OrderedResoTriggers = [ResoElement, ResoRole, ...ResoTriggers[]];
+
 export type Target = 'self' | 'ally' | 'team' | 'enemy';
 export type ResoTriggerCounts = { [key in ResoTriggers]?: number };
 
@@ -123,7 +127,7 @@ export type Weapon = {
 	id: WeaponsIds;
 	name: string;
 	base_stat: BaseStatType;
-	resonances: ResoTriggers[];
+	resonances: OrderedResoTriggers;
 	onfieldness?: number; // priority for onfielding, need to determine this later on
 	effects: WeaponEffectsIds[];
 	reso_effects?: ResoEffectsIds[];
@@ -140,7 +144,7 @@ export type UserWeapon = {
 export type WeaponView = {
 	id: WeaponsIds;
 	name: string;
-	resonances: ResoTriggers[];
+	resonances: OrderedResoTriggers;
 	onfieldness?: number;
 	setting: WeaponSettingStuff[];
 

@@ -12,7 +12,16 @@
     },
     "resonances": {
       "type": "array",
-      "items": {
+      "items": [
+        {
+          "$ref": "#/definitions/ResoElement"
+        },
+        {
+          "$ref": "#/definitions/ResoRole"
+        }
+      ],
+      "minItems": 2,
+      "additionalItems": {
         "$ref": "#/definitions/ResoTriggers"
       }
     },
@@ -126,6 +135,26 @@
       ],
       "type": "string"
     },
+    "ResoElement": {
+      "enum": [
+        "alt",
+        "flame",
+        "frost",
+        "none",
+        "phys",
+        "volt"
+      ],
+      "type": "string"
+    },
+    "ResoRole": {
+      "enum": [
+        "atk",
+        "bene",
+        "fort",
+        "none"
+      ],
+      "type": "string"
+    },
     "ResoTriggers": {
       "enum": [
         "alt",
@@ -134,6 +163,7 @@
         "flame",
         "fort",
         "frost",
+        "none",
         "phys",
         "volt"
       ],

@@ -2,7 +2,7 @@
 	"id": "grayfox",
 	"name": "Grayfox",
 	"base_stat": "crit-med",
-	"resonances": ["bene", "frost", "volt"],
+	"resonances": ["frost", "bene", "volt"],
 	"effects": ["grayfox-skill", "grayfox-a3-buff", "grayfox-a3-debuff", "grayfox-a6"],
 	"reso_effects": ["frost-reso", "volt-reso"]
 }

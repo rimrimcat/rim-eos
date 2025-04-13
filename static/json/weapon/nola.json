@@ -2,7 +2,7 @@
 	"id": "nola",
 	"name": "Nola",
 	"base_stat": "crit-med",
-	"resonances": ["atk"],
+	"resonances": ["none", "atk"],
 	"effects": ["nola-a3", "nola-a6"],
 	"reso_effects": [],
 
