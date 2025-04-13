@@ -4,9 +4,9 @@ import path from 'path';
 const projectRoot = process.cwd();
 const out_file = path.join(projectRoot, 'src/lib/generated/ids.d.ts');
 
-const weapon_effects_path = path.join(projectRoot, 'static/json/weapon_effects');
-const reso_effects_path = path.join(projectRoot, 'static/json/reso_effects');
-const weapons_path = path.join(projectRoot, 'static/json/weapons');
+const weapon_effects_path = path.join(projectRoot, 'static/json/weapon_effect');
+const reso_effects_path = path.join(projectRoot, 'static/json/reso_effect');
+const weapons_path = path.join(projectRoot, 'static/json/weapon');
 
 const weapon_effects_ids = fs
 	.readdirSync(weapon_effects_path)

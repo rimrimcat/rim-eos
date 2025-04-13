@@ -21,6 +21,7 @@ some webapp im making since no more content at TOF
 - [x] Gear: show equipped gears (2025-04-10)
 - [x] Stat: sync with loadout (2025-04-10)
 - [x] Loadout: add my loadout as example (2025-04-10)
+- [ ] Loadout: add some weapons and matrices
 - [ ] Main Page: add good guide/tutorial
 - [ ] Stat: select between uploading base stats or uploading stats with gears
 - [ ] Stat: toggle to show only attack stats

@@ -26,19 +26,19 @@ const schema_matrix_effects = TJS.generateSchema(program, 'MatrixEffects', setti
 const schema_weapons = TJS.generateSchema(program, 'Weapons', settings);
 
 fs.writeFileSync(
-	path.join(schemaDir, 'reso_effects.schema.json'),
+	path.join(schemaDir, 'reso_effect.schema.json'),
 	JSON.stringify(schema_reso_effects, null, 2)
 );
 fs.writeFileSync(
-	path.join(schemaDir, 'weapon_effects.schema.json'),
+	path.join(schemaDir, 'weapon_effect.schema.json'),
 	JSON.stringify(schema_weapon_effects, null, 2)
 );
 fs.writeFileSync(
-	path.join(schemaDir, 'matrix_effects.schema.json'),
+	path.join(schemaDir, 'matrix_effect.schema.json'),
 	JSON.stringify(schema_matrix_effects, null, 2)
 );
 fs.writeFileSync(
-	path.join(schemaDir, 'weapons.schema.json'),
+	path.join(schemaDir, 'weapon.schema.json'),
 	JSON.stringify(schema_weapons, null, 2)
 );
 
