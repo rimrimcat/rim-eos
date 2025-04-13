@@ -609,8 +609,9 @@
 	});
 
 	// $inspect('image source', document.getElementById('user-upload')?.src);
-	$inspect('loadout wepaons', user_weapons);
+	$inspect('loadout weapons', user_weapons);
 	$inspect('weapon views', loadout_weapon_views);
+	$inspect('matrix views', loadout_matrix_views);
 </script>
 
 <div class="loadout-page" style={any_dialog_open ? 'overflow: hidden;' : ''}>

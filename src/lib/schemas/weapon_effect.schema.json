@@ -55,9 +55,9 @@
     "require_weapon": {
       "enum": [
         "grayfox",
-        "invalid",
         "nanyin",
-        "nola"
+        "nola",
+        "none"
       ],
       "type": "string"
     },

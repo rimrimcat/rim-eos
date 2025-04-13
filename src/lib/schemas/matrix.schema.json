@@ -25,7 +25,8 @@
       "enum": [
         "grayfox-4p",
         "nanyin-4p",
-        "nola-4p"
+        "nola-4p",
+        "none"
       ],
       "type": "string"
     },

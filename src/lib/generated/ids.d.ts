@@ -33,5 +33,5 @@ export type ResoEffectsIds =
 	| 'nanyin-reso'
 	| 'phys-reso'
 	| 'volt-reso';
-export type WeaponsIds = 'grayfox' | 'invalid' | 'nanyin' | 'nola';
-export type MatrixIds = 'grayfox-4p' | 'nanyin-4p' | 'nola-4p';
+export type WeaponsIds = 'grayfox' | 'nanyin' | 'nola' | 'none';
+export type MatrixIds = 'grayfox-4p' | 'nanyin-4p' | 'nola-4p' | 'none';
