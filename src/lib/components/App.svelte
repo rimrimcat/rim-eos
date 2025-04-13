@@ -248,6 +248,19 @@
 		flex-direction: column;
 	}
 
+	:global(div.vertical.center) {
+		align-items: center;
+		justify-content: center;
+	}
+
+	:global(div.vertical.center-hori) {
+		align-items: center;
+	}
+
+	:global(div.vertical.center-vert) {
+		justify-content: center;
+	}
+
 	:global(div.vertical-left) {
 		display: flex;
 		flex-direction: column;

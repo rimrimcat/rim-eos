@@ -391,8 +391,8 @@
 		const stat = stat_[0];
 
 		loadout_matrix_views[index] = {
-			id: matrix.id,
-			name: loadout_base_weapons[index].name,
+			id: matrix_.id,
+			name: matrix_.name,
 			advancement,
 			effects,
 			stat
@@ -640,7 +640,7 @@
 {/snippet}
 
 <div class="loadout-page" style={any_dialog_open ? 'overflow: hidden;' : ''}>
-	<h1 class="Pro">Loadout</h1>
+	<h1>Loadout</h1>
 
 	<div class="loadout-container">
 		<div class="loadout-content">
@@ -717,86 +717,93 @@
 		<h2>Weapon Presets</h2>
 		<div class="vertical weapon-matrix-cell">
 			{#each loadout_weapmat_combined as [weapon, matrix], index}
-				<div class="horizontal weapon-matrix-row" style="margin: 1rem;">
-					<div class="weapon-icon-container">
-						<div class="compose below border" style="width: 8rem; height: 8rem;">
-							<div class="compose above" style="top:-0.5rem">
-								<img
-									src="./weapon/{weapon.id}.webp"
-									alt="Weapon"
-									style="height:8rem; width:8rem;"
-								/>
-							</div>
-							{#if weapon.setting && weapon.setting.length > 0}
-								<div class="compose above" style="top: 0.5rem; left: 0.5rem">
-									{#each weapon.setting as setting, settingIndex}
-										<button
-											class="image"
-											onclick={() => {
-												// get keys in settings
-												if (!loadout_base_weapons[index].setting) {
-													return;
-												}
-
-												const selected_keys = weapon.setting.map((setting) => setting.id);
-												const keys = Object.keys(loadout_base_weapons[index].setting.choices);
-
-												let currKey = setting.id;
-												let currInd = keys.indexOf(currKey);
-												const initialCurrInd = currInd;
-
-												while (selected_keys.indexOf(currKey) !== -1) {
-													currInd = (currInd + 1) % keys.length;
-													currKey = keys[currInd];
-
-													if (currInd === initialCurrInd) {
-														// avoid catastrophe
-														console.error('idk why but something went wrong');
+				<div class="horizontal cell-row" style="margin: 0.5rem;">
+					<div class="vertical center weapon-icon-name" style="width: 30vw;">
+						<span class="weapon-name"> {weapon.name} </span>
+						<div class="weapon-icon-container">
+							<div
+								class="compose below border"
+								style="width: 8rem; height: 8rem; margin-top: 0.4rem;"
+							>
+								<div class="compose above" style="top:-0.5rem">
+									<img
+										src="./weapon/{weapon.id}.webp"
+										alt="Weapon"
+										style="height:8rem; width:8rem;"
+									/>
+								</div>
+								{#if weapon.setting && weapon.setting.length > 0}
+									<div class="compose above" style="top: 0.5rem; left: 0.5rem">
+										{#each weapon.setting as setting, settingIndex}
+											<button
+												class="image"
+												onclick={() => {
+													// get keys in settings
+													if (!loadout_base_weapons[index].setting) {
 														return;
 													}
-												}
 
-												if (!user_weapons[index].setting) {
-													user_weapons[index].setting = loadout_base_weapons[index].setting.default;
-												}
-												user_weapons[index].setting[settingIndex] = currKey;
-												saveWeaponMatrixLoadout();
-												// nola can change elements and reso
-												updateAll();
-											}}
-										>
-											<img src={setting.icon} alt={setting.icon} style="height: 1.5rem" />
-										</button>
-									{/each}
-								</div>
-							{/if}
+													const selected_keys = weapon.setting.map((setting) => setting.id);
+													const keys = Object.keys(loadout_base_weapons[index].setting.choices);
 
-							{#each [1, 2, 3, 4, 5, 6] as advSetValue, advIndex}
-								<button
-									class="image"
-									onclick={() => {
-										if (weapon.advancement === advSetValue) {
-											user_weapons[index].advancement = 0;
-										} else {
-											user_weapons[index].advancement = advSetValue;
-										}
-										saveWeaponMatrixLoadout();
-										updateSingleWeaponView(index);
-									}}
-								>
-									<div class="compose-above" style="top: 6.5rem; left:{1 + advIndex}rem">
-										<StarIcon
-											size={16}
-											fill={weapon.advancement >= advSetValue ? 'white' : 'none'}
-										/>
+													let currKey = setting.id;
+													let currInd = keys.indexOf(currKey);
+													const initialCurrInd = currInd;
+
+													while (selected_keys.indexOf(currKey) !== -1) {
+														currInd = (currInd + 1) % keys.length;
+														currKey = keys[currInd];
+
+														if (currInd === initialCurrInd) {
+															// avoid catastrophe
+															console.error('idk why but something went wrong');
+															return;
+														}
+													}
+
+													if (!user_weapons[index].setting) {
+														user_weapons[index].setting =
+															loadout_base_weapons[index].setting.default;
+													}
+													user_weapons[index].setting[settingIndex] = currKey;
+													saveWeaponMatrixLoadout();
+													// nola can change elements and reso
+													updateAll();
+												}}
+											>
+												<img src={setting.icon} alt={setting.icon} style="height: 1.5rem" />
+											</button>
+										{/each}
 									</div>
-								</button>
-							{/each}
+								{/if}
+
+								{#each [1, 2, 3, 4, 5, 6] as advSetValue, advIndex}
+									<button
+										class="image"
+										onclick={() => {
+											if (weapon.advancement === advSetValue) {
+												user_weapons[index].advancement = 0;
+											} else {
+												user_weapons[index].advancement = advSetValue;
+											}
+											saveWeaponMatrixLoadout();
+											updateSingleWeaponView(index);
+										}}
+									>
+										<div class="compose-above" style="top: 6.5rem; left:{1 + advIndex}rem">
+											<StarIcon
+												size={16}
+												fill={weapon.advancement >= advSetValue ? 'white' : 'none'}
+											/>
+										</div>
+									</button>
+								{/each}
+							</div>
 						</div>
 					</div>
 
-					<div class="vertical weapon-name-matrix-col">
-						<span class="weapon-name">{weapon.name}</span>
+					<div class="vertical center-vert center-hori matrix-col" style="width: 30vw;">
+						<span class="weapon-name">{matrix.name}</span>
 						<div class="horizontal matrix-container">
 							<div
 								class="compose below border"
@@ -827,7 +834,6 @@
 									</button>
 								{/each}
 							</div>
-							<span class="weapon-name">{matrix.name}</span>
 						</div>
 					</div>
 				</div>
