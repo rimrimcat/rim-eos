@@ -3,8 +3,14 @@
 	import SwitchLoadout from '$lib/components/dialog/SwitchLoadout.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import StatIcon from '$lib/components/StatIcon.svelte';
-	import type { ResoEffectsIds, WeaponEffectsIds } from '$lib/generated/ids';
-	import { getResoEffects, getWeapon, getWeaponEffect } from '$lib/scripts/json-loader';
+	import type { MatrixEffectsIds, ResoEffectsIds, WeaponEffectsIds } from '$lib/generated/ids';
+	import {
+		getMatrix,
+		getMatrixEffect,
+		getResoEffects,
+		getWeapon,
+		getWeaponEffect
+	} from '$lib/scripts/json-loader';
 	import {
 		addImageToDB,
 		cloneObject,
@@ -19,8 +25,11 @@
 	import { type StatGearUser } from '$lib/scripts/stats';
 	import {
 		WEAPON_BASE_STATS,
+		type MatrixFinalEffect,
+		type MatrixView,
 		type ResoEffect,
 		type ResoTriggerCounts,
+		type UserMatrix,
 		type UserWeapon,
 		type Weapon,
 		type WeaponEffect,
@@ -51,11 +60,13 @@
 	let loadout_icon = $state('');
 	let loadout_image = $state('');
 	let user_weapons = $state([{}, {}, {}] as UserWeapon[]);
+	let user_matrices = $state([{}, {}, {}] as UserMatrix[]);
 
 	let loadout_base_weapons = $state([] as Weapon[]);
 	let loadout_reso_counts = $state({} as ResoTriggerCounts);
 
 	let loadout_weapon_views = $state([{}, {}, {}] as WeaponView[]);
+	let loadout_matrix_views = $state([] as MatrixView[]);
 
 	let loadout_resonance_effects = $state([] as ResoEffect[]);
 	let loadout_resonance_stat = $state(new StatCollection());
@@ -119,6 +130,44 @@
 
 				effects_.push(eff);
 				stat_[0] = stat_[0].add(new StatCollection(eff.stats));
+			})
+		);
+	}
+
+	// helper function for matrix views
+	async function pushAllValidMatrixEffects(
+		effs: MatrixEffectsIds[],
+		advancement: number,
+		effects_: MatrixFinalEffect[],
+		stat_: StatCollection[]
+	) {
+		await Promise.all(
+			effs.map(async (eff_) => {
+				const eff = await getMatrixEffect(eff_);
+				if (eff.require_reso) {
+					const required_reso_count = eff.require_reso_count ?? 2;
+					if (loadout_reso_counts[eff.require_reso] ?? 0 < required_reso_count) {
+						return;
+					}
+				}
+
+				// TEMPORARILY DISABLE ONFIELD EFFECTS
+				if (eff.duration !== undefined && eff.duration === 0) {
+					return;
+				}
+
+				const keys = Object.keys(eff.stats);
+				const finalEffect = {
+					...eff,
+					stats: {}
+				};
+				keys.forEach((key) => {
+					// @ts-expect-error
+					finalEffect.stats[key] = eff.stats[key][advancement];
+				});
+
+				effects_.push(finalEffect);
+				stat_[0] = stat_[0].add(new StatCollection(finalEffect.stats));
 			})
 		);
 	}
@@ -248,6 +297,29 @@
 		);
 	}
 
+	async function updateMatrixViews() {
+		loadout_matrix_views = await Promise.all(
+			user_matrices.map(async (matrix, index) => {
+				const advancement = matrix.advancement ?? 3;
+
+				const effects: MatrixFinalEffect[] = [];
+				const stat_ = [new StatCollection()];
+				const matrix_ = await getMatrix(matrix.id);
+
+				await pushAllValidMatrixEffects(matrix_.effects, advancement, effects, stat_);
+				const stat = stat_[0];
+
+				return {
+					id: matrix.id,
+					name: loadout_base_weapons[index].name,
+					advancement,
+					effects,
+					stat
+				} as MatrixView;
+			})
+		);
+	}
+
 	async function updateSingleWeaponView(index: number) {
 		const weapon = loadout_base_weapons[index];
 		const advancement = user_weapons[index].advancement ?? 6;
@@ -303,6 +375,26 @@
 		} as WeaponView;
 	}
 
+	async function updateSingleMatrixView(index: number) {
+		const matrix = user_matrices[index];
+		const advancement = matrix.advancement ?? 3;
+
+		const effects: MatrixFinalEffect[] = [];
+		const stat_ = [new StatCollection()];
+		const matrix_ = await getMatrix(matrix.id);
+
+		await pushAllValidMatrixEffects(matrix_.effects, advancement, effects, stat_);
+		const stat = stat_[0];
+
+		loadout_matrix_views[index] = {
+			id: matrix.id,
+			name: loadout_base_weapons[index].name,
+			advancement,
+			effects,
+			stat
+		} as MatrixView;
+	}
+
 	// creates gearView and updates loadout_resonance_stat
 	async function updateAll() {
 		loadout_base_weapons = await Promise.all(user_weapons.map((weapon) => getWeapon(weapon.id)));
@@ -315,6 +407,9 @@
 
 		// iterate through weapons
 		await updateWeaponViews();
+
+		// ... and matrices
+		await updateMatrixViews();
 	}
 
 	function saveWeaponMatrixLoadout() {
@@ -506,6 +601,7 @@
 			loadout_desc = user_loadouts[current_loadout].description;
 			loadout_icon = user_loadouts[current_loadout].element;
 			user_weapons = user_loadouts[current_loadout].equipped_weapons;
+			user_matrices = user_loadouts[current_loadout].equipped_matrices;
 			loadout_image = await getImageUrlFromDB(current_loadout);
 
 			await updateAll();

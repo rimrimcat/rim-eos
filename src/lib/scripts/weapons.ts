@@ -50,6 +50,11 @@ export type MatrixEffect = BaseEffect & {
 	stats: MatrixStatData;
 };
 
+export type MatrixFinalEffect = BaseEffect & {
+	id: MatrixEffectsIds;
+	stats: StatData;
+};
+
 /**
  * BaseStatType naming convetion:
  *   [third stat]-[atk value]
@@ -160,7 +165,7 @@ export type MatrixView = {
 	id: MatrixIds;
 	name: string;
 
-	effects: MatrixEffect[];
+	effects: MatrixFinalEffect[];
 	stat: StatCollection;
 
 	advancement: number;
