@@ -39,6 +39,12 @@
           "additionalProperties": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string"
+              },
+              "icon": {
+                "type": "string"
+              },
               "resonances": {
                 "type": "array",
                 "items": {
@@ -61,7 +67,11 @@
                 "type": "string"
               }
             },
-            "additionalProperties": false
+            "additionalProperties": false,
+            "required": [
+              "icon",
+              "id"
+            ]
           }
         },
         "default": {
