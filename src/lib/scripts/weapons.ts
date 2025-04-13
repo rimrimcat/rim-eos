@@ -114,8 +114,9 @@ export type WeaponSettingStuff = {
 export type WeaponSetting = {
 	choices: {
 		[key: string]: WeaponSettingStuff;
-	}; // must be greater than length of default!
+	};
 	default: string[];
+	type: 'element' | 'skill';
 };
 
 export type Weapon = {
