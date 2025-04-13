@@ -16,6 +16,7 @@ export type BaseEffect = {
 	duration?: number; // cooldown and duration only matter if not 100% uptime or if onfield
 	cooldown?: number;
 	require_reso?: ResoTriggers;
+	require_reso_not?: ResoTriggers;
 	require_reso_count?: number; // defaults to 2
 	require_teamplay?: boolean;
 	notes?: string;

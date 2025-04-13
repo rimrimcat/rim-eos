@@ -22,6 +22,7 @@ const program = TJS.getProgramFromFiles([inputTypes], {
 
 const schema_reso_effects = TJS.generateSchema(program, 'ResoEffects', settings);
 const schema_weapon_effects = TJS.generateSchema(program, 'WeaponEffects', settings);
+const schema_matrix_effects = TJS.generateSchema(program, 'MatrixEffects', settings);
 const schema_weapons = TJS.generateSchema(program, 'Weapons', settings);
 
 fs.writeFileSync(
@@ -31,6 +32,10 @@ fs.writeFileSync(
 fs.writeFileSync(
 	path.join(schemaDir, 'weapon_effects.schema.json'),
 	JSON.stringify(schema_weapon_effects, null, 2)
+);
+fs.writeFileSync(
+	path.join(schemaDir, 'matrix_effects.schema.json'),
+	JSON.stringify(schema_matrix_effects, null, 2)
 );
 fs.writeFileSync(
 	path.join(schemaDir, 'weapons.schema.json'),

@@ -1,0 +1,7 @@
+{
+	"id": "grayfox-2p",
+	"stats": {
+		"frost_atk_percent": [24, 26, 28, 30]
+	},
+	"require_reso_not": "bene"
+}

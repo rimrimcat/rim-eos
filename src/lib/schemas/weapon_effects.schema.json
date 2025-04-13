@@ -33,6 +33,19 @@
       ],
       "type": "string"
     },
+    "require_reso_not": {
+      "enum": [
+        "alt",
+        "atk",
+        "bene",
+        "flame",
+        "fort",
+        "frost",
+        "phys",
+        "volt"
+      ],
+      "type": "string"
+    },
     "require_reso_count": {
       "type": "number"
     },
