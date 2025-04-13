@@ -91,6 +91,16 @@ export const WEAPON_BASE_STATS: Record<BaseStatType, BaseStatValue> = {
 	}
 };
 
+export type WeaponSettingEffect = BaseEffect & {
+	id: string;
+	stats: StatData;
+};
+
+export type WeaponSetting = {
+	choices: string[]; // must be greater than length of default!
+	default: string[];
+};
+
 export type Weapon = {
 	id: WeaponsIds;
 	name: string;
@@ -99,11 +109,14 @@ export type Weapon = {
 	onfieldness?: number; // priority for onfielding, need to determine this later on
 	effects: WeaponEffectsIds[];
 	reso_effects?: ResoEffectsIds[];
+
+	setting?: WeaponSetting;
 };
 
 export type UserWeapon = {
 	id: WeaponsIds;
 	advancement?: number;
+	setting?: string[]; // must refer to ids
 };
 
 export type WeaponView = {
@@ -113,9 +126,10 @@ export type WeaponView = {
 	onfieldness?: number;
 
 	base_stat: StatCollection;
-	stat: StatCollection;
 
 	effects: WeaponEffect[];
+	setting_effects: WeaponSettingEffect[];
+	stat: StatCollection;
 
 	advancement: number;
 };

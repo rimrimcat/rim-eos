@@ -30,6 +30,28 @@
       "items": {
         "$ref": "#/definitions/ResoEffectsIds"
       }
+    },
+    "setting": {
+      "type": "object",
+      "properties": {
+        "choices": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "default": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "choices",
+        "default"
+      ]
     }
   },
   "additionalProperties": false,
@@ -46,7 +68,7 @@
         "grayfox",
         "invalid",
         "nanyin",
-        "nola-frost"
+        "nola"
       ],
       "type": "string"
     },
