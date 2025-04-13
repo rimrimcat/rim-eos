@@ -1,4 +1,9 @@
-import type { ResoEffectsIds, WeaponEffectsIds, WeaponsIds } from '../generated/ids';
+import type {
+	MatrixEffectsIds,
+	ResoEffectsIds,
+	WeaponEffectsIds,
+	WeaponsIds
+} from '../generated/ids';
 import type { StatCollection, StatData } from './stat-ops';
 import type { StatDebuffs, StatGearUser, StatNonGear } from './stats';
 
@@ -40,7 +45,7 @@ export type ResoEffect = BaseEffect & {
 };
 
 export type MatrixEffect = BaseEffect & {
-	id: string;
+	id: MatrixEffectsIds;
 	stats: MatrixStatData;
 };
 

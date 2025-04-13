@@ -23,3 +23,9 @@ export type ResoEffectsIds =
 	| 'phys-reso'
 	| 'volt-reso';
 export type WeaponsIds = 'grayfox' | 'invalid' | 'nanyin' | 'nola';
+export type MatrixEffectsIds =
+	| 'grayfox-2p-bene'
+	| 'grayfox-2p'
+	| 'grayfox-4p-bene'
+	| 'grayfox-4p-nonbene'
+	| 'grayfox-4p';

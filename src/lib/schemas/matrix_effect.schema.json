@@ -3,7 +3,7 @@
   "type": "object",
   "properties": {
     "id": {
-      "type": "string"
+      "$ref": "#/definitions/MatrixEffectsIds"
     },
     "target": {
       "enum": [
@@ -73,6 +73,16 @@
     "stats"
   ],
   "definitions": {
+    "MatrixEffectsIds": {
+      "enum": [
+        "grayfox-2p",
+        "grayfox-2p-bene",
+        "grayfox-4p",
+        "grayfox-4p-bene",
+        "grayfox-4p-nonbene"
+      ],
+      "type": "string"
+    },
     "MatrixStatData": {
       "type": "object",
       "properties": {
