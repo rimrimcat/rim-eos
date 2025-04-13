@@ -3,6 +3,7 @@
 	import SwitchLoadout from '$lib/components/dialog/SwitchLoadout.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import StatIcon from '$lib/components/StatIcon.svelte';
+	import type { ResoEffectsIds, WeaponEffectsIds } from '$lib/generated/ids';
 	import { getResoEffects, getWeapon, getWeaponEffect } from '$lib/scripts/json-loader';
 	import {
 		addImageToDB,
@@ -18,6 +19,7 @@
 	import { type StatGearUser } from '$lib/scripts/stats';
 	import {
 		WEAPON_BASE_STATS,
+		type ResoEffect,
 		type ResoTriggerCounts,
 		type UserWeapon,
 		type Weapon,
@@ -55,7 +57,7 @@
 
 	let loadout_weapon_views = $state([{}, {}, {}] as WeaponView[]);
 
-	let loadout_resonance_effects = $state([] as WeaponEffect[]);
+	let loadout_resonance_effects = $state([] as ResoEffect[]);
 	let loadout_resonance_stat = $state(new StatCollection());
 
 	let is_editing = $state(false);
@@ -76,26 +78,92 @@
 		{ value: 'alt', label: 'Altered' }
 	];
 
+	// helper function for updateResoEffects
+	async function pushValidResoEffect(effectIds: ResoEffectsIds[], reso_effects_: ResoEffect[]) {
+		await Promise.all(
+			effectIds.map(async (eff) => {
+				const effect = await getResoEffects(eff);
+				if (effect && effect.id && !reso_effects_.some((eff2) => eff2.id === effect.id)) {
+					reso_effects_.push(effect);
+				}
+			})
+		);
+	}
+	// helper function for weapon views
+	async function pushAllValidWeaponEffects(
+		effs: WeaponEffectsIds[],
+		advancement: number,
+		effects_: WeaponEffect[],
+		stat_: StatCollection[]
+	) {
+		await Promise.all(
+			effs.map(async (eff_) => {
+				const eff = await getWeaponEffect(eff_);
+				if (eff.require_reso) {
+					const required_reso_count = eff.require_reso_count ?? 2;
+					if (loadout_reso_counts[eff.require_reso] ?? 0 < required_reso_count) {
+						return;
+					}
+				}
+
+				if (eff.require_adv) {
+					if (advancement < eff.require_adv) {
+						return;
+					}
+				}
+
+				// TEMPORARILY DISABLE ONFIELD EFFECTS
+				if (eff.duration !== undefined && eff.duration === 0) {
+					return;
+				}
+
+				effects_.push(eff);
+				stat_[0] = stat_[0].add(new StatCollection(eff.stats));
+			})
+		);
+	}
+
 	async function updateResoCounts() {
-		loadout_reso_counts = loadout_base_weapons.reduce((counts, weapon) => {
+		loadout_reso_counts = loadout_base_weapons.reduce((counts, weapon, index) => {
 			weapon.resonances.forEach((resonance) => {
 				counts[resonance] = (counts[resonance] ?? 0) + 1;
 			});
+			if (weapon.setting) {
+				const selected_settings = user_weapons[index].setting ?? weapon.setting.default;
+				selected_settings.forEach((setting) => {
+					// @ts-expect-error
+					const setting_data = weapon.setting.choices[setting];
+					if (setting_data.resonances) {
+						setting_data.resonances.forEach((resonance) => {
+							counts[resonance] = (counts[resonance] ?? 0) + 1;
+						});
+					}
+				});
+			}
+
 			return counts;
 		}, {} as ResoTriggerCounts);
 	}
 
 	async function updateResoEffects() {
-		const reso_effects: WeaponEffect[] = [];
+		console.log('Updating reso effects...');
+		const reso_effects: ResoEffect[] = [];
+
 		await Promise.all(
-			loadout_base_weapons.map(async (weapon) => {
+			loadout_base_weapons.map(async (weapon, index) => {
 				if (weapon.reso_effects) {
+					await pushValidResoEffect(weapon.reso_effects, reso_effects);
+				}
+
+				if (weapon.setting) {
+					const selected_settings = user_weapons[index].setting ?? weapon.setting.default;
+
 					await Promise.all(
-						weapon.reso_effects.map(async (eff) => {
-							const effect = await getResoEffects(eff);
-							// Check if effect exists and has an id
-							if (effect && effect.id && !reso_effects.some((eff2) => eff2.id === effect.id)) {
-								reso_effects.push(effect);
+						selected_settings.map(async (setting) => {
+							// @ts-expect-error
+							const setting_data = weapon.setting.choices[setting];
+							if (setting_data.reso_effects) {
+								await pushValidResoEffect(setting_data.reso_effects, reso_effects);
 							}
 						})
 					);
@@ -135,40 +203,41 @@
 				});
 				const base_stat = new StatCollection(_base_stat);
 
-				const effects: WeaponEffect[] = []; // active effects
-				const wpn_effects = await Promise.all(weapon.effects.map((eff) => getWeaponEffect(eff)));
-				let stat = new StatCollection();
-				wpn_effects.forEach((eff) => {
-					if (eff.require_reso) {
-						const required_reso_count = eff.require_reso_count ?? 2;
-						if (loadout_reso_counts[eff.require_reso] ?? 0 < required_reso_count) {
-							return;
-						}
-					}
+				// active effects
+				const effects: WeaponEffect[] = [];
+				const stat_ = [new StatCollection()];
 
-					if (eff.require_adv) {
-						if (advancement < eff.require_adv) {
-							return;
-						}
-					}
+				await pushAllValidWeaponEffects(weapon.effects ?? [], advancement, effects, stat_);
 
-					// TEMPORARILY DISABLE ONFIELD EFFECTS
-					if (eff.duration !== undefined && eff.duration === 0) {
-						return;
-					}
+				if (weapon.setting) {
+					const selected_settings = user_weapons[index].setting ?? weapon.setting.default;
 
-					effects.push(eff);
-					stat = stat.add(new StatCollection(eff.stats));
-				});
+					await Promise.all(
+						selected_settings.map(async (setting) => {
+							// @ts-expect-error
+							const setting_data = weapon.setting.choices[setting];
+							if (setting_data.effects) {
+								return await pushAllValidWeaponEffects(
+									setting_data.effects,
+									advancement,
+									effects,
+									stat_
+								);
+							}
+						})
+					);
+				}
+				const stat = stat_[0];
 
 				return {
 					id: weapon.id,
 					name: weapon.name,
 					resonances: weapon.resonances,
 					onfieldness: weapon.onfieldness,
-					effects,
-					base_stat,
 					advancement,
+
+					base_stat,
+					effects,
 					stat
 				} as WeaponView;
 			})
@@ -187,34 +256,43 @@
 		});
 		const base_stat = new StatCollection(_base_stat);
 
-		const wpn_effects = await Promise.all(weapon.effects.map((eff) => getWeaponEffect(eff)));
-		let effect_stat = new StatCollection();
-		wpn_effects.forEach((eff) => {
-			if (eff.require_reso) {
-				const required_reso_count = eff.require_reso_count ?? 2;
-				if (loadout_reso_counts[eff.require_reso] ?? 0 < required_reso_count) {
-					return;
-				}
-			}
+		// active effects
+		const effects: WeaponEffect[] = [];
+		const stat_ = [new StatCollection()];
 
-			if (eff.require_adv) {
-				if (advancement < eff.require_adv) {
-					return;
-				}
-			}
-			effect_stat = effect_stat.add(new StatCollection(eff.stats));
-		});
+		await pushAllValidWeaponEffects(weapon.effects ?? [], advancement, effects, stat_);
+
+		if (weapon.setting) {
+			const selected_settings = user_weapons[index].setting ?? weapon.setting.default;
+
+			await Promise.all(
+				selected_settings.map(async (setting) => {
+					// @ts-expect-error
+					const setting_data = weapon.setting.choices[setting];
+					if (setting_data.effects) {
+						return await pushAllValidWeaponEffects(
+							setting_data.effects,
+							advancement,
+							effects,
+							stat_
+						);
+					}
+				})
+			);
+		}
+		const stat = stat_[0];
 
 		loadout_weapon_views[index] = {
 			id: weapon.id,
 			name: weapon.name,
 			resonances: weapon.resonances,
 			onfieldness: weapon.onfieldness,
-			effects: wpn_effects,
-			base_stat,
 			advancement,
-			stat: effect_stat
-		};
+
+			base_stat,
+			effects,
+			stat
+		} as WeaponView;
 	}
 
 	// creates gearView and updates loadout_resonance_stat
@@ -430,7 +508,8 @@
 			loadout_icon = user_loadouts[current_loadout].element;
 			user_weapons = user_loadouts[current_loadout].equipped_weapons;
 			loadout_image = await getImageUrlFromDB(current_loadout);
-			updateAll();
+
+			await updateAll();
 		}
 	});
 

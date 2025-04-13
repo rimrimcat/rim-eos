@@ -130,9 +130,7 @@ export type WeaponView = {
 	onfieldness?: number;
 
 	base_stat: StatCollection;
-
 	effects: WeaponEffect[];
-	setting_effects: WeaponEffect[];
 	stat: StatCollection;
 
 	advancement: number;

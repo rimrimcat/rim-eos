@@ -12,6 +12,21 @@
 				"resonances": ["frost", "volt"],
 				"effects": ["nola-frost-skill"],
 				"reso_effects": ["frost-reso", "volt-reso"]
+			},
+			"phys": {
+				"resonances": ["phys", "volt"],
+				"reso_effects": ["phys-reso", "flame-reso"]
+			},
+			"volt": {
+				"resonances": ["volt", "phys"],
+				"reso_effects": ["volt-reso", "frost-reso"]
+			},
+			"flame": {
+				"resonances": ["flame", "volt"],
+				"reso_effects": ["flame-reso", "phys-reso"]
+			},
+			"alt": {
+				"resonances": ["alt"]
 			}
 		},
 		"default": ["frost"]
