@@ -1,0 +1,8 @@
+{
+	"id": "asuka-a6",
+	"stats": {
+		"phys_dmg_percent": 36,
+		"flame_dmg_percent": 24
+	},
+	"require_adv": 6
+}

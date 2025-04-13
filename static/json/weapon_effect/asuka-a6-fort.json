@@ -1,0 +1,9 @@
+{
+	"id": "asuka-a6-fort",
+	"stats": {
+		"res_reduction_percent": 12
+	},
+	"require_adv": 6,
+	"require_reso": "fort",
+	"target": "enemy"
+}
