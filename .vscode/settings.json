@@ -1,20 +1,24 @@
 {
 	"json.schemas": [
 		{
-			"fileMatch": ["**/reso_effects/*.json"],
-			"url": "./src/lib/schemas/reso_effects.schema.json"
+			"fileMatch": ["**/reso_effect/*.json"],
+			"url": "./src/lib/schemas/reso_effect.schema.json"
 		},
 		{
-			"fileMatch": ["**/weapon_effects/*.json"],
-			"url": "./src/lib/schemas/weapon_effects.schema.json"
+			"fileMatch": ["**/weapon_effect/*.json"],
+			"url": "./src/lib/schemas/weapon_effect.schema.json"
 		},
 		{
-			"fileMatch": ["**/matrix_effects/*.json"],
-			"url": "./src/lib/schemas/matrix_effects.schema.json"
+			"fileMatch": ["**/matrix_effect/*.json"],
+			"url": "./src/lib/schemas/matrix_effect.schema.json"
 		},
 		{
-			"fileMatch": ["**/weapons/*.json"],
-			"url": "./src/lib/schemas/weapons.schema.json"
+			"fileMatch": ["**/weapon/*.json"],
+			"url": "./src/lib/schemas/weapon.schema.json"
+		},
+		{
+			"fileMatch": ["**/matrix/*.json"],
+			"url": "./src/lib/schemas/matrix.schema.json"
 		}
 	]
 }
