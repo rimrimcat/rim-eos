@@ -107,19 +107,38 @@ export type CharacterStat = {
 /**
  * Stats that are not present on gear
  * TODO: subdivide dmg_percent to different multipliers
+ * Elemental atk === Atk
  */
 export type StatNonGear =
 	| 'atk_percent'
 	| 'dmg_percent'
-	| 'normal_dmg_percent'
 	| 'final_dmg_percent'
-	| 'ele_atk'
-	| 'ele_atk_percent'
 	| 'ele_dmg_percent'
 	| 'crit_dmg'
-	| 'healing_percent';
+	| 'healing_percent'
+	| 'shatter';
 
-export type StatDebuffs = 'crit_res_reduction_percent' | 'res_ignore_percent';
+export type StatDebuffs =
+	// res ignores
+	| 'res_ignore_percent' // all elements
+	| 'phys_res_ignore_percent'
+	| 'flame_res_ignore_percent'
+	| 'frost_res_ignore_percent'
+	| 'volt_res_ignore_percent'
+	| 'alt_res_ignore_percent'
+	// dmg increase debuff
+	| 'final_dmg_increase_percent' // separate from ele
+	// ele dmg increase debuffs
+	| 'ele_dmg_increase_percent'
+	| 'phys_dmg_increase_percent'
+	| 'flame_dmg_increase_percent'
+	| 'frost_dmg_increase_percent'
+	| 'volt_dmg_increase_percent'
+	| 'alt_dmg_increase_percent'
+	// others
+	| 'res_reduction_percent'
+	| 'crit_res_reduction_percent'
+	| 'shield_dmg_reduction_ignore_percent';
 
 export type AllStats = StatGearUser | StatGearTitan | StatNonGear | StatDebuffs | StatGearFinal;
 
@@ -132,8 +151,6 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	res_percent: 'Res',
 	atk: 'ATK',
 	atk_percent: 'ATK',
-	ele_atk: 'Ele Atk',
-	ele_atk_percent: 'Ele Atk',
 	dmg_percent: 'Dmg',
 	ele_dmg_percent: 'Ele Dmg',
 	phys_atk: 'Phys Atk',
@@ -199,11 +216,26 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	end: 'Endurance',
 	end_regen: 'Endurance Regen',
 	crit_dmg: 'Crit Dmg',
-	normal_dmg_percent: 'Normal Dmg',
 	final_dmg_percent: 'Final Dmg',
 	crit_res_reduction_percent: 'Crit Res Red',
+	res_reduction_percent: 'Res Reduction',
+	healing_percent: 'Healing',
+	shield_dmg_reduction_ignore_percent: 'Shield Red Ignore',
+	shatter: 'Shatter',
+	// Resistance affecting
 	res_ignore_percent: 'Res Ignore',
-	healing_percent: 'Healing'
+	phys_res_ignore_percent: 'Phys Res Ignore',
+	flame_res_ignore_percent: 'Flame Res Ignore',
+	frost_res_ignore_percent: 'Frost Res Ignore',
+	volt_res_ignore_percent: 'Volt Res Ignore',
+	alt_res_ignore_percent: 'Alt Res Ignore',
+	final_dmg_increase_percent: 'Final Dmg Increase',
+	ele_dmg_increase_percent: 'Ele Dmg Increase',
+	phys_dmg_increase_percent: 'Phys Dmg Increase',
+	flame_dmg_increase_percent: 'Flame Dmg Increase',
+	frost_dmg_increase_percent: 'Frost Dmg Increase',
+	volt_dmg_increase_percent: 'Volt Dmg Increase',
+	alt_dmg_increase_percent: 'Alt Dmg Increase'
 };
 
 export type StatConstant = {
