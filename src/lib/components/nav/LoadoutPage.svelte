@@ -24,6 +24,7 @@
 		type UserWeapon,
 		type Weapon,
 		type WeaponEffect,
+		type WeaponSettingStuff,
 		type WeaponView
 	} from '$lib/scripts/weapons';
 	import {
@@ -208,13 +209,17 @@
 				const stat_ = [new StatCollection()];
 
 				await pushAllValidWeaponEffects(weapon.effects ?? [], advancement, effects, stat_);
-				const setting = user_weapons[index].setting ?? weapon.setting?.default ?? [];
+				const setting_ids = user_weapons[index].setting ?? weapon.setting?.default ?? [];
+				const setting: WeaponSettingStuff[] = setting_ids.map((setting_) => {
+					// @ts-expect-error
+					return weapon.setting.choices[setting_];
+				});
 
 				if (weapon.setting) {
 					await Promise.all(
-						setting.map(async (setting) => {
+						setting_ids.map(async (setting_) => {
 							// @ts-expect-error
-							const setting_data = weapon.setting.choices[setting];
+							const setting_data = weapon.setting.choices[setting_];
 							if (setting_data.effects) {
 								return await pushAllValidWeaponEffects(
 									setting_data.effects,
@@ -261,11 +266,15 @@
 		const stat_ = [new StatCollection()];
 
 		await pushAllValidWeaponEffects(weapon.effects ?? [], advancement, effects, stat_);
-		const setting = user_weapons[index].setting ?? weapon.setting?.default ?? [];
+		const setting_ids = user_weapons[index].setting ?? weapon.setting?.default ?? [];
+		const setting: WeaponSettingStuff[] = setting_ids.map((setting_) => {
+			// @ts-expect-error
+			return weapon.setting.choices[setting_];
+		});
 
 		if (weapon.setting) {
 			await Promise.all(
-				setting.map(async (setting) => {
+				setting_ids.map(async (setting) => {
 					// @ts-expect-error
 					const setting_data = weapon.setting.choices[setting];
 					if (setting_data.effects) {
@@ -598,6 +607,54 @@
 								alt="Weapon"
 								style="height: 8rem; width:8rem;"
 							/>
+							{#if weapon.setting && weapon.setting.length > 0}
+								<div class="compose-above" style="top: 0.5rem; left: 0.5rem">
+									{#each weapon.setting as setting, settingIndex}
+										<button
+											class="image"
+											onclick={() => {
+												// get keys in settings
+												if (!loadout_base_weapons[index].setting) {
+													return;
+												}
+
+												const selected_keys = weapon.setting.map((setting) => setting.id);
+												const keys = Object.keys(loadout_base_weapons[index].setting.choices);
+
+												let currKey = setting.id;
+												let currInd = keys.indexOf(currKey);
+												const initialCurrInd = currInd;
+
+												console.log('All keys: ', keys);
+												console.log('Current Key: ', currKey);
+
+												console.log('init currInd', currInd);
+
+												while (selected_keys.indexOf(currKey) !== -1) {
+													currInd = (currInd + 1) % keys.length;
+													console.log('New currInd', currInd);
+													currKey = keys[currInd];
+
+													if (currInd === initialCurrInd) {
+														// avoid catastrophe
+														console.error('idk why but something went wrong');
+														return;
+													}
+												}
+
+												if (!user_weapons[index].setting) {
+													user_weapons[index].setting = loadout_base_weapons[index].setting.default;
+												}
+												user_weapons[index].setting[settingIndex] = currKey;
+												saveWeaponMatrixLoadout();
+												updateSingleWeaponView(index);
+											}}
+										>
+											<img src={setting.icon} alt={setting.icon} style="height: 1.5rem" />
+										</button>
+									{/each}
+								</div>
+							{/if}
 
 							{#each [1, 2, 3, 4, 5, 6] as advSetValue, advIndex}
 								<button
