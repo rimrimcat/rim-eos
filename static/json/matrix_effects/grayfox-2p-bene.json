@@ -1,7 +1,8 @@
 {
 	"id": "grayfox-2p-bene",
 	"stats": {
-		"atk_percent": [24, 26, 28, 30]
+		"atk_percent": [24, 26, 28, 30],
+		"healing_percent": [20, 20, 20, 20]
 	},
 	"require_reso": "bene"
 }

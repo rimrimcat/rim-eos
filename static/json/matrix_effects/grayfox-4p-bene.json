@@ -1,0 +1,9 @@
+{
+	"id": "grayfox-4p-bene",
+	"stats": {
+		"crit_percent": [20, 20, 20, 20],
+		"crit_dmg": [12, 12, 12, 12]
+	},
+	"target": "team",
+	"require_reso": "bene"
+}

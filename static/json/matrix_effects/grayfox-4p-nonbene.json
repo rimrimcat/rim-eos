@@ -1,0 +1,7 @@
+{
+	"id": "grayfox-4p-nonbene",
+	"stats": {
+		"frost_dmg_percent": [20, 20, 20, 20]
+	},
+	"require_reso_not": "bene"
+}
