@@ -2,7 +2,8 @@ import fs from 'fs';
 import path from 'path';
 
 const projectRoot = process.cwd();
-const out_file = path.join(projectRoot, 'src/lib/generated/ids.d.ts');
+const out_file_types = path.join(projectRoot, 'src/lib/generated/ids.d.ts');
+const out_file_arrays = path.join(projectRoot, 'src/lib/generated/all-ids.ts');
 
 const reso_effects_path = path.join(projectRoot, 'static/json/reso_effect');
 const weapon_effects_path = path.join(projectRoot, 'static/json/weapon_effect');
@@ -31,7 +32,7 @@ const matrix_ids = fs
 	.filter((file) => file.endsWith('.json'))
 	.map((file) => path.basename(file, '.json'));
 
-const typeDef = `// Auto-generated file
+const typeDefs = `// Auto-generated file
 
 export type WeaponEffectsIds = ${weapon_effects_ids.map((id) => `"${id}"`).join(' | ')};
 export type MatrixEffectsIds = ${matrix_effects_ids.map((id) => `"${id}"`).join(' | ')};
@@ -41,5 +42,19 @@ export type MatrixIds = ${matrix_ids.map((id) => `"${id}"`).join(' | ')};
 
 `;
 
-fs.writeFileSync(out_file, typeDef);
+const arrayDefs = `// Auto-generated file
+
+import type { WeaponEffectsIds, MatrixEffectsIds, ResoEffectsIds, WeaponsIds, MatrixIds } from './ids';
+
+export const AllWeaponEffectIds: WeaponEffectsIds[] = ${JSON.stringify(weapon_effects_ids)};
+export const AllMatrixEffectIds: MatrixEffectsIds[] = ${JSON.stringify(matrix_effects_ids)};
+export const AllResoEffectIds: ResoEffectsIds[] = ${JSON.stringify(reso_effects_ids)};
+export const AllMatrixIds: MatrixIds[] = ${JSON.stringify(matrix_ids)};
+export const AllWeaponIds: WeaponsIds[] = ${JSON.stringify(weapons_ids)};
+
+`;
+
+fs.writeFileSync(out_file_types, typeDefs);
+fs.writeFileSync(out_file_arrays, arrayDefs);
+
 console.log('✅ Id types generated successfully.');

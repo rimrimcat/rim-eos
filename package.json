@@ -15,7 +15,7 @@
 		"lint": "prettier --check . && eslint .",
 		"generate-schema": "node --loader ts-node/esm src/lib/scripts/json-schema-gen.ts",
 		"validate-json": "node --loader ts-node/esm src/lib/scripts/json-validator.ts",
-		"generate-id": "node --loader ts-node/esm src/lib/scripts/id-type-gen.ts && prettier --write src/lib/generated/ids.d.ts"
+		"generate-id": "node --loader ts-node/esm src/lib/scripts/id-type-gen.ts && prettier --write src/lib/generated/*.*"
 	},
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
