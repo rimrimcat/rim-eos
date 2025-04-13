@@ -26,20 +26,20 @@ export type MatrixEffectsIds =
 	| 'nola-4p-skill'
 	| 'nola-4p';
 export type ResoEffectsIds =
-	| 'armor-dissolve-reso-teamplay'
-	| 'armor-dissolve-reso'
-	| 'atk-reso-teamplay'
-	| 'atk-reso'
-	| 'bene-reso-teamplay'
-	| 'bene-reso'
-	| 'fiona-reso'
-	| 'flame-reso'
-	| 'force-impact-reso-teamplay'
-	| 'force-impact-reso'
-	| 'fort-reso'
-	| 'frost-reso'
-	| 'nanyin-reso'
-	| 'phys-reso'
-	| 'volt-reso';
+	| 'armor-dissolve-teamplay'
+	| 'armor-dissolve'
+	| 'atk-teamplay'
+	| 'atk'
+	| 'bene-teamplay'
+	| 'bene'
+	| 'fiona'
+	| 'flame'
+	| 'force-impact-teamplay'
+	| 'force-impact'
+	| 'fort'
+	| 'frost'
+	| 'nanyin'
+	| 'phys'
+	| 'volt';
 export type WeaponsIds = 'asuka' | 'grayfox' | 'nanyin' | 'nola' | 'none';
 export type MatrixIds = 'grayfox-4p' | 'nanyin-4p' | 'nola-4p' | 'none';

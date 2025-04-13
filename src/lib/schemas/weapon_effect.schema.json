@@ -104,13 +104,13 @@
     "StatData": {
       "type": "object",
       "properties": {
+        "atk": {
+          "type": "number"
+        },
         "hp": {
           "type": "number"
         },
         "hp_percent": {
-          "type": "number"
-        },
-        "atk": {
           "type": "number"
         },
         "flame_atk": {

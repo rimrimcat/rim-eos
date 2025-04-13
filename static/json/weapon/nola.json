@@ -13,26 +13,26 @@
 				"id": "phys",
 				"icon": "./stat_icon/phys.webp",
 				"resonances": ["phys", "flame", "armor-dissolve"],
-				"reso_effects": ["phys-reso", "flame-reso"]
+				"reso_effects": ["phys", "flame"]
 			},
 			"flame": {
 				"id": "flame",
 				"icon": "./stat_icon/flame.webp",
 				"resonances": ["flame", "volt", "armor-dissolve"],
-				"reso_effects": ["flame-reso", "phys-reso"]
+				"reso_effects": ["flame", "phys"]
 			},
 			"frost": {
 				"id": "frost",
 				"icon": "./stat_icon/frost.webp",
 				"resonances": ["frost", "volt", "force-impact"],
 				"effects": ["nola-frost-skill"],
-				"reso_effects": ["frost-reso", "volt-reso"]
+				"reso_effects": ["frost", "volt"]
 			},
 			"volt": {
 				"id": "volt",
 				"icon": "./stat_icon/volt.webp",
 				"resonances": ["volt", "phys", "force-impact"],
-				"reso_effects": ["volt-reso", "frost-reso"]
+				"reso_effects": ["volt", "frost"]
 			},
 			"alt": {
 				"id": "alt",

@@ -70,34 +70,34 @@
   "definitions": {
     "ResoEffectsIds": {
       "enum": [
-        "armor-dissolve-reso",
-        "armor-dissolve-reso-teamplay",
-        "atk-reso",
-        "atk-reso-teamplay",
-        "bene-reso",
-        "bene-reso-teamplay",
-        "fiona-reso",
-        "flame-reso",
-        "force-impact-reso",
-        "force-impact-reso-teamplay",
-        "fort-reso",
-        "frost-reso",
-        "nanyin-reso",
-        "phys-reso",
-        "volt-reso"
+        "armor-dissolve",
+        "armor-dissolve-teamplay",
+        "atk",
+        "atk-teamplay",
+        "bene",
+        "bene-teamplay",
+        "fiona",
+        "flame",
+        "force-impact",
+        "force-impact-teamplay",
+        "fort",
+        "frost",
+        "nanyin",
+        "phys",
+        "volt"
       ],
       "type": "string"
     },
     "StatData": {
       "type": "object",
       "properties": {
+        "atk": {
+          "type": "number"
+        },
         "hp": {
           "type": "number"
         },
         "hp_percent": {
-          "type": "number"
-        },
-        "atk": {
           "type": "number"
         },
         "flame_atk": {

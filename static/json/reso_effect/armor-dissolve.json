@@ -1,5 +1,5 @@
 {
-	"id": "armor-dissolve-reso",
+	"id": "armor-dissolve",
 	"stats": {
 		"phys_dmg_taken_percent": 10,
 		"flame_dmg_taken_percent": 10

@@ -98,6 +98,25 @@
     "MatrixStatData": {
       "type": "object",
       "properties": {
+        "atk": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
         "hp": {
           "type": "array",
           "items": [
@@ -118,25 +137,6 @@
           "maxItems": 4
         },
         "hp_percent": {
-          "type": "array",
-          "items": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
-        "atk": {
           "type": "array",
           "items": [
             {
