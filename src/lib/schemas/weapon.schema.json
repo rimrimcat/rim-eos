@@ -116,6 +116,7 @@
   "definitions": {
     "WeaponsIds": {
       "enum": [
+        "asuka",
         "grayfox",
         "nanyin",
         "nola",
@@ -171,6 +172,9 @@
     },
     "WeaponEffectsIds": {
       "enum": [
+        "asuka-a6",
+        "asuka-a6-fort",
+        "asuka-skill",
         "grayfox-a3-buff",
         "grayfox-a3-debuff",
         "grayfox-a6",
@@ -189,6 +193,7 @@
         "atk-reso",
         "atk-reso-teamplay",
         "bene-reso",
+        "bene-reso-teamplay",
         "fiona-reso",
         "flame-reso",
         "fort-reso",

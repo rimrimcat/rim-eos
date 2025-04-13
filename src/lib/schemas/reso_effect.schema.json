@@ -45,6 +45,7 @@
     },
     "require_weapon": {
       "enum": [
+        "asuka",
         "grayfox",
         "nanyin",
         "nola",
@@ -70,6 +71,7 @@
         "atk-reso",
         "atk-reso-teamplay",
         "bene-reso",
+        "bene-reso-teamplay",
         "fiona-reso",
         "flame-reso",
         "fort-reso",
@@ -188,16 +190,7 @@
         "dmg_percent": {
           "type": "number"
         },
-        "normal_dmg_percent": {
-          "type": "number"
-        },
         "final_dmg_percent": {
-          "type": "number"
-        },
-        "ele_atk": {
-          "type": "number"
-        },
-        "ele_atk_percent": {
           "type": "number"
         },
         "ele_dmg_percent": {
@@ -206,10 +199,55 @@
         "healing_percent": {
           "type": "number"
         },
-        "crit_res_reduction_percent": {
+        "shatter": {
           "type": "number"
         },
         "res_ignore_percent": {
+          "type": "number"
+        },
+        "phys_res_ignore_percent": {
+          "type": "number"
+        },
+        "flame_res_ignore_percent": {
+          "type": "number"
+        },
+        "frost_res_ignore_percent": {
+          "type": "number"
+        },
+        "volt_res_ignore_percent": {
+          "type": "number"
+        },
+        "alt_res_ignore_percent": {
+          "type": "number"
+        },
+        "final_dmg_increase_percent": {
+          "type": "number"
+        },
+        "ele_dmg_increase_percent": {
+          "type": "number"
+        },
+        "phys_dmg_increase_percent": {
+          "type": "number"
+        },
+        "flame_dmg_increase_percent": {
+          "type": "number"
+        },
+        "frost_dmg_increase_percent": {
+          "type": "number"
+        },
+        "volt_dmg_increase_percent": {
+          "type": "number"
+        },
+        "alt_dmg_increase_percent": {
+          "type": "number"
+        },
+        "res_reduction_percent": {
+          "type": "number"
+        },
+        "crit_res_reduction_percent": {
+          "type": "number"
+        },
+        "shield_dmg_reduction_ignore_percent": {
           "type": "number"
         }
       },

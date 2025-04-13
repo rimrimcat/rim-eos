@@ -1,6 +1,9 @@
 // Auto-generated file
 
 export type WeaponEffectsIds =
+	| 'asuka-a6-fort'
+	| 'asuka-a6'
+	| 'asuka-skill'
 	| 'grayfox-a3-buff'
 	| 'grayfox-a3-debuff'
 	| 'grayfox-a6'
@@ -25,6 +28,7 @@ export type MatrixEffectsIds =
 export type ResoEffectsIds =
 	| 'atk-reso-teamplay'
 	| 'atk-reso'
+	| 'bene-reso-teamplay'
 	| 'bene-reso'
 	| 'fiona-reso'
 	| 'flame-reso'
@@ -33,5 +37,5 @@ export type ResoEffectsIds =
 	| 'nanyin-reso'
 	| 'phys-reso'
 	| 'volt-reso';
-export type WeaponsIds = 'grayfox' | 'nanyin' | 'nola' | 'none';
+export type WeaponsIds = 'asuka' | 'grayfox' | 'nanyin' | 'nola' | 'none';
 export type MatrixIds = 'grayfox-4p' | 'nanyin-4p' | 'nola-4p' | 'none';
