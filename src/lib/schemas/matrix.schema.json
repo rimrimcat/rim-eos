@@ -24,6 +24,7 @@
     "MatrixIds": {
       "enum": [
         "grayfox-4p",
+        "nanyin-4p",
         "nola-4p"
       ],
       "type": "string"
@@ -35,6 +36,8 @@
         "grayfox-4p",
         "grayfox-4p-bene",
         "grayfox-4p-nonbene",
+        "nanyin-2p",
+        "nanyin-4p",
         "nola-2p",
         "nola-4p",
         "nola-4p-skill"

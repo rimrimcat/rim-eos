@@ -1,0 +1,8 @@
+{
+	"id": "nanyin-4p",
+	"stats": {
+		"crit_dmg": [8, 8, 8, 8],
+		"final_dmg_percent": [17, 20, 23, 26]
+	},
+	"require_weapon": "nanyin"
+}
