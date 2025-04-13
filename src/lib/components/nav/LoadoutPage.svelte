@@ -625,14 +625,8 @@
 												let currInd = keys.indexOf(currKey);
 												const initialCurrInd = currInd;
 
-												console.log('All keys: ', keys);
-												console.log('Current Key: ', currKey);
-
-												console.log('init currInd', currInd);
-
 												while (selected_keys.indexOf(currKey) !== -1) {
 													currInd = (currInd + 1) % keys.length;
-													console.log('New currInd', currInd);
 													currKey = keys[currInd];
 
 													if (currInd === initialCurrInd) {
@@ -647,7 +641,8 @@
 												}
 												user_weapons[index].setting[settingIndex] = currKey;
 												saveWeaponMatrixLoadout();
-												updateSingleWeaponView(index);
+												// nola can change elements and reso
+												updateAll();
 											}}
 										>
 											<img src={setting.icon} alt={setting.icon} style="height: 1.5rem" />
