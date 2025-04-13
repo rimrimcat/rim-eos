@@ -2,7 +2,8 @@
   "type": "object",
   "properties": {
     "id": {
-      "type": "string"
+      "type": "string",
+      "const": "grayfox-4p"
     },
     "name": {
       "type": "string"

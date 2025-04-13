@@ -1,5 +1,6 @@
 import type {
 	MatrixEffectsIds,
+	MatrixIds,
 	ResoEffectsIds,
 	WeaponEffectsIds,
 	WeaponsIds
@@ -145,7 +146,7 @@ export type WeaponView = {
 };
 
 export type Matrix = {
-	id: string;
+	id: MatrixIds;
 	name: string;
 	effects: MatrixEffectsIds[];
 };
