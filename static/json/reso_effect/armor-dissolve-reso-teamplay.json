@@ -1,0 +1,10 @@
+{
+	"id": "armor-dissolve-reso-teamplay",
+	"stats": {
+		"phys_dmg_taken_percent": 15,
+		"flame_dmg_taken_percent": 15
+	},
+	"require_reso": "armor-dissolve",
+	"require_reso_count": 1,
+	"require_teamplay": true
+}

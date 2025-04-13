@@ -23,9 +23,11 @@
     "require_reso": {
       "enum": [
         "alt",
+        "armor-dissolve",
         "atk",
         "bene",
         "flame",
+        "force-impact",
         "fort",
         "frost",
         "none",
@@ -37,9 +39,11 @@
     "require_reso_not": {
       "enum": [
         "alt",
+        "armor-dissolve",
         "atk",
         "bene",
         "flame",
+        "force-impact",
         "fort",
         "frost",
         "none",
@@ -238,22 +242,22 @@
         "final_dmg_increase_percent": {
           "type": "number"
         },
-        "ele_dmg_increase_percent": {
+        "ele_dmg_taken_percent": {
           "type": "number"
         },
-        "phys_dmg_increase_percent": {
+        "phys_dmg_taken_percent": {
           "type": "number"
         },
-        "flame_dmg_increase_percent": {
+        "flame_dmg_taken_percent": {
           "type": "number"
         },
-        "frost_dmg_increase_percent": {
+        "frost_dmg_taken_percent": {
           "type": "number"
         },
-        "volt_dmg_increase_percent": {
+        "volt_dmg_taken_percent": {
           "type": "number"
         },
-        "alt_dmg_increase_percent": {
+        "alt_dmg_taken_percent": {
           "type": "number"
         },
         "res_reduction_percent": {

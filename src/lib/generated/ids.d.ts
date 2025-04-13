@@ -26,12 +26,16 @@ export type MatrixEffectsIds =
 	| 'nola-4p-skill'
 	| 'nola-4p';
 export type ResoEffectsIds =
+	| 'armor-dissolve-reso-teamplay'
+	| 'armor-dissolve-reso'
 	| 'atk-reso-teamplay'
 	| 'atk-reso'
 	| 'bene-reso-teamplay'
 	| 'bene-reso'
 	| 'fiona-reso'
 	| 'flame-reso'
+	| 'force-impact-reso-teamplay'
+	| 'force-impact-reso'
 	| 'fort-reso'
 	| 'frost-reso'
 	| 'nanyin-reso'

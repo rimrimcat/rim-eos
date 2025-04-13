@@ -159,9 +159,11 @@
     "ResoTriggers": {
       "enum": [
         "alt",
+        "armor-dissolve",
         "atk",
         "bene",
         "flame",
+        "force-impact",
         "fort",
         "frost",
         "none",
@@ -190,12 +192,16 @@
     },
     "ResoEffectsIds": {
       "enum": [
+        "armor-dissolve-reso",
+        "armor-dissolve-reso-teamplay",
         "atk-reso",
         "atk-reso-teamplay",
         "bene-reso",
         "bene-reso-teamplay",
         "fiona-reso",
         "flame-reso",
+        "force-impact-reso",
+        "force-impact-reso-teamplay",
         "fort-reso",
         "frost-reso",
         "nanyin-reso",

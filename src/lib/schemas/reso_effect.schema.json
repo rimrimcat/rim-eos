@@ -26,9 +26,11 @@
     "require_reso_not": {
       "enum": [
         "alt",
+        "armor-dissolve",
         "atk",
         "bene",
         "flame",
+        "force-impact",
         "fort",
         "frost",
         "none",
@@ -68,12 +70,16 @@
   "definitions": {
     "ResoEffectsIds": {
       "enum": [
+        "armor-dissolve-reso",
+        "armor-dissolve-reso-teamplay",
         "atk-reso",
         "atk-reso-teamplay",
         "bene-reso",
         "bene-reso-teamplay",
         "fiona-reso",
         "flame-reso",
+        "force-impact-reso",
+        "force-impact-reso-teamplay",
         "fort-reso",
         "frost-reso",
         "nanyin-reso",
@@ -223,22 +229,22 @@
         "final_dmg_increase_percent": {
           "type": "number"
         },
-        "ele_dmg_increase_percent": {
+        "ele_dmg_taken_percent": {
           "type": "number"
         },
-        "phys_dmg_increase_percent": {
+        "phys_dmg_taken_percent": {
           "type": "number"
         },
-        "flame_dmg_increase_percent": {
+        "flame_dmg_taken_percent": {
           "type": "number"
         },
-        "frost_dmg_increase_percent": {
+        "frost_dmg_taken_percent": {
           "type": "number"
         },
-        "volt_dmg_increase_percent": {
+        "volt_dmg_taken_percent": {
           "type": "number"
         },
-        "alt_dmg_increase_percent": {
+        "alt_dmg_taken_percent": {
           "type": "number"
         },
         "res_reduction_percent": {
@@ -256,9 +262,11 @@
     "ResoTriggers": {
       "enum": [
         "alt",
+        "armor-dissolve",
         "atk",
         "bene",
         "flame",
+        "force-impact",
         "fort",
         "frost",
         "none",

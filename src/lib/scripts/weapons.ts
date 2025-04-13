@@ -10,7 +10,8 @@ import type { StatDebuffs, StatGearUser, StatNonGear } from './stats';
 
 export type ResoElement = 'phys' | 'flame' | 'frost' | 'volt' | 'alt' | 'none';
 export type ResoRole = 'atk' | 'fort' | 'bene' | 'none';
-export type ResoTriggers = ResoElement | ResoRole;
+export type ResoExtra = 'armor-dissolve' | 'force-impact';
+export type ResoTriggers = ResoElement | ResoRole | ResoExtra;
 export type OrderedResoTriggers = [ResoElement, ResoRole, ...ResoTriggers[]];
 
 export type Target = 'self' | 'ally' | 'team' | 'enemy';

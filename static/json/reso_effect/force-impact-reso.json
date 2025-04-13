@@ -1,0 +1,9 @@
+{
+	"id": "force-impact-reso",
+	"stats": {
+		"volt_dmg_taken_percent": 10,
+		"frost_dmg_taken_percent": 10
+	},
+	"require_reso": "force-impact",
+	"require_reso_count": 1
+}
