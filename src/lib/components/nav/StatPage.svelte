@@ -10,15 +10,10 @@
 	import { STAT_LABELS, type CharacterStat } from '$lib/scripts/stats';
 	import { formatValue } from '$lib/scripts/validation.ts';
 	import { ChartNoAxesColumn, ImagePlus, Trash2 } from '@lucide/svelte';
-
+	import type * as OpenCV from '@techstark/opencv-js';
+	import cv from '@techstark/opencv-js';
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
-
-	import type * as OpenCV from '@techstark/opencv-js';
-	let cv: typeof OpenCV;
-	onMount(async () => {
-		cv = await import('@techstark/opencv-js');
-	});
 
 	let {
 		is_mobile = $bindable(false),

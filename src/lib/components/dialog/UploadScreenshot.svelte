@@ -1,13 +1,9 @@
 <script lang="ts">
 	import { ImagePlus } from '@lucide/svelte';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import Dialog from '../Dialog.svelte';
 
-	import type * as OpenCV from '@techstark/opencv-js';
-	let cv: typeof OpenCV;
-	onMount(async () => {
-		cv = await import('@techstark/opencv-js');
-	});
+	import cv from '@techstark/opencv-js';
 
 	type UploadCallbackType = 'canvas' | 'url' | 'file';
 
