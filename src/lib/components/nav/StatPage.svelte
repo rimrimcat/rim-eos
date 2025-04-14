@@ -10,9 +10,15 @@
 	import { STAT_LABELS, type CharacterStat } from '$lib/scripts/stats';
 	import { formatValue } from '$lib/scripts/validation.ts';
 	import { ChartNoAxesColumn, ImagePlus, Trash2 } from '@lucide/svelte';
-	import cv from '@techstark/opencv-js';
+
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
+
+	import type * as OpenCV from '@techstark/opencv-js';
+	let cv: typeof OpenCV;
+	onMount(async () => {
+		cv = await import('@techstark/opencv-js');
+	});
 
 	let {
 		is_mobile = $bindable(false),
@@ -85,18 +91,18 @@
 	}
 
 	async function processBoxes(
-		src_mat_orig: cv.Mat,
-		stat_p1: cv.Point,
-		stat_p2: cv.Point,
-		src_mat_edit: cv.Mat | null = null,
-		imageUpdateCallback: ((img: cv.Mat) => Promise<void>) | null = null
+		src_mat_orig: OpenCV.Mat,
+		stat_p1: OpenCV.Point,
+		stat_p2: OpenCV.Point,
+		src_mat_edit: OpenCV.Mat | null = null,
+		imageUpdateCallback: ((img: OpenCV.Mat) => Promise<void>) | null = null
 	) {
 		const attr_arr: number[] = [7, 15, 6, 14, 5, 13, 4, 12, 3, 11, 2, 10, 1, 9, 0, 8];
 
 		const worker = await createWorker('eng');
 		let done_tasks = 0;
 
-		async function doTask(rect: cv.Rect, index: number) {
+		async function doTask(rect: OpenCV.Rect, index: number) {
 			const _crop = src_mat_orig.roi(rect);
 
 			const canvas = document.createElement('canvas');
@@ -154,11 +160,11 @@
 	}
 
 	async function matchCharacterStats(
-		src_mat: cv.Mat,
-		imageUpdateCallback: ((img: cv.Mat) => Promise<void>) | null = null,
+		src_mat: OpenCV.Mat,
+		imageUpdateCallback: ((img: OpenCV.Mat) => Promise<void>) | null = null,
 		minimumMatch: number = 0.9
 	) {
-		let edit_src_mat: cv.Mat = new cv.Mat(); // for callback
+		let edit_src_mat: OpenCV.Mat = new cv.Mat(); // for callback
 
 		process_text = 'Cropping...';
 		// remove possibly white pixels from top

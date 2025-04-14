@@ -5,7 +5,12 @@
 	import { onMount } from 'svelte';
 	import ActionToolbar from '../ActionToolbar.svelte';
 
-	import cv from '@techstark/opencv-js';
+	import type * as OpenCV from '@techstark/opencv-js';
+	let cv: typeof OpenCV;
+	onMount(async () => {
+		cv = await import('@techstark/opencv-js');
+	});
+
 	import { createWorker } from 'tesseract.js';
 
 	let { isMobile = $bindable(false) } = $props();
@@ -103,7 +108,7 @@
 		}
 	}
 
-	function matchCharacterStats(src_mat: cv.Mat, minimumMatch: number = 0.9) {
+	function matchCharacterStats(src_mat: OpenCV.Mat, minimumMatch: number = 0.9) {
 		// remove possibly white pixels from top
 		const _W = src_mat.cols;
 		const _H = src_mat.rows;
