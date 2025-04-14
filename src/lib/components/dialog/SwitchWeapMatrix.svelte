@@ -1,0 +1,51 @@
+<script lang="ts">
+	import { AllMatrixIds } from '$lib/generated/all-ids';
+	import { type MatrixIds } from '$lib/generated/ids';
+	import { getMatrix } from '$lib/scripts/json-loader';
+	import Dialog from '../Dialog.svelte';
+	import FlexGrid from '../FlexGrid.svelte';
+
+	let { open = $bindable(false), switching = $bindable('matrix' as 'matrix' | 'weapon') } =
+		$props();
+</script>
+
+{#snippet matrix4p(matrix_id: MatrixIds)}
+	{#each [0, 1, 2, 3] as index}
+		<div class="compose above" style="top: 0rem; left: {-0.75 + 0.5 * index}rem">
+			<img
+				src="./matrix/{matrix_id.replace('-4p', '')}.webp"
+				alt="Matrix"
+				style="height: 6rem; width:6rem;"
+			/>
+		</div>
+	{/each}
+{/snippet}
+
+<Dialog title={'Switch ' + (switching === 'matrix' ? 'Matrix' : 'Weapon')} bind:open>
+	<FlexGrid max_cols={3} horizontal_gap="1rem" vertical_gap="1rem">
+		{#if switching === 'matrix'}
+			{#each AllMatrixIds as matrix_id}
+				{#await getMatrix(matrix_id) then matrix}
+					<div class="matrix-item vertical center" style="width: 8rem; height: 8rem;">
+						<div class="compose below border" style="width: 6rem; height: 6rem;">
+							<button class="image">
+								{#if matrix.id === 'none'}
+									<img
+										src="./matrix/none.webp"
+										alt="Matrix"
+										style="height:6rem; width:6rem; filter: grayscale(100%)"
+									/>
+								{:else}
+									{@render matrix4p(matrix.id)}
+								{/if}
+							</button>
+						</div>
+						<div class="horizontal center" style="margin-top: 0.5rem;">
+							<span class="matrix-name">{matrix.name}</span>
+						</div>
+					</div>
+				{/await}
+			{/each}
+		{/if}
+	</FlexGrid>
+</Dialog>

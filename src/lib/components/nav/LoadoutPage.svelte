@@ -48,6 +48,7 @@
 		Trash2Icon
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
+	import SwitchWeapMatrix from '../dialog/SwitchWeapMatrix.svelte';
 	import StatContributions from '../StatContributions.svelte';
 
 	let {
@@ -84,8 +85,11 @@
 	// Dialog
 	let upload_dialog_open = $state(false);
 	let switch_loadout_dialog_open = $state(false);
+	let switch_gear_matrix_dialog_open = $state(false);
 
-	let any_dialog_open = $derived(upload_dialog_open || switch_loadout_dialog_open);
+	let any_dialog_open = $derived(
+		upload_dialog_open || switch_loadout_dialog_open || switch_gear_matrix_dialog_open
+	);
 
 	// Stat Contrib
 	let chart_width = $derived(inner_width - font_size * 16 - 300);
@@ -656,15 +660,9 @@
 			await updateAll();
 		}
 	});
-
-	// $inspect('image source', document.getElementById('user-upload')?.src);
-	$inspect('loadout weapons', user_weapons);
-	$inspect('weapon views', loadout_weapon_views);
-	$inspect('matrix views', loadout_matrix_views);
-	$inspect('weapmat', loadout_weapmat_combined);
 </script>
 
-{#snippet matrix4p(matrix: MatrixView, sizeScale: number = 1)}
+{#snippet matrix4p(matrix: MatrixView)}
 	{#each [0, 1, 2, 3] as index}
 		<div class="compose-above" style="top: -0.5rem; left: {-0.75 + 0.5 * index}rem">
 			<img
@@ -676,14 +674,16 @@
 	{/each}
 {/snippet}
 
-{#snippet showMatrices(matrix: MatrixView, index: number, sizeScale: number = 1)}
+{#snippet showMatrices(matrix: MatrixView, index: number)}
 	<div class="vertical center matrix-col" style="width: 6rem;">
 		<span class="matrix-name">{matrix.name}</span>
 		<div class="horizontal matrix-container">
 			<div class="compose below border" style="width: 6rem; height: 6rem; margin-top: 0.4rem;">
-				{#if matrix.id.includes('4p')}
-					{@render matrix4p(matrix)}
-				{/if}
+				<button class="image" onclick={() => (switch_gear_matrix_dialog_open = true)}>
+					{#if matrix.id.includes('4p')}
+						{@render matrix4p(matrix)}
+					{/if}
+				</button>
 				{#each [1, 2, 3] as advSetValue, advIndex}
 					<button
 						class="image"
@@ -930,6 +930,8 @@
 	bind:selected_loadout={current_loadout}
 	onSwitchLoadout={switchLoadout}
 />
+
+<SwitchWeapMatrix bind:open={switch_gear_matrix_dialog_open} />
 
 <ActionToolbar actions={metadata.actions} bind:is_mobile={isMobile} />
 
