@@ -10,12 +10,16 @@ export default defineConfig({
 			promiseExportName: '__tla',
 			promiseImportName: (i) => `__tla${i}`
 		}),
-		visualizer({
-			open: true,
-			filename: 'stats.html',
-			gzipSize: true,
-			brotliSize: true
-		})
+		...(process.env.NODE_ENV === 'production'
+			? [
+					visualizer({
+						open: true,
+						filename: 'stats.html',
+						gzipSize: true,
+						brotliSize: true
+					})
+				]
+			: [])
 	],
 	ssr: {
 		noExternal: ['@carbon/charts']
