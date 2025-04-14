@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { scrollY } from '$lib/scripts/stores';
 	function doClose() {
 		open = false;
 	}
@@ -50,6 +51,7 @@
 		{onpaste}
 		role="presentation"
 		tabindex="-1"
+		style="translate: 0 {$scrollY}px;"
 	>
 		<div class="dialog-container" role="dialog" aria-modal="true" style="width: {width};">
 			<div class="dialog-header">
@@ -118,6 +120,9 @@
 		flex-direction: column;
 		overflow: hidden;
 		animation: fadeIn 0.2s ease-out;
+
+		pointer-events: auto;
+		overscroll-behavior-y: contain;
 	}
 
 	@keyframes fadeIn {
@@ -166,6 +171,7 @@
 		padding: 1.25rem;
 		overflow-y: auto;
 		flex: 1;
+		overscroll-behavior-y: contain;
 	}
 
 	.dialog-buttons {
