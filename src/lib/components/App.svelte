@@ -2,7 +2,7 @@
 	import type { GearView, UserGear } from '$lib/scripts/gears';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
-	import { scrollY } from '$lib/scripts/stores';
+	import { any_dialog_open, scrollY } from '$lib/scripts/stores';
 	import { onMount, type Component } from 'svelte';
 	import Dialog from './Dialog.svelte';
 	import GearPage, { createGearView } from './nav/GearPage.svelte';
@@ -45,7 +45,13 @@
 	let current_loadout: string = $state('');
 	let gear_views: GearView[] = $state([]);
 
-	// check if ready
+	function updateDialogOpen(dialog_open: boolean) {
+		$any_dialog_open = dialog_open;
+	}
+
+	$effect(() => {
+		updateDialogOpen(dialog_open);
+	});
 
 	onMount(() => {
 		// get font size
@@ -60,6 +66,7 @@
 		Object.entries(_styles).forEach(([key, value]) => {
 			root.style.setProperty(`--${key}`, value);
 		});
+		root.style.overscrollBehavior = 'contain';
 		styles = _styles;
 
 		// load synced
@@ -75,6 +82,8 @@
 			console.log('Done processing user_gears');
 		});
 	});
+
+	$inspect('DIALOG_OPEN (App)', $any_dialog_open);
 </script>
 
 <svelte:window bind:innerWidth={inner_width} />
@@ -129,6 +138,7 @@
 		padding: 0;
 		/* background-color: var(--bg-color); */
 		color: var(--text-color);
+		overscroll-behavior: contain;
 		font-family:
 			system-ui,
 			-apple-system,
