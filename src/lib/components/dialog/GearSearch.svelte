@@ -250,7 +250,7 @@
 		width: 100%;
 	}
 
-	.search-bar {
+	/* .search-bar {
 		margin-top: 0.5rem;
 		margin-bottom: 1rem;
 		width: 100%;
@@ -266,7 +266,7 @@
 		font-size: 1rem;
 		background-color: var(--input-bg);
 		color: var(--input-text, #fff);
-	}
+	} */
 
 	/* Slot section styling */
 	.slot-section {
