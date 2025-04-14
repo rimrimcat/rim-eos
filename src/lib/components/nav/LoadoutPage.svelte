@@ -87,6 +87,10 @@
 
 	let any_dialog_open = $derived(upload_dialog_open || switch_loadout_dialog_open);
 
+	// Stat Contrib
+	let chart_width = $derived(inner_width - font_size * 16 - 300);
+	$inspect('chart wid', chart_width);
+
 	// Element options
 	const ELEMENTS: { value: LoadoutType; label: string }[] = [
 		{ value: 'atk', label: 'Atk' },
@@ -906,7 +910,7 @@
 			{#if inner_width > 700}
 				<div class="vertical" style="margin-left: 2rem;">
 					<p>wher am i</p>
-					<StatContributions bind:all_effects />
+					<StatContributions bind:all_effects bind:chart_width />
 				</div>
 			{/if}
 		</div>

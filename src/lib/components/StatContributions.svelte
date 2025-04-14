@@ -17,14 +17,15 @@
 		ResoEffect,
 		WeaponEffect
 	} from '$lib/scripts/weapons';
-	import { BarChartStacked } from '@carbon/charts-svelte';
+	import { BarChartStacked, ScaleTypes } from '@carbon/charts-svelte';
 	import '@carbon/charts-svelte/styles.css';
 
 	let {
 		all_effects = $bindable([] as (ResoEffect | WeaponEffect | MatrixFinalEffect)[]),
-		max_width = $bindable(500),
-		bar_width = 15
+		chart_width = $bindable(500)
 	} = $props();
+
+	let key_filter = $state((key: StatKey) => !key.includes('_res_percent'));
 
 	type ETags = {
 		character?: WeaponsIds;
@@ -74,7 +75,7 @@
 	// sort stat_col_data.data accoridng to values and get only the keys
 	let sortedKeys = $derived(
 		Object.entries(stat_col_totals.data)
-			.filter(([key, _]) => !key.includes('_res'))
+			.filter(([key, _]) => key_filter(key as StatKey))
 			.sort((a, b) => a[1] - b[1])
 			.map(([key, _]) => STAT_LABELS[key as StatKey])
 	);
@@ -86,9 +87,10 @@
 				const group = eff.is_weapon ? 'Weapon' : eff.is_matrix ? 'Matrix' : 'Reso';
 
 				Object.keys(eff.stats)
-					.filter((key) => !key.includes('_res'))
+					.filter((key) => key_filter(key as StatKey))
 					.forEach((key) => {
 						const combinedKey = `${group}:${key}`;
+
 						if (!acc.map.has(combinedKey)) {
 							const entry = {
 								group,
@@ -109,6 +111,8 @@
 			{ map: new Map(), list: [] }
 		).list
 	);
+
+	let chart_height = $derived(sortedKeys.length * 40 + 100);
 </script>
 
 <BarChartStacked
@@ -118,8 +122,7 @@
 		title: 'Stat Contributions',
 		axes: {
 			left: {
-				// @ts-expect-error
-				scaleType: 'labels',
+				scaleType: 'labels' as ScaleTypes,
 				mapsTo: 'key',
 				domain: sortedKeys
 			},
@@ -128,6 +131,7 @@
 				mapsTo: 'value'
 			}
 		},
-		height: '400px'
+		width: `${chart_width}px`,
+		height: `${chart_height}px`
 	}}
 />
