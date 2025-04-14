@@ -5,8 +5,8 @@
 		type SliderAction,
 		type ToggleAction
 	} from '$lib/scripts/nav-metadata';
+	import { scrollY } from '$lib/scripts/stores';
 	import { ArrowRightToLine, CircleHelp, Menu, ToggleLeft, ToggleRight } from '@lucide/svelte';
-	import { scrollY } from './App.svelte';
 
 	let {
 		actions = [] as ComponentAction[],
