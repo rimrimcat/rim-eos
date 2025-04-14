@@ -51,7 +51,7 @@
 			? '(( !flame_atk + !frost_atk + !volt_atk + !phys_atk ) <= 2 ) * '
 			: '';
 		const gear = _selectedGear // @ts-expect-error
-			? `( 'gear' === '${GearPart[_selectedGear.toUpperCase()]}' ) * `
+			? `( 'gear' == '${GearPart[_selectedGear.toUpperCase()]}' ) * `
 			: '';
 		const titan = selectedOthers.has('Titan') ? 'titan_' : '';
 		const stat = _selectedStat.toLowerCase();
