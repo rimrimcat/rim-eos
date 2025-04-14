@@ -17,15 +17,23 @@
 		ResoEffect,
 		WeaponEffect
 	} from '$lib/scripts/weapons';
-	import { BarChartStacked, ScaleTypes } from '@carbon/charts-svelte';
+	import { BarChartStacked, ScaleTypes, type BarChartOptions } from '@carbon/charts-svelte';
 	import '@carbon/charts-svelte/styles.css';
+	import { PinIcon, PinOffIcon } from '@lucide/svelte';
 
 	let {
 		all_effects = $bindable([] as (ResoEffect | WeaponEffect | MatrixFinalEffect)[]),
 		chart_width = $bindable(500)
 	} = $props();
 
+	// options
+	let pin_highest = $state(false);
+
+	// stuff
 	let key_filter = $state((key: StatKey) => !key.includes('_res_percent'));
+	let grouping_fcn = $state((eff: TaggedEffect) =>
+		eff.is_weapon ? 'Weapon' : eff.is_matrix ? 'Matrix' : 'Reso'
+	);
 
 	type ETags = {
 		character?: WeaponsIds;
@@ -72,19 +80,32 @@
 		all_effects.reduce((col, eff) => col.add(new StatCollection(eff.stats)), new StatCollection())
 	);
 
-	// sort stat_col_data.data accoridng to values and get only the keys
 	let sortedKeys = $derived(
+		Object.entries(stat_col_totals.data)
+			.filter(([key, _]) => key_filter(key as StatKey))
+			.sort((a, b) => b[1] - a[1])
+			.map(([key, _]) => key)
+	);
+
+	// NOTE: REVERSE ORDER!!!!
+	let sortedKeyLabels = $derived(
 		Object.entries(stat_col_totals.data)
 			.filter(([key, _]) => key_filter(key as StatKey))
 			.sort((a, b) => a[1] - b[1])
 			.map(([key, _]) => STAT_LABELS[key as StatKey])
 	);
 
-	// Filter out keys containing '_res'
+	let highest_so_far = $state(0);
+	$effect(() => {
+		highest_so_far = Math.max(stat_col_totals.data[sortedKeys[0] as StatKey] ?? 0, highest_so_far);
+	});
+	let max_domain = $derived(
+		pin_highest ? (highest_so_far ?? 0) : (stat_col_totals.data[sortedKeys[0] as StatKey] ?? 0)
+	);
 	let data = $derived(
 		tagged_effects.reduce(
 			(acc, eff) => {
-				const group = eff.is_weapon ? 'Weapon' : eff.is_matrix ? 'Matrix' : 'Reso';
+				const group = grouping_fcn(eff);
 
 				Object.keys(eff.stats)
 					.filter((key) => key_filter(key as StatKey))
@@ -112,26 +133,36 @@
 		).list
 	);
 
-	let chart_height = $derived(sortedKeys.length * 40 + 100);
-</script>
-
-<BarChartStacked
-	{data}
-	options={{
+	let options: BarChartOptions = $derived({
 		theme: 'g90',
 		title: 'Stat Contributions',
 		axes: {
 			left: {
 				scaleType: 'labels' as ScaleTypes,
 				mapsTo: 'key',
-				domain: sortedKeys
+				domain: sortedKeyLabels
 			},
 			bottom: {
 				stacked: true,
-				mapsTo: 'value'
+				mapsTo: 'value',
+				domain: [0, max_domain]
 			}
 		},
 		width: `${chart_width}px`,
-		height: `${chart_height}px`
-	}}
-/>
+		height: `${sortedKeyLabels.length * 40 + 100}px`
+	});
+</script>
+
+<div class="chart-actions">
+	<button class="border" id="pin-highest" onclick={() => (pin_highest = !pin_highest)}>
+		{#if pin_highest}
+			<PinOffIcon />
+			<label class="in-button" for="pin-highest">Unpin</label>
+		{:else}
+			<PinIcon />
+			<label class="in-button" for="pin-highest">Pin Highest</label>
+		{/if}
+	</button>
+</div>
+
+<BarChartStacked {data} {options} />
