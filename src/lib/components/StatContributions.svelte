@@ -19,7 +19,7 @@
 	} from '$lib/scripts/weapons';
 	import { BarChartStacked, ScaleTypes, type BarChartOptions } from '@carbon/charts-svelte';
 	import '@carbon/charts-svelte/styles.css';
-	import { DiffIcon, PinIcon, PinOffIcon, SlashIcon } from '@lucide/svelte';
+	import { DiffIcon, GroupIcon, PinIcon, PinOffIcon, SlashIcon } from '@lucide/svelte';
 
 	let {
 		all_effects = $bindable([] as (ResoEffect | WeaponEffect | MatrixFinalEffect)[]),
@@ -27,15 +27,19 @@
 	} = $props();
 
 	// options
+	let grouping_type: 'source' | 'character' = $state('source');
+	const SOURCE_GROUPING = (eff: TaggedEffect) =>
+		eff.is_weapon ? 'Weapon' : eff.is_matrix ? 'Matrix' : 'Reso';
+	const CHARACTER_GROUPING = (eff: TaggedEffect) => eff.character ?? 'none';
+
 	let pin_highest = $state(false);
+
 	let compare_stats = $state(false);
 	let prev_tagged_effects = $state([] as TaggedEffect[]);
 
 	// stuff
 	let key_filter = $state((key: StatKey) => !key.includes('_res_percent'));
-	let grouping_fcn = $state((eff: TaggedEffect) =>
-		eff.is_weapon ? 'Weapon' : eff.is_matrix ? 'Matrix' : 'Reso'
-	);
+	let grouping_fcn: (eff: TaggedEffect) => string = $state(CHARACTER_GROUPING);
 
 	type ETags = {
 		character?: WeaponsIds;
@@ -106,6 +110,14 @@
 				Object.entries(eff.stats).map(([key, value]) => [key, -value])
 			) as StatData
 		};
+	}
+
+	function updateGrouping() {
+		if (grouping_type === 'character') {
+			grouping_fcn = CHARACTER_GROUPING;
+		} else {
+			grouping_fcn = SOURCE_GROUPING;
+		}
 	}
 
 	function getDiff(prev_eff: TaggedEffect[], curr_eff: TaggedEffect[]): TaggedEffect[] {
@@ -229,6 +241,17 @@
 </script>
 
 <div class="horizontal chart-actions">
+	<button
+		class="border"
+		id="stat-grouping"
+		onclick={() => {
+			grouping_type = grouping_type === 'character' ? 'source' : 'character';
+			updateGrouping();
+		}}
+	>
+		<GroupIcon />
+		<label class="in-button" for="stat-grouping">Grouping: {grouping_type}</label>
+	</button>
 	<button
 		class="border"
 		id="pin-highest"
