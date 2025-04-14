@@ -33,6 +33,7 @@
 		"prettier": "^3.4.2",
 		"prettier-plugin-organize-imports": "^4.1.0",
 		"prettier-plugin-svelte": "^3.3.3",
+		"rollup-plugin-visualizer": "^5.14.0",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"ts-node": "^10.9.2",
