@@ -907,9 +907,8 @@
 					</div>
 				{/each}
 			</div>
-			{#if inner_width > 700}
+			{#if inner_width > 600}
 				<div class="vertical" style="margin-left: 2rem;">
-					<p>wher am i</p>
 					<StatContributions bind:all_effects bind:chart_width />
 				</div>
 			{/if}
