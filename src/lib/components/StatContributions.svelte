@@ -73,10 +73,10 @@
 		return tags;
 	}
 
-	function createData(eff_list: TaggedEffect[]) {
+	function createData(eff_list: TaggedEffect[], _grouping_fcn: (eff: TaggedEffect) => string) {
 		return eff_list.reduce(
 			(acc, eff) => {
-				const group = grouping_fcn(eff);
+				const group = _grouping_fcn(eff);
 
 				Object.keys(eff.stats)
 					.filter((key) => key_filter(key as StatKey))
@@ -192,7 +192,7 @@
 		)
 	);
 
-	let data = $derived(createData(current_processed_effects));
+	let data = $derived(createData(current_processed_effects, grouping_fcn));
 	let sortedKeys = $derived(
 		Object.entries(stat_col_totals.data)
 			.filter(([key, _]) => key_filter(key as StatKey))
@@ -225,7 +225,7 @@
 			bottom: {
 				stacked: true,
 				mapsTo: 'value',
-				domain: pin_axis ? curr_axis : [min_domain, max_domain]
+				domain: pin_axis ? curr_axis : undefined
 			}
 		},
 		width: `${chart_width}px`,
@@ -269,7 +269,6 @@
 		onclick={() => {
 			// disable pinning
 			pin_axis = false;
-			highest_so_far = 0;
 
 			compare_stats = !compare_stats;
 			if (!compare_stats) {
