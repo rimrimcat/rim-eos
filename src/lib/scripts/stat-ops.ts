@@ -23,7 +23,7 @@ export class StatCollection {
 	constructor(stat: GearView);
 	constructor(stat: StatGearUser, value: number);
 	constructor(stat: StatGearTitan, value: number);
-	constructor(stat?: StatGearUser | StatGearTitan | StatData | GearView, value?: number) {
+	constructor(stat?: StatKey | StatGearTitan | StatData | GearView, value?: number) {
 		if (stat === undefined) {
 			this.data = {};
 		} else if (typeof stat === 'string') {
@@ -46,7 +46,7 @@ export class StatCollection {
 		}
 	}
 
-	get(stat: StatGearUser | StatNonGear): number {
+	get(stat: StatKey): number {
 		return this.data[stat] ?? 0;
 	}
 
