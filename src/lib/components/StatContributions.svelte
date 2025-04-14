@@ -109,13 +109,13 @@
 	}
 
 	function getDiff(prev_eff: TaggedEffect[], curr_eff: TaggedEffect[]): TaggedEffect[] {
-		type eff_ids = {
+		type DiffIdMap = {
 			id: ResoEffectsIds | WeaponEffectsIds | MatrixEffectsIds;
 			eff_in_prev?: TaggedEffect;
 			eff_in_curr?: TaggedEffect;
 		};
 
-		const present_ids: eff_ids[] = [];
+		const present_ids: DiffIdMap[] = [];
 		curr_eff.forEach((eff) => {
 			if (prev_eff.some((eff2) => eff2.id === eff.id)) {
 				present_ids.push({
@@ -130,11 +130,15 @@
 				});
 			}
 		});
+		prev_eff.forEach((eff) => {
+			if (!present_ids.some((eff2) => eff2.id === eff.id)) {
+				present_ids.push({
+					id: eff.id,
+					eff_in_prev: eff
+				});
+			}
+		});
 
-		// iterate through eff_ids:
-		// if eff_in_curr is undefined but eff_in_prev is defined, invert eff_in_prev and add to array
-		// if eff_in_prev is undefined but eff_in_curr is defined, add eff_in_curr to array
-		// if both are defined, subtract eff_in_prev from eff_in_curr and add to array
 		return present_ids.map((eff) => {
 			if (eff.eff_in_curr && !eff.eff_in_prev) {
 				return eff.eff_in_curr;
@@ -148,6 +152,7 @@
 					).data
 				};
 			} else {
+				console.log('wtf????');
 				throw new Error('Something went wrong!');
 			}
 		});
@@ -219,6 +224,8 @@
 		width: `${chart_width}px`,
 		height: `${sortedKeyLabels.length * 40 + 100}px`
 	});
+
+	$inspect('prev_tag_eff', prev_tagged_effects);
 </script>
 
 <div class="horizontal chart-actions">
