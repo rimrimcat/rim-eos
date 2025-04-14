@@ -19,7 +19,7 @@
 	} from '$lib/scripts/weapons';
 	import { BarChartStacked, ScaleTypes, type BarChartOptions } from '@carbon/charts-svelte';
 	import '@carbon/charts-svelte/styles.css';
-	import { PinIcon, PinOffIcon } from '@lucide/svelte';
+	import { DiffIcon, PinIcon, PinOffIcon, SlashIcon } from '@lucide/svelte';
 
 	let {
 		all_effects = $bindable([] as (ResoEffect | WeaponEffect | MatrixFinalEffect)[]),
@@ -28,6 +28,8 @@
 
 	// options
 	let pin_highest = $state(false);
+	let compare_stats = $state(false);
+	let prev_tagged_effects = $state([] as TaggedEffect[]);
 
 	// stuff
 	let key_filter = $state((key: StatKey) => !key.includes('_res_percent'));
@@ -66,44 +68,8 @@
 		return tags;
 	}
 
-	let tagged_effects = $derived(
-		all_effects.map((eff) => {
-			const tagged_eff: TaggedEffect = {
-				...eff,
-				...tagEffect(eff)
-			};
-			return tagged_eff;
-		})
-	);
-
-	let stat_col_totals = $derived(
-		all_effects.reduce((col, eff) => col.add(new StatCollection(eff.stats)), new StatCollection())
-	);
-
-	let sortedKeys = $derived(
-		Object.entries(stat_col_totals.data)
-			.filter(([key, _]) => key_filter(key as StatKey))
-			.sort((a, b) => b[1] - a[1])
-			.map(([key, _]) => key)
-	);
-
-	// NOTE: REVERSE ORDER!!!!
-	let sortedKeyLabels = $derived(
-		Object.entries(stat_col_totals.data)
-			.filter(([key, _]) => key_filter(key as StatKey))
-			.sort((a, b) => a[1] - b[1])
-			.map(([key, _]) => STAT_LABELS[key as StatKey])
-	);
-
-	let highest_so_far = $state(0);
-	$effect(() => {
-		highest_so_far = Math.max(stat_col_totals.data[sortedKeys[0] as StatKey] ?? 0, highest_so_far);
-	});
-	let max_domain = $derived(
-		pin_highest ? (highest_so_far ?? 0) : (stat_col_totals.data[sortedKeys[0] as StatKey] ?? 0)
-	);
-	let data = $derived(
-		tagged_effects.reduce(
+	function createData(eff_list: TaggedEffect[]) {
+		return eff_list.reduce(
 			(acc, eff) => {
 				const group = grouping_fcn(eff);
 
@@ -130,7 +96,109 @@
 				return acc;
 			},
 			{ map: new Map(), list: [] }
-		).list
+		).list;
+	}
+
+	function invertEffect(eff: TaggedEffect) {
+		return {
+			...eff,
+			stats: Object.fromEntries(
+				Object.entries(eff.stats).map(([key, value]) => [key, -value])
+			) as StatData
+		};
+	}
+
+	function getDiff(prev_eff: TaggedEffect[], curr_eff: TaggedEffect[]): TaggedEffect[] {
+		type eff_ids = {
+			id: ResoEffectsIds | WeaponEffectsIds | MatrixEffectsIds;
+			eff_in_prev?: TaggedEffect;
+			eff_in_curr?: TaggedEffect;
+		};
+
+		const present_ids: eff_ids[] = [];
+		curr_eff.forEach((eff) => {
+			if (prev_eff.some((eff2) => eff2.id === eff.id)) {
+				present_ids.push({
+					id: eff.id,
+					eff_in_prev: prev_eff.find((eff2) => eff2.id === eff.id),
+					eff_in_curr: eff
+				});
+			} else {
+				present_ids.push({
+					id: eff.id,
+					eff_in_curr: eff
+				});
+			}
+		});
+
+		// iterate through eff_ids:
+		// if eff_in_curr is undefined but eff_in_prev is defined, invert eff_in_prev and add to array
+		// if eff_in_prev is undefined but eff_in_curr is defined, add eff_in_curr to array
+		// if both are defined, subtract eff_in_prev from eff_in_curr and add to array
+		return present_ids.map((eff) => {
+			if (eff.eff_in_curr && !eff.eff_in_prev) {
+				return eff.eff_in_curr;
+			} else if (eff.eff_in_prev && !eff.eff_in_curr) {
+				return invertEffect(eff.eff_in_prev);
+			} else if (eff.eff_in_prev && eff.eff_in_curr) {
+				return {
+					...eff.eff_in_curr,
+					stats: new StatCollection(eff.eff_in_curr.stats).subtract(
+						new StatCollection(eff.eff_in_prev.stats)
+					).data
+				};
+			} else {
+				throw new Error('Something went wrong!');
+			}
+		});
+	}
+
+	let tagged_effects = $derived(
+		all_effects.map((eff) => {
+			const tagged_eff: TaggedEffect = {
+				...eff,
+				...tagEffect(eff)
+			};
+			return tagged_eff;
+		})
+	);
+
+	let diff_tagged_effects = $derived(getDiff(prev_tagged_effects, tagged_effects));
+
+	let current_processed_effects = $derived(compare_stats ? diff_tagged_effects : tagged_effects);
+
+	let stat_col_totals = $derived(
+		current_processed_effects.reduce(
+			(col, eff) => col.add(new StatCollection(eff.stats)),
+			new StatCollection()
+		)
+	);
+
+	let data = $derived(createData(current_processed_effects));
+	let sortedKeys = $derived(
+		Object.entries(stat_col_totals.data)
+			.filter(([key, _]) => key_filter(key as StatKey))
+			.sort((a, b) => b[1] - a[1])
+			.map(([key, _]) => key)
+	);
+
+	// NOTE: REVERSE ORDER!!!!
+	let sortedKeyLabels = $derived(
+		Object.entries(stat_col_totals.data)
+			.filter(([key, _]) => key_filter(key as StatKey))
+			.sort((a, b) => a[1] - b[1])
+			.map(([key, _]) => STAT_LABELS[key as StatKey])
+	);
+
+	let highest_so_far = $state(0);
+	$effect(() => {
+		highest_so_far = Math.max(stat_col_totals.data[sortedKeys[0] as StatKey] ?? 0, highest_so_far);
+	});
+	let max_domain = $derived(
+		pin_highest ? (highest_so_far ?? 0) : (stat_col_totals.data[sortedKeys[0] as StatKey] ?? 0)
+	);
+	let min_domain = $derived(
+		compare_stats ? (stat_col_totals.data[sortedKeys[sortedKeys.length - 1] as StatKey] ?? 0) : 0
 	);
 
 	let options: BarChartOptions = $derived({
@@ -145,7 +213,7 @@
 			bottom: {
 				stacked: true,
 				mapsTo: 'value',
-				domain: [0, max_domain]
+				domain: [min_domain, max_domain]
 			}
 		},
 		width: `${chart_width}px`,
@@ -153,8 +221,17 @@
 	});
 </script>
 
-<div class="chart-actions">
-	<button class="border" id="pin-highest" onclick={() => (pin_highest = !pin_highest)}>
+<div class="horizontal chart-actions">
+	<button
+		class="border"
+		id="pin-highest"
+		onclick={() => {
+			pin_highest = !pin_highest;
+			if (!pin_highest) {
+				highest_so_far = 0;
+			}
+		}}
+	>
 		{#if pin_highest}
 			<PinOffIcon />
 			<label class="in-button" for="pin-highest">Unpin</label>
@@ -162,6 +239,35 @@
 			<PinIcon />
 			<label class="in-button" for="pin-highest">Pin Highest</label>
 		{/if}
+	</button>
+	<button
+		class="border"
+		id="compare-stats"
+		onclick={() => {
+			// disable pinning
+			pin_highest = false;
+			highest_so_far = 0;
+
+			compare_stats = !compare_stats;
+			if (!compare_stats) {
+				return;
+			}
+
+			prev_tagged_effects = [...tagged_effects];
+		}}
+	>
+		<div class="compose below lucide">
+			<DiffIcon />
+
+			<div class="compose above lucide">
+				{#if compare_stats}
+					<SlashIcon />
+				{/if}
+			</div>
+		</div>
+		<label class="in-button" for="compare-stats"
+			>{compare_stats ? 'Stop Compare' : 'Compare Stats'}</label
+		>
 	</button>
 </div>
 

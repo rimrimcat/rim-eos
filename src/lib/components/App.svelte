@@ -402,6 +402,11 @@
 		left: 0;
 	}
 
+	:global(.compose.lucide) {
+		height: 24px;
+		width: 24px;
+	}
+
 	:global(.compose.border) {
 		border-radius: 1rem;
 		background-color: rgb(99 99 99);
