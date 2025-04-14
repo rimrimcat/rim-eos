@@ -1,13 +1,9 @@
-<script module>
-	export let scrollY = $state(writable(0));
-</script>
-
 <script lang="ts">
 	import type { GearView, UserGear } from '$lib/scripts/gears';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
+	import { scrollY } from '$lib/scripts/stores';
 	import { onMount, type Component } from 'svelte';
-	import { writable } from 'svelte/store';
 	import Dialog from './Dialog.svelte';
 	import GearPage, { createGearView } from './nav/GearPage.svelte';
 	import LoadoutPage from './nav/LoadoutPage.svelte';
@@ -102,8 +98,8 @@
 		class="content-container"
 		class:mobile={is_mobile}
 		style="translate: 0 {is_mobile ? mobile_toolbar_transform : 0}px;"
-		onscroll={(e: any) => {
-			$scrollY = e.target.scrollTop;
+		onscroll={(e: UIEvent) => {
+			$scrollY = (e.target as HTMLElement).scrollTop;
 		}}
 	>
 		<div style="display: none">
@@ -356,7 +352,6 @@
 		background-color: var(--bg-color);
 		color: var(--text-color);
 		overscroll-behavior-x: none;
-		padding-bottom: 5rem;
 	}
 
 	.content-container {
