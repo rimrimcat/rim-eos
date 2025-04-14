@@ -32,7 +32,8 @@
 		eff.is_weapon ? 'Weapon' : eff.is_matrix ? 'Matrix' : 'Reso';
 	const CHARACTER_GROUPING = (eff: TaggedEffect) => eff.character ?? 'none';
 
-	let pin_highest = $state(false);
+	let pin_axis = $state(false);
+	let curr_axis = $state([0, 0]);
 
 	let compare_stats = $state(false);
 	let prev_tagged_effects = $state([] as TaggedEffect[]);
@@ -207,15 +208,9 @@
 			.map(([key, _]) => STAT_LABELS[key as StatKey])
 	);
 
-	let highest_so_far = $state(0);
-	$effect(() => {
-		highest_so_far = Math.max(stat_col_totals.data[sortedKeys[0] as StatKey] ?? 0, highest_so_far);
-	});
-	let max_domain = $derived(
-		pin_highest ? (highest_so_far ?? 0) : (stat_col_totals.data[sortedKeys[0] as StatKey] ?? 0)
-	);
+	let max_domain = $derived(stat_col_totals.data[sortedKeys[0] as StatKey] ?? 0);
 	let min_domain = $derived(
-		compare_stats ? (stat_col_totals.data[sortedKeys[sortedKeys.length - 1] as StatKey] ?? 0) : 0
+		stat_col_totals.data[sortedKeys[sortedKeys.length - 1] as StatKey] ?? 0
 	);
 
 	let options: BarChartOptions = $derived({
@@ -230,14 +225,12 @@
 			bottom: {
 				stacked: true,
 				mapsTo: 'value',
-				domain: [min_domain, max_domain]
+				domain: pin_axis ? curr_axis : [min_domain, max_domain]
 			}
 		},
 		width: `${chart_width}px`,
 		height: `${sortedKeyLabels.length * 40 + 100}px`
 	});
-
-	$inspect('prev_tag_eff', prev_tagged_effects);
 </script>
 
 <div class="horizontal chart-actions">
@@ -254,20 +247,20 @@
 	</button>
 	<button
 		class="border"
-		id="pin-highest"
+		id="pin-axis"
 		onclick={() => {
-			pin_highest = !pin_highest;
-			if (!pin_highest) {
-				highest_so_far = 0;
+			pin_axis = !pin_axis;
+			if (pin_axis) {
+				curr_axis = [min_domain, max_domain];
 			}
 		}}
 	>
-		{#if pin_highest}
+		{#if pin_axis}
 			<PinOffIcon />
-			<label class="in-button" for="pin-highest">Unpin</label>
+			<label class="in-button" for="pin-axis">Unpin</label>
 		{:else}
 			<PinIcon />
-			<label class="in-button" for="pin-highest">Pin Highest</label>
+			<label class="in-button" for="pin-axis">Pin Axis</label>
 		{/if}
 	</button>
 	<button
@@ -275,7 +268,7 @@
 		id="compare-stats"
 		onclick={() => {
 			// disable pinning
-			pin_highest = false;
+			pin_axis = false;
 			highest_so_far = 0;
 
 			compare_stats = !compare_stats;
