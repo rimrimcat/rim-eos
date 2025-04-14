@@ -10,8 +10,9 @@ const KEYS_ATK_PERCENT: StatGearUser[] = [
 	'alt_atk_percent'
 ];
 
+export type StatKey = StatGearUser | StatNonGear | StatDebuffs;
 export type StatData = {
-	[key in StatGearUser | StatNonGear | StatDebuffs]?: number;
+	[key in StatKey]?: number;
 };
 
 export class StatCollection {

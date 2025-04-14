@@ -48,6 +48,7 @@
 		Trash2Icon
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
+	import StatContributions from '../StatContributions.svelte';
 
 	let {
 		isMobile = $bindable(false),
@@ -75,6 +76,8 @@
 
 	let loadout_resonance_effects = $state([] as ResoEffect[]);
 	let loadout_resonance_stat = $state(new StatCollection());
+
+	let all_effects = $state([] as (ResoEffect | WeaponEffect | MatrixFinalEffect)[]);
 
 	let is_editing = $state(false);
 
@@ -243,7 +246,10 @@
 					return;
 				}
 
-				// TODO: check for teamplay
+				if (eff.require_teamplay) {
+					return;
+				}
+
 				loadout_resonance_stat = loadout_resonance_stat.add(new StatCollection(eff.stats));
 				loadout_resonance_effects.push(eff);
 			}
@@ -386,6 +392,12 @@
 		} as WeaponView;
 
 		loadout_weapmat_combined[index][0] = loadout_weapon_views[index];
+
+		all_effects = [
+			...loadout_weapon_views.flatMap((weapon) => weapon.effects),
+			...loadout_matrix_views.flatMap((matrix) => matrix.effects),
+			...loadout_resonance_effects
+		];
 	}
 
 	async function updateSingleMatrixView(index: number) {
@@ -408,6 +420,12 @@
 		} as MatrixView;
 
 		loadout_weapmat_combined[index][1] = loadout_matrix_views[index];
+
+		all_effects = [
+			...loadout_weapon_views.flatMap((weapon) => weapon.effects),
+			...loadout_matrix_views.flatMap((matrix) => matrix.effects),
+			...loadout_resonance_effects
+		];
 	}
 
 	// creates gearView and updates loadout_resonance_stat
@@ -430,6 +448,12 @@
 			item,
 			loadout_matrix_views[i]
 		]);
+
+		all_effects = [
+			...loadout_weapon_views.flatMap((weapon) => weapon.effects),
+			...loadout_matrix_views.flatMap((matrix) => matrix.effects),
+			...loadout_resonance_effects
+		];
 	}
 
 	function saveWeaponMatrixLoadout() {
@@ -882,6 +906,7 @@
 			{#if inner_width > 700}
 				<div class="vertical" style="margin-left: 2rem;">
 					<p>wher am i</p>
+					<StatContributions bind:all_effects />
 				</div>
 			{/if}
 		</div>

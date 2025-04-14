@@ -18,6 +18,7 @@
 		"generate-id": "node --loader ts-node/esm src/lib/scripts/id-type-gen.ts && prettier --write src/lib/generated/*.*"
 	},
 	"devDependencies": {
+		"@carbon/charts-svelte": "^1.22.18",
 		"@eslint/compat": "^1.2.5",
 		"@eslint/js": "^9.18.0",
 		"@sveltejs/adapter-auto": "^4.0.0",
@@ -44,7 +45,6 @@
 		"@lucide/svelte": "^0.485.0",
 		"@sveltejs/adapter-static": "^3.0.8",
 		"@techstark/opencv-js": "^4.10.0-release.1",
-		"fuse.js": "^7.1.0",
 		"tesseract.js": "^6.0.0"
 	}
 }
