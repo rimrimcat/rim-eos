@@ -289,16 +289,6 @@
 		padding: 0;
 	}
 
-	.toggle-track {
-		display: inline-block;
-		width: 2.5rem;
-		height: 1.25rem;
-		background-color: var(--border-color);
-		border-radius: 1rem;
-		position: relative;
-		transition: background-color 0.3s ease;
-	}
-
 	/* Slider Styles */
 	.slider-item {
 		flex-direction: column;
@@ -312,13 +302,6 @@
 		max-width: 100%;
 		width: 100%;
 		font-size: small;
-	}
-
-	.slider-container {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		margin-left: 1rem;
 	}
 
 	.slider-controls {
@@ -338,6 +321,7 @@
 	.slider-input {
 		flex: 1;
 		-webkit-appearance: none;
+		appearance: none;
 		height: 0.5rem;
 		border-radius: 0.25rem;
 		background: var(--border-color);
