@@ -36,7 +36,6 @@ export class StatCollection {
 
 				gearView.derived.forEach((stat) => {
 					if (stat.stat.startsWith('titan_')) {
-						// console.log('adding titan stat', stat.stat, 'with value', stat.value);
 						this.data[stat.stat.replace('titan_', '') as StatGearUser] = stat.value;
 					}
 				});
@@ -52,6 +51,10 @@ export class StatCollection {
 
 	clone_data(): StatData {
 		return { ...this.data };
+	}
+
+	clone(): StatCollection {
+		return new StatCollection(this.data);
 	}
 
 	add(other: StatCollection): StatCollection {
