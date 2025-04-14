@@ -2,40 +2,40 @@
 	import { onDestroy, onMount, tick } from 'svelte';
 
 	let {
-		horizontalGap = '1rem',
-		verticalGap = '1rem',
+		horizontal_gap = '1rem',
+		vertical_gap = '1rem',
 		gap = undefined,
-		minColumns = 1,
-		maxColumns = 10,
-		preferDivisible = false,
+		min_cols = 1,
+		max_cols = 10,
+		prefer_divisible = false,
 		by_column = true,
-		hasMeasured = $bindable(false),
+		has_measured = $bindable(false),
 		children
 	} = $props();
 
 	if (gap !== undefined) {
-		horizontalGap = gap;
-		verticalGap = gap;
+		horizontal_gap = gap;
+		vertical_gap = gap;
 	}
 
 	let columns = $state(1);
 
-	let numItems = $state(0);
-	let itemWidth = $state(0);
-	let itemHeight = $state(0);
+	let num_items = $state(0);
+	let item_width = $state(0);
+	let item_height = $state(0);
 
 	let container: HTMLDivElement;
 	let items = $state<Element[]>([]);
-	let measuringContainer: HTMLDivElement | null = $state(null);
+	let measuring_container: HTMLDivElement | null = $state(null);
 
-	let previousItemCount = $state(0);
-	let mutationObserver: MutationObserver | null = null;
+	let previous_item_count = $state(0);
+	let mutation_observer: MutationObserver | null = null;
 
 	let gap_px = $state(0);
 
 	// resizing calcs
-	const _arr_ = Array.from({ length: 1 + maxColumns - minColumns + 1 }, (_, i) => i + minColumns);
-	let sizeArr = $derived(_arr_.map((value) => value * itemWidth + (value - 1) * gap_px));
+	const _RESIZE_ARR = Array.from({ length: 1 + max_cols - min_cols + 1 }, (_, i) => i + min_cols);
+	let size_arr = $derived(_RESIZE_ARR.map((value) => value * item_width + (value - 1) * gap_px));
 
 	// Function to check if items have changed
 	function checkItemsChanged() {
@@ -45,14 +45,14 @@
 			container.querySelectorAll(':scope > *:not(.measuring-container)')
 		);
 
-		if (currentItems.length !== previousItemCount) {
-			console.log(`Items changed: ${previousItemCount} → ${currentItems.length}`);
-			previousItemCount = currentItems.length;
+		if (currentItems.length !== previous_item_count) {
+			console.log(`Items changed: ${previous_item_count} → ${currentItems.length}`);
+			previous_item_count = currentItems.length;
 
 			// Reset measurements to force recalculation
-			itemWidth = 0;
-			itemHeight = 0;
-			hasMeasured = false;
+			item_width = 0;
+			item_height = 0;
+			has_measured = false;
 
 			// Remeasure and update grid
 			measureItems();
@@ -68,24 +68,24 @@
 
 		// Get all slot items
 		items = Array.from(container.querySelectorAll(':scope > *:not(.measuring-container)'));
-		numItems = items.length;
+		num_items = items.length;
 
 		if (items.length === 0) return;
 
 		// If itemWidth is not set or we need to remeasure
-		if (!itemWidth || !hasMeasured) {
+		if (!item_width || !has_measured) {
 			// Create a measuring container
-			measuringContainer = document.createElement('div');
-			measuringContainer.className = 'measuring-container';
+			measuring_container = document.createElement('div');
+			measuring_container.className = 'measuring-container';
 
 			// Position it absolutely to not affect layout
-			measuringContainer.style.position = 'absolute';
-			measuringContainer.style.visibility = 'hidden';
-			measuringContainer.style.display = 'block';
-			measuringContainer.style.width = 'auto';
+			measuring_container.style.position = 'absolute';
+			measuring_container.style.visibility = 'hidden';
+			measuring_container.style.display = 'block';
+			measuring_container.style.width = 'auto';
 
 			// Add to DOM for measurement
-			container.appendChild(measuringContainer);
+			container.appendChild(measuring_container);
 
 			// Keep track of maximum dimensions
 			const itemWidths = [];
@@ -103,7 +103,7 @@
 				_itemWrapper.appendChild(clone);
 
 				// Add to measuring container
-				measuringContainer.appendChild(_itemWrapper);
+				measuring_container.appendChild(_itemWrapper);
 
 				// Measure dimensions
 				const _itemWidth = clone.offsetWidth;
@@ -114,44 +114,44 @@
 				itemHeights.push(_itemHeight);
 
 				// Remove this item wrapper
-				measuringContainer.removeChild(_itemWrapper);
+				measuring_container.removeChild(_itemWrapper);
 			}
 
 			// Remove measuring container
-			container.removeChild(measuringContainer);
-			measuringContainer = null;
+			container.removeChild(measuring_container);
+			measuring_container = null;
 
-			itemWidth = Math.ceil(Math.max(...itemWidths));
-			itemHeight = Math.ceil(Math.max(...itemHeights));
+			item_width = Math.ceil(Math.max(...itemWidths));
+			item_height = Math.ceil(Math.max(...itemHeights));
 
 			// console.log('Calculated itemWidth:', itemWidth);
 			// console.log('Calculated itemHeight:', itemHeight);
 		}
 
-		hasMeasured = true;
+		has_measured = true;
 		updateGrid();
 	}
 
 	// Function to update the grid based on container width
 	function updateGrid() {
-		if (!container || !itemWidth) return;
+		if (!container || !item_width) return;
 
-		const currMaxColumns = Math.min(maxColumns, numItems); // # columns shouldnt be greater than # items
+		const currMaxColumns = Math.min(max_cols, num_items); // # columns shouldnt be greater than # items
 
-		if (container.offsetWidth > sizeArr[columns]) {
+		if (container.offsetWidth > size_arr[columns]) {
 			columns++;
-		} else if (container.offsetWidth < sizeArr[columns - 1] && columns > 1) {
+		} else if (container.offsetWidth < size_arr[columns - 1] && columns > 1) {
 			columns--;
 		}
 
 		if (columns > currMaxColumns) {
 			columns = currMaxColumns;
-		} else if (columns < minColumns) {
-			columns = minColumns;
+		} else if (columns < min_cols) {
+			columns = min_cols;
 		}
 
-		if (preferDivisible && columns != 1) {
-			while (numItems % columns !== 0 && columns > 1) {
+		if (prefer_divisible && columns != 1) {
+			while (num_items % columns !== 0 && columns > 1) {
 				columns--;
 			}
 		}
@@ -161,7 +161,7 @@
 
 		// Apply column-based arrangement if needed
 		if (by_column && items.length > 0) {
-			const rows = Math.ceil(numItems / columns);
+			const rows = Math.ceil(num_items / columns);
 
 			// Remove any existing order styles first
 			items.forEach((item) => {
@@ -197,7 +197,7 @@
 		window.addEventListener('resize', updateGrid);
 
 		// Set up mutation observer to detect DOM changes
-		mutationObserver = new MutationObserver((mutations) => {
+		mutation_observer = new MutationObserver((mutations) => {
 			const shouldCheck = mutations.some(
 				(mutation) =>
 					mutation.type === 'childList' ||
@@ -212,7 +212,7 @@
 
 		// Start observing the container
 		if (container) {
-			mutationObserver.observe(container, {
+			mutation_observer.observe(container, {
 				childList: true,
 				subtree: true,
 				attributes: true,
@@ -221,16 +221,17 @@
 		}
 
 		gap_px =
-			parseInt(horizontalGap, 10) * parseFloat(getComputedStyle(document.documentElement).fontSize);
+			parseInt(horizontal_gap, 10) *
+			parseFloat(getComputedStyle(document.documentElement).fontSize);
 		onDestroy(() => {
 			window.removeEventListener('resize', updateGrid);
-			if (mutationObserver) {
-				mutationObserver.disconnect();
+			if (mutation_observer) {
+				mutation_observer.disconnect();
 			}
 		});
 	});
 	$effect(() => {
-		hasMeasured;
+		has_measured;
 		measureItems();
 	});
 </script>
@@ -240,7 +241,7 @@
 	bind:this={container}
 	role="grid"
 	aria-colcount={columns}
-	style="column-gap: {horizontalGap}; row-gap: {verticalGap};"
+	style="column-gap: {horizontal_gap}; row-gap: {vertical_gap};"
 >
 	{@render children()}
 </div>

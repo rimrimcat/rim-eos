@@ -1,52 +1,53 @@
 import { type UserGear } from '$lib/scripts/gears';
-import { type AttributeItem } from '$lib/scripts/stats';
+import { type CharacterStat, type StatGearFinal } from '$lib/scripts/stats';
 import { type AllLoadouts } from './loadouts';
 
 // Keys
-export type LocalStorageKey = 'stats_main' | 'gears_v1' | 'styles' | 'loadouts_v1';
+export type LocalStorageKey = 'gears_v1' | 'loadouts_v1' | 'styles';
 
 const DB_NAME = 'tof-gear';
 const DB_VERSION = 2;
 const IMAGE_STORE = 'images';
 
 // Templates
-export const TEMPLATE_USER_ATTRIBUTES = [
-	{ name: 'HP', icon: './stat/hp.webp', index: 0 },
-	{ name: 'Crit', icon: './stat/crit.webp', index: 1 },
-	{ name: 'Crit Rate', icon: './stat/crit.webp', index: 2 },
-	{ name: 'Physical Attack', icon: './stat/physatk.webp', index: 3 },
-	{ name: 'Flame Attack', icon: './stat/flameatk.webp', index: 4 },
-	{ name: 'Frost Attack', icon: './stat/frostatk.webp', index: 5 },
-	{ name: 'Volt Attack', icon: './stat/voltatk.webp', index: 6 },
-	{ name: 'Altered Attack', icon: './stat/placeholder.webp', index: 7 },
-	{ name: 'Endurance', icon: './stat/placeholder.webp', index: 8 },
-	{ name: 'Endurance Regen Speed', icon: './stat/placeholder.webp', index: 9 },
-	{ name: 'Crit Damage', icon: './stat/placeholder.webp', index: 10 },
-	{ name: 'Physical Resistance', icon: './stat/physres.webp', index: 11 },
-	{ name: 'Flame Resistance', icon: './stat/flameres.webp', index: 12 },
-	{ name: 'Frost Resistance', icon: './stat/frostres.webp', index: 13 },
-	{ name: 'Volt Resistance', icon: './stat/voltres.webp', index: 14 },
-	{ name: 'Altered Resistance', icon: './stat/placeholder.webp', index: 15 }
+export const TEMPLATE_USER_ATTRIBUTES: { key: StatGearFinal; icon: string }[] = [
+	{ key: 'hp', icon: './stat/hp.webp' },
+	{ key: 'crit', icon: './stat/crit.webp' },
+	{ key: 'crit_percent', icon: './stat/crit.webp' },
+	{ key: 'phys_atk', icon: './stat/physatk.webp' },
+	{ key: 'flame_atk', icon: './stat/flameatk.webp' },
+	{ key: 'frost_atk', icon: './stat/frostatk.webp' },
+	{ key: 'volt_atk', icon: './stat/voltatk.webp' },
+	{ key: 'alt_atk', icon: './stat/placeholder.webp' },
+	{ key: 'end', icon: './stat/placeholder.webp' },
+	{ key: 'end_regen', icon: './stat/placeholder.webp' },
+	{ key: 'crit_dmg', icon: './stat/placeholder.webp' },
+	{ key: 'phys_res', icon: './stat/physres.webp' },
+	{ key: 'flame_res', icon: './stat/flameres.webp' },
+	{ key: 'frost_res', icon: './stat/frostres.webp' },
+	{ key: 'volt_res', icon: './stat/voltres.webp' },
+	{ key: 'alt_res', icon: './stat/placeholder.webp' }
 ];
 
 // Defaults
-export const DEFAULT_STATS_MAIN = [
-	'989317',
-	'11318',
-	'1.372',
-	'15544',
-	'16976',
-	'14452',
-	'17489',
-	'18793',
+// TODO: replace this
+export const DEFAULT_STATS_RIM = [
+	'1955732',
+	'20384',
+	'0.000',
+	'72588',
+	'69071',
+	'78061',
+	'73991',
+	'78061',
 	'1300',
-	'0',
-	'64',
-	'8621',
-	'14666',
-	'14013',
-	'10518',
-	'4892'
+	'0.000',
+	'50.000',
+	'18633',
+	'15308',
+	'17701',
+	'13092',
+	'9375'
 ];
 export const DEFAULT_STYLES: Record<string, string> = {
 	'main-bg-color': '#2F2F37',
@@ -85,28 +86,140 @@ export const DEFAULT_STYLES: Record<string, string> = {
 	'warning-color': '#f9e2af',
 	'info-color': '#89dceb'
 };
-export const DEFAULT_LOADOUTS: AllLoadouts = {
-	main: {
-		name: 'main',
-		description: 'No description',
-		icon: 'flame',
-		equipped_gear: {
-			H: null,
-			S: null,
-			A: null,
-			C: null,
-			B: null,
-			L: null,
-			G: null,
-			T: null,
-			V: null,
-			N: null,
-			X: null,
-			R: null
+export const DEFAULT_LOADOUTS_RIM: AllLoadouts = {
+	RimExampleLoadout: {
+		name: 'Rim Example Loadout',
+		description: 'f2p frost loadout',
+		element: 'frost',
+		equipped_gears: {
+			H: 3,
+			S: 11,
+			A: 9,
+			C: 10,
+			B: 8,
+			L: 2,
+			G: 4,
+			T: 0,
+			V: 5,
+			N: 7,
+			X: 6,
+			R: 1
 		},
-		base_stats: DEFAULT_STATS_MAIN
+		base_stats: DEFAULT_STATS_RIM,
+		equipped_weapons: [{ id: 'grayfox' }, { id: 'nola', setting: ['frost'] }, { id: 'nanyin' }],
+		equipped_matrices: [{ id: 'grayfox-4p' }, { id: 'nola-4p' }, { id: 'nanyin-4p' }]
 	}
 };
+export const DEFAULT_GEARS_RIM: UserGear[] = [
+	{
+		id: 0,
+		part: 'T',
+		dateAdded: '2025-04-09T07:45:22.880Z',
+		titan_crit: '6026',
+		titan_hp: '22261',
+		titan_atk: '399',
+		titan_res: '371'
+	},
+	{
+		id: 1,
+		part: 'R',
+		dateAdded: '2025-04-09T07:45:35.108Z',
+		titan_phys_atk: '1544',
+		titan_hp: '22652',
+		titan_phys_atk_percent: '3.655',
+		titan_volt_res: '1162'
+	},
+	{
+		id: 2,
+		part: 'L',
+		dateAdded: '2025-04-09T07:45:51.823Z',
+		titan_hp: '22659',
+		titan_flame_atk: '1235',
+		titan_volt_atk: '1332',
+		titan_atk: '483'
+	},
+	{
+		id: 3,
+		part: 'H',
+		dateAdded: '2025-04-09T07:45:57.175Z',
+		titan_hp: '22558',
+		titan_atk: '721',
+		titan_flame_atk: '1075',
+		titan_phys_atk: '1140'
+	},
+	{
+		id: 4,
+		part: 'G',
+		dateAdded: '2025-04-09T07:46:01.635Z',
+		titan_crit: '3281',
+		titan_volt_atk: '1231',
+		titan_atk: '293',
+		titan_flame_res: '1225'
+	},
+	{
+		id: 5,
+		part: 'V',
+		dateAdded: '2025-04-09T07:46:06.321Z',
+		titan_phys_atk_percent: '8.199',
+		titan_frost_res_percent: '13.055',
+		titan_phys_res: '1207',
+		titan_flame_atk: '700'
+	},
+	{
+		id: 6,
+		part: 'X',
+		dateAdded: '2025-04-09T07:46:16.277Z',
+		titan_atk: '276',
+		titan_phys_atk_percent: '6.662',
+		titan_res: '345',
+		titan_phys_res: '2736'
+	},
+	{
+		id: 7,
+		part: 'N',
+		dateAdded: '2025-04-09T07:46:22.049Z',
+		titan_frost_atk_percent: '6.614',
+		titan_volt_dmg_percent: '2.574',
+		titan_res: '345',
+		titan_volt_atk_percent: '6.271'
+	},
+	{
+		id: 8,
+		part: 'B',
+		dateAdded: '2025-04-09T07:46:26.301Z',
+		titan_atk: '635',
+		titan_frost_atk: '989',
+		titan_volt_atk: '1093',
+		titan_hp: '22396'
+	},
+	{
+		id: 9,
+		part: 'A',
+		dateAdded: '2025-04-09T07:46:30.870Z',
+		titan_frost_atk: '1322',
+		titan_atk: '446',
+		titan_res: '346',
+		titan_phys_atk: '1238'
+	},
+	{
+		id: 10,
+		part: 'C',
+		dateAdded: '2025-04-09T07:46:35.729Z',
+		titan_phys_atk: '1012',
+		titan_atk: '944',
+		titan_flame_atk: '914',
+		titan_volt_atk: '959'
+	},
+	{
+		id: 11,
+		part: 'S',
+		dateAdded: '2025-04-09T07:47:18.251Z',
+		titan_hp: '23382',
+		titan_volt_atk: '1248',
+		titan_atk: '692',
+		titan_frost_atk: '1169'
+	}
+];
 
 export function openImageDB(): Promise<IDBDatabase> {
 	return new Promise((resolve, reject) => {
@@ -295,18 +408,11 @@ export async function deleteImageFromDB(id: string): Promise<void> {
 	}
 }
 
-type LoadOutputs =
-	| string[]
-	| AttributeItem[]
-	| UserGear[]
-	| AllLoadouts
-	| null
-	| typeof DEFAULT_STYLES;
+type LoadOutputs = string[] | UserGear[] | AllLoadouts | null | typeof DEFAULT_STYLES;
 
-export function loadObject(key: 'stats_main', force_default?: boolean): AttributeItem[];
 export function loadObject(key: 'gears_v1', force_default?: boolean): UserGear[];
-export function loadObject(key: 'styles', force_default?: boolean): typeof DEFAULT_STYLES;
 export function loadObject(key: 'loadouts_v1', force_default?: boolean): AllLoadouts;
+export function loadObject(key: 'styles', force_default?: boolean): typeof DEFAULT_STYLES;
 export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadOutputs {
 	let loadedObject: LoadOutputs = null;
 
@@ -320,28 +426,16 @@ export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadO
 	}
 
 	switch (key) {
-		case 'stats_main': {
-			loadedObject = loadedObject as string[];
-
-			const processedObject = loadedObject ? loadedObject : DEFAULT_STATS_MAIN;
-			const user_attributes: AttributeItem[] = TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
-				return {
-					...attr,
-					value: processedObject[index]
-				};
-			});
-			return user_attributes;
-		}
 		case 'gears_v1': {
 			loadedObject = loadedObject as UserGear[];
-			return loadedObject ? loadedObject : [];
+			return loadedObject ?? DEFAULT_GEARS_RIM;
 		}
 
 		case 'loadouts_v1': {
 			loadedObject = loadedObject as AllLoadouts;
 
-			if (!loadedObject) {
-				return DEFAULT_LOADOUTS;
+			if (Object.keys(loadedObject ?? {}).length === 0) {
+				return DEFAULT_LOADOUTS_RIM;
 			}
 
 			try {
@@ -404,20 +498,13 @@ export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadO
 	return null;
 }
 
-export async function saveObject(key: 'stats_main', value: AttributeItem[]): Promise<void>;
 export async function saveObject(key: 'gears_v1', value: UserGear[]): Promise<void>;
 export async function saveObject(key: 'loadouts_v1', value: AllLoadouts): Promise<void>;
 export async function saveObject(
 	key: LocalStorageKey,
-	value: AttributeItem[] | UserGear[] | AllLoadouts
+	value: CharacterStat[] | UserGear[] | AllLoadouts
 ): Promise<void> {
 	switch (key) {
-		case 'stats_main': {
-			value = value as AttributeItem[];
-			const toSaveObject = value.map((attr) => attr.value);
-			localStorage.setItem(key, JSON.stringify(toSaveObject));
-			break;
-		}
 		case 'gears_v1': {
 			localStorage.setItem(key, JSON.stringify(value));
 			break;

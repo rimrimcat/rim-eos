@@ -1,0 +1,8 @@
+{
+	"id": "flame",
+	"stats": {
+		"flame_atk_percent": 15,
+		"flame_res_percent": 25
+	},
+	"require_reso": "flame"
+}

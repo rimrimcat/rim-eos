@@ -1,0 +1,7 @@
+{
+	"id": "bene",
+	"stats": {
+		"healing_percent": 100
+	},
+	"require_reso": "bene"
+}

@@ -1,9 +1,5 @@
 <script lang="ts">
-	import {
-		ActionType,
-		registerComponent,
-		type ComponentMetadata
-	} from '$lib/scripts/navMetadata.svelte.ts';
+	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
 
 	import { Image as ImageIcon, PlayCircle, Sun, Volume2 } from '@lucide/svelte';
 	import { onMount } from 'svelte';
@@ -447,7 +443,7 @@
 	</div>
 </div>
 
-<ActionToolbar actions={metadata.actions} {bound_objects} bind:isMobile />
+<ActionToolbar actions={metadata.actions} {bound_objects} bind:is_mobile={isMobile} />
 
 <style>
 	.opencv-test {

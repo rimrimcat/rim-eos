@@ -1,0 +1,8 @@
+{
+	"id": "frost",
+	"stats": {
+		"frost_atk_percent": 15,
+		"frost_res_percent": 25
+	},
+	"require_reso": "frost"
+}

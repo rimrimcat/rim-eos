@@ -1,4 +1,5 @@
-import { type StatGearTitan, type StatGearUser, ALL_STATS_LIST } from '$lib/scripts/stats';
+// import { type StatGearTitan, type StatGearUser, ALL_STATS_LIST } from '$lib/scripts/stats';
+import { type StatGearTitan, type StatGearUser, ALL_STATS_LIST } from './stats';
 
 /**
  * Enum for different gear slots
@@ -69,14 +70,14 @@ export const VALID_GEAR_PARTS: ValidGearPart[] = [
  */
 type GearId = {
 	id: number;
-	part: GearPart;
+	part: ValidGearPart | GearPart.UNKNOWN | 'U';
 };
 
 /**
  * Valid stats that can be present on a gear piece
  */
 type GearValidStats = {
-	[key in StatGearUser]?: string;
+	[key in StatGearUser | StatGearTitan]?: string;
 };
 
 /**
@@ -114,8 +115,9 @@ export type GearViewStatShort = {
 
 /**
  * Represents raw gear data as stored/input by the user
+ * @property {string} dateAdded - Date the gear was added, in ISO string
  */
-export type UserGear = GearId & GearValidStats & { dateAdded: Date };
+export type UserGear = GearId & GearValidStats & { dateAdded: string };
 
 /**
  * Processed gear data for display and sorting

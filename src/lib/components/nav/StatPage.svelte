@@ -1,98 +1,63 @@
 <script lang="ts">
+	import ActionToolbar from '$lib/components/ActionToolbar.svelte';
+	import StatAdjust from '$lib/components/dialog/StatAdjust.svelte';
+	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
+	import FlexGrid from '$lib/components/FlexGrid.svelte';
+	import type { GearView, UserGear } from '$lib/scripts/gears';
 	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader.ts';
-	import {
-		ActionType,
-		registerComponent,
-		type ComponentMetadata
-	} from '$lib/scripts/navMetadata.svelte.ts';
-	import { type AttributeItem } from '$lib/scripts/stats';
-	import { FLOAT_PERCENT_3D, INTEGER, validateValue } from '$lib/scripts/validation.ts';
-
-	import type { UserGear } from '$lib/scripts/gears';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
+	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
+	import { STAT_LABELS, type CharacterStat } from '$lib/scripts/stats';
+	import { formatValue } from '$lib/scripts/validation.ts';
 	import { ChartNoAxesColumn, ImagePlus, Trash2 } from '@lucide/svelte';
 	import cv from '@techstark/opencv-js';
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
-	import ActionToolbar from '../ActionToolbar.svelte';
-	import UploadScreenshot from '../dialog/UploadScreenshot.svelte';
-	import FlexGrid from '../FlexGrid.svelte';
 
 	let {
-		isMobile = $bindable(false),
+		is_mobile = $bindable(false),
 		user_gears = $bindable([] as UserGear[]),
 		user_loadouts = $bindable({} as AllLoadouts),
-		current_loadout = $bindable('')
+		current_loadout = $bindable(''),
+		gear_views = $bindable([] as GearView[])
 	} = $props();
 
 	// State
-	let user_attributes: AttributeItem[] = $state([]);
-	let validated_attributes: AttributeItem[] = $state([]);
-	let editValue: string = $state('');
-	let editingIndex: number | null = $state(null);
-	let screenshotDialogOpen = $state(false);
-	let uploadedImageURL: string = $state('');
-	let processText: string = $state('');
+	let base_stats: string[] = $state([]);
+	let attribute_view: CharacterStat[] = $state([]);
 
-	// Process and validate attributes
+	// Screenshot Dialog
+	let screenshot_dialog_open = $state(false);
+	let uploaded_image_url: string = $state('');
+	let process_text: string = $state('');
+
+	// Stat Adjust Dialog
+	let stat_adjust_dialog_open = $state(false);
+	let unadjusted_stats: string[] = $state([]);
+
+	let any_dialog_open = $derived(screenshot_dialog_open || stat_adjust_dialog_open);
+
 	function processAttributes() {
-		validated_attributes = user_attributes.map((attr, index) => {
-			const __val = attr.value;
+		// TODO: later on, this should adjust depending on the not-yet created Loadout.stat_adj object
+		attribute_view = TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
+			const __val = base_stats[index];
 			const __use_percent = index === 2 || index === 10;
+
 			return {
 				...attr,
-				value: __use_percent
-					? validateValue(FLOAT_PERCENT_3D, __val)
-					: validateValue(INTEGER, __val)
+				name: STAT_LABELS[attr.key],
+				value: __use_percent ? formatValue('float3d', __val) : formatValue('int', __val)
 			};
 		});
 	}
 
-	function saveAttributes(attributes: AttributeItem[]) {
-		// get stringified array of values
-		const base_stats = attributes.map((attr) => attr.value);
+	function saveAttributes() {
 		user_loadouts[current_loadout].base_stats = base_stats;
 		saveObject('loadouts_v1', user_loadouts);
 	}
 
-	function startEditCell(index: number) {
-		editingIndex = index;
-		const user_value = user_attributes[index].value;
-		editValue = user_value !== undefined ? user_value : '';
-
-		// Automatically select all content when starting to edit the cell
-		setTimeout(() => {
-			const input = document.getElementsByClassName('stat-value')[0] as HTMLInputElement;
-			if (input) {
-				input.select();
-			}
-		}, 0);
-	}
-
-	function saveEditCell(index: number) {
-		// Update the source attributes array
-		user_attributes[index].value = editValue;
-
-		saveAttributes(user_attributes);
-
-		// Update validated attributes
-		const __use_percent = index === 2 || index === 10;
-		validated_attributes[index].value = __use_percent
-			? validateValue(FLOAT_PERCENT_3D, editValue)
-			: validateValue(INTEGER, editValue);
-
-		editingIndex = null;
-		editValue = '';
-	}
-
-	function handleKeyDown(e: any, index: number) {
-		if (e.key === 'Enter') {
-			saveEditCell(index);
-		}
-	}
-
 	// actions
-	function* boxIterator(w: number, h: number, off_x: number = 0, off_y: number = 0) {
+	function* iterateBoxes(w: number, h: number, off_x: number = 0, off_y: number = 0) {
 		const box_width = Math.round(0.23 * w);
 		const box_height = Math.round(0.047 * h);
 
@@ -140,21 +105,20 @@
 			const data_url = canvas.toDataURL();
 
 			const ret = await worker.recognize(data_url);
-			user_attributes[attr_arr[index]].value = ret.data.text.replace('%', '').replace('/', '');
+			unadjusted_stats[attr_arr[index]] = ret.data.text.replace('%', '').replace('/', '');
+			console.log('OCR Text:', ret.data.text);
 
 			// Clean up resources
 			_crop.delete();
 			canvas.remove();
 
 			done_tasks++;
-			console.log('OCR Text:', ret.data.text);
-			console.info('Done tasks:', done_tasks);
 		}
 
 		try {
 			// Process boxes in sequence rather than spawning parallel promises
 			for (const [_i, _rect] of Array.from(
-				boxIterator(stat_p2.x - stat_p1.x, stat_p2.y - stat_p1.y, stat_p1.x, stat_p1.y)
+				iterateBoxes(stat_p2.x - stat_p1.x, stat_p2.y - stat_p1.y, stat_p1.x, stat_p1.y)
 			).entries()) {
 				// Update image visualization if callback provided
 				if (src_mat_edit && imageUpdateCallback) {
@@ -182,9 +146,10 @@
 			}
 			await worker.terminate();
 
-			saveAttributes(user_attributes);
+			// TODO: add a new prompt here asking if user wants to save stats
+			saveAttributes();
 			processAttributes();
-			processText = 'Done!';
+			process_text = 'Done!';
 		}
 	}
 
@@ -195,7 +160,7 @@
 	) {
 		let edit_src_mat: cv.Mat = new cv.Mat(); // for callback
 
-		processText = 'Cropping...';
+		process_text = 'Cropping...';
 		// remove possibly white pixels from top
 		const _W = src_mat.cols;
 		const _H = src_mat.rows;
@@ -225,7 +190,7 @@
 			imageUpdateCallback(edit_src_mat);
 		}
 
-		processText = 'Determining template size...';
+		process_text = 'Determining template size...';
 		// constants
 		const W = src_mat.size().width;
 		const H = src_mat.size().height;
@@ -251,7 +216,7 @@
 		);
 
 		async function smolMatching() {
-			processText = 'Matching template...';
+			process_text = 'Matching template...';
 
 			const search_center_x = W * (0.64 + some_factor);
 			const search_center_y = H * 0.52;
@@ -311,10 +276,10 @@
 			cropped_src.delete();
 
 			if (maxVal > minimumMatch) {
-				processText = 'Reading fields...';
+				process_text = 'Reading fields...';
 				await processBoxes(src_mat, stat_p1, stat_p2, edit_src_mat, imageUpdateCallback);
 			} else {
-				processText = 'No match found!';
+				process_text = 'No match found!';
 			}
 
 			return maxVal;
@@ -330,13 +295,13 @@
 	}
 
 	function onFileUpload(canvas: HTMLCanvasElement) {
-		if (uploadedImageURL && canvas) {
+		if (uploaded_image_url && canvas) {
 			const img = cv.imread(canvas); // cant read unless from canvas or img id
 
 			matchCharacterStats(img, async (img) => {
 				const canvas = document.createElement('canvas');
 				cv.imshow(canvas, img);
-				uploadedImageURL = canvas.toDataURL();
+				uploaded_image_url = canvas.toDataURL();
 			});
 		}
 	}
@@ -361,7 +326,14 @@
 				label: 'From Screenshot',
 				lucide: ImagePlus,
 				type: ActionType.BUTTON,
-				callback: () => (screenshotDialogOpen = true)
+				callback: () => (screenshot_dialog_open = true)
+			},
+			{
+				id: 'adjust',
+				label: 'Adjust Attack Stats',
+				lucide: ChartNoAxesColumn,
+				type: ActionType.BUTTON,
+				callback: () => (stat_adjust_dialog_open = true)
 			},
 			{ id: 'reset', label: 'Reset', lucide: Trash2, type: ActionType.BUTTON, callback: resetStats }
 			// { id: 'share', label: 'Share' }
@@ -372,38 +344,31 @@
 		registerComponent(id, metadata);
 
 		// load and process attributes
+		// TODO: change the way of loading after setting up
 		if (Object.keys(user_loadouts).length > 0) {
-			user_attributes = TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
-				return {
-					...attr,
-					value: user_loadouts[current_loadout].base_stats[index]
-				};
-			});
+			base_stats = user_loadouts[current_loadout].base_stats;
+			unadjusted_stats = base_stats; // TEMPORARY!!!
 			processAttributes();
 		}
 	});
 </script>
 
 <div style="display: none">
-	<img
-		id="uploadedImg"
-		src={uploadedImageURL ?? './template/template_crit.png'}
-		alt="User uploaded screenshot"
-	/>
+	<img id="templateImage" src={'./template/template_crit.png'} alt="User uploaded screenshot" />
 </div>
 
-<div class="stat-panel">
-	<h1 class="head">Character Stats</h1>
+<div class="stat-panel" style={any_dialog_open ? 'overflow: hidden;' : ''}>
+	<h1>Character Stats</h1>
 	<p>This page might undergo overhaul soon, just waiting for gear page to be completed.</p>
 
 	<FlexGrid
-		horizontalGap="0.9rem"
-		verticalGap="1rem"
-		minColumns={1}
-		maxColumns={2}
-		preferDivisible={false}
+		horizontal_gap="0.9rem"
+		vertical_gap="1rem"
+		min_cols={1}
+		max_cols={2}
+		prefer_divisible={false}
 	>
-		{#each validated_attributes as attribute}
+		{#each attribute_view as attribute, index}
 			<div class="stat-cell">
 				<div class="stat-content">
 					<div class="stat-icon">
@@ -412,43 +377,41 @@
 					<div class="stat-info">
 						<div class="stat-name">{attribute.name}</div>
 						<div class="stat-value-container">
-							{#if editingIndex === attribute.index}
-								<input
-									type="text"
-									class="stat-value"
-									bind:value={editValue}
-									onblur={() => saveEditCell(attribute.index)}
-									onkeydown={(e) => handleKeyDown(e, attribute.index)}
-								/>
-							{:else}
-								<div
-									class="stat-value-text"
-									style="font-size: 1.25rem"
-									role="textbox"
-									tabindex={10 + attribute.index}
-									ondblclick={() => startEditCell(attribute.index)}
-								>
-									{attribute.value}
-								</div>
-							{/if}
+							<span
+								class="stat-value-text"
+								style="font-size: 1.25rem"
+								role="textbox"
+								tabindex={10 + index}
+							>
+								{attribute.value}
+							</span>
 						</div>
 					</div>
 				</div>
 			</div>
 		{/each}
 	</FlexGrid>
-
-	<h1 class="Pro">Character Stats</h1>
 </div>
 
 <UploadScreenshot
 	{onFileUpload}
-	bind:open={screenshotDialogOpen}
-	bind:uploadedImageURL
-	bind:processText
+	bind:open={screenshot_dialog_open}
+	bind:image={uploaded_image_url}
+	bind:text={process_text}
+	upload_type="canvas"
+	prompt_on_open={true}
 />
 
-<ActionToolbar actions={metadata.actions} bind:isMobile />
+<StatAdjust
+	bind:open={stat_adjust_dialog_open}
+	bind:user_gears
+	bind:gear_views
+	bind:user_loadouts
+	bind:current_loadout
+	bind:unadjusted_stats
+/>
+
+<ActionToolbar actions={metadata.actions} bind:is_mobile />
 
 <style>
 	.stat-panel {
@@ -457,10 +420,6 @@
 		background-color: var(--bg-color);
 		width: 100%;
 		max-width: 100%;
-	}
-
-	.head {
-		color: var(--title-color);
 	}
 
 	.stat-cell {
@@ -509,19 +468,8 @@
 		border-radius: 2rem;
 	}
 
-	.stat-value {
-		background-color: var(--button-bg);
-		border: 1px solid var(--button-border);
-		border-radius: 0.1rem;
-		color: var(--button-text);
-		padding: 2px 6px;
-		width: 100%;
-		font-size: 1rem;
-	}
-
 	.stat-value-text {
 		padding: 2px 6px;
 		color: var(--text-color);
-		cursor: pointer;
 	}
 </style>

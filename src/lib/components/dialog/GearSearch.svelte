@@ -168,12 +168,12 @@
 	bind:open
 >
 	<div class="search-dialog">
-		{#if !isMobile}
+		<!-- {#if !isMobile}
 			<label for="search">Search Query:</label>
 			<div class="search-bar">
 				<input id="search" type="text" readonly value={query} placeholder="Search Query" />
 			</div>
-		{/if}
+		{/if} -->
 
 		<div class="slot-section">
 			<h3>Slot</h3>

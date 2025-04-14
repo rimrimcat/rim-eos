@@ -1,54 +1,59 @@
+<script module>
+	export let scrollY = $state(writable(0));
+</script>
+
 <script lang="ts">
-	import type { UserGear } from '$lib/scripts/gears';
+	import type { GearView, UserGear } from '$lib/scripts/gears';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
-	import type { AttributeItem } from '$lib/scripts/stats';
 	import { onMount, type Component } from 'svelte';
+	import { writable } from 'svelte/store';
 	import Dialog from './Dialog.svelte';
-	import GearPage from './nav/GearPage.svelte';
+	import GearPage, { createGearView } from './nav/GearPage.svelte';
 	import LoadoutPage from './nav/LoadoutPage.svelte';
 	import MainPage from './nav/MainPage.svelte';
-	import OpenCvTest from './nav/OpenCvTest.svelte';
 	import StatPage from './nav/StatPage.svelte';
+	import ReadySignal from './ReadySignal.svelte';
 	import Toolbar from './Toolbar.svelte';
 
+	let { signal = $bindable(false) } = $props();
+
 	// Toolbar
-	let isCollapsed = $state(true);
-	let mobileToolbarTransform = $state(0);
+	let is_collapsed = $state(true);
+	let mobile_toolbar_transform = $state(0);
 
 	// Detect if mobile
-	let fontSize = $state(0);
-	let innerWidth = $state(1000);
-	let isMobile = $derived((13.75 * fontSize) / innerWidth > 0.25);
+	let font_size = $state(0);
+	let inner_width = $state(1000);
+	let is_mobile = $derived((13.75 * font_size) / inner_width > 0.25);
 
 	// Active Nav
-	const navMap: Record<string, Component> = {
+	const NAV_MAP: Record<string, Component> = {
 		'main-page': MainPage,
 		'loadout-page': LoadoutPage,
 		'stat-page': StatPage,
-		'gear-page': GearPage,
-		'opencv-test': OpenCvTest
+		'gear-page': GearPage
 	};
-	let activeComponent = $state('main-page');
-	let CurrentComponent: Component = $derived(navMap[activeComponent] || StatPage);
+	let active_component = $state('main-page');
+	let CurrentComponent: Component = $derived(NAV_MAP[active_component] || StatPage);
 
 	// Dialogs
-	let dialogOpen = $state(true);
+	let dialog_open = $state(true);
 
 	// color scheme
 	let styles = $state({});
 
 	// synced data across app
 	let user_gears: UserGear[] = $state([]);
-	let user_attributes: AttributeItem[] = $state([]);
 	let user_loadouts: AllLoadouts = $state({});
 	let current_loadout: string = $state('');
+	let gear_views: GearView[] = $state([]);
+
+	// check if ready
 
 	onMount(() => {
-		// run once
-
 		// get font size
-		fontSize = parseFloat(getComputedStyle(document.documentElement).fontSize);
+		font_size = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
 		// setup imagedb
 		openImageDB();
@@ -63,19 +68,23 @@
 
 		// load synced
 		user_gears = loadObject('gears_v1');
-		user_attributes = loadObject('stats_main');
 		user_loadouts = loadObject('loadouts_v1');
 		current_loadout = Object.keys(user_loadouts)[0];
-	});
 
-	// $inspect('mobile detection:', isMobile);
-	// $inspect('innerWidth', innerWidth);
+		// processing
+		Promise.all(
+			user_gears.map((gear) => createGearView(gear, false, user_loadouts, current_loadout))
+		).then((gearViews) => {
+			gear_views = gearViews;
+			console.log('Done processing user_gears');
+		});
+	});
 </script>
 
-<svelte:window bind:innerWidth />
+<svelte:window bind:innerWidth={inner_width} />
 
 <Dialog
-	bind:open={dialogOpen}
+	bind:open={dialog_open}
 	title="Note"
 	blocking={true}
 	blur={true}
@@ -87,30 +96,36 @@
 </Dialog>
 
 <div class="app-container">
-	<Toolbar bind:isMobile bind:activeComponent bind:isCollapsed bind:mobileToolbarTransform />
+	<Toolbar bind:is_mobile bind:active_component bind:is_collapsed bind:mobile_toolbar_transform />
 
 	<div
 		class="content-container"
-		class:mobile={isMobile}
-		style="translate: 0 {isMobile ? mobileToolbarTransform : 0}px;"
+		class:mobile={is_mobile}
+		style="translate: 0 {is_mobile ? mobile_toolbar_transform : 0}px;"
+		onscroll={(e: any) => {
+			$scrollY = e.target.scrollTop;
+		}}
 	>
 		<div style="display: none">
 			<MainPage />
 			<LoadoutPage />
 			<StatPage />
 			<GearPage />
-			<OpenCvTest />
 		</div>
 
 		<CurrentComponent
-			bind:isMobile
+			bind:isMobile={is_mobile}
 			bind:user_gears
-			bind:user_attributes
 			bind:user_loadouts
 			bind:current_loadout
+			bind:gear_views
+			bind:font_size
+			bind:inner_width
 		/>
 	</div>
 </div>
+
+<ReadySignal bind:signal />
 
 <style>
 	:global(body) {
@@ -210,13 +225,56 @@
 		gap: 1rem;
 	} */
 
-	:global(div.horizontal) {
+	:global(input) {
+		background-color: var(--button-bg);
+		border: 1px solid var(--button-border);
+		border-radius: 0.5rem;
+		color: var(--button-text);
+		padding: 2px 6px;
+		font-size: large;
+	}
+
+	:global(.horizontal) {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 1rem;
 	}
 
+	:global(.horizontal.center) {
+		justify-content: center;
+	}
+
 	:global(div.hori-item) {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	:global(div.vertical) {
+		display: flex;
+		flex-direction: column;
+	}
+
+	:global(div.vertical.center) {
+		align-items: center;
+		justify-content: center;
+	}
+
+	:global(div.vertical.center-hori) {
+		align-items: center;
+	}
+
+	:global(div.vertical.center-vert) {
+		justify-content: center;
+	}
+
+	:global(div.vertical-left) {
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+	}
+
+	:global(div.item-flex) {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -266,12 +324,23 @@
 
 	/* labels inside button */
 	:global(label.in-button) {
+		/* display: flex; */
 		cursor: pointer;
+		text-align: center;
+		vertical-align: middle;
+		pointer-events: none;
 	}
 
 	:global(*:focus-visible) {
 		outline: 2px solid var(--focus-outline);
 		outline-offset: 2px;
+	}
+
+	:global(img.border) {
+		border-radius: 1rem;
+		background-color: rgb(99 99 99);
+		width: 8rem;
+		height: 8rem;
 	}
 
 	:global(img.user-upload) {
@@ -287,6 +356,7 @@
 		background-color: var(--bg-color);
 		color: var(--text-color);
 		overscroll-behavior-x: none;
+		padding-bottom: 5rem;
 	}
 
 	.content-container {
@@ -301,5 +371,59 @@
 
 	.content-container.mobile {
 		margin-top: 3rem;
+	}
+
+	/* specific for attribute icons */
+	:global(.attribute-icon) {
+		width: 2.5rem;
+		height: 2.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	:global(.attribute-icon img) {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: none;
+		filter: invert(75%);
+	}
+
+	/* for composing icons */
+
+	:global(.compose.below) {
+		position: relative;
+	}
+
+	:global(.compose.above) {
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+
+	:global(.compose.lucide) {
+		height: 24px;
+		width: 24px;
+	}
+
+	:global(.compose.border) {
+		border-radius: 1rem;
+		background-color: rgb(99 99 99);
+	}
+
+	:global(.compose-below) {
+		position: relative;
+	}
+
+	:global(.compose-above) {
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+
+	:global(.compose-border) {
+		border-radius: 1rem;
+		background-color: rgb(99 99 99);
 	}
 </style>

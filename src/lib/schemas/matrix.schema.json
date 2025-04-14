@@ -1,0 +1,50 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "#/definitions/MatrixIds"
+    },
+    "name": {
+      "type": "string"
+    },
+    "effects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/MatrixEffectsIds"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "effects",
+    "id",
+    "name"
+  ],
+  "definitions": {
+    "MatrixIds": {
+      "enum": [
+        "grayfox-4p",
+        "nanyin-4p",
+        "nola-4p",
+        "none"
+      ],
+      "type": "string"
+    },
+    "MatrixEffectsIds": {
+      "enum": [
+        "grayfox-2p",
+        "grayfox-2p-bene",
+        "grayfox-4p",
+        "grayfox-4p-bene",
+        "grayfox-4p-nonbene",
+        "nanyin-2p",
+        "nanyin-4p",
+        "nola-2p",
+        "nola-4p",
+        "nola-4p-skill"
+      ],
+      "type": "string"
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

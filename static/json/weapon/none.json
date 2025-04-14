@@ -1,0 +1,7 @@
+{
+	"id": "none",
+	"name": "None",
+	"base_stat": "crit-low",
+	"resonances": ["none", "none"],
+	"effects": []
+}

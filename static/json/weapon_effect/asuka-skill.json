@@ -1,0 +1,7 @@
+{
+	"id": "asuka-skill",
+	"stats": {
+		"phys_dmg_percent": 18,
+		"flame_dmg_percent": 12
+	}
+}

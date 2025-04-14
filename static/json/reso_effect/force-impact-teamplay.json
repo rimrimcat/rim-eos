@@ -1,0 +1,11 @@
+{
+	"id": "force-impact-teamplay",
+	"stats": {
+		"volt_dmg_taken_percent": 15,
+		"frost_dmg_taken_percent": 15
+	},
+	"require_reso": "force-impact",
+	"require_reso_count": 1,
+	"require_teamplay": true,
+	"target": "enemy"
+}

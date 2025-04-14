@@ -1,0 +1,7 @@
+{
+	"id": "atk",
+	"stats": {
+		"final_dmg_percent": 10
+	},
+	"require_reso": "atk"
+}

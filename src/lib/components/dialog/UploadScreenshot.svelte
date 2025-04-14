@@ -8,20 +8,20 @@
 
 	let {
 		open = $bindable(false),
-		onFileUpload = (out: HTMLCanvasElement | string | File) => {},
-		uploadedImageURL = $bindable(''),
-		processText = $bindable(''),
-		uploadType = 'canvas' as UploadCallbackType,
-		promptOnOpen = true,
-		closeOnUpload = false
+		image = $bindable(''),
+		text = $bindable(''),
+		upload_type = 'canvas' as UploadCallbackType,
+		prompt_on_open = true,
+		close_on_upload = false,
+		onFileUpload = (out: HTMLCanvasElement | string | File) => {}
 	} = $props();
 
 	function uploadImageCanvas(file: File | undefined) {
-		processText = 'Uploading...';
+		text = 'Uploading...';
 
 		if (file) {
-			uploadedImageURL = URL.createObjectURL(file);
-			switch (uploadType) {
+			image = URL.createObjectURL(file);
+			switch (upload_type) {
 				case 'canvas': {
 					setTimeout(() => {
 						const canvas = document.createElement('canvas');
@@ -36,7 +36,7 @@
 					break;
 				}
 				case 'url': {
-					onFileUpload(uploadedImageURL);
+					onFileUpload(image);
 					break;
 				}
 
@@ -46,12 +46,12 @@
 				}
 
 				default:
-					console.error('Unknown upload type:', uploadType);
+					console.error('Unknown upload type:', upload_type);
 					break;
 			}
 		}
 
-		if (closeOnUpload) {
+		if (close_on_upload) {
 			open = false;
 		}
 	}
@@ -75,13 +75,13 @@
 	}
 
 	onDestroy(() => {
-		if (uploadedImageURL) {
-			URL.revokeObjectURL(uploadedImageURL);
+		if (image) {
+			URL.revokeObjectURL(image);
 		}
 	});
 
 	$effect(() => {
-		if (open && promptOnOpen) {
+		if (open && prompt_on_open) {
 			// navigator.clipboard.read().then((items) => {
 			// 	if (items.length > 0) {
 			// 		items[0].getType('image/png').then((blob) => {
@@ -98,20 +98,15 @@
 <Dialog title="From Screenshot" bind:open onpaste={doPaste}>
 	<div class="screenshot-upload">
 		<button
-			class={uploadedImageURL ? 'image' : 'icon'}
+			class={image ? 'image' : 'icon'}
 			onclick={() => document.getElementById('srcInput')?.click()}
 		>
-			{#if uploadedImageURL}
-				<img
-					class="user-upload"
-					id="user-upload"
-					src={uploadedImageURL}
-					alt="Uploaded screenshot"
-				/>
+			{#if image}
+				<img class="user-upload" id="user-upload" src={image} alt="Uploaded screenshot" />
 				<img
 					class="user-upload-full"
 					id="user-upload-full"
-					src={uploadedImageURL}
+					src={image}
 					alt="Uploaded screenshot at full size"
 					style="display: none"
 				/>
@@ -122,8 +117,8 @@
 
 		<input type="file" id="srcInput" accept="image/*" {onchange} style="display:none;" />
 
-		{#if uploadedImageURL}
-			<p class="upload-text">{processText ?? 'Processing...'}</p>
+		{#if image}
+			<p class="upload-text">{text ?? 'Processing...'}</p>
 		{:else}
 			<p class="upload-text">Paste or upload screenshot here</p>
 		{/if}

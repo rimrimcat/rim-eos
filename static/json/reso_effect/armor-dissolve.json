@@ -1,0 +1,10 @@
+{
+	"id": "armor-dissolve",
+	"stats": {
+		"phys_dmg_taken_percent": 10,
+		"flame_dmg_taken_percent": 10
+	},
+	"require_reso": "armor-dissolve",
+	"require_reso_count": 1,
+	"target": "enemy"
+}

@@ -1,0 +1,8 @@
+{
+	"id": "fiona",
+	"stats": {
+		"atk_percent": 20,
+		"alt_res_percent": 30
+	},
+	"require_reso": "alt"
+}

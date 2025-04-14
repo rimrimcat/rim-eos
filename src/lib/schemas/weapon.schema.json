@@ -1,0 +1,215 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "#/definitions/WeaponsIds"
+    },
+    "name": {
+      "type": "string"
+    },
+    "base_stat": {
+      "$ref": "#/definitions/BaseStatType"
+    },
+    "resonances": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/ResoElement"
+        },
+        {
+          "$ref": "#/definitions/ResoRole"
+        }
+      ],
+      "minItems": 2,
+      "additionalItems": {
+        "$ref": "#/definitions/ResoTriggers"
+      }
+    },
+    "onfieldness": {
+      "type": "number"
+    },
+    "effects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/WeaponEffectsIds"
+      }
+    },
+    "reso_effects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ResoEffectsIds"
+      }
+    },
+    "setting": {
+      "type": "object",
+      "properties": {
+        "choices": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "icon": {
+                "type": "string"
+              },
+              "resonances": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/ResoTriggers"
+                }
+              },
+              "effects": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/WeaponEffectsIds"
+                }
+              },
+              "reso_effects": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/ResoEffectsIds"
+                }
+              },
+              "notes": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "icon",
+              "id"
+            ]
+          }
+        },
+        "default": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "type": {
+          "enum": [
+            "element",
+            "skill"
+          ],
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "choices",
+        "default",
+        "type"
+      ]
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "base_stat",
+    "effects",
+    "id",
+    "name",
+    "resonances"
+  ],
+  "definitions": {
+    "WeaponsIds": {
+      "enum": [
+        "asuka",
+        "grayfox",
+        "nanyin",
+        "nola",
+        "none"
+      ],
+      "type": "string"
+    },
+    "BaseStatType": {
+      "description": "BaseStatType naming convetion:\n  [third stat]-[atk value]\n  third stat: crit, res\n  atk value: low, med, high",
+      "enum": [
+        "crit-high",
+        "crit-low",
+        "crit-med",
+        "res-high",
+        "res-low",
+        "res-med"
+      ],
+      "type": "string"
+    },
+    "ResoElement": {
+      "enum": [
+        "alt",
+        "flame",
+        "frost",
+        "none",
+        "phys",
+        "volt"
+      ],
+      "type": "string"
+    },
+    "ResoRole": {
+      "enum": [
+        "atk",
+        "bene",
+        "fort",
+        "none"
+      ],
+      "type": "string"
+    },
+    "ResoTriggers": {
+      "enum": [
+        "alt",
+        "armor-dissolve",
+        "atk",
+        "bene",
+        "flame",
+        "force-impact",
+        "fort",
+        "frost",
+        "none",
+        "phys",
+        "volt"
+      ],
+      "type": "string"
+    },
+    "WeaponEffectsIds": {
+      "enum": [
+        "asuka-a6",
+        "asuka-a6-fort",
+        "asuka-skill",
+        "grayfox-a3-buff",
+        "grayfox-a3-debuff",
+        "grayfox-a6",
+        "grayfox-skill",
+        "nanyin-a5",
+        "nanyin-a6",
+        "nanyin-inhabit",
+        "nola-a3",
+        "nola-a6",
+        "nola-frost-skill"
+      ],
+      "type": "string"
+    },
+    "ResoEffectsIds": {
+      "enum": [
+        "armor-dissolve",
+        "armor-dissolve-teamplay",
+        "atk",
+        "atk-teamplay",
+        "bene",
+        "bene-teamplay",
+        "fiona",
+        "flame",
+        "force-impact",
+        "force-impact-teamplay",
+        "fort",
+        "frost",
+        "nanyin",
+        "phys",
+        "volt"
+      ],
+      "type": "string"
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}
