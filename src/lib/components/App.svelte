@@ -356,6 +356,7 @@
 		background-color: var(--bg-color);
 		color: var(--text-color);
 		overscroll-behavior-x: none;
+		padding-bottom: 5rem;
 	}
 
 	.content-container {
