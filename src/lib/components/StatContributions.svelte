@@ -206,7 +206,7 @@
 
 	let max_domain = $derived(stat_col_totals.data[sortedKeys[0] as StatKey] ?? 0);
 	let min_domain = $derived(
-		stat_col_totals.data[sortedKeys[sortedKeys.length - 1] as StatKey] ?? 0
+		Math.min(stat_col_totals.data[sortedKeys[sortedKeys.length - 1] as StatKey] ?? 0, 0)
 	);
 
 	let options: BarChartOptions = $derived({
