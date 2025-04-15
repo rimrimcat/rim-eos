@@ -19,7 +19,7 @@
 	} from '$lib/scripts/loadout';
 	import { ActionType } from '$lib/scripts/nav-metadata';
 	import { StatCollection } from '$lib/scripts/stats';
-	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
+	import { current_loadout, inner_width, user_loadouts } from '$lib/scripts/stores';
 	import { WEAPON_BASE_STATS } from '$lib/scripts/weapons';
 	import type {
 		LoadoutType,
@@ -49,7 +49,7 @@
 	import SwitchWeapMatrix from '../dialog/SwitchWeapMatrix.svelte';
 	import StatContributions from '../StatContributions.svelte';
 
-	let { font_size = $bindable(16), inner_width = $bindable(1000) } = $props();
+	let { font_size = $bindable(16) } = $props();
 
 	// State
 	let loadout_name = $state('');
@@ -80,7 +80,7 @@
 	let switch_gear_matrix_dialog_open = $state(false);
 
 	// Stat Contrib
-	let chart_width = $derived(inner_width - font_size * 16 - 300);
+	let chart_width = $derived($inner_width - font_size * 16 - 300);
 	$inspect('chart wid', chart_width);
 
 	// Element options
@@ -815,19 +815,19 @@
 								</div>
 							</div>
 
-							{#if inner_width < 500}
+							{#if $inner_width < 500}
 								<div style="margin-top: 1rem; margin-bottom: 1.5rem;">
 									{@render showMatrices(matrix, index)}
 								</div>
 							{/if}
 						</div>
-						{#if inner_width >= 500}
+						{#if $inner_width >= 500}
 							{@render showMatrices(matrix, index)}
 						{/if}
 					</div>
 				{/each}
 			</div>
-			{#if inner_width > 600}
+			{#if $inner_width > 600}
 				<div class="vertical" style="margin-left: 2rem;">
 					<StatContributions bind:all_effects bind:chart_width />
 				</div>
