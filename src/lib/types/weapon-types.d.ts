@@ -58,6 +58,7 @@ export type MatrixEffect = BaseEffect & {
 export type MatrixFinalEffect = BaseEffect & {
 	id: MatrixEffectsIds;
 	stats: StatData;
+	advancement: number;
 };
 
 /**

@@ -17,7 +17,11 @@ function checkValidEffect(
 	reso_counts_: ResoTriggerCounts,
 	advancement: number
 ): boolean;
-function checkValidEffect(eff: MatrixEffect, reso_counts_: ResoTriggerCounts): boolean;
+function checkValidEffect(
+	eff: MatrixEffect,
+	reso_counts_: ResoTriggerCounts,
+	advancement: number
+): boolean;
 function checkValidEffect(
 	eff: WeaponEffect | MatrixEffect | BaseEffect,
 	reso_counts_: ResoTriggerCounts,
@@ -98,14 +102,15 @@ export async function pushAllValidMatrixEffects(
 		effs.map(async (eff_) => {
 			const eff = await getMatrixEffect(eff_);
 
-			if (!checkValidEffect(eff, reso_counts_)) {
+			if (!checkValidEffect(eff, reso_counts_, advancement)) {
 				return;
 			}
 
 			const keys = Object.keys(eff.stats);
 			const finalEffect = {
 				...eff,
-				stats: {}
+				stats: {},
+				advancement
 			};
 			keys.forEach((key) => {
 				// @ts-expect-error : its oke
