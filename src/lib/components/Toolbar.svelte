@@ -1,11 +1,11 @@
 <script lang="ts">
 	import { navItems } from '$lib/scripts/nav-metadata';
+	import { is_mobile } from '$lib/scripts/stores';
 	import { ArrowLeftToLine, ChevronDown, ChevronUp, Menu } from '@lucide/svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { fade, fly, slide } from 'svelte/transition';
 
 	let {
-		is_mobile = $bindable(false),
 		active_component = $bindable('stat-page'),
 		is_collapsed = $bindable(false),
 		mobile_toolbar_transform = $bindable(0)
