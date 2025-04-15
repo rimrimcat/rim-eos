@@ -1,10 +1,4 @@
-import {
-	type Matrix,
-	type MatrixEffect,
-	type ResoEffect,
-	type Weapon,
-	type WeaponEffect
-} from '../types/index';
+import type { Matrix, MatrixEffect, ResoEffect, Weapon, WeaponEffect } from '../types/index';
 
 export type WeaponEffects = WeaponEffect;
 export type MatrixEffects = MatrixEffect;

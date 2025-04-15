@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { AllMatrixEffectIds, AllResoEffectIds, AllWeaponEffectIds } from '$lib/generated/all-ids';
-	import { STAT_LABELS, StatCollection, type StatData, type StatKey } from '$lib/scripts/stats';
+	import { STAT_LABELS, StatCollection } from '$lib/scripts/stats';
 	import type {
 		BaseEffect,
 		MatrixEffectsIds,
 		MatrixFinalEffect,
 		ResoEffect,
 		ResoEffectsIds,
+		StatData,
+		StatKey,
 		WeaponEffect,
 		WeaponEffectsIds,
 		WeaponsIds

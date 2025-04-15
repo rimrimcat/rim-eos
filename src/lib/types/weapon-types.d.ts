@@ -1,4 +1,3 @@
-import type { StatCollection } from '$lib/scripts/stats';
 import type {
 	MatrixEffectsIds,
 	MatrixIds,
@@ -6,7 +5,8 @@ import type {
 	WeaponEffectsIds,
 	WeaponsIds
 } from '../generated/ids';
-import type { StatDebuffs, StatGearUser, StatNonGear } from './stat-types';
+import type { StatCollection } from '../scripts/stats';
+import type { StatData, StatDebuffs, StatGearUser, StatNonGear } from './stat-types';
 
 export type ResoElement = 'phys' | 'flame' | 'frost' | 'volt' | 'alt' | 'none';
 export type ResoRole = 'atk' | 'fort' | 'bene' | 'none';

@@ -181,12 +181,7 @@
 	import { STAT_CONSTANTS } from '$lib/scripts/json-loader';
 	import { saveObject } from '$lib/scripts/loader.ts';
 	import { ActionType } from '$lib/scripts/nav-metadata';
-	import {
-		STAT_LABELS,
-		type AllStats,
-		type StatGearUser as Stat,
-		type StatGearTitan as TitanStat
-	} from '$lib/scripts/stats.ts';
+	import { STAT_LABELS } from '$lib/scripts/stats.ts';
 	import {
 		current_loadout,
 		gear_views,
@@ -197,10 +192,13 @@
 	import { formatValue } from '$lib/scripts/validation.ts';
 	import type {
 		AllLoadouts,
+		AllStats,
 		GearSearchView,
 		GearView,
 		GearViewStatLong,
 		GearViewStatShort,
+		StatGearUser as Stat,
+		StatGearTitan as TitanStat,
 		UserGear,
 		ValidGearPart
 	} from '$lib/types/index';

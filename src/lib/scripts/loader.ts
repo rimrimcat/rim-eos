@@ -1,6 +1,4 @@
-import type { UserGear } from '$lib/scripts/gears';
-import type { CharacterStat, StatGearFinal } from '$lib/scripts/stats';
-import type { AllLoadouts } from '../types/loadout-types';
+import type { AllLoadouts, CharacterStat, StatGearFinal, UserGear } from '$lib/types/index';
 
 // Keys
 export type LocalStorageKey = 'gears_v1' | 'loadouts_v1' | 'styles';

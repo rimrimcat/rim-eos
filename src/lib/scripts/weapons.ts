@@ -1,5 +1,4 @@
 import type { BaseStatType, BaseStatValue } from '../types/index';
-export type * from '../types/weapon-types';
 
 /**
  * A0 LVL 200 values taken from toweroffantasy.info. Need someone to verify.

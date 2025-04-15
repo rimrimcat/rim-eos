@@ -6,7 +6,6 @@ import type {
 	StatGearUser,
 	StatKey
 } from '../types/index';
-export type * from '../types/stat-types';
 
 export const STAT_LABELS: Record<AllStats, string> = {
 	hp: 'HP',

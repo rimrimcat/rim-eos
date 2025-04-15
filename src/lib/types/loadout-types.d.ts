@@ -1,5 +1,5 @@
 import type { ValidGearPart } from '../scripts/gears';
-import type { UserMatrix, UserWeapon } from '../scripts/weapons';
+import type { UserMatrix, UserWeapon } from './weapon-types';
 
 export type EquippedGear = {
 	[key in ValidGearPart]: number | null;

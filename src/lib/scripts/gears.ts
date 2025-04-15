@@ -1,4 +1,3 @@
-export type * from '../types/gear-types';
 import { ALL_STATS_LIST } from './stats';
 
 /**
