@@ -375,8 +375,6 @@
 			stat
 		} as MatrixView;
 
-		console.log('updating mat');
-
 		loadout_weapmat_combined[index][1] = loadout_matrix_views[index];
 
 		all_effects = [
@@ -642,27 +640,29 @@
 						/>
 					{/if}
 				</button>
-				{#each [1, 2, 3] as advSetValue, advIndex}
-					<button
-						class="image"
-						onclick={() => {
-							if (matrix.advancement === advSetValue) {
-								user_matrices[index].advancement = 0;
-							} else {
-								user_matrices[index].advancement = advSetValue;
-							}
-							saveWeaponMatrixLoadout();
-							updateSingleMatrixView(index);
-						}}
-					>
-						<div class="compose above" style="top: 4.5rem; left:{1.5 + advIndex}rem">
-							<StarIcon
-								size={$font_size}
-								fill={matrix.advancement >= advSetValue ? 'white' : 'none'}
-							/>
-						</div>
-					</button>
-				{/each}
+				{#if matrix.id !== 'none'}
+					{#each [1, 2, 3] as advSetValue, advIndex}
+						<button
+							class="image"
+							onclick={() => {
+								if (matrix.advancement === advSetValue) {
+									user_matrices[index].advancement = 0;
+								} else {
+									user_matrices[index].advancement = advSetValue;
+								}
+								saveWeaponMatrixLoadout();
+								updateSingleMatrixView(index);
+							}}
+						>
+							<div class="compose above" style="top: 4.5rem; left:{1.5 + advIndex}rem">
+								<StarIcon
+									size={$font_size}
+									fill={matrix.advancement >= advSetValue ? 'white' : 'none'}
+								/>
+							</div>
+						</button>
+					{/each}
+				{/if}
 			</div>
 		</div>
 	</div>
