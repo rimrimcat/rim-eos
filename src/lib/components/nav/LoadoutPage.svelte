@@ -617,6 +617,12 @@
 				>
 					{#if matrix.id.includes('4p')}
 						{@render matrix4p(matrix)}
+					{:else if matrix.id === 'none'}
+						<img
+							src="./matrix/none.webp"
+							alt="Matrix"
+							style="height:6rem; width:6rem; filter: grayscale(100%)"
+						/>
 					{/if}
 				</button>
 				{#each [1, 2, 3] as advSetValue, advIndex}
