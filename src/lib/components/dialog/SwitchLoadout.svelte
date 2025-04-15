@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { StatGearUser } from '$lib/scripts/stats';
 	import { user_loadouts } from '$lib/scripts/stores';
+	import type { StatGearUser } from '$lib/types/index';
 	import { ArrowRightIcon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';

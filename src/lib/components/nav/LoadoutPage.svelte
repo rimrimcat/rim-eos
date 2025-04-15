@@ -3,7 +3,6 @@
 	import SwitchLoadout from '$lib/components/dialog/SwitchLoadout.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import StatIcon from '$lib/components/StatIcon.svelte';
-	import type { MatrixEffectsIds, ResoEffectsIds, WeaponEffectsIds } from '$lib/generated/ids';
 	import {
 		getMatrix,
 		getMatrixEffect,
@@ -20,22 +19,26 @@
 		saveObject
 	} from '$lib/scripts/loader';
 	import { ActionType } from '$lib/scripts/nav-metadata';
-	import { StatCollection, type StatGearUser } from '$lib/scripts/stats';
+	import { StatCollection } from '$lib/scripts/stats';
 	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
-	import {
-		WEAPON_BASE_STATS,
-		type MatrixFinalEffect,
-		type MatrixView,
-		type ResoEffect,
-		type ResoTriggerCounts,
-		type UserMatrix,
-		type UserWeapon,
-		type Weapon,
-		type WeaponEffect,
-		type WeaponSettingStuff,
-		type WeaponView
-	} from '$lib/scripts/weapons';
-	import type { LoadoutType } from '$lib/types/loadout-types';
+	import { WEAPON_BASE_STATS } from '$lib/scripts/weapons';
+	import type {
+		LoadoutType,
+		MatrixEffectsIds,
+		MatrixFinalEffect,
+		MatrixView,
+		ResoEffect,
+		ResoEffectsIds,
+		ResoTriggerCounts,
+		StatGearUser,
+		UserMatrix,
+		UserWeapon,
+		Weapon,
+		WeaponEffect,
+		WeaponEffectsIds,
+		WeaponSettingStuff,
+		WeaponView
+	} from '$lib/types/index';
 	import {
 		ArrowRightLeftIcon,
 		ChartNoAxesColumnIcon,

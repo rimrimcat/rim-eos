@@ -1,5 +1,11 @@
-import type { GearView } from '../types/gear-types';
-import type { AllStats, StatData, StatGearTitan, StatGearUser, StatKey } from '../types/stat-types';
+import type {
+	AllStats,
+	GearView,
+	StatData,
+	StatGearTitan,
+	StatGearUser,
+	StatKey
+} from '../types/index';
 export type * from '../types/stat-types';
 
 export const STAT_LABELS: Record<AllStats, string> = {

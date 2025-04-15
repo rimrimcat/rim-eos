@@ -1,4 +1,3 @@
-// import { type StatGearTitan, type StatGearUser, ALL_STATS_LIST } from '$lib/scripts/stats';
 export type * from '../types/gear-types';
 import { ALL_STATS_LIST } from './stats';
 

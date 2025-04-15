@@ -1,9 +1,8 @@
 <script lang="ts">
 	import { ImagePlus } from '@lucide/svelte';
+	import cv from '@techstark/opencv-js';
 	import { onDestroy } from 'svelte';
 	import Dialog from '../Dialog.svelte';
-
-	import cv from '@techstark/opencv-js';
 
 	type UploadCallbackType = 'canvas' | 'url' | 'file';
 

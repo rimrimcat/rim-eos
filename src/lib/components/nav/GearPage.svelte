@@ -177,20 +177,9 @@
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
 	import StatIcon from '$lib/components/StatIcon.svelte';
-	import {
-		ALL_STATS_REGEX,
-		GearPart,
-		VALID_GEAR_PARTS,
-		type GearSearchView,
-		type GearView,
-		type GearViewStatLong,
-		type GearViewStatShort,
-		type UserGear,
-		type ValidGearPart
-	} from '$lib/scripts/gears.ts';
+	import { ALL_STATS_REGEX, GearPart, VALID_GEAR_PARTS } from '$lib/scripts/gears.ts';
 	import { STAT_CONSTANTS } from '$lib/scripts/json-loader';
 	import { saveObject } from '$lib/scripts/loader.ts';
-	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import { ActionType } from '$lib/scripts/nav-metadata';
 	import {
 		STAT_LABELS,
@@ -206,6 +195,15 @@
 		user_loadouts
 	} from '$lib/scripts/stores';
 	import { formatValue } from '$lib/scripts/validation.ts';
+	import type {
+		AllLoadouts,
+		GearSearchView,
+		GearView,
+		GearViewStatLong,
+		GearViewStatShort,
+		UserGear,
+		ValidGearPart
+	} from '$lib/types/index';
 	import { eval as evall, parse } from '@casbin/expression-eval';
 	import {
 		CaseSensitiveIcon,

@@ -4,7 +4,7 @@ import {
 	type ResoEffect,
 	type Weapon,
 	type WeaponEffect
-} from '../scripts/weapons';
+} from '../types/index';
 
 export type WeaponEffects = WeaponEffect;
 export type MatrixEffects = MatrixEffect;

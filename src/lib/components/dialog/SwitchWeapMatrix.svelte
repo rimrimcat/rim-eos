@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { AllMatrixIds } from '$lib/generated/all-ids';
-	import { type MatrixIds } from '$lib/generated/ids';
 	import { getMatrix } from '$lib/scripts/json-loader';
+	import type { MatrixIds } from '$lib/types/index';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 

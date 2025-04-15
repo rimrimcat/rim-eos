@@ -1,21 +1,16 @@
-<script module>
-</script>
-
 <script lang="ts">
 	import { AllMatrixEffectIds, AllResoEffectIds, AllWeaponEffectIds } from '$lib/generated/all-ids';
-	import type {
-		MatrixEffectsIds,
-		ResoEffectsIds,
-		WeaponEffectsIds,
-		WeaponsIds
-	} from '$lib/generated/ids';
 	import { STAT_LABELS, StatCollection, type StatData, type StatKey } from '$lib/scripts/stats';
 	import type {
 		BaseEffect,
+		MatrixEffectsIds,
 		MatrixFinalEffect,
 		ResoEffect,
-		WeaponEffect
-	} from '$lib/scripts/weapons';
+		ResoEffectsIds,
+		WeaponEffect,
+		WeaponEffectsIds,
+		WeaponsIds
+	} from '$lib/types/index';
 	import { BarChartStacked, ScaleTypes, type BarChartOptions } from '@carbon/charts-svelte';
 	import '@carbon/charts-svelte/styles.css';
 	import { DiffIcon, GroupIcon, PinIcon, PinOffIcon, SlashIcon } from '@lucide/svelte';

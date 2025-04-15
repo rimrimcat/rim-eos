@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { GearView } from '$lib/scripts/gears';
 	import { user_gears } from '$lib/scripts/stores';
+	import type { GearView } from '$lib/types/index';
 	import { ShirtIcon, SlashIcon, Trash2Icon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
 

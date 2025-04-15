@@ -1,4 +1,4 @@
-import type { BaseStatType, BaseStatValue } from '../types/weapon-types';
+import type { BaseStatType, BaseStatValue } from '../types/index';
 export type * from '../types/weapon-types';
 
 /**

@@ -1,5 +1,6 @@
 import type { GearPart, ValidGearPart } from '../scripts/gears';
 import type { StatGearTitan, StatGearUser } from './stat-types';
+export type { GearPart, ValidGearPart } from '../scripts/gears';
 
 /**
  * Identification for a gear piece

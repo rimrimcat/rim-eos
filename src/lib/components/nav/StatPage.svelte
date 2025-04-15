@@ -5,9 +5,10 @@
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
 	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader.ts';
 	import { ActionType } from '$lib/scripts/nav-metadata';
-	import { STAT_LABELS, type CharacterStat } from '$lib/scripts/stats';
+	import { STAT_LABELS } from '$lib/scripts/stats';
 	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
 	import { formatValue } from '$lib/scripts/validation.ts';
+	import type { CharacterStat } from '$lib/types/index';
 	import { ChartNoAxesColumn, ImagePlus, Trash2 } from '@lucide/svelte';
 	import type * as OpenCV from '@techstark/opencv-js';
 	import cv from '@techstark/opencv-js';

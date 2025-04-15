@@ -1,10 +1,10 @@
 <script lang="ts">
-	import type { ValidGearPart } from '$lib/scripts/gears';
 	import { TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader';
 	import { STAT_LABELS, StatCollection, type CharacterStat } from '$lib/scripts/stats';
 	import { current_loadout, gear_views, user_loadouts } from '$lib/scripts/stores';
+	import type { ValidGearPart } from '$lib/types/index';
 	import { ShirtIcon, SlashIcon, SwordIcon } from '@lucide/svelte';
-	import { type Component } from 'svelte';
+	import type { Component } from 'svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
