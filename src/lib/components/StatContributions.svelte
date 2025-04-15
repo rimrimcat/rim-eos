@@ -9,8 +9,7 @@
 		WeaponEffectsIds,
 		WeaponsIds
 	} from '$lib/generated/ids';
-	import { StatCollection, type StatData, type StatKey } from '$lib/scripts/stat-ops';
-	import { STAT_LABELS } from '$lib/scripts/stats';
+	import { STAT_LABELS, StatCollection, type StatData, type StatKey } from '$lib/scripts/stats';
 	import type {
 		BaseEffect,
 		MatrixFinalEffect,

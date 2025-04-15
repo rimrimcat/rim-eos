@@ -32,7 +32,7 @@
 		title = 'Dialog',
 		open = $bindable(false),
 		primary = 'OK',
-		width = $bindable('50vw'),
+		width = $bindable('70vw'),
 		onButtonPress = doButtonPress,
 		onClickOutside = doClickOutside,
 		onkeydown = doKeydown,

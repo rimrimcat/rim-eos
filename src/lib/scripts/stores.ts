@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
+import type { AllLoadouts } from '../types/loadout-types';
 import type { GearView, UserGear } from './gears';
-import type { AllLoadouts } from './loadouts';
 
 export const scroll_y = writable<number>(0);
 export const is_mobile = writable<boolean>(false);

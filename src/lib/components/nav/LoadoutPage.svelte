@@ -19,10 +19,8 @@
 		getImageUrlFromDB,
 		saveObject
 	} from '$lib/scripts/loader';
-	import type { LoadoutType } from '$lib/scripts/loadouts';
 	import { ActionType } from '$lib/scripts/nav-metadata';
-	import { StatCollection } from '$lib/scripts/stat-ops';
-	import { type StatGearUser } from '$lib/scripts/stats';
+	import { StatCollection, type StatGearUser } from '$lib/scripts/stats';
 	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
 	import {
 		WEAPON_BASE_STATS,
@@ -37,6 +35,7 @@
 		type WeaponSettingStuff,
 		type WeaponView
 	} from '$lib/scripts/weapons';
+	import type { LoadoutType } from '$lib/types/loadout-types';
 	import {
 		ArrowRightLeftIcon,
 		ChartNoAxesColumnIcon,
