@@ -706,25 +706,6 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "crit_dmg_percent": {
-          "type": "array",
-          "items": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
         "atk_percent": {
           "type": "array",
           "items": [
@@ -783,6 +764,25 @@
           "maxItems": 4
         },
         "ele_dmg_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "crit_dmg_percent": {
           "type": "array",
           "items": [
             {
