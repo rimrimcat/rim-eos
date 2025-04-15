@@ -5,8 +5,11 @@
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
-	let { open = $bindable(false), switching = $bindable('matrix' as 'matrix' | 'weapon') } =
-		$props();
+	let {
+		open = $bindable(false),
+		switching = $bindable('matrix' as 'matrix' | 'weapon'),
+		onSwitchMatrix = (id: MatrixIds) => {}
+	} = $props();
 </script>
 
 {#snippet matrix4p(matrix_id: MatrixIds)}
@@ -28,7 +31,13 @@
 				{#await getMatrix(matrix_id) then matrix}
 					<div class="matrix-item vertical center" style="width: 8rem; height: 8rem;">
 						<div class="compose below border" style="width: 6rem; height: 6rem;">
-							<button class="image">
+							<button
+								class="image"
+								onclick={() => {
+									onSwitchMatrix(matrix_id);
+									open = false;
+								}}
+							>
 								{#if matrix.id === 'none'}
 									<img
 										src="./matrix/none.webp"

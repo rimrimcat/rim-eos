@@ -24,6 +24,7 @@
 	import type {
 		LoadoutType,
 		MatrixFinalEffect,
+		MatrixIds,
 		MatrixView,
 		ResoEffect,
 		ResoTriggerCounts,
@@ -75,7 +76,10 @@
 	// Dialog
 	let upload_dialog_open = $state(false);
 	let switch_loadout_dialog_open = $state(false);
+
 	let switch_gear_matrix_dialog_open = $state(false);
+	let switching: 'matrix' | 'weapon' = $state('matrix');
+	let switch_index = $state(0);
 
 	// Stat Contrib
 	let chart_width = $derived($inner_width - $font_size * 16 - 300);
@@ -519,6 +523,12 @@
 		});
 	}
 
+	function onSwitchMatrix(id: MatrixIds) {
+		user_matrices[switch_index] = { id };
+		saveWeaponMatrixLoadout();
+		updateAll();
+	}
+
 	const ACTIONS = [
 		{
 			id: 'switch',
@@ -597,7 +607,14 @@
 		<span class="matrix-name">{matrix.name}</span>
 		<div class="horizontal matrix-container">
 			<div class="compose below border" style="width: 6rem; height: 6rem; margin-top: 0.4rem;">
-				<button class="image" onclick={() => (switch_gear_matrix_dialog_open = true)}>
+				<button
+					class="image"
+					onclick={() => {
+						switching = 'matrix';
+						switch_index = index;
+						switch_gear_matrix_dialog_open = true;
+					}}
+				>
 					{#if matrix.id.includes('4p')}
 						{@render matrix4p(matrix)}
 					{/if}
@@ -848,7 +865,7 @@
 	onSwitchLoadout={switchLoadout}
 />
 
-<SwitchWeapMatrix bind:open={switch_gear_matrix_dialog_open} />
+<SwitchWeapMatrix bind:open={switch_gear_matrix_dialog_open} bind:switching {onSwitchMatrix} />
 
 <ActionToolbar actions={ACTIONS} />
 
