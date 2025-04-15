@@ -2,7 +2,7 @@
 	import type { GearView, UserGear } from '$lib/scripts/gears';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
-	import { any_dialog_open, scrollY } from '$lib/scripts/stores';
+	import { scrollY } from '$lib/scripts/stores';
 	import { onMount, type Component } from 'svelte';
 	import Dialog from './Dialog.svelte';
 	import GearPage, { createGearView } from './nav/GearPage.svelte';
@@ -45,14 +45,6 @@
 	let current_loadout: string = $state('');
 	let gear_views: GearView[] = $state([]);
 
-	function updateDialogOpen(dialog_open: boolean) {
-		$any_dialog_open = dialog_open;
-	}
-
-	$effect(() => {
-		updateDialogOpen(dialog_open);
-	});
-
 	onMount(() => {
 		// get font size
 		font_size = parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -82,8 +74,6 @@
 			console.log('Done processing user_gears');
 		});
 	});
-
-	$inspect('DIALOG_OPEN (App)', $any_dialog_open);
 </script>
 
 <svelte:window bind:innerWidth={inner_width} />

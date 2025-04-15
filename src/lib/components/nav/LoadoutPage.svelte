@@ -87,10 +87,6 @@
 	let switch_loadout_dialog_open = $state(false);
 	let switch_gear_matrix_dialog_open = $state(false);
 
-	let any_dialog_open = $derived(
-		upload_dialog_open || switch_loadout_dialog_open || switch_gear_matrix_dialog_open
-	);
-
 	// Stat Contrib
 	let chart_width = $derived(inner_width - font_size * 16 - 300);
 	$inspect('chart wid', chart_width);
@@ -710,7 +706,7 @@
 	</div>
 {/snippet}
 
-<div class="loadout-page" style={any_dialog_open ? 'overflow: hidden;' : ''}>
+<div class="loadout-page">
 	<h1>Loadout</h1>
 
 	<div class="loadout-container">

@@ -36,8 +36,6 @@
 	let stat_adjust_dialog_open = $state(false);
 	let unadjusted_stats: string[] = $state([]);
 
-	let any_dialog_open = $derived(screenshot_dialog_open || stat_adjust_dialog_open);
-
 	function processAttributes() {
 		// TODO: later on, this should adjust depending on the not-yet created Loadout.stat_adj object
 		attribute_view = TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
@@ -358,7 +356,7 @@
 	<img id="templateImage" src={'./template/template_crit.png'} alt="User uploaded screenshot" />
 </div>
 
-<div class="stat-panel" style={any_dialog_open ? 'overflow: hidden;' : ''}>
+<div class="stat-panel">
 	<h1>Character Stats</h1>
 	<p>This page might undergo overhaul soon, just waiting for gear page to be completed.</p>
 
