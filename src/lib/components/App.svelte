@@ -3,7 +3,10 @@
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
 	import {
 		current_loadout,
+		font_size,
 		gear_views,
+		inner_width,
+		is_mobile,
 		scroll_y,
 		user_gears,
 		user_loadouts
@@ -29,11 +32,6 @@
 	let is_collapsed = $state(true);
 	let mobile_toolbar_transform = $state(0);
 
-	// Detect if mobile
-	let font_size = $state(0);
-	let inner_width = $state(1000);
-	let is_mobile = $derived((13.75 * font_size) / inner_width > 0.25);
-
 	// Active Nav
 	let active_component = $state({
 		id: 'main-page',
@@ -49,10 +47,9 @@
 	let styles = $state({});
 
 	onMount(async () => {
-		// load some stuff
-
-		// get font size
-		font_size = parseFloat(getComputedStyle(document.documentElement).fontSize);
+		// get font size and check if mobile
+		$font_size = parseFloat(getComputedStyle(document.documentElement).fontSize);
+		$is_mobile = (13.75 * $font_size) / $inner_width > 0.25;
 
 		// setup imagedb
 		openImageDB();
@@ -82,7 +79,7 @@
 	});
 </script>
 
-<svelte:window bind:innerWidth={inner_width} />
+<svelte:window bind:innerWidth={$inner_width} />
 
 <Dialog
 	bind:open={dialog_open}

@@ -5,6 +5,7 @@ import type { AllLoadouts } from './loadouts';
 export const scroll_y = writable<number>(0);
 export const is_mobile = writable<boolean>(false);
 export const font_size = writable<number>(16);
+export const inner_width = writable<number>(1000);
 
 export const user_gears = writable<UserGear[]>([]);
 export const user_loadouts = writable<AllLoadouts>({});
