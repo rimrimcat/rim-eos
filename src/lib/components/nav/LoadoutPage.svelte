@@ -3,13 +3,7 @@
 	import SwitchLoadout from '$lib/components/dialog/SwitchLoadout.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import StatIcon from '$lib/components/StatIcon.svelte';
-	import {
-		getMatrix,
-		getMatrixEffect,
-		getResoEffects,
-		getWeapon,
-		getWeaponEffect
-	} from '$lib/scripts/json-loader';
+	import { getMatrix, getResoEffects, getWeapon } from '$lib/scripts/json-loader';
 	import {
 		addImageToDB,
 		cloneObject,
@@ -18,24 +12,26 @@
 		getImageUrlFromDB,
 		saveObject
 	} from '$lib/scripts/loader';
+	import {
+		pushAllValidMatrixEffects,
+		pushAllValidWeaponEffects,
+		pushValidResoEffect
+	} from '$lib/scripts/loadout';
 	import { ActionType } from '$lib/scripts/nav-metadata';
 	import { StatCollection } from '$lib/scripts/stats';
 	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
 	import { WEAPON_BASE_STATS } from '$lib/scripts/weapons';
 	import type {
 		LoadoutType,
-		MatrixEffectsIds,
 		MatrixFinalEffect,
 		MatrixView,
 		ResoEffect,
-		ResoEffectsIds,
 		ResoTriggerCounts,
 		StatGearUser,
 		UserMatrix,
 		UserWeapon,
 		Weapon,
 		WeaponEffect,
-		WeaponEffectsIds,
 		WeaponSettingStuff,
 		WeaponView
 	} from '$lib/types/index';
@@ -96,89 +92,6 @@
 		{ value: 'phys', label: 'Physical' },
 		{ value: 'alt', label: 'Altered' }
 	];
-
-	// helper function for updateResoEffects
-	async function pushValidResoEffect(effectIds: ResoEffectsIds[], reso_effects_: ResoEffect[]) {
-		await Promise.all(
-			effectIds.map(async (eff) => {
-				const effect = await getResoEffects(eff);
-				if (effect && effect.id && !reso_effects_.some((eff2) => eff2.id === effect.id)) {
-					reso_effects_.push(effect);
-				}
-			})
-		);
-	}
-	// helper function for weapon views
-	async function pushAllValidWeaponEffects(
-		effs: WeaponEffectsIds[],
-		advancement: number,
-		effects_: WeaponEffect[],
-		stat_: StatCollection[]
-	) {
-		await Promise.all(
-			effs.map(async (eff_) => {
-				const eff = await getWeaponEffect(eff_);
-				if (eff.require_reso) {
-					const required_reso_count = eff.require_reso_count ?? 2;
-					if (loadout_reso_counts[eff.require_reso] ?? 0 < required_reso_count) {
-						return;
-					}
-				}
-
-				if (eff.require_adv) {
-					if (advancement < eff.require_adv) {
-						return;
-					}
-				}
-
-				// TEMPORARILY DISABLE ONFIELD EFFECTS
-				if (eff.duration !== undefined && eff.duration === 0) {
-					return;
-				}
-
-				effects_.push(eff);
-				stat_[0] = stat_[0].add(new StatCollection(eff.stats));
-			})
-		);
-	}
-
-	// helper function for matrix views
-	async function pushAllValidMatrixEffects(
-		effs: MatrixEffectsIds[],
-		advancement: number,
-		effects_: MatrixFinalEffect[],
-		stat_: StatCollection[]
-	) {
-		await Promise.all(
-			effs.map(async (eff_) => {
-				const eff = await getMatrixEffect(eff_);
-				if (eff.require_reso) {
-					const required_reso_count = eff.require_reso_count ?? 2;
-					if (loadout_reso_counts[eff.require_reso] ?? 0 < required_reso_count) {
-						return;
-					}
-				}
-
-				// TEMPORARILY DISABLE ONFIELD EFFECTS
-				if (eff.duration !== undefined && eff.duration === 0) {
-					return;
-				}
-
-				const keys = Object.keys(eff.stats);
-				const finalEffect = {
-					...eff,
-					stats: {}
-				};
-				keys.forEach((key) => {
-					// @ts-expect-error
-					finalEffect.stats[key] = eff.stats[key][advancement];
-				});
-
-				effects_.push(finalEffect);
-				stat_[0] = stat_[0].add(new StatCollection(finalEffect.stats));
-			})
-		);
-	}
 
 	async function updateResoCounts() {
 		loadout_reso_counts = loadout_base_weapons.reduce((counts, weapon, index) => {
@@ -273,7 +186,13 @@
 				const effects: WeaponEffect[] = [];
 				const stat_ = [new StatCollection()];
 
-				await pushAllValidWeaponEffects(weapon.effects ?? [], advancement, effects, stat_);
+				await pushAllValidWeaponEffects(
+					weapon.effects ?? [],
+					advancement,
+					loadout_reso_counts,
+					effects,
+					stat_
+				);
 				const setting_ids = user_weapons[index].setting ?? weapon.setting?.default ?? [];
 				const setting: WeaponSettingStuff[] = setting_ids.map((setting_) => {
 					// @ts-expect-error
@@ -289,6 +208,7 @@
 								return await pushAllValidWeaponEffects(
 									setting_data.effects,
 									advancement,
+									loadout_reso_counts,
 									effects,
 									stat_
 								);
@@ -323,7 +243,13 @@
 				const stat_ = [new StatCollection()];
 				const matrix_ = await getMatrix(matrix.id);
 
-				await pushAllValidMatrixEffects(matrix_.effects, advancement, effects, stat_);
+				await pushAllValidMatrixEffects(
+					matrix_.effects,
+					advancement,
+					loadout_reso_counts,
+					effects,
+					stat_
+				);
 				const stat = stat_[0];
 
 				return {
@@ -353,7 +279,13 @@
 		const effects: WeaponEffect[] = [];
 		const stat_ = [new StatCollection()];
 
-		await pushAllValidWeaponEffects(weapon.effects ?? [], advancement, effects, stat_);
+		await pushAllValidWeaponEffects(
+			weapon.effects ?? [],
+			advancement,
+			loadout_reso_counts,
+			effects,
+			stat_
+		);
 		const setting_ids = user_weapons[index].setting ?? weapon.setting?.default ?? [];
 		const setting: WeaponSettingStuff[] = setting_ids.map((setting_) => {
 			// @ts-expect-error
@@ -369,6 +301,7 @@
 						return await pushAllValidWeaponEffects(
 							setting_data.effects,
 							advancement,
+							loadout_reso_counts,
 							effects,
 							stat_
 						);
@@ -408,7 +341,13 @@
 		const stat_ = [new StatCollection()];
 		const matrix_ = await getMatrix(matrix.id);
 
-		await pushAllValidMatrixEffects(matrix_.effects, advancement, effects, stat_);
+		await pushAllValidMatrixEffects(
+			matrix_.effects,
+			advancement,
+			loadout_reso_counts,
+			effects,
+			stat_
+		);
 		const stat = stat_[0];
 
 		loadout_matrix_views[index] = {
