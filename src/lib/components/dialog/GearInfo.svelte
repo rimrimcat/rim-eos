@@ -1,14 +1,12 @@
 <script lang="ts">
-	import type { GearView, UserGear } from '$lib/scripts/gears';
+	import type { GearView } from '$lib/scripts/gears';
+	import { user_gears } from '$lib/scripts/stores';
 	import { ShirtIcon, SlashIcon, Trash2Icon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
 
 	let {
 		open = $bindable(false),
 		gear = $bindable() as GearView | null,
-		user_gears = $bindable() as UserGear[],
-		gear_views = $bindable() as GearView[],
-		is_mobile = $bindable(false),
 		onRemoveGear = (id: number) => {},
 		onEquipGear = (id: number) => {},
 		onUnequipGear = (id: number) => {}
@@ -21,7 +19,7 @@
 		{ position: 'bottom-right', index: 3 }
 	];
 
-	let date = $derived(new Date(user_gears[gear?.id ?? 0]?.dateAdded ?? 0));
+	let date = $derived(new Date($user_gears[gear?.id ?? 0]?.dateAdded ?? 0));
 
 	// get relative date
 	function getRelativeDate(): string {

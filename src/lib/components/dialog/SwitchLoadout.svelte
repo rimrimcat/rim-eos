@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { AllLoadouts } from '$lib/scripts/loadouts';
 	import type { StatGearUser } from '$lib/scripts/stats';
+	import { user_loadouts } from '$lib/scripts/stores';
 	import { ArrowRightIcon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
@@ -8,7 +8,6 @@
 
 	let {
 		open = $bindable(false),
-		loadouts = $bindable({} as AllLoadouts),
 		selected_loadout = $bindable(''),
 		onSwitchLoadout = (loadoutKey: string) => {}
 	} = $props();
@@ -22,8 +21,8 @@
 <Dialog title="Switch Loadout" bind:open>
 	<div class="switch-loadout-dialog">
 		<FlexGrid max_cols={3} horizontal_gap="1rem" vertical_gap="1rem">
-			{#if Object.keys(loadouts).length > 0}
-				{#each Object.entries(loadouts) as [loadoutKey, loadout]}
+			{#if Object.keys($user_loadouts).length > 0}
+				{#each Object.entries($user_loadouts) as [loadoutKey, loadout]}
 					<div
 						class="loadout-item"
 						class:selected={loadoutKey === selected_loadout}

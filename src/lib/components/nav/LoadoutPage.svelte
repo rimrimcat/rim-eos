@@ -19,10 +19,11 @@
 		getImageUrlFromDB,
 		saveObject
 	} from '$lib/scripts/loader';
-	import type { AllLoadouts, LoadoutType } from '$lib/scripts/loadouts';
+	import type { LoadoutType } from '$lib/scripts/loadouts';
 	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
 	import { StatCollection } from '$lib/scripts/stat-ops';
 	import { type StatGearUser } from '$lib/scripts/stats';
+	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
 	import {
 		WEAPON_BASE_STATS,
 		type MatrixFinalEffect,
@@ -51,13 +52,7 @@
 	import SwitchWeapMatrix from '../dialog/SwitchWeapMatrix.svelte';
 	import StatContributions from '../StatContributions.svelte';
 
-	let {
-		isMobile = $bindable(false),
-		user_loadouts = $bindable({} as AllLoadouts),
-		current_loadout = $bindable(''),
-		font_size = $bindable(16),
-		inner_width = $bindable(1000)
-	} = $props();
+	let { font_size = $bindable(16), inner_width = $bindable(1000) } = $props();
 
 	// State
 	let loadout_name = $state('');
@@ -461,17 +456,17 @@
 	}
 
 	function saveWeaponMatrixLoadout() {
-		user_loadouts[current_loadout].equipped_weapons = user_weapons;
-		user_loadouts[current_loadout].equipped_matrices = user_matrices;
-		saveObject('loadouts_v1', user_loadouts);
+		$user_loadouts[$current_loadout].equipped_weapons = user_weapons;
+		$user_loadouts[$current_loadout].equipped_matrices = user_matrices;
+		saveObject('loadouts_v1', $user_loadouts);
 	}
 
 	function toggleEditing() {
 		if (is_editing) {
-			const prevSelectedLoadout = current_loadout;
-			user_loadouts[prevSelectedLoadout].name = loadout_name;
-			user_loadouts[prevSelectedLoadout].description = loadout_desc;
-			user_loadouts[prevSelectedLoadout].element = loadout_icon as LoadoutType;
+			const prevSelectedLoadout = $current_loadout;
+			$user_loadouts[prevSelectedLoadout].name = loadout_name;
+			$user_loadouts[prevSelectedLoadout].description = loadout_desc;
+			$user_loadouts[prevSelectedLoadout].element = loadout_icon as LoadoutType;
 
 			const sanitizedLoadoutName = sanitizeLoadoutKey(loadout_name);
 
@@ -489,12 +484,12 @@
 				});
 
 				// rename loadout
-				user_loadouts[sanitizedLoadoutName] = cloneObject(user_loadouts[prevSelectedLoadout]);
-				delete user_loadouts[prevSelectedLoadout];
-				current_loadout = sanitizedLoadoutName;
+				$user_loadouts[sanitizedLoadoutName] = cloneObject($user_loadouts[prevSelectedLoadout]);
+				delete $user_loadouts[prevSelectedLoadout];
+				$current_loadout = sanitizedLoadoutName;
 			}
 
-			saveObject('loadouts_v1', user_loadouts);
+			saveObject('loadouts_v1', $user_loadouts);
 		}
 
 		is_editing = !is_editing;
@@ -508,7 +503,7 @@
 			};
 			reader.readAsDataURL(file);
 
-			addImageToDB(current_loadout, file);
+			addImageToDB($current_loadout, file);
 		}
 	}
 
@@ -521,7 +516,7 @@
 		let sanitizedLoadoutName = sanitizeLoadoutKey(newLoadoutName);
 		let counter = 1;
 
-		while (user_loadouts[sanitizedLoadoutName]) {
+		while ($user_loadouts[sanitizedLoadoutName]) {
 			counter++;
 			newLoadoutName = loadout_name.match(/(.*)\s(\d+)$/)
 				? loadout_name.replace(/(\d+)$/, String(counter))
@@ -531,13 +526,13 @@
 
 		console.error('sanitized', sanitizedLoadoutName);
 
-		user_loadouts[sanitizedLoadoutName] = cloneObject(user_loadouts[current_loadout]);
-		user_loadouts[sanitizedLoadoutName].name = newLoadoutName;
-		user_loadouts[sanitizedLoadoutName].description =
+		$user_loadouts[sanitizedLoadoutName] = cloneObject($user_loadouts[$current_loadout]);
+		$user_loadouts[sanitizedLoadoutName].name = newLoadoutName;
+		$user_loadouts[sanitizedLoadoutName].description =
 			loadout_desc + ` (duplicate from ${loadout_name})`;
 
 		// copy image, fetch from db then add to db
-		getImageFromDB(current_loadout).then((imageFile) => {
+		getImageFromDB($current_loadout).then((imageFile) => {
 			if (imageFile) {
 				const newFile = new File([imageFile], `${sanitizedLoadoutName}.jpg`, {
 					type: imageFile.type
@@ -546,40 +541,40 @@
 			}
 		});
 
-		saveObject('loadouts_v1', user_loadouts);
+		saveObject('loadouts_v1', $user_loadouts);
 		if (switchToDupe) {
 			switchLoadout(sanitizedLoadoutName);
 		}
 	}
 
 	function deleteCurrentLoadout() {
-		console.error('deleting loadout', current_loadout);
-		if (Object.keys(user_loadouts).length === 1) {
+		console.error('deleting loadout', $current_loadout);
+		if (Object.keys($user_loadouts).length === 1) {
 			console.error('Cannot delete last loadout!');
 			return;
 		}
 
-		delete user_loadouts[current_loadout];
-		deleteImageFromDB(current_loadout);
+		delete $user_loadouts[$current_loadout];
+		deleteImageFromDB($current_loadout);
 
-		saveObject('loadouts_v1', user_loadouts);
+		saveObject('loadouts_v1', $user_loadouts);
 
-		current_loadout = Object.keys(user_loadouts)[0];
-		switchLoadout(current_loadout);
+		$current_loadout = Object.keys($user_loadouts)[0];
+		switchLoadout($current_loadout);
 	}
 
 	function switchLoadout(loadout: string) {
-		if (!user_loadouts[loadout]) {
+		if (!$user_loadouts[loadout]) {
 			console.error('Loadout not found:', loadout);
 			return;
 		}
 
-		current_loadout = loadout;
+		$current_loadout = loadout;
 
-		loadout_name = user_loadouts[loadout].name;
-		loadout_desc = user_loadouts[loadout].description;
-		loadout_icon = user_loadouts[loadout].element;
-		getImageUrlFromDB(current_loadout).then((imageUrl) => {
+		loadout_name = $user_loadouts[loadout].name;
+		loadout_desc = $user_loadouts[loadout].description;
+		loadout_icon = $user_loadouts[loadout].element;
+		getImageUrlFromDB($current_loadout).then((imageUrl) => {
 			if (imageUrl) {
 				loadout_image = imageUrl;
 			}
@@ -589,69 +584,70 @@
 	// register
 	const id = 'loadout-page';
 
+	const ACTIONS = [
+		{
+			id: 'switch',
+			label: 'Switch Loadout',
+			lucide: ArrowRightLeftIcon,
+			type: ActionType.BUTTON,
+			callback: () => {
+				switch_loadout_dialog_open = true;
+			}
+		},
+		{
+			id: 'duplicate',
+			label: 'Duplicate Loadout',
+			lucide: CopyPlusIcon,
+			type: ActionType.BUTTON,
+			callback: () => {
+				duplicateLoadout(true);
+			}
+		},
+		{
+			id: 'delete',
+			label: 'Delete Loadout',
+			lucide: Trash2Icon,
+			type: ActionType.BUTTON,
+			callback: () => {
+				deleteCurrentLoadout();
+			}
+		},
+		{
+			id: 'reset',
+			label: 'Reset to defaults',
+			lucide: RotateCcwIcon,
+			type: ActionType.BUTTON,
+			callback: () => {
+				// delete keys in localStorage
+				localStorage.removeItem('loadouts_v1');
+				localStorage.removeItem('gears_v1');
+				// delete database
+				indexedDB.deleteDatabase('tof-gear');
+				// reload page
+				window.location.reload();
+			}
+		}
+	];
+
 	const metadata: ComponentMetadata = {
 		id,
 		label: 'Loadout',
 		lucide: BoxIcon,
-		showInNav: true,
-		actions: [
-			{
-				id: 'switch',
-				label: 'Switch Loadout',
-				lucide: ArrowRightLeftIcon,
-				type: ActionType.BUTTON,
-				callback: () => {
-					switch_loadout_dialog_open = true;
-				}
-			},
-			{
-				id: 'duplicate',
-				label: 'Duplicate Loadout',
-				lucide: CopyPlusIcon,
-				type: ActionType.BUTTON,
-				callback: () => {
-					duplicateLoadout(true);
-				}
-			},
-			{
-				id: 'delete',
-				label: 'Delete Loadout',
-				lucide: Trash2Icon,
-				type: ActionType.BUTTON,
-				callback: () => {
-					deleteCurrentLoadout();
-				}
-			},
-			{
-				id: 'reset',
-				label: 'Reset to defaults',
-				lucide: RotateCcwIcon,
-				type: ActionType.BUTTON,
-				callback: () => {
-					// delete keys in localStorage
-					localStorage.removeItem('loadouts_v1');
-					localStorage.removeItem('gears_v1');
-					// delete database
-					indexedDB.deleteDatabase('tof-gear');
-					// reload page
-					window.location.reload();
-				}
-			}
-		]
+		showInNav: true
 	};
 
 	onMount(async () => {
 		registerComponent(id, metadata);
 
-		if (Object.keys(user_loadouts).length === 0) {
+		if (Object.keys($user_loadouts).length === 0) {
 			// skip if preload
 		} else {
-			loadout_name = user_loadouts[current_loadout].name;
-			loadout_desc = user_loadouts[current_loadout].description;
-			loadout_icon = user_loadouts[current_loadout].element;
-			user_weapons = user_loadouts[current_loadout].equipped_weapons;
-			user_matrices = user_loadouts[current_loadout].equipped_matrices;
-			loadout_image = await getImageUrlFromDB(current_loadout);
+			loadout_name = $user_loadouts[$current_loadout].name;
+			loadout_desc = $user_loadouts[$current_loadout].description;
+			loadout_icon = $user_loadouts[$current_loadout].element;
+			user_weapons = $user_loadouts[$current_loadout].equipped_weapons;
+			user_matrices = $user_loadouts[$current_loadout].equipped_matrices;
+			loadout_image = await getImageUrlFromDB($current_loadout);
 
 			await updateAll();
 		}
@@ -922,14 +918,13 @@
 
 <SwitchLoadout
 	bind:open={switch_loadout_dialog_open}
-	bind:loadouts={user_loadouts}
-	bind:selected_loadout={current_loadout}
+	bind:selected_loadout={$current_loadout}
 	onSwitchLoadout={switchLoadout}
 />
 
 <SwitchWeapMatrix bind:open={switch_gear_matrix_dialog_open} />
 
-<ActionToolbar actions={metadata.actions} bind:is_mobile={isMobile} />
+<ActionToolbar actions={ACTIONS} />
 
 <style>
 	.loadout-page {

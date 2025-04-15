@@ -1,8 +1,12 @@
 <script lang="ts">
-	import type { GearView, UserGear } from '$lib/scripts/gears';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
-	import type { AllLoadouts } from '$lib/scripts/loadouts';
-	import { scrollY } from '$lib/scripts/stores';
+	import {
+		current_loadout,
+		gear_views,
+		scroll_y,
+		user_gears,
+		user_loadouts
+	} from '$lib/scripts/stores';
 	import { onMount, type Component } from 'svelte';
 	import Dialog from './Dialog.svelte';
 	import GearPage, { createGearView } from './nav/GearPage.svelte';
@@ -39,12 +43,6 @@
 	// color scheme
 	let styles = $state({});
 
-	// synced data across app
-	let user_gears: UserGear[] = $state([]);
-	let user_loadouts: AllLoadouts = $state({});
-	let current_loadout: string = $state('');
-	let gear_views: GearView[] = $state([]);
-
 	onMount(() => {
 		// get font size
 		font_size = parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -62,15 +60,15 @@
 		styles = _styles;
 
 		// load synced
-		user_gears = loadObject('gears_v1');
-		user_loadouts = loadObject('loadouts_v1');
-		current_loadout = Object.keys(user_loadouts)[0];
+		$user_gears = loadObject('gears_v1');
+		$user_loadouts = loadObject('loadouts_v1');
+		$current_loadout = Object.keys($user_loadouts)[0];
 
 		// processing
 		Promise.all(
-			user_gears.map((gear) => createGearView(gear, false, user_loadouts, current_loadout))
+			$user_gears.map((gear) => createGearView(gear, false, $user_loadouts, $current_loadout))
 		).then((gearViews) => {
-			gear_views = gearViews;
+			$gear_views = gearViews;
 			console.log('Done processing user_gears');
 		});
 	});
@@ -98,7 +96,7 @@
 		class:mobile={is_mobile}
 		style="translate: 0 {is_mobile ? mobile_toolbar_transform : 0}px;"
 		onscroll={(e: UIEvent) => {
-			$scrollY = (e.target as HTMLElement).scrollTop;
+			$scroll_y = (e.target as HTMLElement).scrollTop;
 		}}
 	>
 		<div style="display: none">
@@ -108,15 +106,7 @@
 			<GearPage />
 		</div>
 
-		<CurrentComponent
-			bind:isMobile={is_mobile}
-			bind:user_gears
-			bind:user_loadouts
-			bind:current_loadout
-			bind:gear_views
-			bind:font_size
-			bind:inner_width
-		/>
+		<CurrentComponent />
 	</div>
 </div>
 

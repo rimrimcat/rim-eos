@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { scrollY } from '$lib/scripts/stores';
+	import { scroll_y } from '$lib/scripts/stores';
 	function doClose() {
 		open = false;
 	}
@@ -51,7 +51,7 @@
 		{onpaste}
 		role="presentation"
 		tabindex="-1"
-		style="translate: 0 {$scrollY}px;"
+		style="translate: 0 {$scroll_y}px;"
 	>
 		<div class="dialog-container" role="dialog" aria-modal="true" style="width: {width};">
 			<div class="dialog-header">

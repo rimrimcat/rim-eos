@@ -5,14 +5,10 @@
 		type SliderAction,
 		type ToggleAction
 	} from '$lib/scripts/nav-metadata';
-	import { scrollY } from '$lib/scripts/stores';
+	import { is_mobile, scroll_y } from '$lib/scripts/stores';
 	import { ArrowRightToLine, CircleHelp, Menu, ToggleLeft, ToggleRight } from '@lucide/svelte';
 
-	let {
-		actions = [] as ComponentAction[],
-		bound_objects = $bindable({}),
-		is_mobile: is_mobile = $bindable(false)
-	} = $props();
+	let { actions = [] as ComponentAction[], bound_objects = $bindable({}) } = $props();
 
 	let is_collapsed = $state(true);
 
@@ -48,10 +44,10 @@
 <div
 	class="nav-tools"
 	class:collapsed={is_collapsed}
-	class:mobile={is_mobile}
+	class:mobile={$is_mobile}
 	style="height:{5.5 +
 		3 * (actions.length - SLIDER_COUNT) +
-		5 * SLIDER_COUNT}rem; translate: 0 {$scrollY}px;"
+		5 * SLIDER_COUNT}rem; translate: 0 {$scroll_y}px;"
 >
 	<div class="tools-header">
 		<div class="header-content">

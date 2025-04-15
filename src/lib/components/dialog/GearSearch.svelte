@@ -1,13 +1,10 @@
 <script lang="ts">
 	import { ALLOWED_REGEX_OPS, ALLOWED_REGEX_VARS, GearPart } from '$lib/scripts/gears.ts';
+	import { is_mobile } from '$lib/scripts/stores';
 	import { SvelteSet } from 'svelte/reactivity';
 	import Dialog from '../Dialog.svelte';
 
-	let {
-		open = $bindable(false),
-		onConfirmSearch = (query: string) => {},
-		isMobile = $bindable(false)
-	} = $props();
+	let { open = $bindable(false), onConfirmSearch = (query: string) => {} } = $props();
 
 	let advancedOptions = $state(false);
 
@@ -195,7 +192,7 @@
 								width="30px"
 								height="30px"
 							/>
-							{#if !isMobile}
+							{#if !is_mobile}
 								<span class="slot-label">{slot}</span>
 							{/if}
 						</div>

@@ -1,3 +1,13 @@
 import { writable } from 'svelte/store';
+import type { GearView, UserGear } from './gears';
+import type { AllLoadouts } from './loadouts';
 
-export const scrollY = writable(0);
+export const scroll_y = writable<number>(0);
+export const is_mobile = writable<boolean>(false);
+export const font_size = writable<number>(16);
+
+export const user_gears = writable<UserGear[]>([]);
+export const user_loadouts = writable<AllLoadouts>({});
+
+export const current_loadout = writable<string>('');
+export const gear_views = writable<GearView[]>([]);
