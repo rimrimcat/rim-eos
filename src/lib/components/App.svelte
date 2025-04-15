@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { loadStatConstants } from '$lib/scripts/json-loader';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
 	import {
 		current_loadout,
@@ -9,7 +10,7 @@
 	} from '$lib/scripts/stores';
 	import { onMount, type Component } from 'svelte';
 	import Dialog from './Dialog.svelte';
-	import GearPage, { createGearView } from './nav/GearPage.svelte';
+	import GearPage, { createGearView, register as registerGearPage } from './nav/GearPage.svelte';
 	import LoadoutPage from './nav/LoadoutPage.svelte';
 	import MainPage from './nav/MainPage.svelte';
 	import StatPage from './nav/StatPage.svelte';
@@ -44,6 +45,8 @@
 	let styles = $state({});
 
 	onMount(() => {
+		loadStatConstants();
+
 		// get font size
 		font_size = parseFloat(getComputedStyle(document.documentElement).fontSize);
 
@@ -71,6 +74,9 @@
 			$gear_views = gearViews;
 			console.log('Done processing user_gears');
 		});
+
+		// register pages
+		registerGearPage();
 	});
 </script>
 
@@ -89,7 +95,7 @@
 </Dialog>
 
 <div class="app-container">
-	<Toolbar bind:is_mobile bind:active_component bind:is_collapsed bind:mobile_toolbar_transform />
+	<Toolbar bind:active_component bind:is_collapsed bind:mobile_toolbar_transform />
 
 	<div
 		class="content-container"
@@ -100,10 +106,10 @@
 		}}
 	>
 		<div style="display: none">
-			<MainPage />
+			<!-- <MainPage />
 			<LoadoutPage />
-			<StatPage />
-			<GearPage />
+			<StatPage /> -->
+			<!-- <GearPage /> -->
 		</div>
 
 		<CurrentComponent />
