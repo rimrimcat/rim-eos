@@ -95,6 +95,21 @@
 		{ value: 'alt', label: 'Altered' }
 	];
 
+	function dedupeMatEffs(effects: MatrixFinalEffect[]) {
+		return effects.reduce((acc, effect) => {
+			const existing_eff = acc.find((eff) => eff.id === effect.id);
+
+			if (!existing_eff) {
+				acc.push(effect);
+			} else if (effect.advancement > existing_eff.advancement) {
+				acc.splice(acc.indexOf(existing_eff), 1);
+				acc.push(effect);
+			}
+
+			return acc;
+		}, [] as MatrixFinalEffect[]);
+	}
+
 	async function updateResoCounts() {
 		loadout_reso_counts = loadout_base_weapons.reduce((counts, weapon, index) => {
 			weapon.resonances.forEach((resonance) => {
@@ -330,7 +345,7 @@
 
 		all_effects = [
 			...loadout_weapon_views.flatMap((weapon) => weapon.effects),
-			...loadout_matrix_views.flatMap((matrix) => matrix.effects),
+			...dedupeMatEffs(loadout_matrix_views.flatMap((matrix) => matrix.effects)),
 			...loadout_resonance_effects
 		];
 	}
@@ -360,11 +375,13 @@
 			stat
 		} as MatrixView;
 
+		console.log('updating mat');
+
 		loadout_weapmat_combined[index][1] = loadout_matrix_views[index];
 
 		all_effects = [
 			...loadout_weapon_views.flatMap((weapon) => weapon.effects),
-			...loadout_matrix_views.flatMap((matrix) => matrix.effects),
+			...dedupeMatEffs(loadout_matrix_views.flatMap((matrix) => matrix.effects)),
 			...loadout_resonance_effects
 		];
 	}
@@ -392,7 +409,7 @@
 
 		all_effects = [
 			...loadout_weapon_views.flatMap((weapon) => weapon.effects),
-			...loadout_matrix_views.flatMap((matrix) => matrix.effects),
+			...dedupeMatEffs(loadout_matrix_views.flatMap((matrix) => matrix.effects)),
 			...loadout_resonance_effects
 		];
 	}
