@@ -20,7 +20,7 @@
 		saveObject
 	} from '$lib/scripts/loader';
 	import type { LoadoutType } from '$lib/scripts/loadouts';
-	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
+	import { ActionType } from '$lib/scripts/nav-metadata';
 	import { StatCollection } from '$lib/scripts/stat-ops';
 	import { type StatGearUser } from '$lib/scripts/stats';
 	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
@@ -39,7 +39,6 @@
 	} from '$lib/scripts/weapons';
 	import {
 		ArrowRightLeftIcon,
-		BoxIcon,
 		ChartNoAxesColumnIcon,
 		CopyPlusIcon,
 		PencilIcon,
@@ -581,9 +580,6 @@
 		});
 	}
 
-	// register
-	const id = 'loadout-page';
-
 	const ACTIONS = [
 		{
 			id: 'switch',
@@ -629,16 +625,7 @@
 		}
 	];
 
-	const metadata: ComponentMetadata = {
-		id,
-		label: 'Loadout',
-		lucide: BoxIcon,
-		showInNav: true
-	};
-
 	onMount(async () => {
-		registerComponent(id, metadata);
-
 		if (Object.keys($user_loadouts).length === 0) {
 			// skip if preload
 		} else {

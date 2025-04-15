@@ -1,6 +1,4 @@
 <script module lang="ts">
-	await loadStatConstants();
-
 	export const RAINBOW_TITAN_STATS: TitanStat[] = [
 		'titan_flame_atk',
 		'titan_frost_atk',
@@ -190,10 +188,10 @@
 		type UserGear,
 		type ValidGearPart
 	} from '$lib/scripts/gears.ts';
-	import { loadStatConstants, STAT_CONSTANTS } from '$lib/scripts/json-loader';
+	import { STAT_CONSTANTS } from '$lib/scripts/json-loader';
 	import { saveObject } from '$lib/scripts/loader.ts';
 	import type { AllLoadouts } from '$lib/scripts/loadouts';
-	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
+	import { ActionType } from '$lib/scripts/nav-metadata';
 	import {
 		STAT_LABELS,
 		type AllStats,
@@ -216,7 +214,6 @@
 		LayoutGridIcon,
 		SearchIcon,
 		SearchXIcon,
-		Shirt,
 		ShirtIcon,
 		SlashIcon,
 		SparkleIcon,
@@ -224,10 +221,7 @@
 		SquareIcon,
 		Trash2Icon
 	} from '@lucide/svelte';
-	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
-
-	let {} = $props();
 
 	let prev_search_query: string = $state('');
 	let search_views: GearSearchView[] = $state([]);
@@ -761,8 +755,6 @@
 		titanMode: false
 	});
 
-	const ID = 'gear-page';
-
 	const ACTIONS = [
 		{
 			id: 'fourStatMode',
@@ -816,17 +808,6 @@
 			}
 		}
 	];
-
-	const METADATA: ComponentMetadata = {
-		id: ID,
-		label: 'Gears',
-		lucide: Shirt,
-		showInNav: true
-	};
-
-	onMount(() => {
-		registerComponent(ID, METADATA);
-	});
 </script>
 
 {#snippet gear_actions(gear: GearView)}

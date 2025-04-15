@@ -8,16 +8,22 @@
 		user_gears,
 		user_loadouts
 	} from '$lib/scripts/stores';
+	import { AppWindowIcon } from '@lucide/svelte';
 	import { onMount, type Component } from 'svelte';
 	import Dialog from './Dialog.svelte';
-	import GearPage, { createGearView, register as registerGearPage } from './nav/GearPage.svelte';
-	import LoadoutPage from './nav/LoadoutPage.svelte';
-	import MainPage from './nav/MainPage.svelte';
-	import StatPage from './nav/StatPage.svelte';
+	import { createGearView } from './nav/GearPage.svelte';
 	import ReadySignal from './ReadySignal.svelte';
 	import Toolbar from './Toolbar.svelte';
 
 	let { signal = $bindable(false) } = $props();
+
+	type NavIds = 'main-page' | 'loadout-page' | 'gear-page' | 'stat-page';
+	type NavItem = {
+		id: NavIds;
+		label: string;
+		lucide: Component;
+		import_name: string;
+	};
 
 	// Toolbar
 	let is_collapsed = $state(true);
@@ -29,14 +35,12 @@
 	let is_mobile = $derived((13.75 * font_size) / inner_width > 0.25);
 
 	// Active Nav
-	const NAV_MAP: Record<string, Component> = {
-		'main-page': MainPage,
-		'loadout-page': LoadoutPage,
-		'stat-page': StatPage,
-		'gear-page': GearPage
-	};
-	let active_component = $state('main-page');
-	let CurrentComponent: Component = $derived(NAV_MAP[active_component] || StatPage);
+	let active_component = $state({
+		id: 'main-page',
+		label: 'Main Page',
+		lucide: AppWindowIcon,
+		import_name: 'MainPage'
+	} as NavItem);
 
 	// Dialogs
 	let dialog_open = $state(true);
@@ -44,8 +48,8 @@
 	// color scheme
 	let styles = $state({});
 
-	onMount(() => {
-		loadStatConstants();
+	onMount(async () => {
+		// load some stuff
 
 		// get font size
 		font_size = parseFloat(getComputedStyle(document.documentElement).fontSize);
@@ -68,15 +72,13 @@
 		$current_loadout = Object.keys($user_loadouts)[0];
 
 		// processing
+		await loadStatConstants(); // need this for gear proecssing
 		Promise.all(
 			$user_gears.map((gear) => createGearView(gear, false, $user_loadouts, $current_loadout))
 		).then((gearViews) => {
 			$gear_views = gearViews;
 			console.log('Done processing user_gears');
 		});
-
-		// register pages
-		registerGearPage();
 	});
 </script>
 
@@ -105,14 +107,9 @@
 			$scroll_y = (e.target as HTMLElement).scrollTop;
 		}}
 	>
-		<div style="display: none">
-			<!-- <MainPage />
-			<LoadoutPage />
-			<StatPage /> -->
-			<!-- <GearPage /> -->
-		</div>
-
-		<CurrentComponent />
+		{#await import(`./nav/${active_component.import_name}.svelte`) then { default: Nav }}
+			<Nav />
+		{/await}
 	</div>
 </div>
 

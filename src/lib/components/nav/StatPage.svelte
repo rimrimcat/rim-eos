@@ -4,7 +4,7 @@
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
 	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader.ts';
-	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
+	import { ActionType } from '$lib/scripts/nav-metadata';
 	import { STAT_LABELS, type CharacterStat } from '$lib/scripts/stats';
 	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
 	import { formatValue } from '$lib/scripts/validation.ts';
@@ -302,9 +302,6 @@
 		// processAttributes();
 	}
 
-	// register
-	const id = 'stat-page';
-
 	const ACTIONS = [
 		{
 			id: 'screenshot',
@@ -324,16 +321,7 @@
 		// { id: 'share', label: 'Share' }
 	];
 
-	const metadata: ComponentMetadata = {
-		id,
-		label: 'Stats',
-		lucide: ChartNoAxesColumn,
-		showInNav: true
-	};
-
 	onMount(() => {
-		registerComponent(id, metadata);
-
 		// load and process attributes
 		// TODO: change the way of loading after setting up
 		if (Object.keys($user_loadouts).length > 0) {

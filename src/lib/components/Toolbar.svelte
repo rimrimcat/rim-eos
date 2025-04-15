@@ -1,12 +1,57 @@
 <script lang="ts">
 	import { navItems } from '$lib/scripts/nav-metadata';
 	import { is_mobile } from '$lib/scripts/stores';
-	import { ArrowLeftToLine, ChevronDown, ChevronUp, Menu } from '@lucide/svelte';
+	import {
+		AppWindowIcon,
+		ArrowLeftToLine,
+		BoxIcon,
+		ChartNoAxesColumnIcon,
+		ChevronDown,
+		ChevronUp,
+		Menu,
+		ShirtIcon
+	} from '@lucide/svelte';
+	import type { Component } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { fade, fly, slide } from 'svelte/transition';
 
+	type NavIds = 'main-page' | 'loadout-page' | 'gear-page' | 'stat-page';
+	type NavItem = {
+		id: NavIds;
+		label: string;
+		lucide: Component;
+		import_name: string;
+	};
+
+	const NAV_ITEMS: NavItem[] = [
+		{
+			id: 'main-page',
+			label: 'Main Page',
+			lucide: AppWindowIcon,
+			import_name: 'MainPage'
+		},
+		{
+			id: 'loadout-page',
+			label: 'Loadout',
+			lucide: BoxIcon,
+			import_name: 'LoadoutPage'
+		},
+		{
+			id: 'gear-page',
+			label: 'Gears',
+			lucide: ShirtIcon,
+			import_name: 'GearPage'
+		},
+		{
+			id: 'stat-page',
+			label: 'Stats',
+			lucide: ChartNoAxesColumnIcon,
+			import_name: 'StatPage'
+		}
+	];
+
 	let {
-		active_component = $bindable('stat-page'),
+		active_component = $bindable({} as NavItem),
 		is_collapsed = $bindable(false),
 		mobile_toolbar_transform = $bindable(0)
 	} = $props();
@@ -21,8 +66,8 @@
 		is_collapsed = !is_collapsed;
 	}
 
-	function selectComponent(id: string) {
-		active_component = id;
+	function selectComponent(nav_item: NavItem) {
+		active_component = nav_item;
 		if (is_mobile && !is_collapsed) {
 			is_collapsed = true;
 		}
@@ -60,20 +105,20 @@
 		{#if !is_collapsed}
 			<div transition:slide={{ duration: 300, easing: cubicOut }}>
 				<nav class="mobile-nav">
-					{#each $navItems as item, i}
+					{#each NAV_ITEMS as nav_item, i}
 						<button
 							class="nav-item mobile-item"
-							class:active={active_component === item.id}
-							onclick={() => selectComponent(item.id ?? DEFAULT_ACTIVE_COMPONENT)}
+							class:active={active_component.id === nav_item.id}
+							onclick={() => selectComponent(nav_item)}
 							in:fly={{ y: 20, delay: i * 50, duration: 250, easing: cubicOut }}
 							out:fade={{ duration: 150 }}
 						>
 							<div class="nav-icon">
-								{#if item.lucide}
-									<item.lucide />
+								{#if nav_item.lucide}
+									<nav_item.lucide />
 								{/if}
 							</div>
-							<span class="nav-label">{item.label}</span>
+							<span class="nav-label">{nav_item.label}</span>
 						</button>
 					{/each}
 				</nav>
@@ -104,11 +149,11 @@
 		</div>
 
 		<nav class="toolbar-nav">
-			{#each $navItems as item}
+			{#each NAV_ITEMS as item}
 				<button
 					class="nav-item"
-					class:active={active_component === item.id}
-					onclick={() => selectComponent(item.id ?? DEFAULT_ACTIVE_COMPONENT)}
+					class:active={active_component.id === item.id}
+					onclick={() => selectComponent(item)}
 				>
 					<div class="nav-icon">
 						{#if item.lucide}
