@@ -8,6 +8,7 @@
 		inner_width,
 		is_mobile,
 		scroll_y,
+		toolbar_transform,
 		user_gears,
 		user_loadouts
 	} from '$lib/scripts/stores';
@@ -30,7 +31,6 @@
 
 	// Toolbar
 	let is_collapsed = $state(true);
-	let mobile_toolbar_transform = $state(0);
 
 	// Active Nav
 	let active_component = $state({
@@ -94,12 +94,12 @@
 </Dialog>
 
 <div class="app-container">
-	<Toolbar bind:active_component bind:is_collapsed bind:mobile_toolbar_transform />
+	<Toolbar bind:active_component bind:is_collapsed />
 
 	<div
 		class="content-container"
 		class:mobile={is_mobile}
-		style="translate: 0 {is_mobile ? mobile_toolbar_transform : 0}px;"
+		style="translate: 0 {is_mobile ? $toolbar_transform : 0}px;"
 		onscroll={(e: UIEvent) => {
 			$scroll_y = (e.target as HTMLElement).scrollTop;
 		}}

@@ -19,7 +19,7 @@
 	} from '$lib/scripts/loadout';
 	import { ActionType } from '$lib/scripts/nav-metadata';
 	import { StatCollection } from '$lib/scripts/stats';
-	import { current_loadout, inner_width, user_loadouts } from '$lib/scripts/stores';
+	import { current_loadout, font_size, inner_width, user_loadouts } from '$lib/scripts/stores';
 	import { WEAPON_BASE_STATS } from '$lib/scripts/weapons';
 	import type {
 		LoadoutType,
@@ -48,8 +48,6 @@
 	import { onMount } from 'svelte';
 	import SwitchWeapMatrix from '../dialog/SwitchWeapMatrix.svelte';
 	import StatContributions from '../StatContributions.svelte';
-
-	let { font_size = $bindable(16) } = $props();
 
 	// State
 	let loadout_name = $state('');
@@ -80,7 +78,7 @@
 	let switch_gear_matrix_dialog_open = $state(false);
 
 	// Stat Contrib
-	let chart_width = $derived($inner_width - font_size * 16 - 300);
+	let chart_width = $derived($inner_width - $font_size * 16 - 300);
 	$inspect('chart wid', chart_width);
 
 	// Element options
@@ -619,7 +617,7 @@
 					>
 						<div class="compose above" style="top: 4.5rem; left:{1.5 + advIndex}rem">
 							<StarIcon
-								size={font_size}
+								size={$font_size}
 								fill={matrix.advancement >= advSetValue ? 'white' : 'none'}
 							/>
 						</div>
@@ -806,7 +804,7 @@
 										>
 											<div class="compose-above" style="top: 6.5rem; left:{1 + advIndex}rem">
 												<StarIcon
-													size={font_size}
+													size={$font_size}
 													fill={weapon.advancement >= advSetValue ? 'white' : 'none'}
 												/>
 											</div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { is_mobile } from '$lib/scripts/stores';
+	import { is_mobile, toolbar_transform } from '$lib/scripts/stores';
 	import {
 		AppWindowIcon,
 		BoxIcon,
@@ -47,15 +47,8 @@
 		}
 	];
 
-	let {
-		active_component = $bindable({} as NavItem),
-		is_collapsed = $bindable(false),
-		mobile_toolbar_transform = $bindable(0)
-	} = $props();
+	let { active_component = $bindable({} as NavItem), is_collapsed = $bindable(false) } = $props();
 
-	const DEFAULT_ACTIVE_COMPONENT = 'stat-panel' as const;
-	let scroll_y = $state(0);
-	let toolbar_width = $state(0);
 	let offset_height = $state(0);
 	let collapsed_height = $state(0);
 
@@ -78,11 +71,9 @@
 
 	$effect(() => {
 		setCollapsedHeight();
-		mobile_toolbar_transform = offset_height - collapsed_height;
+		$toolbar_transform = offset_height - collapsed_height;
 	});
 </script>
-
-<svelte:window bind:scrollY={scroll_y} />
 
 <div class="mobile-toolbar" bind:offsetHeight={offset_height}>
 	<div class="mobile-header">
