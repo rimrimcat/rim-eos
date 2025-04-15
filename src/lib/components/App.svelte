@@ -97,9 +97,9 @@
 	<Toolbar bind:active_component bind:is_collapsed />
 
 	<div
-		class="content-container"
+		class="vertical content-container"
 		class:mobile={is_mobile}
-		style="translate: 0 {is_mobile ? $toolbar_transform : 0}px;"
+		style="translate: 0 {$toolbar_transform}px; padding-bottom: {$toolbar_transform}px"
 		onscroll={(e: UIEvent) => {
 			$scroll_y = (e.target as HTMLElement).scrollTop;
 		}}
@@ -351,7 +351,9 @@
 		overflow-x: hidden;
 		padding-left: 1rem;
 		padding-right: 6rem;
-		transition: translate 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+		transition:
+			translate 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+			padding-bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.content-container.mobile {
