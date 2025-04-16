@@ -1,0 +1,10 @@
+{
+	"id": "brevey-a6-link",
+	"stats": {
+		"final_dmg_percent": 20,
+		"shatter": 25
+	},
+	"require_adv": 6,
+	"require_reso": "bene",
+	"target": "team"
+}

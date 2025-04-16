@@ -1,0 +1,8 @@
+{
+	"id": "claudiax",
+	"name": "Claudia X",
+	"base_stat": "crit-med",
+	"resonances": ["phys", "atk", "flame", "armor-dissolve"],
+	"effects": ["claudiax-skill", "claudiax-a6-skill"],
+	"reso_effects": ["phys", "flame"]
+}

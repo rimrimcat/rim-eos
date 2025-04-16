@@ -1,22 +1,17 @@
 <script lang="ts">
-	import type { GearView, UserGear, ValidGearPart } from '$lib/scripts/gears';
 	import { TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader';
-	import type { AllLoadouts } from '$lib/scripts/loadouts';
-	import { StatCollection } from '$lib/scripts/stat-ops';
-	import { STAT_LABELS, type CharacterStat } from '$lib/scripts/stats';
+	import { STAT_LABELS, StatCollection } from '$lib/scripts/stats';
+	import { current_loadout, gear_views, user_loadouts } from '$lib/scripts/stores';
+	import type { CharacterStat, ValidGearPart } from '$lib/types/index';
 	import { ShirtIcon, SlashIcon, SwordIcon } from '@lucide/svelte';
-	import { type Component } from 'svelte';
+	import type { Component } from 'svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
 	let {
 		open = $bindable(false),
-		unadjusted_stats = $bindable([] as string[]),
+		unadjusted_stats = $bindable([] as string[])
 		// TODO: variable that controls adjustment
-		user_gears = $bindable([] as UserGear[]),
-		gear_views = $bindable([] as GearView[]),
-		user_loadouts = $bindable({} as AllLoadouts),
-		current_loadout = $bindable('')
 	} = $props();
 
 	// raw user-uploaded attribute
@@ -46,11 +41,11 @@
 	function getGearTotal() {
 		let stat_col = new StatCollection();
 
-		const equipped_gears = user_loadouts[current_loadout].equipped_gears;
+		const equipped_gears = $user_loadouts[$current_loadout].equipped_gears;
 		for (const part in equipped_gears) {
 			const gear_id = equipped_gears[part as ValidGearPart];
 			if (gear_id !== null && gear_id !== -1) {
-				const new_stat = new StatCollection(gear_views[gear_id]);
+				const new_stat = new StatCollection($gear_views[gear_id]);
 				stat_col = stat_col.add(new_stat);
 			}
 		}
@@ -79,7 +74,7 @@
 	});
 
 	$effect(() => {
-		if (!current_loadout) {
+		if (!$current_loadout) {
 			return;
 		}
 

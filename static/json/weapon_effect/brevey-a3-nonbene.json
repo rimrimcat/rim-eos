@@ -1,0 +1,10 @@
+{
+	"id": "brevey-a3-nonbene",
+	"stats": {
+		"volt_dmg_percent": 10,
+		"frost_dmg_percent": 10
+	},
+	"require_adv": 3,
+	"require_reso_not": "bene",
+	"require_boss": true
+}

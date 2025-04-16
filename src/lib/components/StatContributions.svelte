@@ -1,22 +1,18 @@
-<script module>
-</script>
-
 <script lang="ts">
 	import { AllMatrixEffectIds, AllResoEffectIds, AllWeaponEffectIds } from '$lib/generated/all-ids';
-	import type {
-		MatrixEffectsIds,
-		ResoEffectsIds,
-		WeaponEffectsIds,
-		WeaponsIds
-	} from '$lib/generated/ids';
-	import { StatCollection, type StatData, type StatKey } from '$lib/scripts/stat-ops';
-	import { STAT_LABELS } from '$lib/scripts/stats';
+	import { STAT_LABELS, StatCollection } from '$lib/scripts/stats';
 	import type {
 		BaseEffect,
+		MatrixEffectsIds,
 		MatrixFinalEffect,
 		ResoEffect,
-		WeaponEffect
-	} from '$lib/scripts/weapons';
+		ResoEffectsIds,
+		StatData,
+		StatKey,
+		WeaponEffect,
+		WeaponEffectsIds,
+		WeaponsIds
+	} from '$lib/types/index';
 	import { BarChartStacked, ScaleTypes, type BarChartOptions } from '@carbon/charts-svelte';
 	import '@carbon/charts-svelte/styles.css';
 	import { DiffIcon, GroupIcon, PinIcon, PinOffIcon, SlashIcon } from '@lucide/svelte';
@@ -27,10 +23,16 @@
 	} = $props();
 
 	// options
-	let grouping_type: 'source' | 'character' = $state('source');
-	const SOURCE_GROUPING = (eff: TaggedEffect) =>
-		eff.is_weapon ? 'Weapon' : eff.is_matrix ? 'Matrix' : 'Reso';
-	const CHARACTER_GROUPING = (eff: TaggedEffect) => eff.character ?? 'none';
+	let grouping_fcn_index: number = $state(0);
+	const GROUPING_FUNCTION_NAMES = ['Source', 'Character', 'Character-Source'];
+	const GROUPING_FUNCTIONS: ((eff: TaggedEffect) => string)[] = [
+		(eff: TaggedEffect) => (eff.is_weapon ? 'Weapon' : eff.is_matrix ? 'Matrix' : 'Reso'),
+		(eff: TaggedEffect) => eff.character ?? 'none',
+		(eff: TaggedEffect) =>
+			eff.character
+				? `${eff.character}-${eff.is_weapon ? 'weapon' : eff.is_matrix ? 'matrix' : ''}`
+				: 'others'
+	];
 
 	let pin_axis = $state(false);
 	let curr_axis = $state([0, 0]);
@@ -40,7 +42,9 @@
 
 	// stuff
 	let key_filter = $state((key: StatKey) => !key.includes('_res_percent'));
-	let grouping_fcn: (eff: TaggedEffect) => string = $state(CHARACTER_GROUPING);
+	let grouping_fcn: (eff: TaggedEffect) => string = $derived(
+		GROUPING_FUNCTIONS[grouping_fcn_index]
+	);
 
 	type ETags = {
 		character?: WeaponsIds;
@@ -111,14 +115,6 @@
 				Object.entries(eff.stats).map(([key, value]) => [key, -value])
 			) as StatData
 		};
-	}
-
-	function updateGrouping() {
-		if (grouping_type === 'character') {
-			grouping_fcn = CHARACTER_GROUPING;
-		} else {
-			grouping_fcn = SOURCE_GROUPING;
-		}
 	}
 
 	function getDiff(prev_eff: TaggedEffect[], curr_eff: TaggedEffect[]): TaggedEffect[] {
@@ -210,7 +206,7 @@
 
 	let max_domain = $derived(stat_col_totals.data[sortedKeys[0] as StatKey] ?? 0);
 	let min_domain = $derived(
-		stat_col_totals.data[sortedKeys[sortedKeys.length - 1] as StatKey] ?? 0
+		Math.min(stat_col_totals.data[sortedKeys[sortedKeys.length - 1] as StatKey] ?? 0, 0)
 	);
 
 	let options: BarChartOptions = $derived({
@@ -238,12 +234,13 @@
 		class="border"
 		id="stat-grouping"
 		onclick={() => {
-			grouping_type = grouping_type === 'character' ? 'source' : 'character';
-			updateGrouping();
+			grouping_fcn_index = (grouping_fcn_index + 1) % GROUPING_FUNCTIONS.length;
 		}}
 	>
 		<GroupIcon />
-		<label class="in-button" for="stat-grouping">Grouping: {grouping_type}</label>
+		<label class="in-button" for="stat-grouping"
+			>Grouping: {GROUPING_FUNCTION_NAMES[grouping_fcn_index]}</label
+		>
 	</button>
 	<button
 		class="border"

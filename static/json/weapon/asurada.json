@@ -1,0 +1,8 @@
+{
+	"id": "asurada",
+	"name": "Asurada",
+	"base_stat": "crit-med",
+	"resonances": ["flame", "atk", "phys", "armor-dissolve"],
+	"effects": ["asurada-a6-skill", "asurada-skill"],
+	"reso_effects": ["phys", "flame"]
+}

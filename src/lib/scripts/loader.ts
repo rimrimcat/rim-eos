@@ -1,6 +1,4 @@
-import { type UserGear } from '$lib/scripts/gears';
-import { type CharacterStat, type StatGearFinal } from '$lib/scripts/stats';
-import { type AllLoadouts } from './loadouts';
+import type { AllLoadouts, CharacterStat, StatGearFinal, UserGear } from '$lib/types/index';
 
 // Keys
 export type LocalStorageKey = 'gears_v1' | 'loadouts_v1' | 'styles';
@@ -21,7 +19,7 @@ export const TEMPLATE_USER_ATTRIBUTES: { key: StatGearFinal; icon: string }[] = 
 	{ key: 'alt_atk', icon: './stat/placeholder.webp' },
 	{ key: 'end', icon: './stat/placeholder.webp' },
 	{ key: 'end_regen', icon: './stat/placeholder.webp' },
-	{ key: 'crit_dmg', icon: './stat/placeholder.webp' },
+	{ key: 'crit_dmg_percent', icon: './stat/placeholder.webp' },
 	{ key: 'phys_res', icon: './stat/physres.webp' },
 	{ key: 'flame_res', icon: './stat/flameres.webp' },
 	{ key: 'frost_res', icon: './stat/frostres.webp' },

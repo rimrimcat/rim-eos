@@ -21,6 +21,7 @@ some webapp im making since no more content at TOF
 - [x] Gear: show equipped gears (2025-04-10)
 - [x] Stat: sync with loadout (2025-04-10)
 - [x] Loadout: add my loadout as example (2025-04-10)
+- [ ] Loadout: add way to change weapons/matrices
 - [ ] Loadout: add some weapons and matrices
 - [ ] Main Page: add good guide/tutorial
 - [ ] Stat: select between uploading base stats or uploading stats with gears
@@ -46,4 +47,5 @@ some webapp im making since no more content at TOF
 - [ ] Misc: add image that you can click and it switches so you have something to look and play with ig
 - [ ] Misc: disable some buttons when mid animation
 - [ ] Misc: add prompts when performing destructive actions
+- [ ] Misc: confine opencv to single script
 - [ ] Gear: implement augmented gear template matching (NOT PLANNED)

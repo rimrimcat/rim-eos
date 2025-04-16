@@ -1,0 +1,8 @@
+{
+	"id": "merylx",
+	"name": "Meryl X",
+	"base_stat": "crit-med",
+	"resonances": ["volt", "fort", "frost", "force-impact"],
+	"effects": ["merylx-a5", "merylx-discharge", "merylx-skill-fort"],
+	"reso_effects": ["volt", "frost"]
+}

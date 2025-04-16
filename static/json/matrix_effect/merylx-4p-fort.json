@@ -1,0 +1,8 @@
+{
+	"id": "merylx-4p-fort",
+	"stats": {
+		"crit_percent": [7, 7, 7, 7]
+	},
+	"require_weapon": "merylx",
+	"require_reso": "fort"
+}

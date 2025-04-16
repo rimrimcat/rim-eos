@@ -1,19 +1,54 @@
 <script lang="ts">
-	import { navItems } from '$lib/scripts/nav-metadata';
-	import { ArrowLeftToLine, ChevronDown, ChevronUp, Menu } from '@lucide/svelte';
+	import { is_mobile, toolbar_transform } from '$lib/scripts/stores';
+	import {
+		AppWindowIcon,
+		BoxIcon,
+		ChartNoAxesColumnIcon,
+		ChevronDown,
+		ChevronUp,
+		ShirtIcon
+	} from '@lucide/svelte';
+	import type { Component } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { fade, fly, slide } from 'svelte/transition';
 
-	let {
-		is_mobile = $bindable(false),
-		active_component = $bindable('stat-page'),
-		is_collapsed = $bindable(false),
-		mobile_toolbar_transform = $bindable(0)
-	} = $props();
+	type NavIds = 'main-page' | 'loadout-page' | 'gear-page' | 'stat-page';
+	type NavItem = {
+		id: NavIds;
+		label: string;
+		lucide: Component;
+		import_name: string;
+	};
 
-	const DEFAULT_ACTIVE_COMPONENT = 'stat-panel' as const;
-	let scroll_y = $state(0);
-	let toolbar_width = $state(0);
+	const NAV_ITEMS: NavItem[] = [
+		{
+			id: 'main-page',
+			label: 'Main Page',
+			lucide: AppWindowIcon,
+			import_name: 'MainPage'
+		},
+		{
+			id: 'loadout-page',
+			label: 'Loadout',
+			lucide: BoxIcon,
+			import_name: 'LoadoutPage'
+		},
+		{
+			id: 'gear-page',
+			label: 'Gears',
+			lucide: ShirtIcon,
+			import_name: 'GearPage'
+		},
+		{
+			id: 'stat-page',
+			label: 'Stats',
+			lucide: ChartNoAxesColumnIcon,
+			import_name: 'StatPage'
+		}
+	];
+
+	let { active_component = $bindable({} as NavItem), is_collapsed = $bindable(false) } = $props();
+
 	let offset_height = $state(0);
 	let collapsed_height = $state(0);
 
@@ -21,9 +56,9 @@
 		is_collapsed = !is_collapsed;
 	}
 
-	function selectComponent(id: string) {
-		active_component = id;
-		if (is_mobile && !is_collapsed) {
+	function selectComponent(nav_item: NavItem) {
+		active_component = nav_item;
+		if ($is_mobile && !is_collapsed) {
 			is_collapsed = true;
 		}
 	}
@@ -36,132 +71,49 @@
 
 	$effect(() => {
 		setCollapsedHeight();
-		mobile_toolbar_transform = offset_height - collapsed_height;
+		$toolbar_transform = offset_height - collapsed_height;
 	});
 </script>
 
-<svelte:window bind:scrollY={scroll_y} />
-
-{#if is_mobile}
-	<div class="mobile-toolbar" bind:offsetHeight={offset_height}>
-		<div class="mobile-header">
-			<button class="collapse-toggle" onclick={toggleCollapse}>
-				{#if is_collapsed}
-					<ChevronDown />
-				{:else}
-					<ChevronUp />
-				{/if}
-			</button>
-			<div class="logo">
-				<span class="logo-text">GearComp</span>
-			</div>
+<div class="mobile-toolbar" bind:offsetHeight={offset_height}>
+	<div class="mobile-header">
+		<button class="collapse-toggle" onclick={toggleCollapse}>
+			{#if is_collapsed}
+				<ChevronDown />
+			{:else}
+				<ChevronUp />
+			{/if}
+		</button>
+		<div class="logo">
+			<span class="logo-text">GearComp</span>
 		</div>
-
-		{#if !is_collapsed}
-			<div transition:slide={{ duration: 300, easing: cubicOut }}>
-				<nav class="mobile-nav">
-					{#each $navItems as item, i}
-						<button
-							class="nav-item mobile-item"
-							class:active={active_component === item.id}
-							onclick={() => selectComponent(item.id ?? DEFAULT_ACTIVE_COMPONENT)}
-							in:fly={{ y: 20, delay: i * 50, duration: 250, easing: cubicOut }}
-							out:fade={{ duration: 150 }}
-						>
-							<div class="nav-icon">
-								{#if item.lucide}
-									<item.lucide />
-								{/if}
-							</div>
-							<span class="nav-label">{item.label}</span>
-						</button>
-					{/each}
-				</nav>
-			</div>
-		{/if}
 	</div>
-{:else}
-	<div
-		class="toolbar"
-		class:collapsed={is_collapsed}
-		style="translate: 0 {scroll_y}px; height: {5.5 + 4 * $navItems.length}rem;"
-		bind:offsetWidth={toolbar_width}
-	>
-		<div class="toolbar-header">
-			<button class="collapse-toggle" onclick={toggleCollapse}>
-				{#if is_collapsed}
-					<Menu />
-				{:else}
-					<ArrowLeftToLine />
-				{/if}
-			</button>
 
-			<div class="logo">
-				{#if !is_collapsed}
-					<span class="logo-text" in:fade={{ duration: 200 }}>GearComp</span>
-				{/if}
-			</div>
+	{#if !is_collapsed}
+		<div transition:slide={{ duration: 300, easing: cubicOut }}>
+			<nav class="mobile-nav">
+				{#each NAV_ITEMS as nav_item, i}
+					<button
+						class="nav-item mobile-item"
+						class:active={active_component.id === nav_item.id}
+						onclick={() => selectComponent(nav_item)}
+						in:fly={{ y: 20, delay: i * 50, duration: 250, easing: cubicOut }}
+						out:fade={{ duration: 150 }}
+					>
+						<div class="nav-icon">
+							{#if nav_item.lucide}
+								<nav_item.lucide />
+							{/if}
+						</div>
+						<span class="nav-label">{nav_item.label}</span>
+					</button>
+				{/each}
+			</nav>
 		</div>
-
-		<nav class="toolbar-nav">
-			{#each $navItems as item}
-				<button
-					class="nav-item"
-					class:active={active_component === item.id}
-					onclick={() => selectComponent(item.id ?? DEFAULT_ACTIVE_COMPONENT)}
-				>
-					<div class="nav-icon">
-						{#if item.lucide}
-							<item.lucide />
-						{/if}
-					</div>
-					{#if !is_collapsed}
-						<span class="nav-label" in:fade={{ duration: 200 }}>
-							{item.label}
-						</span>
-					{/if}
-				</button>
-			{/each}
-		</nav>
-	</div>
-{/if}
+	{/if}
+</div>
 
 <style>
-	.toolbar {
-		position: sticky;
-		top: 1rem;
-		display: flex;
-		flex-direction: column;
-		background-color: var(--bg-color);
-		color: var(--text-color);
-		transition:
-			width 0.4s cubic-bezier(0.16, 1, 0.3, 1),
-			translate 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-		width: 13.75rem;
-		border-radius: 1rem;
-		box-shadow: 0 4px 8px var(--shadow-color);
-		z-index: 10;
-		overflow: hidden;
-	}
-
-	.toolbar.collapsed {
-		width: 3.75rem;
-	}
-
-	.toolbar-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 1rem;
-		border-bottom: 0.0625rem solid var(--border-color);
-	}
-
-	.toolbar-nav {
-		display: flex;
-		flex-direction: column;
-		padding: 1rem 0;
-	}
-
 	.mobile-toolbar {
 		position: fixed;
 		top: 0;

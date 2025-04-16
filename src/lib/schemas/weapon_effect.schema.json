@@ -60,8 +60,14 @@
     },
     "require_weapon": {
       "enum": [
+        "anka",
+        "antoria",
         "asuka",
+        "asurada",
+        "brevey",
+        "claudiax",
         "grayfox",
+        "merylx",
         "nanyin",
         "nola",
         "none"
@@ -76,6 +82,15 @@
     },
     "require_adv": {
       "type": "number"
+    },
+    "require_adv_not": {
+      "type": "number"
+    },
+    "require_boss": {
+      "type": "boolean"
+    },
+    "require_offhand": {
+      "type": "boolean"
     }
   },
   "required": [
@@ -85,13 +100,32 @@
   "definitions": {
     "WeaponEffectsIds": {
       "enum": [
+        "anka-a3",
+        "anka-a6-skill",
+        "anka-skill",
+        "antoria-a3",
+        "antoria-a6-skill",
+        "antoria-skill",
         "asuka-a6",
         "asuka-a6-fort",
         "asuka-skill",
+        "asurada-a6-skill",
+        "asurada-skill",
+        "brevey-a3-nonbene",
+        "brevey-a6",
+        "brevey-a6-link",
+        "brevey-link",
+        "brevey-skill",
+        "brevey-skill-offhand",
+        "claudiax-a6-skill",
+        "claudiax-skill",
         "grayfox-a3-buff",
         "grayfox-a3-debuff",
         "grayfox-a6",
         "grayfox-skill",
+        "merylx-a5",
+        "merylx-discharge",
+        "merylx-skill-fort",
         "nanyin-a5",
         "nanyin-a6",
         "nanyin-inhabit",
@@ -200,9 +234,6 @@
         "phys_res_percent": {
           "type": "number"
         },
-        "crit_dmg_percent": {
-          "type": "number"
-        },
         "atk_percent": {
           "type": "number"
         },
@@ -213,6 +244,9 @@
           "type": "number"
         },
         "ele_dmg_percent": {
+          "type": "number"
+        },
+        "crit_dmg_percent": {
           "type": "number"
         },
         "healing_percent": {

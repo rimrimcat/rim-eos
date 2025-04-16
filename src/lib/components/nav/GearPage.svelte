@@ -1,6 +1,4 @@
 <script module lang="ts">
-	await loadStatConstants();
-
 	export const RAINBOW_TITAN_STATS: TitanStat[] = [
 		'titan_flame_atk',
 		'titan_frost_atk',
@@ -173,35 +171,38 @@
 </script>
 
 <script lang="ts">
-	import {
-		ALL_STATS_REGEX,
-		GearPart,
-		VALID_GEAR_PARTS,
-		type GearSearchView,
-		type GearView,
-		type GearViewStatLong,
-		type GearViewStatShort,
-		type UserGear,
-		type ValidGearPart
-	} from '$lib/scripts/gears.ts';
-	import { saveObject } from '$lib/scripts/loader.ts';
-	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
-	import {
-		STAT_LABELS,
-		type AllStats,
-		type StatGearUser as Stat,
-		type StatGearTitan as TitanStat
-	} from '$lib/scripts/stats.ts';
-	import { formatValue } from '$lib/scripts/validation.ts';
-
 	import ActionToolbar from '$lib/components/ActionToolbar.svelte';
 	import GearInfo from '$lib/components/dialog/GearInfo.svelte';
 	import GearSearch from '$lib/components/dialog/GearSearch.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
 	import StatIcon from '$lib/components/StatIcon.svelte';
-	import { loadStatConstants, STAT_CONSTANTS } from '$lib/scripts/json-loader';
-	import type { AllLoadouts } from '$lib/scripts/loadouts';
+	import { ALL_STATS_REGEX, GearPart, VALID_GEAR_PARTS } from '$lib/scripts/gears.ts';
+	import { STAT_CONSTANTS } from '$lib/scripts/json-loader';
+	import { saveObject } from '$lib/scripts/loader.ts';
+	import { ActionType } from '$lib/scripts/nav-metadata';
+	import { STAT_LABELS } from '$lib/scripts/stats.ts';
+	import {
+		current_loadout,
+		gear_views,
+		is_mobile,
+		user_gears,
+		user_loadouts
+	} from '$lib/scripts/stores';
+	import { formatValue } from '$lib/scripts/validation.ts';
+	import type {
+		AllLoadouts,
+		AllStats,
+		GearSearchView,
+		GearView,
+		GearViewStatLong,
+		GearViewStatShort,
+		StatGearUser as Stat,
+		StatGearTitan as TitanStat,
+		UserGear,
+		ValidGearPart
+	} from '$lib/types/index';
+	import { eval as evall, parse } from '@casbin/expression-eval';
 	import {
 		CaseSensitiveIcon,
 		DiamondIcon,
@@ -209,7 +210,6 @@
 		LayoutGridIcon,
 		SearchIcon,
 		SearchXIcon,
-		Shirt,
 		ShirtIcon,
 		SlashIcon,
 		SparkleIcon,
@@ -217,23 +217,14 @@
 		SquareIcon,
 		Trash2Icon
 	} from '@lucide/svelte';
-	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
-
-	let {
-		isMobile = $bindable(false),
-		user_gears = $bindable([] as UserGear[]),
-		user_loadouts = $bindable({} as AllLoadouts),
-		current_loadout = $bindable(''),
-		gear_views = $bindable([] as GearView[])
-	} = $props();
 
 	let prev_search_query: string = $state('');
 	let search_views: GearSearchView[] = $state([]);
 
 	let is_showing_equipped_gears = $state(false);
 	let equipped_gears: number[] = $state([]);
-	let span_length = $derived(Math.ceil(Math.log10(gear_views.length || 10)) + 1);
+	let span_length = $derived(Math.ceil(Math.log10($gear_views.length || 10)) + 1);
 
 	// Screenshot Dialog
 	let screenshot_dialog_open = $state(false);
@@ -249,10 +240,6 @@
 	let gear_info_gear: GearView | null = $state(null);
 
 	let has_measured = $state(false); // for triggering flexGrid itemWidth update
-
-	let any_dialog_open = $derived(
-		screenshot_dialog_open || search_dialog_open || gear_info_dialog_open
-	);
 
 	// html
 	const GRID_ORDERING = [
@@ -311,19 +298,19 @@
 	];
 
 	function decrementGearId(start: number = 0) {
-		if (start == user_gears.length) {
+		if (start == $user_gears.length) {
 			// no need to renumber if removing the last index
 			return;
 		}
 
-		for (let i = start; i < user_gears.length; i++) {
-			user_gears[i].id--;
+		for (let i = start; i < $user_gears.length; i++) {
+			$user_gears[i].id--;
 		}
 
-		// iterate through gear_views, if gv_id > start, then gv_id--
-		for (let i = 0; i < gear_views.length; i++) {
-			if (gear_views[i].id > start) {
-				gear_views[i].id--;
+		// iterate through $gear_views, if gv_id > start, then gv_id--
+		for (let i = 0; i < $gear_views.length; i++) {
+			if ($gear_views[i].id > start) {
+				$gear_views[i].id--;
 			}
 		}
 
@@ -334,21 +321,21 @@
 			}
 		}
 
-		// same with user_loadouts
-		for (const key in user_loadouts) {
-			for (const gearKey in user_loadouts[key].equipped_gears) {
+		// same with $user_loadouts
+		for (const key in $user_loadouts) {
+			for (const gearKey in $user_loadouts[key].equipped_gears) {
 				if (
-					user_loadouts[key].equipped_gears[gearKey as ValidGearPart] !== null &&
+					$user_loadouts[key].equipped_gears[gearKey as ValidGearPart] !== null &&
 					// @ts-expect-error
-					user_loadouts[key].equipped_gears[gearKey as ValidGearPart] > start
+					$user_loadouts[key].equipped_gears[gearKey as ValidGearPart] > start
 				) {
 					// @ts-expect-error
-					user_loadouts[key].equipped_gears[gearKey as ValidGearPart]--;
+					$user_loadouts[key].equipped_gears[gearKey as ValidGearPart]--;
 				}
 			}
 		}
 
-		saveObject('loadouts_v1', user_loadouts);
+		saveObject('loadouts_v1', $user_loadouts);
 	}
 
 	async function createGearView(gear: UserGear, equip: boolean = false): Promise<GearView> {
@@ -482,7 +469,7 @@
 		const isEquipped =
 			equip ||
 			(part !== GearPart.UNKNOWN &&
-				user_loadouts[current_loadout].equipped_gears[gear.part as ValidGearPart] === gear.id);
+				$user_loadouts[$current_loadout].equipped_gears[gear.part as ValidGearPart] === gear.id);
 
 		return {
 			id,
@@ -496,18 +483,18 @@
 
 	function addNewGear(gear: UserGear, equip: boolean = false) {
 		createGearView(gear, equip).then((gearView) => {
-			if (gear_views.some((gv) => gv.hash === gearView.hash)) {
+			if ($gear_views.some((gv) => gv.hash === gearView.hash)) {
 				console.log('GearView already exists!');
 				process_text = 'Duplicate gear!';
 				return;
 			}
 
-			user_gears.push(gear);
-			gear_views.push(gearView);
+			$user_gears.push(gear);
+			$gear_views.push(gearView);
 			if (equip) {
 				equipGear(gear.id);
 			}
-			saveObject('gears_v1', user_gears);
+			saveObject('gears_v1', $user_gears);
 
 			// reset searching after adding gear
 			search_views = [];
@@ -518,55 +505,55 @@
 
 	function equipGear(id: number) {
 		// search for equipped gear with same part
-		const part = gear_views[id].part;
+		const part = $gear_views[id].part;
 		if (part === GearPart.UNKNOWN) {
 			console.error('Cannot equip UNKNOWN gear!');
 			return;
 		}
 
-		const prevEquippedGearId = user_loadouts[current_loadout].equipped_gears[part];
+		const prevEquippedGearId = $user_loadouts[$current_loadout].equipped_gears[part];
 		if (prevEquippedGearId !== null) {
 			unequipGear(prevEquippedGearId, false);
 		}
 
-		user_loadouts[current_loadout].equipped_gears[part] = id;
-		gear_views[id].isEquipped = true;
-		saveObject('loadouts_v1', user_loadouts);
+		$user_loadouts[$current_loadout].equipped_gears[part] = id;
+		$gear_views[id].isEquipped = true;
+		saveObject('loadouts_v1', $user_loadouts);
 	}
 
 	function unequipGear(id: number, saveAfter: boolean = true) {
-		const part = gear_views[id].part;
+		const part = $gear_views[id].part;
 		if (part === GearPart.UNKNOWN || id === -1) {
 			return;
 		}
 
-		user_loadouts[current_loadout].equipped_gears[part] = null;
-		gear_views[id].isEquipped = false;
+		$user_loadouts[$current_loadout].equipped_gears[part] = null;
+		$gear_views[id].isEquipped = false;
 
 		if (saveAfter) {
-			saveObject('loadouts_v1', user_loadouts);
+			saveObject('loadouts_v1', $user_loadouts);
 		}
 	}
 
 	function removeGear(id: number) {
-		if (gear_views[id].part !== GearPart.UNKNOWN) {
-			user_loadouts[current_loadout].equipped_gears[gear_views[id].part] = null;
+		if ($gear_views[id].part !== GearPart.UNKNOWN) {
+			$user_loadouts[$current_loadout].equipped_gears[$gear_views[id].part] = null;
 		}
-		user_gears = user_gears.filter((gear) => gear.id !== id);
-		gear_views = gear_views.filter((gear) => gear.id !== id);
+		$user_gears = $user_gears.filter((gear) => gear.id !== id);
+		$gear_views = $gear_views.filter((gear) => gear.id !== id);
 		search_views = search_views.filter((gear) => gear.id !== id);
 
 		// simple renumbering
 		decrementGearId(id);
 
-		saveObject('gears_v1', user_gears);
-		saveObject('loadouts_v1', user_loadouts);
+		saveObject('gears_v1', $user_gears);
+		saveObject('loadouts_v1', $user_loadouts);
 	}
 
 	function updateEquippedGears() {
 		equipped_gears = [];
 		for (const part in VALID_GEAR_PARTS) {
-			const gearId = user_loadouts[current_loadout].equipped_gears[VALID_GEAR_PARTS[part]];
+			const gearId = $user_loadouts[$current_loadout].equipped_gears[VALID_GEAR_PARTS[part]];
 			if (gearId !== null) {
 				equipped_gears.push(gearId);
 			} else {
@@ -590,7 +577,7 @@
 			.replace(/^[^\s]{1,3} /gm, '') // remove 2-3 characters followed by space at the start of a line
 			.split('\n'); // those characters are noise from trying to read symbols
 
-		const id = user_gears.length;
+		const id = $user_gears.length;
 
 		const partCleanedStr = txt[0]
 			.replace('titan ', '')
@@ -603,14 +590,14 @@
 		const equip =
 			txt[0].includes('equipped') && // check if any gear is equipped in current loadout
 			part !== GearPart.UNKNOWN &&
-			user_loadouts[current_loadout].equipped_gears[part] === null;
+			$user_loadouts[$current_loadout].equipped_gears[part] === null;
 		const dateAdded = new Date().toISOString();
 
 		// console.log('part text clean', partCleanedStr);
 		// console.log('Titan', isTitan);
 		// console.log('Equipped', equip);
 		// console.log('Text has equip', txt[0].includes('equipped'));
-		// console.log('Part is null', user_loadouts[current_loadout].equipped_gear[part] === null);
+		// console.log('Part is null', $user_loadouts[$current_loadout].equipped_gear[part] === null);
 		// console.log('TEXT', txt);
 
 		const newGear: UserGear = {
@@ -683,7 +670,7 @@
 			}
 		}
 
-		gear_views.map(doFiltering);
+		$gear_views.map(doFiltering);
 		search_views.sort((a, b) => b.stats[0].value - a.stats[0].value);
 	}
 
@@ -709,7 +696,12 @@
 
 			// @ts-expect-error
 			const new_query = query.replace(ALL_STATS_REGEX, (match) => variables[match].toString());
-			const result = eval(new_query);
+
+			console.log('query', new_query);
+			const expr = parse(new_query);
+			console.log('EXPR', expr);
+			const result = evall(expr, {});
+			console.log('result', result);
 
 			if (result) {
 				search_views.push({
@@ -727,7 +719,7 @@
 			}
 		}
 
-		gear_views.map(doFiltering);
+		$gear_views.map(doFiltering);
 		search_views.sort((a, b) => b.stats[0].value - a.stats[0].value);
 	}
 
@@ -754,76 +746,64 @@
 
 	// register
 	let bound_objects = $state({
-		fourStatMode: isMobile ? false : true,
-		iconStats: isMobile ? true : false,
+		fourStatMode: $is_mobile ? false : true,
+		iconStats: $is_mobile ? true : false,
 		titanMode: false
 	});
 
-	const ID = 'gear-page';
-
-	const METADATA: ComponentMetadata = {
-		id: ID,
-		label: 'Gears',
-		lucide: Shirt,
-		showInNav: true,
-		actions: [
-			{
-				id: 'fourStatMode',
-				label: 'Extended Stats',
-				type: ActionType.TOGGLE,
-				callback: () => {
-					if (is_searching) {
-						return;
-					}
-					bound_objects.fourStatMode = !bound_objects.fourStatMode;
-					has_measured = false;
-				},
-				lucide_on: LayoutGridIcon,
-				lucide_off: SquareIcon
-			},
-			{
-				id: 'iconStats',
-				label: 'Icon Stats',
-				type: ActionType.TOGGLE,
-				callback: () => {
-					bound_objects.iconStats = !bound_objects.iconStats;
-					has_measured = false;
-				},
-				lucide_on: DiamondIcon,
-				lucide_off: CaseSensitiveIcon
-			},
-			{
-				id: 'titanMode',
-				label: 'Titan Stats',
-				type: ActionType.TOGGLE,
-				callback: () => {
-					if (is_searching) {
-						return;
-					}
-
-					bound_objects.titanMode = !bound_objects.titanMode;
-					has_measured = false;
-				},
-				lucide_on: SparklesIcon,
-				lucide_off: SparkleIcon
-			},
-			{
-				id: 'clearGears',
-				label: 'Clear List',
-				lucide: Trash2Icon,
-				type: ActionType.BUTTON,
-				callback: () => {
-					user_gears = [];
-					gear_views = [];
-					saveObject('gears_v1', user_gears);
+	const ACTIONS = [
+		{
+			id: 'fourStatMode',
+			label: 'Extended Stats',
+			type: ActionType.TOGGLE,
+			callback: () => {
+				if (is_searching) {
+					return;
 				}
-			}
-		]
-	};
+				bound_objects.fourStatMode = !bound_objects.fourStatMode;
+				has_measured = false;
+			},
+			lucide_on: LayoutGridIcon,
+			lucide_off: SquareIcon
+		},
+		{
+			id: 'iconStats',
+			label: 'Icon Stats',
+			type: ActionType.TOGGLE,
+			callback: () => {
+				bound_objects.iconStats = !bound_objects.iconStats;
+				has_measured = false;
+			},
+			lucide_on: DiamondIcon,
+			lucide_off: CaseSensitiveIcon
+		},
+		{
+			id: 'titanMode',
+			label: 'Titan Stats',
+			type: ActionType.TOGGLE,
+			callback: () => {
+				if (is_searching) {
+					return;
+				}
 
-	onMount(() => {
-		registerComponent(ID, METADATA);
-	});
+				bound_objects.titanMode = !bound_objects.titanMode;
+				has_measured = false;
+			},
+			lucide_on: SparklesIcon,
+			lucide_off: SparkleIcon
+		},
+		{
+			id: 'clearGears',
+			label: 'Clear List',
+			lucide: Trash2Icon,
+			type: ActionType.BUTTON,
+			callback: () => {
+				$user_gears = [];
+				$gear_views = [];
+				saveObject('gears_v1', $user_gears);
+			}
+		}
+	];
 </script>
 
 {#snippet gear_actions(gear: GearView)}
@@ -871,17 +851,17 @@
 	</div>
 {/snippet}
 
-<div class="full-width" style={any_dialog_open ? 'overflow: hidden;' : ''}>
+<div class="full-width">
 	<div class="block">
 		<h1>Gear List</h1>
 
-		{#if Object.keys(user_loadouts).length > 0 && current_loadout}
+		{#if Object.keys($user_loadouts).length > 0 && $current_loadout}
 			<div class="horizontal" style="gap: 1rem; margin: 1rem;">
 				<div class="hori-item">
-					<StatIcon stat={user_loadouts[current_loadout].element as Stat} size="2rem" />
+					<StatIcon stat={$user_loadouts[$current_loadout].element as Stat} size="2rem" />
 				</div>
 				<div class="hori-item">
-					<span>{user_loadouts[current_loadout].name}</span>
+					<span>{$user_loadouts[$current_loadout].name}</span>
 				</div>
 			</div>
 		{/if}
@@ -941,8 +921,8 @@
 			horizontal_gap="5rem"
 			bind:has_measured
 		>
-			{#if gear_views.length !== 0 && !is_searching && !is_showing_equipped_gears}
-				{#each gear_views as gear}
+			{#if $gear_views.length !== 0 && !is_searching && !is_showing_equipped_gears}
+				{#each $gear_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
 						<span style="width: {span_length * 0.75}rem">{gear.id}</span>
 						{@render gear_icon(gear)}
@@ -990,7 +970,7 @@
 							</div>
 						{/if}
 
-						{#if !isMobile}
+						{#if !$is_mobile}
 							{@render gear_actions(gear)}
 						{/if}
 					</div>
@@ -999,7 +979,7 @@
 				{#each search_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
 						<span style="width: {span_length * 0.75}rem">{gear.id}</span>
-						{@render gear_icon(gear_views[gear.id])}
+						{@render gear_icon($gear_views[gear.id])}
 
 						<div class="single-stat">
 							<div class="stat-content" class:icon={bound_objects.iconStats}>
@@ -1014,8 +994,8 @@
 							</div>
 						</div>
 
-						{#if !isMobile}
-							{@render gear_actions(gear_views[gear.id])}
+						{#if !$is_mobile}
+							{@render gear_actions($gear_views[gear.id])}
 						{/if}
 					</div>
 				{/each}
@@ -1025,9 +1005,9 @@
 						<span style="max-width: {span_length * 0.75}rem; width: {span_length * 0.75}rem"
 							>{gearId}</span
 						>
-						{@render gear_icon(gear_views[gearId], VALID_GEAR_PARTS[partIndex])}
+						{@render gear_icon($gear_views[gearId], VALID_GEAR_PARTS[partIndex])}
 
-						{@render gear_actions(gear_views[gearId])}
+						{@render gear_actions($gear_views[gearId])}
 					</div>
 				{/each}
 			{:else}
@@ -1056,17 +1036,14 @@
 <GearInfo
 	bind:open={gear_info_dialog_open}
 	bind:gear={gear_info_gear}
-	bind:is_mobile={isMobile}
-	bind:user_gears
-	bind:gear_views
 	onRemoveGear={removeGear}
 	onEquipGear={equipGear}
 	onUnequipGear={unequipGear}
 />
 
-<GearSearch bind:open={search_dialog_open} bind:isMobile onConfirmSearch={onGearSearch} />
+<GearSearch bind:open={search_dialog_open} onConfirmSearch={onGearSearch} />
 
-<ActionToolbar actions={METADATA.actions} bind:bound_objects bind:is_mobile={isMobile} />
+<ActionToolbar actions={ACTIONS} bind:bound_objects />
 
 <style>
 	.gear-grid {

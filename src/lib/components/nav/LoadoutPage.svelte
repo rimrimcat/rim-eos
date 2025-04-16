@@ -3,14 +3,7 @@
 	import SwitchLoadout from '$lib/components/dialog/SwitchLoadout.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import StatIcon from '$lib/components/StatIcon.svelte';
-	import type { MatrixEffectsIds, ResoEffectsIds, WeaponEffectsIds } from '$lib/generated/ids';
-	import {
-		getMatrix,
-		getMatrixEffect,
-		getResoEffects,
-		getWeapon,
-		getWeaponEffect
-	} from '$lib/scripts/json-loader';
+	import { getMatrix, getResoEffects, getWeapon } from '$lib/scripts/json-loader';
 	import {
 		addImageToDB,
 		cloneObject,
@@ -19,26 +12,33 @@
 		getImageUrlFromDB,
 		saveObject
 	} from '$lib/scripts/loader';
-	import type { AllLoadouts, LoadoutType } from '$lib/scripts/loadouts';
-	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
-	import { StatCollection } from '$lib/scripts/stat-ops';
-	import { type StatGearUser } from '$lib/scripts/stats';
 	import {
-		WEAPON_BASE_STATS,
-		type MatrixFinalEffect,
-		type MatrixView,
-		type ResoEffect,
-		type ResoTriggerCounts,
-		type UserMatrix,
-		type UserWeapon,
-		type Weapon,
-		type WeaponEffect,
-		type WeaponSettingStuff,
-		type WeaponView
-	} from '$lib/scripts/weapons';
+		pushAllValidMatrixEffects,
+		pushAllValidWeaponEffects,
+		pushValidResoEffect
+	} from '$lib/scripts/loadout';
+	import { ActionType } from '$lib/scripts/nav-metadata';
+	import { StatCollection } from '$lib/scripts/stats';
+	import { current_loadout, font_size, inner_width, user_loadouts } from '$lib/scripts/stores';
+	import { WEAPON_BASE_STATS } from '$lib/scripts/weapons';
+	import type {
+		LoadoutType,
+		MatrixFinalEffect,
+		MatrixIds,
+		MatrixView,
+		ResoEffect,
+		ResoTriggerCounts,
+		StatGearUser,
+		UserMatrix,
+		UserWeapon,
+		Weapon,
+		WeaponEffect,
+		WeaponSettingStuff,
+		WeaponsIds,
+		WeaponView
+	} from '$lib/types/index';
 	import {
 		ArrowRightLeftIcon,
-		BoxIcon,
 		ChartNoAxesColumnIcon,
 		CopyPlusIcon,
 		PencilIcon,
@@ -48,15 +48,8 @@
 		Trash2Icon
 	} from '@lucide/svelte';
 	import { onMount } from 'svelte';
+	import SwitchWeapMatrix from '../dialog/SwitchWeapMatrix.svelte';
 	import StatContributions from '../StatContributions.svelte';
-
-	let {
-		isMobile = $bindable(false),
-		user_loadouts = $bindable({} as AllLoadouts),
-		current_loadout = $bindable(''),
-		font_size = $bindable(16),
-		inner_width = $bindable(1000)
-	} = $props();
 
 	// State
 	let loadout_name = $state('');
@@ -85,10 +78,12 @@
 	let upload_dialog_open = $state(false);
 	let switch_loadout_dialog_open = $state(false);
 
-	let any_dialog_open = $derived(upload_dialog_open || switch_loadout_dialog_open);
+	let switch_gear_matrix_dialog_open = $state(false);
+	let switching: 'matrix' | 'weapon' = $state('matrix');
+	let switch_index = $state(0);
 
 	// Stat Contrib
-	let chart_width = $derived(inner_width - font_size * 16 - 300);
+	let chart_width = $derived($inner_width - $font_size * 16 - 300);
 	$inspect('chart wid', chart_width);
 
 	// Element options
@@ -101,87 +96,19 @@
 		{ value: 'alt', label: 'Altered' }
 	];
 
-	// helper function for updateResoEffects
-	async function pushValidResoEffect(effectIds: ResoEffectsIds[], reso_effects_: ResoEffect[]) {
-		await Promise.all(
-			effectIds.map(async (eff) => {
-				const effect = await getResoEffects(eff);
-				if (effect && effect.id && !reso_effects_.some((eff2) => eff2.id === effect.id)) {
-					reso_effects_.push(effect);
-				}
-			})
-		);
-	}
-	// helper function for weapon views
-	async function pushAllValidWeaponEffects(
-		effs: WeaponEffectsIds[],
-		advancement: number,
-		effects_: WeaponEffect[],
-		stat_: StatCollection[]
-	) {
-		await Promise.all(
-			effs.map(async (eff_) => {
-				const eff = await getWeaponEffect(eff_);
-				if (eff.require_reso) {
-					const required_reso_count = eff.require_reso_count ?? 2;
-					if (loadout_reso_counts[eff.require_reso] ?? 0 < required_reso_count) {
-						return;
-					}
-				}
+	function dedupeMatEffs(effects: MatrixFinalEffect[]) {
+		return effects.reduce((acc, effect) => {
+			const existing_eff = acc.find((eff) => eff.id === effect.id);
 
-				if (eff.require_adv) {
-					if (advancement < eff.require_adv) {
-						return;
-					}
-				}
+			if (!existing_eff) {
+				acc.push(effect);
+			} else if (effect.advancement > existing_eff.advancement) {
+				acc.splice(acc.indexOf(existing_eff), 1);
+				acc.push(effect);
+			}
 
-				// TEMPORARILY DISABLE ONFIELD EFFECTS
-				if (eff.duration !== undefined && eff.duration === 0) {
-					return;
-				}
-
-				effects_.push(eff);
-				stat_[0] = stat_[0].add(new StatCollection(eff.stats));
-			})
-		);
-	}
-
-	// helper function for matrix views
-	async function pushAllValidMatrixEffects(
-		effs: MatrixEffectsIds[],
-		advancement: number,
-		effects_: MatrixFinalEffect[],
-		stat_: StatCollection[]
-	) {
-		await Promise.all(
-			effs.map(async (eff_) => {
-				const eff = await getMatrixEffect(eff_);
-				if (eff.require_reso) {
-					const required_reso_count = eff.require_reso_count ?? 2;
-					if (loadout_reso_counts[eff.require_reso] ?? 0 < required_reso_count) {
-						return;
-					}
-				}
-
-				// TEMPORARILY DISABLE ONFIELD EFFECTS
-				if (eff.duration !== undefined && eff.duration === 0) {
-					return;
-				}
-
-				const keys = Object.keys(eff.stats);
-				const finalEffect = {
-					...eff,
-					stats: {}
-				};
-				keys.forEach((key) => {
-					// @ts-expect-error
-					finalEffect.stats[key] = eff.stats[key][advancement];
-				});
-
-				effects_.push(finalEffect);
-				stat_[0] = stat_[0].add(new StatCollection(finalEffect.stats));
-			})
-		);
+			return acc;
+		}, [] as MatrixFinalEffect[]);
 	}
 
 	async function updateResoCounts() {
@@ -277,7 +204,13 @@
 				const effects: WeaponEffect[] = [];
 				const stat_ = [new StatCollection()];
 
-				await pushAllValidWeaponEffects(weapon.effects ?? [], advancement, effects, stat_);
+				await pushAllValidWeaponEffects(
+					weapon.effects ?? [],
+					advancement,
+					loadout_reso_counts,
+					effects,
+					stat_
+				);
 				const setting_ids = user_weapons[index].setting ?? weapon.setting?.default ?? [];
 				const setting: WeaponSettingStuff[] = setting_ids.map((setting_) => {
 					// @ts-expect-error
@@ -293,6 +226,7 @@
 								return await pushAllValidWeaponEffects(
 									setting_data.effects,
 									advancement,
+									loadout_reso_counts,
 									effects,
 									stat_
 								);
@@ -327,7 +261,14 @@
 				const stat_ = [new StatCollection()];
 				const matrix_ = await getMatrix(matrix.id);
 
-				await pushAllValidMatrixEffects(matrix_.effects, advancement, effects, stat_);
+				await pushAllValidMatrixEffects(
+					matrix_.effects,
+					advancement,
+					loadout_reso_counts,
+					effects,
+					stat_,
+					user_weapons
+				);
 				const stat = stat_[0];
 
 				return {
@@ -357,7 +298,13 @@
 		const effects: WeaponEffect[] = [];
 		const stat_ = [new StatCollection()];
 
-		await pushAllValidWeaponEffects(weapon.effects ?? [], advancement, effects, stat_);
+		await pushAllValidWeaponEffects(
+			weapon.effects ?? [],
+			advancement,
+			loadout_reso_counts,
+			effects,
+			stat_
+		);
 		const setting_ids = user_weapons[index].setting ?? weapon.setting?.default ?? [];
 		const setting: WeaponSettingStuff[] = setting_ids.map((setting_) => {
 			// @ts-expect-error
@@ -373,6 +320,7 @@
 						return await pushAllValidWeaponEffects(
 							setting_data.effects,
 							advancement,
+							loadout_reso_counts,
 							effects,
 							stat_
 						);
@@ -399,7 +347,7 @@
 
 		all_effects = [
 			...loadout_weapon_views.flatMap((weapon) => weapon.effects),
-			...loadout_matrix_views.flatMap((matrix) => matrix.effects),
+			...dedupeMatEffs(loadout_matrix_views.flatMap((matrix) => matrix.effects)),
 			...loadout_resonance_effects
 		];
 	}
@@ -412,7 +360,14 @@
 		const stat_ = [new StatCollection()];
 		const matrix_ = await getMatrix(matrix.id);
 
-		await pushAllValidMatrixEffects(matrix_.effects, advancement, effects, stat_);
+		await pushAllValidMatrixEffects(
+			matrix_.effects,
+			advancement,
+			loadout_reso_counts,
+			effects,
+			stat_,
+			user_weapons
+		);
 		const stat = stat_[0];
 
 		loadout_matrix_views[index] = {
@@ -427,7 +382,7 @@
 
 		all_effects = [
 			...loadout_weapon_views.flatMap((weapon) => weapon.effects),
-			...loadout_matrix_views.flatMap((matrix) => matrix.effects),
+			...dedupeMatEffs(loadout_matrix_views.flatMap((matrix) => matrix.effects)),
 			...loadout_resonance_effects
 		];
 	}
@@ -455,23 +410,23 @@
 
 		all_effects = [
 			...loadout_weapon_views.flatMap((weapon) => weapon.effects),
-			...loadout_matrix_views.flatMap((matrix) => matrix.effects),
+			...dedupeMatEffs(loadout_matrix_views.flatMap((matrix) => matrix.effects)),
 			...loadout_resonance_effects
 		];
 	}
 
 	function saveWeaponMatrixLoadout() {
-		user_loadouts[current_loadout].equipped_weapons = user_weapons;
-		user_loadouts[current_loadout].equipped_matrices = user_matrices;
-		saveObject('loadouts_v1', user_loadouts);
+		$user_loadouts[$current_loadout].equipped_weapons = user_weapons;
+		$user_loadouts[$current_loadout].equipped_matrices = user_matrices;
+		saveObject('loadouts_v1', $user_loadouts);
 	}
 
 	function toggleEditing() {
 		if (is_editing) {
-			const prevSelectedLoadout = current_loadout;
-			user_loadouts[prevSelectedLoadout].name = loadout_name;
-			user_loadouts[prevSelectedLoadout].description = loadout_desc;
-			user_loadouts[prevSelectedLoadout].element = loadout_icon as LoadoutType;
+			const prevSelectedLoadout = $current_loadout;
+			$user_loadouts[prevSelectedLoadout].name = loadout_name;
+			$user_loadouts[prevSelectedLoadout].description = loadout_desc;
+			$user_loadouts[prevSelectedLoadout].element = loadout_icon as LoadoutType;
 
 			const sanitizedLoadoutName = sanitizeLoadoutKey(loadout_name);
 
@@ -489,12 +444,12 @@
 				});
 
 				// rename loadout
-				user_loadouts[sanitizedLoadoutName] = cloneObject(user_loadouts[prevSelectedLoadout]);
-				delete user_loadouts[prevSelectedLoadout];
-				current_loadout = sanitizedLoadoutName;
+				$user_loadouts[sanitizedLoadoutName] = cloneObject($user_loadouts[prevSelectedLoadout]);
+				delete $user_loadouts[prevSelectedLoadout];
+				$current_loadout = sanitizedLoadoutName;
 			}
 
-			saveObject('loadouts_v1', user_loadouts);
+			saveObject('loadouts_v1', $user_loadouts);
 		}
 
 		is_editing = !is_editing;
@@ -508,7 +463,7 @@
 			};
 			reader.readAsDataURL(file);
 
-			addImageToDB(current_loadout, file);
+			addImageToDB($current_loadout, file);
 		}
 	}
 
@@ -521,7 +476,7 @@
 		let sanitizedLoadoutName = sanitizeLoadoutKey(newLoadoutName);
 		let counter = 1;
 
-		while (user_loadouts[sanitizedLoadoutName]) {
+		while ($user_loadouts[sanitizedLoadoutName]) {
 			counter++;
 			newLoadoutName = loadout_name.match(/(.*)\s(\d+)$/)
 				? loadout_name.replace(/(\d+)$/, String(counter))
@@ -531,13 +486,13 @@
 
 		console.error('sanitized', sanitizedLoadoutName);
 
-		user_loadouts[sanitizedLoadoutName] = cloneObject(user_loadouts[current_loadout]);
-		user_loadouts[sanitizedLoadoutName].name = newLoadoutName;
-		user_loadouts[sanitizedLoadoutName].description =
+		$user_loadouts[sanitizedLoadoutName] = cloneObject($user_loadouts[$current_loadout]);
+		$user_loadouts[sanitizedLoadoutName].name = newLoadoutName;
+		$user_loadouts[sanitizedLoadoutName].description =
 			loadout_desc + ` (duplicate from ${loadout_name})`;
 
 		// copy image, fetch from db then add to db
-		getImageFromDB(current_loadout).then((imageFile) => {
+		getImageFromDB($current_loadout).then((imageFile) => {
 			if (imageFile) {
 				const newFile = new File([imageFile], `${sanitizedLoadoutName}.jpg`, {
 					type: imageFile.type
@@ -546,125 +501,120 @@
 			}
 		});
 
-		saveObject('loadouts_v1', user_loadouts);
+		saveObject('loadouts_v1', $user_loadouts);
 		if (switchToDupe) {
 			switchLoadout(sanitizedLoadoutName);
 		}
 	}
 
 	function deleteCurrentLoadout() {
-		console.error('deleting loadout', current_loadout);
-		if (Object.keys(user_loadouts).length === 1) {
+		console.error('deleting loadout', $current_loadout);
+		if (Object.keys($user_loadouts).length === 1) {
 			console.error('Cannot delete last loadout!');
 			return;
 		}
 
-		delete user_loadouts[current_loadout];
-		deleteImageFromDB(current_loadout);
+		delete $user_loadouts[$current_loadout];
+		deleteImageFromDB($current_loadout);
 
-		saveObject('loadouts_v1', user_loadouts);
+		saveObject('loadouts_v1', $user_loadouts);
 
-		current_loadout = Object.keys(user_loadouts)[0];
-		switchLoadout(current_loadout);
+		$current_loadout = Object.keys($user_loadouts)[0];
+		switchLoadout($current_loadout);
 	}
 
 	function switchLoadout(loadout: string) {
-		if (!user_loadouts[loadout]) {
+		if (!$user_loadouts[loadout]) {
 			console.error('Loadout not found:', loadout);
 			return;
 		}
 
-		current_loadout = loadout;
+		$current_loadout = loadout;
 
-		loadout_name = user_loadouts[loadout].name;
-		loadout_desc = user_loadouts[loadout].description;
-		loadout_icon = user_loadouts[loadout].element;
-		getImageUrlFromDB(current_loadout).then((imageUrl) => {
+		loadout_name = $user_loadouts[loadout].name;
+		loadout_desc = $user_loadouts[loadout].description;
+		loadout_icon = $user_loadouts[loadout].element;
+		getImageUrlFromDB($current_loadout).then((imageUrl) => {
 			if (imageUrl) {
 				loadout_image = imageUrl;
 			}
 		});
 	}
 
-	// register
-	const id = 'loadout-page';
+	function onSwitchMatrix(id: MatrixIds) {
+		user_matrices[switch_index] = { id };
+		saveWeaponMatrixLoadout();
+		updateAll();
+	}
 
-	const metadata: ComponentMetadata = {
-		id,
-		label: 'Loadout',
-		lucide: BoxIcon,
-		showInNav: true,
-		actions: [
-			{
-				id: 'switch',
-				label: 'Switch Loadout',
-				lucide: ArrowRightLeftIcon,
-				type: ActionType.BUTTON,
-				callback: () => {
-					switch_loadout_dialog_open = true;
-				}
-			},
-			{
-				id: 'duplicate',
-				label: 'Duplicate Loadout',
-				lucide: CopyPlusIcon,
-				type: ActionType.BUTTON,
-				callback: () => {
-					duplicateLoadout(true);
-				}
-			},
-			{
-				id: 'delete',
-				label: 'Delete Loadout',
-				lucide: Trash2Icon,
-				type: ActionType.BUTTON,
-				callback: () => {
-					deleteCurrentLoadout();
-				}
-			},
-			{
-				id: 'reset',
-				label: 'Reset to defaults',
-				lucide: RotateCcwIcon,
-				type: ActionType.BUTTON,
-				callback: () => {
-					// delete keys in localStorage
-					localStorage.removeItem('loadouts_v1');
-					localStorage.removeItem('gears_v1');
-					// delete database
-					indexedDB.deleteDatabase('tof-gear');
-					// reload page
-					window.location.reload();
-				}
+	function onSwitchWeapon(id: WeaponsIds) {
+		user_weapons[switch_index] = { id };
+		saveWeaponMatrixLoadout();
+		updateAll();
+	}
+
+	const ACTIONS = [
+		{
+			id: 'switch',
+			label: 'Switch Loadout',
+			lucide: ArrowRightLeftIcon,
+			type: ActionType.BUTTON,
+			callback: () => {
+				switch_loadout_dialog_open = true;
 			}
-		]
-	};
+		},
+		{
+			id: 'duplicate',
+			label: 'Duplicate Loadout',
+			lucide: CopyPlusIcon,
+			type: ActionType.BUTTON,
+			callback: () => {
+				duplicateLoadout(true);
+			}
+		},
+		{
+			id: 'delete',
+			label: 'Delete Loadout',
+			lucide: Trash2Icon,
+			type: ActionType.BUTTON,
+			callback: () => {
+				deleteCurrentLoadout();
+			}
+		},
+		{
+			id: 'reset',
+			label: 'Reset to defaults',
+			lucide: RotateCcwIcon,
+			type: ActionType.BUTTON,
+			callback: () => {
+				// delete keys in localStorage
+				localStorage.removeItem('loadouts_v1');
+				localStorage.removeItem('gears_v1');
+				// delete database
+				indexedDB.deleteDatabase('tof-gear');
+				// reload page
+				window.location.reload();
+			}
+		}
+	];
 
 	onMount(async () => {
-		registerComponent(id, metadata);
-
-		if (Object.keys(user_loadouts).length === 0) {
+		if (Object.keys($user_loadouts).length === 0) {
 			// skip if preload
 		} else {
-			loadout_name = user_loadouts[current_loadout].name;
-			loadout_desc = user_loadouts[current_loadout].description;
-			loadout_icon = user_loadouts[current_loadout].element;
-			user_weapons = user_loadouts[current_loadout].equipped_weapons;
-			user_matrices = user_loadouts[current_loadout].equipped_matrices;
-			loadout_image = await getImageUrlFromDB(current_loadout);
+			loadout_name = $user_loadouts[$current_loadout].name;
+			loadout_desc = $user_loadouts[$current_loadout].description;
+			loadout_icon = $user_loadouts[$current_loadout].element;
+			user_weapons = $user_loadouts[$current_loadout].equipped_weapons;
+			user_matrices = $user_loadouts[$current_loadout].equipped_matrices;
+			loadout_image = await getImageUrlFromDB($current_loadout);
 
 			await updateAll();
 		}
 	});
-
-	// $inspect('image source', document.getElementById('user-upload')?.src);
-	$inspect('loadout weapons', user_weapons);
-	$inspect('weapon views', loadout_weapon_views);
-	$inspect('matrix views', loadout_matrix_views);
-	$inspect('weapmat', loadout_weapmat_combined);
 </script>
 
-{#snippet matrix4p(matrix: MatrixView, sizeScale: number = 1)}
+{#snippet matrix4p(matrix: MatrixView)}
 	{#each [0, 1, 2, 3] as index}
 		<div class="compose-above" style="top: -0.5rem; left: {-0.75 + 0.5 * index}rem">
 			<img
@@ -676,41 +626,58 @@
 	{/each}
 {/snippet}
 
-{#snippet showMatrices(matrix: MatrixView, index: number, sizeScale: number = 1)}
+{#snippet showMatrices(matrix: MatrixView, index: number)}
 	<div class="vertical center matrix-col" style="width: 6rem;">
 		<span class="matrix-name">{matrix.name}</span>
 		<div class="horizontal matrix-container">
 			<div class="compose below border" style="width: 6rem; height: 6rem; margin-top: 0.4rem;">
-				{#if matrix.id.includes('4p')}
-					{@render matrix4p(matrix)}
+				<button
+					class="image"
+					onclick={() => {
+						switching = 'matrix';
+						switch_index = index;
+						switch_gear_matrix_dialog_open = true;
+					}}
+				>
+					{#if matrix.id.includes('4p')}
+						{@render matrix4p(matrix)}
+					{:else if matrix.id === 'none'}
+						<img
+							src="./matrix/none.webp"
+							alt="Matrix"
+							style="height:6rem; width:6rem; filter: grayscale(100%)"
+						/>
+					{/if}
+				</button>
+				{#if matrix.id !== 'none'}
+					{#each [1, 2, 3] as advSetValue, advIndex}
+						<button
+							class="image"
+							onclick={() => {
+								if (matrix.advancement === advSetValue) {
+									user_matrices[index].advancement = 0;
+								} else {
+									user_matrices[index].advancement = advSetValue;
+								}
+								saveWeaponMatrixLoadout();
+								updateSingleMatrixView(index);
+							}}
+						>
+							<div class="compose above" style="top: 4.5rem; left:{1.5 + advIndex}rem">
+								<StarIcon
+									size={$font_size}
+									fill={matrix.advancement >= advSetValue ? 'white' : 'none'}
+								/>
+							</div>
+						</button>
+					{/each}
 				{/if}
-				{#each [1, 2, 3] as advSetValue, advIndex}
-					<button
-						class="image"
-						onclick={() => {
-							if (matrix.advancement === advSetValue) {
-								user_matrices[index].advancement = 0;
-							} else {
-								user_matrices[index].advancement = advSetValue;
-							}
-							saveWeaponMatrixLoadout();
-							updateSingleMatrixView(index);
-						}}
-					>
-						<div class="compose above" style="top: 4.5rem; left:{1.5 + advIndex}rem">
-							<StarIcon
-								size={font_size}
-								fill={matrix.advancement >= advSetValue ? 'white' : 'none'}
-							/>
-						</div>
-					</button>
-				{/each}
 			</div>
 		</div>
 	</div>
 {/snippet}
 
-<div class="loadout-page" style={any_dialog_open ? 'overflow: hidden;' : ''}>
+<div class="loadout-page">
 	<h1>Loadout</h1>
 
 	<div class="loadout-container">
@@ -805,12 +772,24 @@
 									class="compose below border"
 									style="width: 8rem; height: 8rem; margin-top: 0.4rem;"
 								>
-									<div class="compose above" style="top:-0.5rem">
-										<img
-											src="./weapon/{weapon.id}.webp"
-											alt="Weapon"
-											style="height:8rem; width:8rem;"
-										/>
+									<div
+										class="compose above"
+										style="top:{weapon.id === 'none' ? '0rem' : '-0.5rem'}"
+									>
+										<button
+											class="image"
+											onclick={() => {
+												switching = 'weapon';
+												switch_index = index;
+												switch_gear_matrix_dialog_open = true;
+											}}
+										>
+											<img
+												src="./weapon/{weapon.id}.webp"
+												alt={weapon.name}
+												style="height:8rem; width:8rem; {weapon.id === 'none' ? 'opacity: 0;' : ''}"
+											/>
+										</button>
 									</div>
 									{#if weapon.setting && weapon.setting.length > 0}
 										<div class="compose above" style="top: 0.5rem; left: 0.5rem;">
@@ -861,7 +840,7 @@
 												</button>
 											{/each}
 										</div>
-									{:else}
+									{:else if weapon.id !== 'none'}
 										<div class="compose above" style="top: 0.5rem; left: 0.5rem">
 											<StatIcon
 												stat={weapon.resonances[0] as LoadoutType}
@@ -871,43 +850,45 @@
 										</div>
 									{/if}
 
-									{#each [1, 2, 3, 4, 5, 6] as advSetValue, advIndex}
-										<button
-											class="image"
-											onclick={() => {
-												if (weapon.advancement === advSetValue) {
-													user_weapons[index].advancement = 0;
-												} else {
-													user_weapons[index].advancement = advSetValue;
-												}
-												saveWeaponMatrixLoadout();
-												updateSingleWeaponView(index);
-											}}
-										>
-											<div class="compose-above" style="top: 6.5rem; left:{1 + advIndex}rem">
-												<StarIcon
-													size={font_size}
-													fill={weapon.advancement >= advSetValue ? 'white' : 'none'}
-												/>
-											</div>
-										</button>
-									{/each}
+									{#if weapon.id !== 'none'}
+										{#each [1, 2, 3, 4, 5, 6] as advSetValue, advIndex}
+											<button
+												class="image"
+												onclick={() => {
+													if (weapon.advancement === advSetValue) {
+														user_weapons[index].advancement = 0;
+													} else {
+														user_weapons[index].advancement = advSetValue;
+													}
+													saveWeaponMatrixLoadout();
+													updateSingleWeaponView(index);
+												}}
+											>
+												<div class="compose-above" style="top: 6.5rem; left:{1 + advIndex}rem">
+													<StarIcon
+														size={$font_size}
+														fill={weapon.advancement >= advSetValue ? 'white' : 'none'}
+													/>
+												</div>
+											</button>
+										{/each}
+									{/if}
 								</div>
 							</div>
 
-							{#if inner_width < 500}
+							{#if $inner_width < 500}
 								<div style="margin-top: 1rem; margin-bottom: 1.5rem;">
 									{@render showMatrices(matrix, index)}
 								</div>
 							{/if}
 						</div>
-						{#if inner_width >= 500}
+						{#if $inner_width >= 500}
 							{@render showMatrices(matrix, index)}
 						{/if}
 					</div>
 				{/each}
 			</div>
-			{#if inner_width > 600}
+			{#if chart_width > 350}
 				<div class="vertical" style="margin-left: 2rem;">
 					<StatContributions bind:all_effects bind:chart_width />
 				</div>
@@ -926,12 +907,19 @@
 
 <SwitchLoadout
 	bind:open={switch_loadout_dialog_open}
-	bind:loadouts={user_loadouts}
-	bind:selected_loadout={current_loadout}
+	bind:selected_loadout={$current_loadout}
 	onSwitchLoadout={switchLoadout}
 />
 
-<ActionToolbar actions={metadata.actions} bind:is_mobile={isMobile} />
+<SwitchWeapMatrix
+	bind:open={switch_gear_matrix_dialog_open}
+	bind:switching
+	bind:user_weapons
+	{onSwitchMatrix}
+	{onSwitchWeapon}
+/>
+
+<ActionToolbar actions={ACTIONS} />
 
 <style>
 	.loadout-page {

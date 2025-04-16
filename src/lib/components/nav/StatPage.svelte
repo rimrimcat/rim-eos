@@ -3,24 +3,17 @@
 	import StatAdjust from '$lib/components/dialog/StatAdjust.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
-	import type { GearView, UserGear } from '$lib/scripts/gears';
 	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader.ts';
-	import type { AllLoadouts } from '$lib/scripts/loadouts';
-	import { ActionType, registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
-	import { STAT_LABELS, type CharacterStat } from '$lib/scripts/stats';
+	import { ActionType } from '$lib/scripts/nav-metadata';
+	import { STAT_LABELS } from '$lib/scripts/stats';
+	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
 	import { formatValue } from '$lib/scripts/validation.ts';
+	import type { CharacterStat } from '$lib/types/index';
 	import { ChartNoAxesColumn, ImagePlus, Trash2 } from '@lucide/svelte';
+	import type * as OpenCV from '@techstark/opencv-js';
 	import cv from '@techstark/opencv-js';
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
-
-	let {
-		is_mobile = $bindable(false),
-		user_gears = $bindable([] as UserGear[]),
-		user_loadouts = $bindable({} as AllLoadouts),
-		current_loadout = $bindable(''),
-		gear_views = $bindable([] as GearView[])
-	} = $props();
 
 	// State
 	let base_stats: string[] = $state([]);
@@ -34,8 +27,6 @@
 	// Stat Adjust Dialog
 	let stat_adjust_dialog_open = $state(false);
 	let unadjusted_stats: string[] = $state([]);
-
-	let any_dialog_open = $derived(screenshot_dialog_open || stat_adjust_dialog_open);
 
 	function processAttributes() {
 		// TODO: later on, this should adjust depending on the not-yet created Loadout.stat_adj object
@@ -52,8 +43,8 @@
 	}
 
 	function saveAttributes() {
-		user_loadouts[current_loadout].base_stats = base_stats;
-		saveObject('loadouts_v1', user_loadouts);
+		$user_loadouts[$current_loadout].base_stats = base_stats;
+		saveObject('loadouts_v1', $user_loadouts);
 	}
 
 	// actions
@@ -85,18 +76,18 @@
 	}
 
 	async function processBoxes(
-		src_mat_orig: cv.Mat,
-		stat_p1: cv.Point,
-		stat_p2: cv.Point,
-		src_mat_edit: cv.Mat | null = null,
-		imageUpdateCallback: ((img: cv.Mat) => Promise<void>) | null = null
+		src_mat_orig: OpenCV.Mat,
+		stat_p1: OpenCV.Point,
+		stat_p2: OpenCV.Point,
+		src_mat_edit: OpenCV.Mat | null = null,
+		imageUpdateCallback: ((img: OpenCV.Mat) => Promise<void>) | null = null
 	) {
 		const attr_arr: number[] = [7, 15, 6, 14, 5, 13, 4, 12, 3, 11, 2, 10, 1, 9, 0, 8];
 
 		const worker = await createWorker('eng');
 		let done_tasks = 0;
 
-		async function doTask(rect: cv.Rect, index: number) {
+		async function doTask(rect: OpenCV.Rect, index: number) {
 			const _crop = src_mat_orig.roi(rect);
 
 			const canvas = document.createElement('canvas');
@@ -154,11 +145,11 @@
 	}
 
 	async function matchCharacterStats(
-		src_mat: cv.Mat,
-		imageUpdateCallback: ((img: cv.Mat) => Promise<void>) | null = null,
+		src_mat: OpenCV.Mat,
+		imageUpdateCallback: ((img: OpenCV.Mat) => Promise<void>) | null = null,
 		minimumMatch: number = 0.9
 	) {
-		let edit_src_mat: cv.Mat = new cv.Mat(); // for callback
+		let edit_src_mat: OpenCV.Mat = new cv.Mat(); // for callback
 
 		process_text = 'Cropping...';
 		// remove possibly white pixels from top
@@ -312,41 +303,30 @@
 		// processAttributes();
 	}
 
-	// register
-	const id = 'stat-page';
-
-	const metadata: ComponentMetadata = {
-		id,
-		label: 'Stats',
-		lucide: ChartNoAxesColumn,
-		showInNav: true,
-		actions: [
-			{
-				id: 'screenshot',
-				label: 'From Screenshot',
-				lucide: ImagePlus,
-				type: ActionType.BUTTON,
-				callback: () => (screenshot_dialog_open = true)
-			},
-			{
-				id: 'adjust',
-				label: 'Adjust Attack Stats',
-				lucide: ChartNoAxesColumn,
-				type: ActionType.BUTTON,
-				callback: () => (stat_adjust_dialog_open = true)
-			},
-			{ id: 'reset', label: 'Reset', lucide: Trash2, type: ActionType.BUTTON, callback: resetStats }
-			// { id: 'share', label: 'Share' }
-		]
-	};
+	const ACTIONS = [
+		{
+			id: 'screenshot',
+			label: 'From Screenshot',
+			lucide: ImagePlus,
+			type: ActionType.BUTTON,
+			callback: () => (screenshot_dialog_open = true)
+		},
+		{
+			id: 'adjust',
+			label: 'Adjust Attack Stats',
+			lucide: ChartNoAxesColumn,
+			type: ActionType.BUTTON,
+			callback: () => (stat_adjust_dialog_open = true)
+		},
+		{ id: 'reset', label: 'Reset', lucide: Trash2, type: ActionType.BUTTON, callback: resetStats }
+		// { id: 'share', label: 'Share' }
+	];
 
 	onMount(() => {
-		registerComponent(id, metadata);
-
 		// load and process attributes
 		// TODO: change the way of loading after setting up
-		if (Object.keys(user_loadouts).length > 0) {
-			base_stats = user_loadouts[current_loadout].base_stats;
+		if (Object.keys($user_loadouts).length > 0) {
+			base_stats = $user_loadouts[$current_loadout].base_stats;
 			unadjusted_stats = base_stats; // TEMPORARY!!!
 			processAttributes();
 		}
@@ -357,7 +337,7 @@
 	<img id="templateImage" src={'./template/template_crit.png'} alt="User uploaded screenshot" />
 </div>
 
-<div class="stat-panel" style={any_dialog_open ? 'overflow: hidden;' : ''}>
+<div class="stat-panel">
 	<h1>Character Stats</h1>
 	<p>This page might undergo overhaul soon, just waiting for gear page to be completed.</p>
 
@@ -402,16 +382,9 @@
 	prompt_on_open={true}
 />
 
-<StatAdjust
-	bind:open={stat_adjust_dialog_open}
-	bind:user_gears
-	bind:gear_views
-	bind:user_loadouts
-	bind:current_loadout
-	bind:unadjusted_stats
-/>
+<StatAdjust bind:open={stat_adjust_dialog_open} bind:unadjusted_stats />
 
-<ActionToolbar actions={metadata.actions} bind:is_mobile />
+<ActionToolbar actions={ACTIONS} />
 
 <style>
 	.stat-panel {

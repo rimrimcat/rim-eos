@@ -1,7 +1,7 @@
-import type { ValidGearPart } from './gears';
-import type { UserMatrix, UserWeapon } from './weapons';
+import type { ValidGearPart } from '../scripts/gears';
+import type { UserMatrix, UserWeapon } from './weapon-types';
 
-type EquippedGear = {
+export type EquippedGear = {
 	[key in ValidGearPart]: number | null;
 };
 
@@ -15,7 +15,7 @@ export type Loadout = {
 	equipped_gears: EquippedGear;
 	equipped_weapons: UserWeapon[];
 	equipped_matrices: UserMatrix[];
-	base_stats: string[]; // raw stat uploaded by user
+	base_stats: string[]; // NOT raw stat uploaded by user
 	stat_adj?: object;
 	image_url?: string;
 };

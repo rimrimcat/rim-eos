@@ -1,0 +1,7 @@
+{
+	"id": "merylx-skill-fort",
+	"stats": {
+		"res_reduction_percent": 10
+	},
+	"require_reso": "fort"
+}

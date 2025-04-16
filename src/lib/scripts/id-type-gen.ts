@@ -23,14 +23,20 @@ const matrix_effects_ids = fs
 	.readdirSync(matrix_effects_path)
 	.filter((file) => file.endsWith('.json'))
 	.map((file) => path.basename(file, '.json'));
-const weapons_ids = fs
-	.readdirSync(weapons_path)
-	.filter((file) => file.endsWith('.json'))
-	.map((file) => path.basename(file, '.json'));
-const matrix_ids = fs
-	.readdirSync(matrix_path)
-	.filter((file) => file.endsWith('.json'))
-	.map((file) => path.basename(file, '.json'));
+const weapons_ids = [
+	'none',
+	...fs
+		.readdirSync(weapons_path)
+		.filter((file) => file.endsWith('.json') && file !== 'none.json')
+		.map((file) => path.basename(file, '.json'))
+];
+const matrix_ids = [
+	'none',
+	...fs
+		.readdirSync(matrix_path)
+		.filter((file) => file.endsWith('.json') && file !== 'none.json')
+		.map((file) => path.basename(file, '.json'))
+];
 
 const typeDefs = `// Auto-generated file
 

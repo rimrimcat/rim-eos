@@ -1,0 +1,8 @@
+{
+	"id": "antoria-skill",
+	"stats": {
+		"final_dmg_percent": 10,
+		"volt_dmg_percent": 4
+	},
+	"require_adv_not": 6
+}

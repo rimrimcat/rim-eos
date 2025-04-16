@@ -5,14 +5,10 @@
 		type SliderAction,
 		type ToggleAction
 	} from '$lib/scripts/nav-metadata';
+	import { is_mobile, scroll_y } from '$lib/scripts/stores';
 	import { ArrowRightToLine, CircleHelp, Menu, ToggleLeft, ToggleRight } from '@lucide/svelte';
-	import { scrollY } from './App.svelte';
 
-	let {
-		actions = [] as ComponentAction[],
-		bound_objects = $bindable({}),
-		is_mobile: is_mobile = $bindable(false)
-	} = $props();
+	let { actions = [] as ComponentAction[], bound_objects = $bindable({}) } = $props();
 
 	let is_collapsed = $state(true);
 
@@ -48,10 +44,10 @@
 <div
 	class="nav-tools"
 	class:collapsed={is_collapsed}
-	class:mobile={is_mobile}
+	class:mobile={$is_mobile}
 	style="height:{5.5 +
 		3 * (actions.length - SLIDER_COUNT) +
-		5 * SLIDER_COUNT}rem; translate: 0 {$scrollY}px;"
+		5 * SLIDER_COUNT}rem; translate: 0 {$scroll_y}px;"
 >
 	<div class="tools-header">
 		<div class="header-content">
@@ -289,16 +285,6 @@
 		padding: 0;
 	}
 
-	.toggle-track {
-		display: inline-block;
-		width: 2.5rem;
-		height: 1.25rem;
-		background-color: var(--border-color);
-		border-radius: 1rem;
-		position: relative;
-		transition: background-color 0.3s ease;
-	}
-
 	/* Slider Styles */
 	.slider-item {
 		flex-direction: column;
@@ -312,13 +298,6 @@
 		max-width: 100%;
 		width: 100%;
 		font-size: small;
-	}
-
-	.slider-container {
-		width: 100%;
-		display: flex;
-		flex-direction: column;
-		margin-left: 1rem;
 	}
 
 	.slider-controls {
@@ -338,6 +317,7 @@
 	.slider-input {
 		flex: 1;
 		-webkit-appearance: none;
+		appearance: none;
 		height: 0.5rem;
 		border-radius: 0.25rem;
 		background: var(--border-color);

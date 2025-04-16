@@ -1,0 +1,7 @@
+{
+	"id": "merylx-2p-static",
+	"stats": {
+		"crit_dmg_percent": [24, 24, 24, 24]
+	},
+	"require_weapon": "merylx"
+}

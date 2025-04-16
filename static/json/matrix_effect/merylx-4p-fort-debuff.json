@@ -1,0 +1,9 @@
+{
+	"id": "merylx-4p-fort-debuff",
+	"stats": {
+		"crit_res_reduction_percent": [8, 8, 8, 8]
+	},
+	"require_weapon": "merylx",
+	"require_reso": "fort",
+	"target": "enemy"
+}

@@ -1,0 +1,7 @@
+{
+	"id": "claudiax-a6-skill",
+	"stats": {
+		"phys_dmg_percent": 40
+	},
+	"require_adv": 6
+}

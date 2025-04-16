@@ -1,13 +1,17 @@
 import { browser } from '$app/environment';
 import type {
+	Matrix,
+	MatrixEffect,
 	MatrixEffectsIds,
 	MatrixIds,
+	ResoEffect,
 	ResoEffectsIds,
+	StatConstants,
+	Weapon,
+	WeaponEffect,
 	WeaponEffectsIds,
 	WeaponsIds
-} from '../generated/ids';
-import type { StatConstants } from './stats';
-import type { Matrix, MatrixEffect, ResoEffect, Weapon, WeaponEffect } from './weapons';
+} from '../types/index';
 
 // load once before using
 export let STAT_CONSTANTS: StatConstants;

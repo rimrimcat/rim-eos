@@ -1,41 +1,44 @@
-<script module>
-	export let scrollY = $state(writable(0));
-</script>
-
 <script lang="ts">
-	import type { GearView, UserGear } from '$lib/scripts/gears';
+	import { loadStatConstants } from '$lib/scripts/json-loader';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
-	import type { AllLoadouts } from '$lib/scripts/loadouts';
+	import {
+		current_loadout,
+		font_size,
+		gear_views,
+		inner_width,
+		is_mobile,
+		scroll_y,
+		toolbar_transform,
+		user_gears,
+		user_loadouts
+	} from '$lib/scripts/stores';
+	import { AppWindowIcon } from '@lucide/svelte';
 	import { onMount, type Component } from 'svelte';
-	import { writable } from 'svelte/store';
 	import Dialog from './Dialog.svelte';
-	import GearPage, { createGearView } from './nav/GearPage.svelte';
-	import LoadoutPage from './nav/LoadoutPage.svelte';
-	import MainPage from './nav/MainPage.svelte';
-	import StatPage from './nav/StatPage.svelte';
+	import { createGearView } from './nav/GearPage.svelte';
 	import ReadySignal from './ReadySignal.svelte';
 	import Toolbar from './Toolbar.svelte';
 
 	let { signal = $bindable(false) } = $props();
 
+	type NavIds = 'main-page' | 'loadout-page' | 'gear-page' | 'stat-page';
+	type NavItem = {
+		id: NavIds;
+		label: string;
+		lucide: Component;
+		import_name: string;
+	};
+
 	// Toolbar
 	let is_collapsed = $state(true);
-	let mobile_toolbar_transform = $state(0);
-
-	// Detect if mobile
-	let font_size = $state(0);
-	let inner_width = $state(1000);
-	let is_mobile = $derived((13.75 * font_size) / inner_width > 0.25);
 
 	// Active Nav
-	const NAV_MAP: Record<string, Component> = {
-		'main-page': MainPage,
-		'loadout-page': LoadoutPage,
-		'stat-page': StatPage,
-		'gear-page': GearPage
-	};
-	let active_component = $state('main-page');
-	let CurrentComponent: Component = $derived(NAV_MAP[active_component] || StatPage);
+	let active_component = $state({
+		id: 'main-page',
+		label: 'Main Page',
+		lucide: AppWindowIcon,
+		import_name: 'MainPage'
+	} as NavItem);
 
 	// Dialogs
 	let dialog_open = $state(true);
@@ -43,17 +46,10 @@
 	// color scheme
 	let styles = $state({});
 
-	// synced data across app
-	let user_gears: UserGear[] = $state([]);
-	let user_loadouts: AllLoadouts = $state({});
-	let current_loadout: string = $state('');
-	let gear_views: GearView[] = $state([]);
-
-	// check if ready
-
-	onMount(() => {
-		// get font size
-		font_size = parseFloat(getComputedStyle(document.documentElement).fontSize);
+	onMount(async () => {
+		// get font size and check if mobile
+		$font_size = parseFloat(getComputedStyle(document.documentElement).fontSize);
+		$is_mobile = (13.75 * $font_size) / $inner_width > 0.25;
 
 		// setup imagedb
 		openImageDB();
@@ -64,24 +60,26 @@
 		Object.entries(_styles).forEach(([key, value]) => {
 			root.style.setProperty(`--${key}`, value);
 		});
+		root.style.overscrollBehavior = 'contain';
 		styles = _styles;
 
 		// load synced
-		user_gears = loadObject('gears_v1');
-		user_loadouts = loadObject('loadouts_v1');
-		current_loadout = Object.keys(user_loadouts)[0];
+		$user_gears = loadObject('gears_v1');
+		$user_loadouts = loadObject('loadouts_v1');
+		$current_loadout = Object.keys($user_loadouts)[0];
 
 		// processing
+		await loadStatConstants(); // need this for gear proecssing
 		Promise.all(
-			user_gears.map((gear) => createGearView(gear, false, user_loadouts, current_loadout))
+			$user_gears.map((gear) => createGearView(gear, false, $user_loadouts, $current_loadout))
 		).then((gearViews) => {
-			gear_views = gearViews;
+			$gear_views = gearViews;
 			console.log('Done processing user_gears');
 		});
 	});
 </script>
 
-<svelte:window bind:innerWidth={inner_width} />
+<svelte:window bind:innerWidth={$inner_width} />
 
 <Dialog
 	bind:open={dialog_open}
@@ -96,32 +94,19 @@
 </Dialog>
 
 <div class="app-container">
-	<Toolbar bind:is_mobile bind:active_component bind:is_collapsed bind:mobile_toolbar_transform />
+	<Toolbar bind:active_component bind:is_collapsed />
 
 	<div
-		class="content-container"
+		class="vertical content-container"
 		class:mobile={is_mobile}
-		style="translate: 0 {is_mobile ? mobile_toolbar_transform : 0}px;"
-		onscroll={(e: any) => {
-			$scrollY = e.target.scrollTop;
+		style="translate: 0 {$toolbar_transform}px; padding-bottom: {$toolbar_transform}px"
+		onscroll={(e: UIEvent) => {
+			$scroll_y = (e.target as HTMLElement).scrollTop;
 		}}
 	>
-		<div style="display: none">
-			<MainPage />
-			<LoadoutPage />
-			<StatPage />
-			<GearPage />
-		</div>
-
-		<CurrentComponent
-			bind:isMobile={is_mobile}
-			bind:user_gears
-			bind:user_loadouts
-			bind:current_loadout
-			bind:gear_views
-			bind:font_size
-			bind:inner_width
-		/>
+		{#await import(`./nav/${active_component.import_name}.svelte`) then { default: Nav }}
+			<Nav />
+		{/await}
 	</div>
 </div>
 
@@ -133,6 +118,7 @@
 		padding: 0;
 		/* background-color: var(--bg-color); */
 		color: var(--text-color);
+		overscroll-behavior: contain;
 		font-family:
 			system-ui,
 			-apple-system,
@@ -356,7 +342,6 @@
 		background-color: var(--bg-color);
 		color: var(--text-color);
 		overscroll-behavior-x: none;
-		padding-bottom: 5rem;
 	}
 
 	.content-container {
@@ -366,7 +351,9 @@
 		overflow-x: hidden;
 		padding-left: 1rem;
 		padding-right: 6rem;
-		transition: translate 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+		transition:
+			translate 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+			padding-bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.content-container.mobile {

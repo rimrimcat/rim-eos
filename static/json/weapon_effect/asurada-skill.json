@@ -1,0 +1,7 @@
+{
+	"id": "asurada-skill",
+	"stats": {
+		"final_dmg_percent": 10
+	},
+	"require_adv_not": 6
+}

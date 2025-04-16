@@ -1,0 +1,7 @@
+{
+	"id": "antoria-a3",
+	"stats": {
+		"volt_res_ignore_percent": 15
+	},
+	"require_adv": 3
+}

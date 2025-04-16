@@ -1,13 +1,10 @@
 <script lang="ts">
 	import { ALLOWED_REGEX_OPS, ALLOWED_REGEX_VARS, GearPart } from '$lib/scripts/gears.ts';
+	import { is_mobile } from '$lib/scripts/stores';
 	import { SvelteSet } from 'svelte/reactivity';
 	import Dialog from '../Dialog.svelte';
 
-	let {
-		open = $bindable(false),
-		onConfirmSearch = (query: string) => {},
-		isMobile = $bindable(false)
-	} = $props();
+	let { open = $bindable(false), onConfirmSearch = (query: string) => {} } = $props();
 
 	let advancedOptions = $state(false);
 
@@ -51,7 +48,7 @@
 			? '(( !flame_atk + !frost_atk + !volt_atk + !phys_atk ) <= 2 ) * '
 			: '';
 		const gear = _selectedGear // @ts-expect-error
-			? `( 'gear' === '${GearPart[_selectedGear.toUpperCase()]}' ) * `
+			? `( 'gear' == '${GearPart[_selectedGear.toUpperCase()]}' ) * `
 			: '';
 		const titan = selectedOthers.has('Titan') ? 'titan_' : '';
 		const stat = _selectedStat.toLowerCase();
@@ -195,7 +192,7 @@
 								width="30px"
 								height="30px"
 							/>
-							{#if !isMobile}
+							{#if !is_mobile}
 								<span class="slot-label">{slot}</span>
 							{/if}
 						</div>
@@ -250,7 +247,7 @@
 		width: 100%;
 	}
 
-	.search-bar {
+	/* .search-bar {
 		margin-top: 0.5rem;
 		margin-bottom: 1rem;
 		width: 100%;
@@ -266,7 +263,7 @@
 		font-size: 1rem;
 		background-color: var(--input-bg);
 		color: var(--input-text, #fff);
-	}
+	} */
 
 	/* Slot section styling */
 	.slot-section {

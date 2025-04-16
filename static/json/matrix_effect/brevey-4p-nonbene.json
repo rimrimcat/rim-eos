@@ -1,0 +1,7 @@
+{
+	"id": "brevey-4p-nonbene",
+	"stats": {
+		"atk_percent": [26, 30, 34, 38]
+	},
+	"require_reso_not": "bene"
+}

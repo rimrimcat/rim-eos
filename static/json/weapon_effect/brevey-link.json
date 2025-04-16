@@ -1,0 +1,9 @@
+{
+	"id": "brevey-link",
+	"stats": {
+		"final_dmg_percent": 5
+	},
+	"require_reso": "bene",
+	"target": "team",
+	"require_adv_not": 6
+}

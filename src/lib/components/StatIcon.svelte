@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { LoadoutType } from '$lib/scripts/loadouts';
-	import { type StatGearUser } from '$lib/scripts/stats';
+	import type { LoadoutType, StatGearUser } from '$lib/types/index';
 
 	type StatOrElement = StatGearUser | LoadoutType;
 

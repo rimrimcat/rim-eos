@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { scroll_y } from '$lib/scripts/stores';
 	function doClose() {
 		open = false;
 	}
@@ -31,7 +32,7 @@
 		title = 'Dialog',
 		open = $bindable(false),
 		primary = 'OK',
-		width = $bindable('50vw'),
+		width = $bindable('70vw'),
 		onButtonPress = doButtonPress,
 		onClickOutside = doClickOutside,
 		onkeydown = doKeydown,
@@ -50,6 +51,7 @@
 		{onpaste}
 		role="presentation"
 		tabindex="-1"
+		style="translate: 0 {$scroll_y}px;"
 	>
 		<div class="dialog-container" role="dialog" aria-modal="true" style="width: {width};">
 			<div class="dialog-header">
@@ -118,6 +120,9 @@
 		flex-direction: column;
 		overflow: hidden;
 		animation: fadeIn 0.2s ease-out;
+
+		pointer-events: auto;
+		overscroll-behavior-y: contain;
 	}
 
 	@keyframes fadeIn {
@@ -166,6 +171,7 @@
 		padding: 1.25rem;
 		overflow-y: auto;
 		flex: 1;
+		overscroll-behavior-y: contain;
 	}
 
 	.dialog-buttons {
