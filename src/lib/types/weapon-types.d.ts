@@ -6,7 +6,7 @@ import type {
 	WeaponsIds
 } from '../generated/ids';
 import type { StatCollection } from '../scripts/stats';
-import type { StatData, StatDebuffs, StatGearUser, StatNonGear } from './stat-types';
+import type { StatData, StatGearUser, StatKey, StatNonGear } from './stat-types';
 
 export type ResoElement = 'phys' | 'flame' | 'frost' | 'volt' | 'alt' | 'none';
 export type ResoRole = 'atk' | 'fort' | 'bene' | 'none';
@@ -16,10 +16,6 @@ export type OrderedResoTriggers = [ResoElement, ResoRole, ...ResoTriggers[]];
 
 export type Target = 'self' | 'ally' | 'team' | 'enemy';
 export type ResoTriggerCounts = { [key in ResoTriggers]?: number };
-
-export type MatrixStatData = {
-	[key in StatGearUser | StatNonGear | StatDebuffs]?: [number, number, number, number];
-};
 
 export type BaseEffect = {
 	id: string;
@@ -53,9 +49,14 @@ export type ResoEffect = BaseEffect & {
 	require_reso: ResoTriggers;
 };
 
+export type MatrixStatData = {
+	[key in StatKey]?: [number, number, number, number];
+};
+export type MatrixResoFunction = (reso_trigger_counts: ResoTriggerCounts) => MatrixStatData;
+
 export type MatrixEffect = BaseEffect & {
 	id: MatrixEffectsIds;
-	stats: MatrixStatData;
+	stats: MatrixStatData | MatrixResoFunction;
 };
 
 export type MatrixFinalEffect = BaseEffect & {
