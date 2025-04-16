@@ -34,6 +34,7 @@
 		Weapon,
 		WeaponEffect,
 		WeaponSettingStuff,
+		WeaponsIds,
 		WeaponView
 	} from '$lib/types/index';
 	import {
@@ -546,6 +547,12 @@
 		updateAll();
 	}
 
+	function onSwitchWeapon(id: WeaponsIds) {
+		user_weapons[switch_index] = { id };
+		saveWeaponMatrixLoadout();
+		updateAll();
+	}
+
 	const ACTIONS = [
 		{
 			id: 'switch',
@@ -766,11 +773,20 @@
 									style="width: 8rem; height: 8rem; margin-top: 0.4rem;"
 								>
 									<div class="compose above" style="top:-0.5rem">
-										<img
-											src="./weapon/{weapon.id}.webp"
-											alt="Weapon"
-											style="height:8rem; width:8rem;"
-										/>
+										<button
+											class="image"
+											onclick={() => {
+												switching = 'weapon';
+												switch_index = index;
+												switch_gear_matrix_dialog_open = true;
+											}}
+										>
+											<img
+												src="./weapon/{weapon.id}.webp"
+												alt={weapon.name}
+												style="height:8rem; width:8rem;"
+											/>
+										</button>
 									</div>
 									{#if weapon.setting && weapon.setting.length > 0}
 										<div class="compose above" style="top: 0.5rem; left: 0.5rem;">
@@ -890,7 +906,12 @@
 	onSwitchLoadout={switchLoadout}
 />
 
-<SwitchWeapMatrix bind:open={switch_gear_matrix_dialog_open} bind:switching {onSwitchMatrix} />
+<SwitchWeapMatrix
+	bind:open={switch_gear_matrix_dialog_open}
+	bind:switching
+	{onSwitchMatrix}
+	{onSwitchWeapon}
+/>
 
 <ActionToolbar actions={ACTIONS} />
 

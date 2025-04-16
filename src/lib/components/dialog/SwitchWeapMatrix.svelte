@@ -1,14 +1,15 @@
 <script lang="ts">
-	import { AllMatrixIds } from '$lib/generated/all-ids';
-	import { getMatrix } from '$lib/scripts/json-loader';
-	import type { MatrixIds } from '$lib/types/index';
+	import { AllMatrixIds, AllWeaponIds } from '$lib/generated/all-ids';
+	import { getMatrix, getWeapon } from '$lib/scripts/json-loader';
+	import type { MatrixIds, WeaponsIds } from '$lib/types/index';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
 	let {
 		open = $bindable(false),
 		switching = $bindable('matrix' as 'matrix' | 'weapon'),
-		onSwitchMatrix = (id: MatrixIds) => {}
+		onSwitchMatrix = (id: MatrixIds) => {},
+		onSwitchWeapon = (id: WeaponsIds) => {}
 	} = $props();
 </script>
 
@@ -50,7 +51,32 @@
 							</button>
 						</div>
 						<div class="horizontal center" style="margin-top: 0.5rem;">
-							<span class="matrix-name">{matrix.name}</span>
+							<span>{matrix.name}</span>
+						</div>
+					</div>
+				{/await}
+			{/each}
+		{:else if switching === 'weapon'}
+			{#each AllWeaponIds as weapon_id}
+				{#await getWeapon(weapon_id) then weapon}
+					<div class="matrix-item vertical center" style="width: 8rem; height: 8rem;">
+						<div class="compose below border" style="width: 6rem; height: 6rem;">
+							<button
+								class="image"
+								onclick={() => {
+									onSwitchWeapon(weapon_id);
+									open = false;
+								}}
+							>
+								<img
+									src="./weapon/{weapon.id}.webp"
+									alt="Weapon"
+									style="height:6rem; width:6rem;"
+								/>
+							</button>
+						</div>
+						<div class="horizontal center" style="margin-top: 0.5rem;">
+							<span>{weapon.name}</span>
 						</div>
 					</div>
 				{/await}
