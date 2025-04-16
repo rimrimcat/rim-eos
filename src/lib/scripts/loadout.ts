@@ -126,8 +126,13 @@ export async function pushAllValidMatrixEffects(
 				advancement
 			};
 			keys.forEach((key) => {
-				// @ts-expect-error : its oke
-				finalEffect.stats[key] = eff.stats[key][advancement];
+				if (typeof eff.stats === 'function') {
+					// @ts-expect-error : key is guaranteed to exist
+					finalEffect.stats[key] = eff.stats(reso_counts_)[key][advancement];
+				} else {
+					// @ts-expect-error : key is guaranteed to exist
+					finalEffect.stats[key] = eff.stats[key][advancement];
+				}
 			});
 
 			effects_.push(finalEffect);

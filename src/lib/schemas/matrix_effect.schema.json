@@ -78,7 +78,15 @@
       "type": "string"
     },
     "stats": {
-      "$ref": "#/definitions/MatrixStatData"
+      "anyOf": [
+        {
+          "$ref": "#/definitions/MatrixStatData"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false
+        }
+      ]
     }
   },
   "required": [
