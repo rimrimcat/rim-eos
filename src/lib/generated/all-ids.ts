@@ -24,6 +24,9 @@ export const AllWeaponEffectIds: WeaponEffectsIds[] = [
 	'nola-frost-skill'
 ];
 export const AllMatrixEffectIds: MatrixEffectsIds[] = [
+	'asuka-2p',
+	'asuka-4p-weap',
+	'asuka-4p',
 	'grayfox-2p-bene',
 	'grayfox-2p',
 	'grayfox-4p-bene',
@@ -52,5 +55,5 @@ export const AllResoEffectIds: ResoEffectsIds[] = [
 	'phys',
 	'volt'
 ];
-export const AllMatrixIds: MatrixIds[] = ['grayfox-4p', 'nanyin-4p', 'nola-4p', 'none'];
+export const AllMatrixIds: MatrixIds[] = ['asuka-4p', 'grayfox-4p', 'nanyin-4p', 'nola-4p', 'none'];
 export const AllWeaponIds: WeaponsIds[] = ['asuka', 'grayfox', 'nanyin', 'nola', 'none'];

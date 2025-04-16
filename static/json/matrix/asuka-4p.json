@@ -1,0 +1,5 @@
+{
+	"id": "asuka-4p",
+	"name": "Asuka 4P",
+	"effects": ["asuka-2p", "asuka-4p", "asuka-4p-weap"]
+}

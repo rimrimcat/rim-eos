@@ -1,0 +1,7 @@
+{
+	"id": "asuka-4p-weap",
+	"require_weapon": "asuka",
+	"stats": {
+		"final_dmg_percent": [9, 9, 9, 9]
+	}
+}

@@ -15,6 +15,9 @@ export type WeaponEffectsIds =
 	| 'nola-a6'
 	| 'nola-frost-skill';
 export type MatrixEffectsIds =
+	| 'asuka-2p'
+	| 'asuka-4p-weap'
+	| 'asuka-4p'
 	| 'grayfox-2p-bene'
 	| 'grayfox-2p'
 	| 'grayfox-4p-bene'
@@ -42,4 +45,4 @@ export type ResoEffectsIds =
 	| 'phys'
 	| 'volt';
 export type WeaponsIds = 'asuka' | 'grayfox' | 'nanyin' | 'nola' | 'none';
-export type MatrixIds = 'grayfox-4p' | 'nanyin-4p' | 'nola-4p' | 'none';
+export type MatrixIds = 'asuka-4p' | 'grayfox-4p' | 'nanyin-4p' | 'nola-4p' | 'none';

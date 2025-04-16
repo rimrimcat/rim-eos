@@ -23,6 +23,7 @@
   "definitions": {
     "MatrixIds": {
       "enum": [
+        "asuka-4p",
         "grayfox-4p",
         "nanyin-4p",
         "nola-4p",
@@ -32,6 +33,9 @@
     },
     "MatrixEffectsIds": {
       "enum": [
+        "asuka-2p",
+        "asuka-4p",
+        "asuka-4p-weap",
         "grayfox-2p",
         "grayfox-2p-bene",
         "grayfox-4p",
