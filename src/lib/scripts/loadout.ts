@@ -188,8 +188,6 @@ export function dedupeMatEffs(effects: MatrixFinalEffect[]) {
 	}, [] as MatrixFinalEffect[]);
 }
 
-// user_weapons == get(user_loadouts)[get(current_loadout)].equipped_weapons
-
 export async function updateBaseWeapons() {
 	base_weapons.set(
 		await Promise.all(
@@ -488,14 +486,6 @@ export async function updateSingleMatrixView(index: number) {
 		stat
 	} as MatrixView;
 	matrix_views.set(loadout_matrix_views);
-
-	// loadout_weapmat_combined[index][1] = loadout_matrix_views[index];
-
-	// all_effects = [
-	// 	...loadout_weapon_views.flatMap((weapon) => weapon.effects),
-	// 	...dedupeMatEffs(loadout_matrix_views.flatMap((matrix) => matrix.effects)),
-	// 	...loadout_resonance_effects
-	// ];
 }
 
 // creates gearView and updates loadout_resonance_stat
@@ -514,12 +504,4 @@ export async function updateWeaponMatrix() {
 
 	// ... and matrices
 	await updateMatrixViews();
-
-	// loadout_weapmat_combined = loadout_weapon_views.map((item, i) => [item, loadout_matrix_views[i]]);
-
-	// all_effects = [
-	// 	...loadout_weapon_views.flatMap((weapon) => weapon.effects),
-	// 	...dedupeMatEffs(loadout_matrix_views.flatMap((matrix) => matrix.effects)),
-	// 	...loadout_resonance_effects
-	// ];
 }
