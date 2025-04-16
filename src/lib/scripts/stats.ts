@@ -407,7 +407,6 @@ export class StatCollection {
 				(parseInt(final_stats[i + 3]) / (base_atk_stats[i] + this.get(KEYS_ATK[i])) -
 					(1 + this.get(KEYS_ATK_PERCENT[i]) / 100)) *
 				100;
-			console.log('base', base_atk_stats[i], 'final', final_stats[i + 3]);
 		}
 
 		return new StatCollection(new_data);
