@@ -1,5 +1,15 @@
 import { writable } from 'svelte/store';
-import type { AllLoadouts, GearView, UserGear } from '../types/index';
+import type {
+	AllLoadouts,
+	GearView,
+	MatrixView,
+	ResoEffect,
+	ResoTriggerCounts,
+	UserGear,
+	Weapon,
+	WeaponView
+} from '../types/index';
+import { StatCollection } from './stats';
 
 export const scroll_y = writable<number>(0);
 export const is_mobile = writable<boolean>(false);
@@ -12,3 +22,9 @@ export const user_loadouts = writable<AllLoadouts>({});
 
 export const current_loadout = writable<string>('');
 export const gear_views = writable<GearView[]>([]);
+export const base_weapons = writable<Weapon[]>([]);
+export const reso_counts = writable<ResoTriggerCounts>({});
+export const reso_effects = writable<ResoEffect[]>([]);
+export const reso_stat = writable<StatCollection>(new StatCollection());
+export const weapon_views = writable<WeaponView[]>([]);
+export const matrix_views = writable<MatrixView[]>([]);
