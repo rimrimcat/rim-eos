@@ -1,0 +1,7 @@
+{
+	"id": "asurada-4p-weap",
+	"stats": {
+		"final_dmg_percent": [16, 19, 22, 25]
+	},
+	"require_weapon": "asurada"
+}

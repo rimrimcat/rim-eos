@@ -1,0 +1,11 @@
+{
+	"id": "brevey-4p",
+	"name": "Brevey 4P",
+	"effects": [
+		"brevey-2p",
+		"brevey-2p-discharge",
+		"brevey-4p-bene",
+		"brevey-4p-nonbene",
+		"brevey-4p-weap"
+	]
+}

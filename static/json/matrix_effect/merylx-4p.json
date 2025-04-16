@@ -1,0 +1,7 @@
+{
+	"id": "merylx-4p",
+	"stats": {
+		"volt_atk_percent": [21, 24, 27, 30]
+	},
+	"require_weapon": "merylx"
+}

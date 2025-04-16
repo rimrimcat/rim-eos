@@ -1,0 +1,5 @@
+{
+	"id": "antoria-4p",
+	"name": "Antoria 4P",
+	"effects": ["antoria-2p", "antoria-4p", "antoria-4p-weap"]
+}

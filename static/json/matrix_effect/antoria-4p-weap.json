@@ -1,0 +1,7 @@
+{
+	"id": "antoria-4p-weap",
+	"stats": {
+		"final_dmg_percent": [12, 12, 12, 12]
+	},
+	"require_weapon": "antoria"
+}

@@ -1,0 +1,11 @@
+{
+	"id": "merylx-4p",
+	"name": "Meryl X 4P",
+	"effects": [
+		"merylx-2p",
+		"merylx-2p-static",
+		"merylx-4p",
+		"merylx-4p-fort",
+		"merylx-4p-fort-debuff"
+	]
+}

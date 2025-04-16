@@ -1,0 +1,7 @@
+{
+	"id": "claudiax-4p-weap",
+	"stats": {
+		"final_dmg_percent": [22, 22, 22, 22]
+	},
+	"require_weapon": "claudiax"
+}
