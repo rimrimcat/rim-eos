@@ -787,7 +787,7 @@
 											<img
 												src="./weapon/{weapon.id}.webp"
 												alt={weapon.name}
-												style="height:8rem; width:8rem;"
+												style="height:8rem; width:8rem; {weapon.id === 'none' ? 'opacity: 0;' : ''}"
 											/>
 										</button>
 									</div>

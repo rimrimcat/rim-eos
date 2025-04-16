@@ -2,6 +2,7 @@
 	import { AllMatrixIds, AllWeaponIds } from '$lib/generated/all-ids';
 	import { getMatrix, getWeapon } from '$lib/scripts/json-loader';
 	import type { MatrixIds, WeaponsIds } from '$lib/types/index';
+	import { XIcon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
@@ -40,11 +41,7 @@
 								}}
 							>
 								{#if matrix.id === 'none'}
-									<img
-										src="./matrix/none.webp"
-										alt="Matrix"
-										style="height:6rem; width:6rem; filter: grayscale(100%)"
-									/>
+									<XIcon size="6rem" color="var(--text-color)" />
 								{:else}
 									{@render matrix4p(matrix.id)}
 								{/if}
@@ -68,11 +65,15 @@
 									open = false;
 								}}
 							>
-								<img
-									src="./weapon/{weapon.id}.webp"
-									alt="Weapon"
-									style="height:6rem; width:6rem;"
-								/>
+								{#if weapon.id === 'none'}
+									<XIcon size="6rem" color="var(--text-color)" />
+								{:else}
+									<img
+										src="./weapon/{weapon.id}.webp"
+										alt="Weapon"
+										style="height:6rem; width:6rem;"
+									/>
+								{/if}
 							</button>
 						</div>
 						<div class="horizontal center" style="margin-top: 0.5rem;">

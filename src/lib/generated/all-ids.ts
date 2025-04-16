@@ -55,5 +55,5 @@ export const AllResoEffectIds: ResoEffectsIds[] = [
 	'phys',
 	'volt'
 ];
-export const AllMatrixIds: MatrixIds[] = ['asuka-4p', 'grayfox-4p', 'nanyin-4p', 'nola-4p', 'none'];
-export const AllWeaponIds: WeaponsIds[] = ['asuka', 'grayfox', 'nanyin', 'nola', 'none'];
+export const AllMatrixIds: MatrixIds[] = ['none', 'asuka-4p', 'grayfox-4p', 'nanyin-4p', 'nola-4p'];
+export const AllWeaponIds: WeaponsIds[] = ['none', 'asuka', 'grayfox', 'nanyin', 'nola'];

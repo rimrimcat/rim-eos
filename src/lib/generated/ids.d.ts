@@ -44,5 +44,5 @@ export type ResoEffectsIds =
 	| 'nanyin'
 	| 'phys'
 	| 'volt';
-export type WeaponsIds = 'asuka' | 'grayfox' | 'nanyin' | 'nola' | 'none';
-export type MatrixIds = 'asuka-4p' | 'grayfox-4p' | 'nanyin-4p' | 'nola-4p' | 'none';
+export type WeaponsIds = 'none' | 'asuka' | 'grayfox' | 'nanyin' | 'nola';
+export type MatrixIds = 'none' | 'asuka-4p' | 'grayfox-4p' | 'nanyin-4p' | 'nola-4p';
