@@ -26,12 +26,12 @@
 	let grouping_fcn_index: number = $state(0);
 	const GROUPING_FUNCTION_NAMES = ['Source', 'Character', 'Character-Source'];
 	const GROUPING_FUNCTIONS: ((eff: TaggedEffect) => string)[] = [
-		(eff: TaggedEffect) => (eff.is_weapon ? 'Weapon' : eff.is_matrix ? 'Matrix' : 'Reso'), // source
-		(eff: TaggedEffect) => eff.character ?? 'none', // character
+		(eff: TaggedEffect) => (eff.is_weapon ? 'Weapon' : eff.is_matrix ? 'Matrix' : 'Reso'),
+		(eff: TaggedEffect) => eff.character ?? 'none',
 		(eff: TaggedEffect) =>
 			eff.character
 				? `${eff.character}-${eff.is_weapon ? 'weapon' : eff.is_matrix ? 'matrix' : ''}`
-				: 'others' // character-source
+				: 'others'
 	];
 
 	let pin_axis = $state(false);
