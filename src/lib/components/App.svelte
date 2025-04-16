@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { loadStatConstants } from '$lib/scripts/json-loader';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
+	import { updateWeaponMatrix } from '$lib/scripts/loadout';
 	import {
 		current_loadout,
 		font_size,
@@ -76,6 +77,9 @@
 			$gear_views = gearViews;
 			console.log('Done processing user_gears');
 		});
+
+		// create gear and matrix views
+		await updateWeaponMatrix();
 	});
 </script>
 

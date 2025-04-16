@@ -499,7 +499,7 @@ export async function updateSingleMatrixView(index: number) {
 }
 
 // creates gearView and updates loadout_resonance_stat
-export async function updateAll() {
+export async function updateWeaponMatrix() {
 	// update base weapons
 	await updateBaseWeapons();
 
