@@ -303,27 +303,21 @@ export class StatCollection {
 	}
 
 	/**
-	 * Calculates the base stat assuming that this (StatCollection) encompasses all buffs.
+	 * Calculates the base stat assuming that this encompasses all buffs.
 	 * @param {string[]} final_stats - Stats as seen on the character screen.
 	 * @returns Calculated base stats
 	 */
-	calc_base_from(final_stats: string[]): number[] {
-		if (Object.keys(this.data).length === 0) {
-			return final_stats.map((value) => parseFloat(value));
-		}
-
+	calc_loadout_base_stats(final_stats: string[]): number[] {
 		// value correspond to index in StatGearFinal
 		const base_stats: number[] = [];
 
 		for (let i = 0; i < final_stats.length; i++) {
 			switch (i) {
 				case 0: // hp
-					base_stats.push(
-						parseInt(final_stats[i]) / (1 + this.get('hp_percent') / 100) - this.get('hp')
-					);
+					base_stats.push(parseInt(final_stats[i]) / (1 + this.get('hp_percent') / 100));
 					break;
 				case 1: // crit
-					base_stats.push(parseInt(final_stats[i]) - this.get('crit'));
+					base_stats.push(parseInt(final_stats[i]));
 					break;
 				case 2: // crit_percent
 					base_stats.push(parseFloat(final_stats[i]) - this.get('crit_percent'));
@@ -331,35 +325,30 @@ export class StatCollection {
 				case 3: // phys_atk
 					base_stats.push(
 						parseInt(final_stats[i]) /
-							(1 + this.get('phys_atk_percent') / 100 + this.get('atk_percent') / 100) -
-							(this.get('phys_atk') + this.get('atk'))
+							(1 + this.get('phys_atk_percent') / 100 + this.get('atk_percent') / 100)
 					);
 					break;
 				case 4: // flame_atk
 					base_stats.push(
 						parseInt(final_stats[i]) /
-							(1 + this.get('flame_atk_percent') / 100 + this.get('atk_percent') / 100) -
-							(this.get('flame_atk') + this.get('atk'))
+							(1 + this.get('flame_atk_percent') / 100 + this.get('atk_percent') / 100)
 					);
 					break;
 				case 5: // frost_atk
 					base_stats.push(
 						parseInt(final_stats[i]) /
-							(1 + this.get('frost_atk_percent') / 100 + this.get('atk_percent') / 100) -
-							(this.get('frost_atk') + this.get('atk'))
+							(1 + this.get('frost_atk_percent') / 100 + this.get('atk_percent') / 100)
 					);
 					break;
 				case 6: // volt_atk
 					base_stats.push(
 						parseInt(final_stats[i]) /
-							(1 + this.get('volt_atk_percent') / 100 + this.get('atk_percent') / 100) -
-							(this.get('volt_atk') + this.get('atk'))
+							(1 + this.get('volt_atk_percent') / 100 + this.get('atk_percent') / 100)
 					);
 					break;
 				case 7: {
-					// alt_atk
-					const alt_atk = Math.max(...base_stats.slice(3, 7));
-					base_stats.push(alt_atk / (1 + this.get('alt_atk_percent') / 100) - this.get('alt_atk'));
+					// alt_atk, shouldnt matter anyway
+					base_stats.push(Math.max(...base_stats.slice(3, 7)));
 					break;
 				}
 				case 8: // end
@@ -372,19 +361,19 @@ export class StatCollection {
 					base_stats.push(parseFloat(final_stats[i]) - this.get('crit_dmg_percent'));
 					break;
 				case 11: // phys_res
-					base_stats.push(parseInt(final_stats[i]) - this.get('phys_res') - this.get('res'));
+					base_stats.push(parseInt(final_stats[i]) / (1 + this.get('phys_res_percent') / 100));
 					break;
 				case 12: // flame_res
-					base_stats.push(parseInt(final_stats[i]) - this.get('flame_res') - this.get('res'));
+					base_stats.push(parseInt(final_stats[i]) / (1 + this.get('flame_res_percent') / 100));
 					break;
 				case 13: // frost_res
-					base_stats.push(parseInt(final_stats[i]) - this.get('frost_res') - this.get('res'));
+					base_stats.push(parseInt(final_stats[i]) / (1 + this.get('frost_res_percent') / 100));
 					break;
 				case 14: // volt_res
-					base_stats.push(parseInt(final_stats[i]) - this.get('volt_res') - this.get('res'));
+					base_stats.push(parseInt(final_stats[i]) / (1 + this.get('volt_res_percent') / 100));
 					break;
 				case 15: // alt_res
-					base_stats.push(parseInt(final_stats[i]) - this.get('alt_res') - this.get('res'));
+					base_stats.push(parseInt(final_stats[i]) / (1 + this.get('alt_res_percent') / 100));
 					break;
 			}
 		}

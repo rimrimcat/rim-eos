@@ -1,7 +1,15 @@
 <script lang="ts">
 	import { TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader';
+	import { dedupeMatEffs } from '$lib/scripts/loadout';
 	import { STAT_LABELS, StatCollection } from '$lib/scripts/stats';
-	import { current_loadout, gear_views, user_loadouts } from '$lib/scripts/stores';
+	import {
+		current_loadout,
+		gear_views,
+		matrix_views,
+		reso_effects,
+		user_loadouts,
+		weapon_views
+	} from '$lib/scripts/stores';
 	import type { CharacterStat, ValidGearPart } from '$lib/types/index';
 	import { ShirtIcon, SlashIcon, SwordIcon } from '@lucide/svelte';
 	import type { Component } from 'svelte';
@@ -49,6 +57,29 @@
 				stat_col = stat_col.add(new_stat);
 			}
 		}
+
+		return stat_col;
+	}
+
+	function getWeaponTotal() {
+		let stat_col = new StatCollection();
+
+		const all_effects = [
+			...$weapon_views.flatMap((weapon) => weapon.effects),
+			...dedupeMatEffs($matrix_views.flatMap((matrix) => matrix.effects)),
+			...$reso_effects
+		];
+		all_effects.forEach((eff) => {
+			stat_col = stat_col.add(new StatCollection(eff.stats));
+		});
+
+		// add base stats
+		$weapon_views.forEach((weapon) => {
+			stat_col = stat_col.add(weapon.base_stat);
+		});
+
+		console.log('WEAPON_PERCENTS', stat_col);
+
 		return stat_col;
 	}
 
@@ -56,14 +87,28 @@
 		if (btn === 'Finalize') {
 			// save adjusted stats
 			// lets see what was calculated
-			const extra_stat = getGearTotal().calc_extra_atk_from(
+			let stat_col = new StatCollection();
+
+			if (adjust_for_gear) {
+				stat_col = stat_col.add(getGearTotal());
+			}
+
+			if (adjust_for_weapon) {
+				stat_col = stat_col.add(getWeaponTotal());
+			}
+
+			// extra_stat comes from other sources that idk
+			// will be saved for stat adjustment
+			const extra_stat = stat_col.calc_extra_atk_from(
 				unadjusted_stats,
 				manual_base_atk_inputs.map((value) => {
 					return parseInt(value) || 0;
 				})
 			);
 
-			console.log('Calculated extra_stat:', extra_stat);
+			console.log('EXTRA_STATS', extra_stat);
+
+			// TODO: calculate real base atk stats
 		} else {
 			open = false;
 		}
@@ -83,8 +128,16 @@
 		if (adjust_for_gear) {
 			stat_col = stat_col.add(getGearTotal());
 		}
+		if (adjust_for_weapon) {
+			stat_col = stat_col.add(getWeaponTotal());
+		}
+		// if adjust for mia...
+		// if adjust for blade shot...
+		// if adjust for enhanced blade shot...
 
-		adj_raw_attributes = stat_col.calc_base_from(unadjusted_stats);
+		console.log('COMBINED_PERCENTS', stat_col);
+
+		adj_raw_attributes = stat_col.calc_loadout_base_stats(unadjusted_stats);
 	});
 
 	$inspect('unadjusted stats', unadjusted_stats);
