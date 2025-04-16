@@ -914,6 +914,7 @@
 <SwitchWeapMatrix
 	bind:open={switch_gear_matrix_dialog_open}
 	bind:switching
+	bind:user_weapons
 	{onSwitchMatrix}
 	{onSwitchWeapon}
 />
