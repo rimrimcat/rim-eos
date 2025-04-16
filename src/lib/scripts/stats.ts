@@ -256,6 +256,12 @@ export class StatCollection {
 		this.data[stat] = value;
 	}
 
+	pop(stat: StatKey) {
+		const value = this.data[stat];
+		delete this.data[stat];
+		return value;
+	}
+
 	clone_data(): StatData {
 		return { ...this.data };
 	}
