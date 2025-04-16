@@ -598,7 +598,7 @@
 		// console.log('Equipped', equip);
 		// console.log('Text has equip', txt[0].includes('equipped'));
 		// console.log('Part is null', $user_loadouts[$current_loadout].equipped_gear[part] === null);
-		// console.log('TEXT', txt);
+		console.log('TEXT', txt);
 
 		const newGear: UserGear = {
 			id,
@@ -639,6 +639,12 @@
 			console.error('I CANT FIND RANDOM STATS!');
 			console.error('Perhaps I should go for reverse order...');
 			console.error('(I havent encountered this yet)');
+			return;
+		}
+
+		if (foundStats < 4) {
+			console.error('Found less than 4 stats!');
+			process_text = 'Failed to OCR!';
 			return;
 		}
 
