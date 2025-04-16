@@ -265,7 +265,8 @@
 					advancement,
 					loadout_reso_counts,
 					effects,
-					stat_
+					stat_,
+					user_weapons
 				);
 				const stat = stat_[0];
 
@@ -363,7 +364,8 @@
 			advancement,
 			loadout_reso_counts,
 			effects,
-			stat_
+			stat_,
+			user_weapons
 		);
 		const stat = stat_[0];
 

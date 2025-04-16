@@ -6,6 +6,7 @@ import type {
 	ResoEffect,
 	ResoEffectsIds,
 	ResoTriggerCounts,
+	UserWeapon,
 	WeaponEffect,
 	WeaponEffectsIds
 } from '../types/index';
@@ -15,17 +16,20 @@ import { StatCollection } from './stats';
 function checkValidEffect(
 	eff: WeaponEffect,
 	reso_counts_: ResoTriggerCounts,
-	advancement: number
+	advancement: number,
+	user_weapons_?: UserWeapon[]
 ): boolean;
 function checkValidEffect(
 	eff: MatrixEffect,
 	reso_counts_: ResoTriggerCounts,
-	advancement: number
+	advancement: number,
+	user_weapons_: UserWeapon[]
 ): boolean;
 function checkValidEffect(
 	eff: WeaponEffect | MatrixEffect | BaseEffect,
 	reso_counts_: ResoTriggerCounts,
-	advancement?: number
+	advancement?: number,
+	user_weapons_?: UserWeapon[]
 ): boolean {
 	// check if required reso is fulfilled
 	if (eff.require_reso) {
@@ -37,6 +41,14 @@ function checkValidEffect(
 
 	// check if required adv is fulfilled
 	if (advancement && 'require_adv' in eff && eff.require_adv && advancement < eff.require_adv) {
+		return false;
+	}
+
+	if (
+		eff.require_weapon &&
+		user_weapons_ &&
+		!user_weapons_.some((weapon) => weapon.id === eff.require_weapon)
+	) {
 		return false;
 	}
 
@@ -96,13 +108,14 @@ export async function pushAllValidMatrixEffects(
 	advancement: number,
 	reso_counts_: ResoTriggerCounts,
 	effects_: MatrixFinalEffect[],
-	stat_: StatCollection[]
+	stat_: StatCollection[],
+	user_weapons_: UserWeapon[]
 ) {
 	await Promise.all(
 		effs.map(async (eff_) => {
 			const eff = await getMatrixEffect(eff_);
 
-			if (!checkValidEffect(eff, reso_counts_, advancement)) {
+			if (!checkValidEffect(eff, reso_counts_, advancement, user_weapons_ ?? [])) {
 				return;
 			}
 

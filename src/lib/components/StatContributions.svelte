@@ -23,7 +23,7 @@
 	} = $props();
 
 	// options
-	let grouping_type: 'source' | 'character' = $state('source');
+	let grouping_type: 'source' | 'character' = $state('character');
 	const SOURCE_GROUPING = (eff: TaggedEffect) =>
 		eff.is_weapon ? 'Weapon' : eff.is_matrix ? 'Matrix' : 'Reso';
 	const CHARACTER_GROUPING = (eff: TaggedEffect) => eff.character ?? 'none';
