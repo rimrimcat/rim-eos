@@ -1,3 +1,4 @@
+import { eval as evil, parse } from '@casbin/expression-eval';
 import type {
 	BaseEffect,
 	MatrixEffect,
@@ -126,12 +127,15 @@ export async function pushAllValidMatrixEffects(
 				advancement
 			};
 			keys.forEach((key) => {
-				if (typeof eff.stats === 'function') {
-					// @ts-expect-error : key is guaranteed to exist
-					finalEffect.stats[key] = eff.stats(reso_counts_)[key][advancement];
+				// @ts-expect-error: key is guaranteed to exist
+				const expr_or_number: string | number = eff.stats[key][advancement];
+
+				if (typeof expr_or_number === 'string') {
+					// @ts-expect-error: key is guaranteed to exist
+					finalEffect.stats[key] = evil(parse(expr_or_number), reso_counts_);
 				} else {
-					// @ts-expect-error : key is guaranteed to exist
-					finalEffect.stats[key] = eff.stats[key][advancement];
+					// @ts-expect-error: key is guaranteed to exist
+					finalEffect.stats[key] = expr_or_number;
 				}
 			});
 
