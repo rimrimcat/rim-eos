@@ -888,7 +888,7 @@
 					</div>
 				{/each}
 			</div>
-			{#if $inner_width > 600}
+			{#if chart_width > 350}
 				<div class="vertical" style="margin-left: 2rem;">
 					<StatContributions bind:all_effects bind:chart_width />
 				</div>
