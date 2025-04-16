@@ -55,7 +55,7 @@
 				{/await}
 			{/each}
 		{:else if switching === 'weapon'}
-			{#each AllWeaponIds.filter((id) => !user_weapons.some((weapon) => weapon.id === id)) as weapon_id}
+			{#each AllWeaponIds.filter((id) => id === 'none' || !user_weapons.some((weapon) => weapon.id === id)) as weapon_id}
 				{#await getWeapon(weapon_id) then weapon}
 					<div class="matrix-item vertical center" style="width: 8rem; height: 8rem;">
 						<div class="compose below border" style="width: 6rem; height: 6rem;">
