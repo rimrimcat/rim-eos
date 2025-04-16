@@ -202,7 +202,7 @@
 		UserGear,
 		ValidGearPart
 	} from '$lib/types/index';
-	import { eval as evall, parse } from '@casbin/expression-eval';
+	import { eval as evil, parse } from '@casbin/expression-eval';
 	import {
 		CaseSensitiveIcon,
 		DiamondIcon,
@@ -696,12 +696,7 @@
 
 			// @ts-expect-error
 			const new_query = query.replace(ALL_STATS_REGEX, (match) => variables[match].toString());
-
-			console.log('query', new_query);
-			const expr = parse(new_query);
-			console.log('EXPR', expr);
-			const result = evall(expr, {});
-			console.log('result', result);
+			const result = evil(parse(new_query), {});
 
 			if (result) {
 				search_views.push({
