@@ -64,7 +64,12 @@ function checkValidEffect(
 	}
 
 	// check if required adv is fulfilled
-	if (advancement && 'require_adv' in eff && eff.require_adv && advancement < eff.require_adv) {
+	if (
+		advancement !== undefined &&
+		'require_adv' in eff &&
+		eff.require_adv &&
+		advancement < eff.require_adv
+	) {
 		return false;
 	}
 
@@ -290,12 +295,12 @@ export async function updateWeaponViews() {
 	weapon_views.set(
 		await Promise.all(
 			get(base_weapons).map(async (weapon, index) => {
-				const advancement = user_weapons[index].advancement ?? 6;
+				const advancement = user_weapons[index].advancement ?? 0;
 
 				// get base stat of weapon
 				const _base_stat: { [key in StatKey]?: number } = {};
 				Object.entries(WEAPON_BASE_STATS[weapon.base_stat]).forEach(([stat, value]) => {
-					_base_stat[stat as StatKey] = value[0] + ((value[1] - value[0]) * (advancement - 1)) / 5;
+					_base_stat[stat as StatKey] = value[0] + ((value[1] - value[0]) * advancement) / 6;
 				});
 				const base_stat = new StatCollection(_base_stat);
 
@@ -358,7 +363,7 @@ export async function updateMatrixViews() {
 	matrix_views.set(
 		await Promise.all(
 			selected_loadout.equipped_matrices.map(async (matrix) => {
-				const advancement = matrix.advancement ?? 3;
+				const advancement = matrix.advancement ?? 0;
 
 				const effects: MatrixFinalEffect[] = [];
 				const stat_ = [new StatCollection()];
@@ -390,12 +395,14 @@ export async function updateSingleWeaponView(index: number) {
 	const weapon = get(base_weapons)[index];
 	const user_weapons = get(user_loadouts)[get(current_loadout)].equipped_weapons;
 	const loadout_reso_counts = get(reso_counts);
-	const advancement = user_weapons[index].advancement ?? 6;
+	const advancement = user_weapons[index].advancement ?? 0;
+
+	console.log('THIS WEAP ADV:', advancement);
 
 	// get base stat of weapon
 	const _base_stat: { [key in StatKey]?: number } = {};
 	Object.entries(WEAPON_BASE_STATS[weapon.base_stat]).forEach(([stat, value]) => {
-		_base_stat[stat as StatKey] = value[0] + ((value[1] - value[0]) * (advancement - 1)) / 5;
+		_base_stat[stat as StatKey] = value[0] + ((value[1] - value[0]) * advancement) / 6;
 	});
 	const base_stat = new StatCollection(_base_stat);
 
@@ -410,6 +417,7 @@ export async function updateSingleWeaponView(index: number) {
 		effects,
 		stat_
 	);
+
 	const setting_ids = user_weapons[index].setting ?? weapon.setting?.default ?? [];
 	const setting: WeaponSettingStuff[] = setting_ids.map((setting_) => {
 		// @ts-expect-error: it oke
@@ -449,21 +457,13 @@ export async function updateSingleWeaponView(index: number) {
 		stat
 	} as WeaponView;
 	weapon_views.set(loadout_weapon_views);
-
-	// loadout_weapmat_combined[index][0] = loadout_weapon_views[index];
-
-	// all_effects = [
-	// 	...loadout_weapon_views.flatMap((weapon) => weapon.effects),
-	// 	...dedupeMatEffs(loadout_matrix_views.flatMap((matrix) => matrix.effects)),
-	// 	...loadout_resonance_effects
-	// ];
 }
 
 export async function updateSingleMatrixView(index: number) {
 	const selected_loadout = get(user_loadouts)[get(current_loadout)];
 	const user_matrices = selected_loadout.equipped_matrices;
 	const matrix = user_matrices[index];
-	const advancement = matrix.advancement ?? 3;
+	const advancement = matrix.advancement ?? 0;
 
 	const effects: MatrixFinalEffect[] = [];
 	const stat_ = [new StatCollection()];

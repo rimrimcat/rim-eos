@@ -291,6 +291,12 @@
 			loadout_image = await getImageUrlFromDB($current_loadout);
 		}
 	});
+
+	// $inspect('weapmatcomb', loadout_weapmat_combined);
+	// $inspect(
+	// 	'all effects anka',
+	// 	all_effects.filter((eff) => eff.id.includes('anka'))
+	// );
 </script>
 
 {#snippet matrix4p(matrix: MatrixView)}
