@@ -23,10 +23,16 @@
 	} = $props();
 
 	// options
-	let grouping_type: 'source' | 'character' = $state('character');
-	const SOURCE_GROUPING = (eff: TaggedEffect) =>
-		eff.is_weapon ? 'Weapon' : eff.is_matrix ? 'Matrix' : 'Reso';
-	const CHARACTER_GROUPING = (eff: TaggedEffect) => eff.character ?? 'none';
+	let grouping_fcn_index: number = $state(0);
+	const GROUPING_FUNCTION_NAMES = ['Source', 'Character', 'Character-Source'];
+	const GROUPING_FUNCTIONS: ((eff: TaggedEffect) => string)[] = [
+		(eff: TaggedEffect) => (eff.is_weapon ? 'Weapon' : eff.is_matrix ? 'Matrix' : 'Reso'), // source
+		(eff: TaggedEffect) => eff.character ?? 'none', // character
+		(eff: TaggedEffect) =>
+			eff.character
+				? `${eff.character}-${eff.is_weapon ? 'weapon' : eff.is_matrix ? 'matrix' : ''}`
+				: 'others' // character-source
+	];
 
 	let pin_axis = $state(false);
 	let curr_axis = $state([0, 0]);
@@ -36,7 +42,9 @@
 
 	// stuff
 	let key_filter = $state((key: StatKey) => !key.includes('_res_percent'));
-	let grouping_fcn: (eff: TaggedEffect) => string = $state(CHARACTER_GROUPING);
+	let grouping_fcn: (eff: TaggedEffect) => string = $derived(
+		GROUPING_FUNCTIONS[grouping_fcn_index]
+	);
 
 	type ETags = {
 		character?: WeaponsIds;
@@ -107,14 +115,6 @@
 				Object.entries(eff.stats).map(([key, value]) => [key, -value])
 			) as StatData
 		};
-	}
-
-	function updateGrouping() {
-		if (grouping_type === 'character') {
-			grouping_fcn = CHARACTER_GROUPING;
-		} else {
-			grouping_fcn = SOURCE_GROUPING;
-		}
 	}
 
 	function getDiff(prev_eff: TaggedEffect[], curr_eff: TaggedEffect[]): TaggedEffect[] {
@@ -234,12 +234,13 @@
 		class="border"
 		id="stat-grouping"
 		onclick={() => {
-			grouping_type = grouping_type === 'character' ? 'source' : 'character';
-			updateGrouping();
+			grouping_fcn_index = (grouping_fcn_index + 1) % GROUPING_FUNCTIONS.length;
 		}}
 	>
 		<GroupIcon />
-		<label class="in-button" for="stat-grouping">Grouping: {grouping_type}</label>
+		<label class="in-button" for="stat-grouping"
+			>Grouping: {GROUPING_FUNCTION_NAMES[grouping_fcn_index]}</label
+		>
 	</button>
 	<button
 		class="border"
