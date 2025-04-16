@@ -1,0 +1,8 @@
+{
+	"id": "antoria",
+	"name": "Antoria",
+	"base_stat": "crit-med",
+	"resonances": ["volt", "atk", "frost", "force-impact"],
+	"effects": ["antoria-a3", "antoria-skill", "antoria-a6-skill"],
+	"reso_effects": ["volt", "frost"]
+}

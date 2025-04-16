@@ -42,6 +42,9 @@ export type WeaponEffect = BaseEffect & {
 	id: WeaponEffectsIds;
 	stats: StatData;
 	require_adv?: number; // required advancement (esp. for weapons)
+	require_adv_not?: number; // for advancement that modifies original effects
+	require_boss?: boolean; // effects that only activate against bosses
+	require_offhand?: boolean; // effects that only activate when offhand
 };
 
 export type ResoEffect = BaseEffect & {

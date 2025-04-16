@@ -1,0 +1,7 @@
+{
+	"id": "claudiax-skill",
+	"stats": {
+		"phys_dmg_percent": 12
+	},
+	"require_adv_not": 6
+}

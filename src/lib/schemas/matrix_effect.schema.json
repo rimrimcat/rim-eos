@@ -60,8 +60,14 @@
     },
     "require_weapon": {
       "enum": [
+        "anka",
+        "antoria",
         "asuka",
+        "asurada",
+        "brevey",
+        "claudiax",
         "grayfox",
+        "merylx",
         "nanyin",
         "nola",
         "none"

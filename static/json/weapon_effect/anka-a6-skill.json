@@ -1,0 +1,7 @@
+{
+	"id": "anka-a6-skill",
+	"stats": {
+		"final_dmg_percent": 35
+	},
+	"require_adv": 6
+}

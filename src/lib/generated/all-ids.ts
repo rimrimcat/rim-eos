@@ -9,13 +9,32 @@ import type {
 } from './ids';
 
 export const AllWeaponEffectIds: WeaponEffectsIds[] = [
+	'anka-a3',
+	'anka-a6-skill',
+	'anka-skill',
+	'antoria-a3',
+	'antoria-a6-skill',
+	'antoria-skill',
 	'asuka-a6-fort',
 	'asuka-a6',
 	'asuka-skill',
+	'asurada-a6-skill',
+	'asurada-skill',
+	'brevey-a3-nonbene',
+	'brevey-a6-link',
+	'brevey-a6',
+	'brevey-link',
+	'brevey-skill-offhand',
+	'brevey-skill',
+	'claudiax-a6-skill',
+	'claudiax-skill',
 	'grayfox-a3-buff',
 	'grayfox-a3-debuff',
 	'grayfox-a6',
 	'grayfox-skill',
+	'merylx-a5',
+	'merylx-discharge',
+	'merylx-skill-fort',
 	'nanyin-a5',
 	'nanyin-a6',
 	'nanyin-inhabit',
@@ -90,4 +109,16 @@ export const AllMatrixIds: MatrixIds[] = [
 	'nanyin-4p',
 	'nola-4p'
 ];
-export const AllWeaponIds: WeaponsIds[] = ['none', 'asuka', 'grayfox', 'nanyin', 'nola'];
+export const AllWeaponIds: WeaponsIds[] = [
+	'none',
+	'anka',
+	'antoria',
+	'asuka',
+	'asurada',
+	'brevey',
+	'claudiax',
+	'grayfox',
+	'merylx',
+	'nanyin',
+	'nola'
+];
