@@ -772,7 +772,10 @@
 									class="compose below border"
 									style="width: 8rem; height: 8rem; margin-top: 0.4rem;"
 								>
-									<div class="compose above" style="top:-0.5rem">
+									<div
+										class="compose above"
+										style="top:{weapon.id === 'none' ? '0rem' : '-0.5rem'}"
+									>
 										<button
 											class="image"
 											onclick={() => {
@@ -837,7 +840,7 @@
 												</button>
 											{/each}
 										</div>
-									{:else}
+									{:else if weapon.id !== 'none'}
 										<div class="compose above" style="top: 0.5rem; left: 0.5rem">
 											<StatIcon
 												stat={weapon.resonances[0] as LoadoutType}
@@ -847,27 +850,29 @@
 										</div>
 									{/if}
 
-									{#each [1, 2, 3, 4, 5, 6] as advSetValue, advIndex}
-										<button
-											class="image"
-											onclick={() => {
-												if (weapon.advancement === advSetValue) {
-													user_weapons[index].advancement = 0;
-												} else {
-													user_weapons[index].advancement = advSetValue;
-												}
-												saveWeaponMatrixLoadout();
-												updateSingleWeaponView(index);
-											}}
-										>
-											<div class="compose-above" style="top: 6.5rem; left:{1 + advIndex}rem">
-												<StarIcon
-													size={$font_size}
-													fill={weapon.advancement >= advSetValue ? 'white' : 'none'}
-												/>
-											</div>
-										</button>
-									{/each}
+									{#if weapon.id !== 'none'}
+										{#each [1, 2, 3, 4, 5, 6] as advSetValue, advIndex}
+											<button
+												class="image"
+												onclick={() => {
+													if (weapon.advancement === advSetValue) {
+														user_weapons[index].advancement = 0;
+													} else {
+														user_weapons[index].advancement = advSetValue;
+													}
+													saveWeaponMatrixLoadout();
+													updateSingleWeaponView(index);
+												}}
+											>
+												<div class="compose-above" style="top: 6.5rem; left:{1 + advIndex}rem">
+													<StarIcon
+														size={$font_size}
+														fill={weapon.advancement >= advSetValue ? 'white' : 'none'}
+													/>
+												</div>
+											</button>
+										{/each}
+									{/if}
 								</div>
 							</div>
 
