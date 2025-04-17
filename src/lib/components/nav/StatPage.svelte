@@ -1,14 +1,12 @@
 <script lang="ts">
-	import ActionToolbar from '$lib/components/ActionToolbar.svelte';
 	import StatAdjust from '$lib/components/dialog/StatAdjust.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
 	import { saveObject } from '$lib/scripts/loader.ts';
 	import { createAttributeView } from '$lib/scripts/loadout';
-	import { ActionType } from '$lib/scripts/nav-metadata';
 	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
 	import type { BaseStats14, BaseStats16, CharacterStat } from '$lib/types/index';
-	import { ChartNoAxesColumn, ImagePlus, Trash2 } from '@lucide/svelte';
+	import { ChartNoAxesColumnIcon, ImagePlusIcon } from '@lucide/svelte';
 	import type * as OpenCV from '@techstark/opencv-js';
 	import cv from '@techstark/opencv-js';
 	import { onMount } from 'svelte';
@@ -324,24 +322,6 @@
 		// processAttributes();
 	}
 
-	const ACTIONS = [
-		{
-			id: 'screenshot',
-			label: 'From Screenshot',
-			lucide: ImagePlus,
-			type: ActionType.BUTTON,
-			callback: () => (screenshot_dialog_open = true)
-		},
-		{
-			id: 'adjust',
-			label: 'Adjust Attack Stats',
-			lucide: ChartNoAxesColumn,
-			type: ActionType.BUTTON,
-			callback: () => (stat_adjust_dialog_open = true)
-		},
-		{ id: 'reset', label: 'Reset', lucide: Trash2, type: ActionType.BUTTON, callback: resetStats }
-	];
-
 	onMount(() => {
 		if (Object.keys($user_loadouts).length > 0) {
 			base_stats = $user_loadouts[$current_loadout].base_stats;
@@ -358,8 +338,31 @@
 	<h1>Character Stats</h1>
 
 	{#if unadjusted_stats && unadjusted_stats.length > 0}
-		<p>Unadjusted stats are shown in the table below. Please finish adjustment!</p>
-		<!-- TODO: add stat adjust here -->
+		<p>
+			Unadjusted stats are shown in the table below. Uploaded stats won't be effective until
+			adjustment is done.
+		</p>
+		<div style="margin-bottom: 1.5rem;">
+			<button
+				class="image border"
+				id="stat-adjustment"
+				onclick={() => (stat_adjust_dialog_open = true)}
+			>
+				<ChartNoAxesColumnIcon />
+				<label class="in-button" for="stat-adjustment">Stat Adjustment</label>
+			</button>
+		</div>
+	{:else}
+		<div style="margin-bottom: 1.5rem;">
+			<button
+				class="image border"
+				id="upload-stats"
+				onclick={() => (screenshot_dialog_open = true)}
+			>
+				<ImagePlusIcon />
+				<label class="in-button" for="upload-stats">Upload Stats</label>
+			</button>
+		</div>
 	{/if}
 
 	<FlexGrid
@@ -385,8 +388,7 @@
 								tabindex={10 + index}
 							>
 								{#if unadjusted_stats}
-									<!-- show unadjusted stats if applicable -->
-									{unadjusted_stats[index]}
+									<input type="text" bind:value={unadjusted_stats[index]} style="width: 8ch;" />
 								{:else}
 									{attribute.value}
 								{/if}
@@ -410,7 +412,7 @@
 
 <StatAdjust bind:open={stat_adjust_dialog_open} bind:unadjusted_stats />
 
-<ActionToolbar actions={ACTIONS} />
+<!-- <ActionToolbar actions={ACTIONS} /> -->
 
 <style>
 	.stat-panel {
