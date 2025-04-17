@@ -193,6 +193,7 @@
 	import type {
 		AllLoadouts,
 		AllStats,
+		GearAugment,
 		GearSearchView,
 		GearView,
 		GearViewStatLong,
@@ -249,7 +250,7 @@
 		{ position: 'bottom-right', index: 3 }
 	];
 
-	const OCR_KEY_MAP = {
+	const OCR_RANDOM_STAT_MAP: Record<string, string> = {
 		hp: 'hp',
 		atk: 'atk',
 		crit: 'crit',
@@ -269,7 +270,22 @@
 		'volt resistance': 'volt_res',
 		'physical resistance': 'phys_res',
 		'alt resistance': 'alt_res'
-	} as const;
+	};
+
+	const OCR_AUGMENT_STAT_MAP: Record<string, GearAugment> = {
+		delay: 'delay',
+		'increased healing': 'increased_healing',
+		lifesteal: 'lifesteal',
+		'hp recovery': 'hp_recovery',
+		block: 'block',
+		'damage reduction': 'dmg_reduction',
+		'damage boost': 'dmg_boost',
+		'weak point damage boost': 'weakpoint',
+		'normal attack damage boost': 'normal_atk_dmg_boost',
+		'dodge attack damage boost': 'dodge_atk_dmg_boost',
+		'skill damage boost': 'skill_dmg_boost',
+		'discharge damage boost': 'discharge_dmg_boost'
+	};
 
 	const OCR_PART_MAP: Record<string, GearPart> = {
 		helm: GearPart.HELMET,
@@ -344,6 +360,7 @@
 		let id: number = -1;
 		let part: GearPart = GearPart.UNKNOWN;
 		let hash = '';
+		let augment: [GearAugment, number] | undefined = undefined;
 
 		Object.entries(gear).forEach(([key, value]) => {
 			switch (key) {
@@ -355,6 +372,9 @@
 					hash += value;
 					break;
 				case 'dateAdded':
+					break;
+				case 'augment':
+					augment = value as [GearAugment, number];
 					break;
 				default:
 					const isTitan = key.startsWith('titan_');
@@ -477,7 +497,8 @@
 			stats,
 			hash,
 			derived,
-			isEquipped
+			isEquipped,
+			augment
 		};
 	}
 
@@ -593,6 +614,12 @@
 			$user_loadouts[$current_loadout].equipped_gears[part] === null;
 		const dateAdded = new Date().toISOString();
 
+		const newGear: UserGear = {
+			id,
+			part,
+			dateAdded
+		};
+
 		// console.log('part text clean', partCleanedStr);
 		// console.log('Titan', isTitan);
 		// console.log('Equipped', equip);
@@ -600,24 +627,19 @@
 		// console.log('Part is null', $user_loadouts[$current_loadout].equipped_gear[part] === null);
 		console.log('TEXT', txt);
 
-		const newGear: UserGear = {
-			id,
-			part,
-			dateAdded
-		};
+		const random_stats_index = txt.findIndex((line) => line.includes('random stats'));
+		const augment_stat_index = txt.findIndex((line) => line.includes('augmentation stats'));
 
-		const rsIndex = txt.findIndex((line) => line.includes('random stats'));
 		let foundStats = 0;
-		if (rsIndex) {
-			const statLines = txt.slice(rsIndex + 1);
+		if (random_stats_index) {
+			const statLines = txt.slice(random_stats_index + 1);
 
 			for (let _i = 0; _i < statLines.length; _i++) {
 				const line = statLines[_i];
 
 				const _spl = line.split('+');
 
-				// @ts-expect-error
-				const _base = OCR_KEY_MAP[_spl[0].trim()];
+				const _base = OCR_RANDOM_STAT_MAP[_spl[0].trim()];
 				if (_spl[1] && _base) {
 					const _stat =
 						(isTitan ? 'titan_' : '') + _base + (_spl[1].includes('%') ? '_percent' : '');
@@ -631,9 +653,16 @@
 						console.error('bad OCR or empty line?:', line);
 						continue;
 					}
-					console.log('Found 4 stats, assuming we are done here.');
+
+					console.log('Found all stats, assuming we are done here.');
 					break;
 				}
+			}
+
+			if (foundStats < 4) {
+				console.error('Found less than 4 stats!');
+				process_text = 'Failed to OCR!';
+				return;
 			}
 		} else {
 			console.error('I CANT FIND RANDOM STATS!');
@@ -642,10 +671,20 @@
 			return;
 		}
 
-		if (foundStats < 4) {
-			console.error('Found less than 4 stats!');
-			process_text = 'Failed to OCR!';
-			return;
+		if (augment_stat_index) {
+			const augmentLines = txt.slice(augment_stat_index + 1);
+
+			for (let _i = 0; _i < augmentLines.length; _i++) {
+				const line = augmentLines[_i];
+
+				const _spl = line.split('+');
+				const _base = OCR_AUGMENT_STAT_MAP[_spl[0].trim()];
+				if (_spl[1] && _base) {
+					newGear.augment = [_base, parseInt(_spl[1].trim())];
+					console.log('Found augment.');
+					break;
+				}
+			}
 		}
 
 		addNewGear(newGear, equip);
