@@ -5,6 +5,8 @@ import type {
 	BaseStats14,
 	BaseStats16,
 	CharacterStat,
+	EquippedGear,
+	GearView,
 	MatrixEffect,
 	MatrixEffectsIds,
 	MatrixFinalEffect,
@@ -194,7 +196,7 @@ export function dedupeMatEffs(effects: MatrixFinalEffect[]) {
 	}, [] as MatrixFinalEffect[]);
 }
 
-export async function updateBaseWeapons() {
+export async function updateBaseWeapons_() {
 	base_weapons.set(
 		await Promise.all(
 			get(user_loadouts)[get(current_loadout)].equipped_weapons.map((weapon) =>
@@ -497,7 +499,7 @@ export async function updateSingleMatrixView(index: number) {
 // creates gearView and updates loadout_resonance_stat
 export async function updateWeaponMatrix() {
 	// update base weapons
-	await updateBaseWeapons();
+	await updateBaseWeapons_();
 
 	// create counts of resonance triggers
 	await updateResoCounts();
@@ -550,8 +552,6 @@ export function getWeaponTotal() {
 export function createAttributeView(base_stats_14: BaseStats14): CharacterStat[] {
 	const stat_adj = get(user_loadouts)[get(current_loadout)].stat_adj;
 
-	console.log('BASE14', base_stats_14);
-
 	const total_base_stats = new StatCollection(base_stats_14 as BaseStats14) // base stats
 		.add(new StatCollection(stat_adj ? stat_adj.unaccounted : {})) // unaccounted
 		.add(new StatCollection('atk_percent', stat_adj ? stat_adj.supercompute : 0)) // supercompute
@@ -559,6 +559,7 @@ export function createAttributeView(base_stats_14: BaseStats14): CharacterStat[]
 		.add(getGearTotal()) // gear
 		.add(getWeaponTotal()) // weapon + matrix + reso
 		.to_displayed_stats();
+
 	const base_stats_ = [
 		...total_base_stats.slice(0, 8),
 		'1400',
@@ -581,3 +582,18 @@ export function createAttributeView(base_stats_14: BaseStats14): CharacterStat[]
 		};
 	});
 }
+
+export function getEquippedGearViews(equipped_gears: EquippedGear): GearView[] {
+	const gear_views_ = get(gear_views);
+
+	const equipped_gear_views: GearView[] = [];
+	for (const part in equipped_gears) {
+		const gear_id = equipped_gears[part as ValidGearPart];
+		if (gear_id !== null && gear_id !== -1) {
+			equipped_gear_views.push(gear_views_[gear_id]);
+		}
+	}
+	return equipped_gear_views;
+}
+
+export async function applyExtraGearViewStats() {}

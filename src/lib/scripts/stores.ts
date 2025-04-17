@@ -28,3 +28,5 @@ export const reso_effects = writable<ResoEffect[]>([]);
 export const reso_stat = writable<StatCollection>(new StatCollection());
 export const weapon_views = writable<WeaponView[]>([]);
 export const matrix_views = writable<MatrixView[]>([]);
+export const equipped_gear_views = writable<GearView[]>([]);
+export const all_stats = writable<StatCollection>(new StatCollection());

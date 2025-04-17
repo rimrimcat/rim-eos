@@ -2,9 +2,10 @@
 	import { createGearView } from '$lib/scripts/gears';
 	import { loadStatConstants } from '$lib/scripts/json-loader';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
-	import { updateWeaponMatrix } from '$lib/scripts/loadout';
+	import { getEquippedGearViews, updateWeaponMatrix } from '$lib/scripts/loadout';
 	import {
 		current_loadout,
+		equipped_gear_views,
 		font_size,
 		gear_views,
 		inner_width,
@@ -71,14 +72,22 @@
 
 		// processing
 		await loadStatConstants(); // need this for gear proecssing
+		// create gear views
 		Promise.all($user_gears.map((gear) => createGearView(gear, false))).then((gearViews) => {
 			$gear_views = gearViews;
 			console.log('Done processing user_gears');
 		});
 
-		// create gear and matrix views
+		// create weapon and matrix views
 		await updateWeaponMatrix();
 	});
+
+	// update for equipped_gear_views
+	$effect(() => {
+		$equipped_gear_views = getEquippedGearViews($user_loadouts[$current_loadout].equipped_gears);
+	});
+
+	$inspect('Equipped Gear Views', $equipped_gear_views);
 </script>
 
 <svelte:window bind:innerWidth={$inner_width} />
