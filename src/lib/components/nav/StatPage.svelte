@@ -52,7 +52,7 @@
 		const box_width = Math.round(0.23 * w);
 		const box_height = Math.round(0.047 * h);
 
-		const box_start_x = Math.round(0.061 * w) + off_x;
+		const box_start_x = Math.round(0.062 * w) + off_x;
 		const box_start_y = 0.922 * h + off_y;
 
 		const box_start_x_2 = Math.round(0.625 * w) + off_x;
