@@ -10,7 +10,14 @@
 		user_loadouts,
 		weapon_views
 	} from '$lib/scripts/stores';
-	import type { CharacterStat, ValidGearPart } from '$lib/types/index';
+	import type {
+		AtkStats5,
+		AtkStats5Number,
+		BaseStats14,
+		BaseStats16,
+		CharacterStat,
+		ValidGearPart
+	} from '$lib/types/index';
 	import { ShirtIcon, SlashIcon, SwordIcon, SyringeIcon } from '@lucide/svelte';
 	import type { Component } from 'svelte';
 	import Dialog from '../Dialog.svelte';
@@ -18,7 +25,7 @@
 
 	let {
 		open = $bindable(false),
-		unadjusted_stats = $bindable([] as string[])
+		unadjusted_stats = $bindable(null as null | BaseStats16)
 		// TODO: variable that controls adjustment
 	} = $props();
 
@@ -28,7 +35,7 @@
 			return {
 				...attr,
 				name: STAT_LABELS[attr.key],
-				value: unadjusted_stats[index]
+				value: unadjusted_stats ? unadjusted_stats[index] : '0'
 			};
 		})
 	);
@@ -40,8 +47,9 @@
 	);
 
 	// adjustment only for base atk!
-	let manual_base_atk_inputs: string[] = $state([]);
-	let base_atk_inputs: number[] = $derived(
+	let manual_base_atk_inputs: AtkStats5 = $state(['0', '0', '0', '0', '0']);
+	// @ts-expect-error
+	let base_atk_inputs: AtkStats5Number = $derived(
 		manual_base_atk_inputs.map((value) => {
 			return parseInt(value) || 0;
 		})
@@ -92,6 +100,10 @@
 
 	function onButtonPress(btn: string | 'Finalize' | 'Cancel') {
 		if (btn === 'Finalize') {
+			if (!unadjusted_stats) {
+				return;
+			}
+
 			// save adjusted stats
 			// lets see what was calculated
 			let stat_col = new StatCollection();
@@ -115,16 +127,21 @@
 			// extra_stat comes from other sources that idk
 			// will be saved for stat adjustment
 			const extra_stat = stat_col.calc_extra_atk_from(unadjusted_stats, base_atk_inputs);
-			const real_base = stat_col.calc_real_base_stats(unadjusted_stats, base_atk_inputs);
+			const real_base = stat_col.calc_real_base_stats(
+				unadjusted_stats as BaseStats16,
+				base_atk_inputs
+			);
 
-			$user_loadouts[$current_loadout].base_stats = real_base.map((value) => value.toString());
+			$user_loadouts[$current_loadout].base_stats = real_base.map((value) =>
+				value.toString()
+			) as BaseStats14;
 			$user_loadouts[$current_loadout].stat_adj = {
 				unaccounted: extra_stat.data,
 				supercompute: parseInt(supercompute_adjust),
 				use_blade_shot: adjust_for_blade_shot
 			};
 			saveObject('loadouts_v1', $user_loadouts);
-			unadjusted_stats = [];
+			unadjusted_stats = null;
 
 			open = false;
 		} else {
@@ -133,11 +150,15 @@
 	}
 
 	$effect(() => {
-		manual_base_atk_inputs = adj_raw_attributes_view.slice(3, 8);
+		manual_base_atk_inputs = adj_raw_attributes_view.slice(3, 8) as AtkStats5;
 	});
 
 	$effect(() => {
 		if (!$current_loadout) {
+			return;
+		}
+
+		if (!unadjusted_stats) {
 			return;
 		}
 
@@ -158,7 +179,7 @@
 			stat_col = stat_col.add(new StatCollection({ atk_percent: parseInt(supercompute_adjust) }));
 		}
 
-		adj_raw_attributes = stat_col.calc_loadout_base_stats(unadjusted_stats);
+		adj_raw_attributes = stat_col.calc_loadout_base_stats(unadjusted_stats as BaseStats16);
 	});
 
 	$inspect('unadjusted stats', unadjusted_stats);
@@ -191,11 +212,11 @@
 <Dialog
 	title="Stat Adjustment"
 	bind:open
-	buttons={unadjusted_stats.length > 0 ? ['Finalize', 'Cancel'] : ['Cancel']}
+	buttons={unadjusted_stats ? ['Finalize', 'Cancel'] : ['Cancel']}
 	primary="Finalize"
 	{onButtonPress}
 >
-	{#if unadjusted_stats.length > 0}
+	{#if unadjusted_stats}
 		<FlexGrid
 			horizontal_gap="0.9rem"
 			vertical_gap="1rem"

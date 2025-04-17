@@ -1,5 +1,5 @@
 import type { ValidGearPart } from '../scripts/gears';
-import type { StatData } from './stat-types';
+import type { BaseStats14, StatData } from './stat-types';
 import type { UserMatrix, UserWeapon } from './weapon-types';
 
 export type EquippedGear = {
@@ -22,7 +22,7 @@ export type Loadout = {
 	equipped_gears: EquippedGear;
 	equipped_weapons: UserWeapon[];
 	equipped_matrices: UserMatrix[];
-	base_stats: string[]; // NOT raw stat uploaded by user
+	base_stats: BaseStats14; // NOT raw stat uploaded by user
 	stat_adj?: StatAdjustments;
 	image_url?: string;
 };

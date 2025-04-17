@@ -3,12 +3,11 @@
 	import StatAdjust from '$lib/components/dialog/StatAdjust.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
-	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader.ts';
+	import { saveObject } from '$lib/scripts/loader.ts';
 	import { ActionType } from '$lib/scripts/nav-metadata';
-	import { STAT_LABELS } from '$lib/scripts/stats';
+	import { createAttributeView } from '$lib/scripts/stats';
 	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
-	import { formatValue } from '$lib/scripts/validation.ts';
-	import type { CharacterStat } from '$lib/types/index';
+	import type { BaseStats14, BaseStats16, CharacterStat } from '$lib/types/index';
 	import { ChartNoAxesColumn, ImagePlus, Trash2 } from '@lucide/svelte';
 	import type * as OpenCV from '@techstark/opencv-js';
 	import cv from '@techstark/opencv-js';
@@ -16,7 +15,22 @@
 	import { createWorker } from 'tesseract.js';
 
 	// State
-	let base_stats: string[] = $state([]);
+	let base_stats: BaseStats14 = $state([
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0'
+	]);
 	let attribute_view: CharacterStat[] = $state([]);
 
 	// Screenshot Dialog
@@ -26,21 +40,7 @@
 
 	// Stat Adjust Dialog
 	let stat_adjust_dialog_open = $state(false);
-	let unadjusted_stats: string[] = $state([]);
-
-	function processAttributes() {
-		// TODO: later on, this should adjust depending on the not-yet created Loadout.stat_adj object
-		attribute_view = TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
-			const __val = base_stats[index];
-			const __use_percent = index === 2 || index === 10;
-
-			return {
-				...attr,
-				name: STAT_LABELS[attr.key],
-				value: __use_percent ? formatValue('float3d', __val) : formatValue('int', __val)
-			};
-		});
-	}
+	let unadjusted_stats: null | BaseStats16 = $state(null);
 
 	function saveAttributes() {
 		$user_loadouts[$current_loadout].base_stats = base_stats;
@@ -83,6 +83,24 @@
 		imageUpdateCallback: ((img: OpenCV.Mat) => Promise<void>) | null = null
 	) {
 		const attr_arr: number[] = [7, 15, 6, 14, 5, 13, 4, 12, 3, 11, 2, 10, 1, 9, 0, 8];
+		unadjusted_stats = [
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0'
+		];
 
 		const worker = await createWorker('eng');
 		let done_tasks = 0;
@@ -96,6 +114,10 @@
 			const data_url = canvas.toDataURL();
 
 			const ret = await worker.recognize(data_url);
+
+			if (!unadjusted_stats) {
+				throw new Error('unadjusted_stats is null!');
+			}
 			unadjusted_stats[attr_arr[index]] = ret.data.text.replace('%', '').replace('/', '');
 			console.log('OCR Text:', ret.data.text);
 
@@ -137,9 +159,8 @@
 			}
 			await worker.terminate();
 
-			// TODO: add a new prompt here asking if user wants to save stats
 			saveAttributes();
-			processAttributes();
+			attribute_view = createAttributeView(base_stats);
 			process_text = 'Done!';
 		}
 	}
@@ -319,16 +340,12 @@
 			callback: () => (stat_adjust_dialog_open = true)
 		},
 		{ id: 'reset', label: 'Reset', lucide: Trash2, type: ActionType.BUTTON, callback: resetStats }
-		// { id: 'share', label: 'Share' }
 	];
 
 	onMount(() => {
-		// load and process attributes
-		// TODO: change the way of loading after setting up
 		if (Object.keys($user_loadouts).length > 0) {
 			base_stats = $user_loadouts[$current_loadout].base_stats;
-			unadjusted_stats = base_stats; // TEMPORARY!!!
-			processAttributes();
+			attribute_view = createAttributeView(base_stats);
 		}
 	});
 </script>
@@ -339,7 +356,11 @@
 
 <div class="stat-panel">
 	<h1>Character Stats</h1>
-	<p>This page might undergo overhaul soon, just waiting for gear page to be completed.</p>
+
+	{#if unadjusted_stats && unadjusted_stats.length > 0}
+		<p>Unadjusted stats are shown in the table below. Please finish adjustment!</p>
+		<!-- TODO: add stat adjust here -->
+	{/if}
 
 	<FlexGrid
 		horizontal_gap="0.9rem"
@@ -363,7 +384,12 @@
 								role="textbox"
 								tabindex={10 + index}
 							>
-								{attribute.value}
+								{#if unadjusted_stats}
+									<!-- show unadjusted stats if applicable -->
+									{unadjusted_stats[index]}
+								{:else}
+									{attribute.value}
+								{/if}
 							</span>
 						</div>
 					</div>

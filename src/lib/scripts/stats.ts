@@ -1,11 +1,20 @@
 import type {
 	AllStats,
+	AtkStats5Number,
+	BaseStats14,
+	BaseStats14Number,
+	BaseStats16,
+	BaseStats16Number,
+	CharacterStat,
 	GearView,
 	StatData,
+	StatGearFinal,
+	StatGearFinalUseful,
 	StatGearTitan,
 	StatGearUser,
 	StatKey
 } from '../types/index';
+import { formatValue } from './validation';
 
 export const STAT_LABELS: Record<AllStats, string> = {
 	hp: 'HP',
@@ -217,6 +226,71 @@ const KEYS_ATK_PERCENT: StatGearUser[] = [
 	'volt_atk_percent',
 	'alt_atk_percent'
 ];
+const STAT_GEAR_FINAL_KEYS: StatGearFinalUseful[] = [
+	'hp',
+	'crit',
+	'crit_percent',
+	'phys_atk',
+	'flame_atk',
+	'frost_atk',
+	'volt_atk',
+	'alt_atk',
+	'crit_dmg_percent',
+	'phys_res',
+	'flame_res',
+	'frost_res',
+	'volt_res',
+	'alt_res'
+];
+
+export const TEMPLATE_USER_ATTRIBUTES: { key: StatGearFinal; icon: string }[] = [
+	{ key: 'hp', icon: './stat/hp.webp' },
+	{ key: 'crit', icon: './stat/crit.webp' },
+	{ key: 'crit_percent', icon: './stat/crit.webp' },
+	{ key: 'phys_atk', icon: './stat/physatk.webp' },
+	{ key: 'flame_atk', icon: './stat/flameatk.webp' },
+	{ key: 'frost_atk', icon: './stat/frostatk.webp' },
+	{ key: 'volt_atk', icon: './stat/voltatk.webp' },
+	{ key: 'alt_atk', icon: './stat/placeholder.webp' },
+	{ key: 'end', icon: './stat/placeholder.webp' },
+	{ key: 'end_regen', icon: './stat/placeholder.webp' },
+	{ key: 'crit_dmg_percent', icon: './stat/placeholder.webp' },
+	{ key: 'phys_res', icon: './stat/physres.webp' },
+	{ key: 'flame_res', icon: './stat/flameres.webp' },
+	{ key: 'frost_res', icon: './stat/frostres.webp' },
+	{ key: 'volt_res', icon: './stat/voltres.webp' },
+	{ key: 'alt_res', icon: './stat/placeholder.webp' }
+];
+
+export function createAttributeView(base_stats_: BaseStats14 | BaseStats16): CharacterStat[] {
+	// TODO: later on, this should adjust depending on the not-yet created Loadout.stat_adj object
+
+	// TODO: add weapon and gear stats on top of base stats
+
+	if (base_stats_.length === 14) {
+		base_stats_ = [
+			...base_stats_.slice(0, 8),
+			'1400',
+			'0',
+			...base_stats_.slice(8, 14)
+		] as BaseStats16;
+	}
+
+	if (base_stats_.length !== 16) {
+		throw new Error('Invalid base stats length!');
+	}
+
+	return TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
+		const __val = base_stats_[index];
+		const __use_percent = index === 2 || index === 10;
+
+		return {
+			...attr,
+			name: STAT_LABELS[attr.key],
+			value: __use_percent ? formatValue('float3d', __val) : formatValue('int', __val)
+		};
+	});
+}
 
 export class StatCollection {
 	public data: StatData = {};
@@ -226,12 +300,22 @@ export class StatCollection {
 	constructor(stat: GearView);
 	constructor(stat: StatGearUser, value: number);
 	constructor(stat: StatGearTitan, value: number);
-	constructor(stat?: StatKey | StatGearTitan | StatData | GearView, value?: number) {
+	constructor(stat?: StatKey | StatGearTitan | StatData | GearView | BaseStats14, value?: number) {
 		if (stat === undefined) {
 			this.data = {};
 		} else if (typeof stat === 'string') {
 			this.data = {};
 			this.data[stat.replace('titan_', '') as StatGearUser] = value ?? 0;
+		} else if (Array.isArray(stat)) {
+			this.data = {};
+
+			if (stat.length === 14) {
+				for (let i = 0; i < 14; i++) {
+					this.data[STAT_GEAR_FINAL_KEYS[i]] = parseInt(stat[i]);
+				}
+			} else {
+				throw new Error('Invalid base stats length!');
+			}
 		} else if (typeof stat === 'object') {
 			if ('derived' in stat) {
 				this.data = {};
@@ -304,10 +388,10 @@ export class StatCollection {
 
 	/**
 	 * Calculates the base stat assuming that this encompasses all buffs.
-	 * @param {string[]} final_stats - Stats as seen on the character screen.
+	 * @param {BaseStats16} final_stats - Stats as seen on the character screen.
 	 * @returns Calculated base stats
 	 */
-	calc_loadout_base_stats(final_stats: string[]): number[] {
+	calc_loadout_base_stats(final_stats: BaseStats16): BaseStats16Number {
 		// value correspond to index in StatGearFinal
 		const base_stats: number[] = [];
 
@@ -378,7 +462,7 @@ export class StatCollection {
 			}
 		}
 
-		return base_stats;
+		return base_stats as BaseStats16Number;
 	}
 
 	/**
@@ -386,7 +470,10 @@ export class StatCollection {
 	 * @param {number[]} base_atk_stats - Base atk stats as seen on the character screen.
 	 * @returns
 	 */
-	calc_real_base_stats(final_stats: string[], base_atk_stats: number[]): number[] {
+	calc_real_base_stats(
+		final_stats: BaseStats16,
+		base_atk_stats: AtkStats5Number
+	): BaseStats14Number {
 		// iterate through base_atk_stats
 		const final_base_stats: number[] = [];
 
@@ -417,12 +504,6 @@ export class StatCollection {
 					break;
 				case 7: // alt atk
 					final_base_stats.push(Math.max(...final_base_stats.slice(3, 7)));
-					break;
-				case 8: // end
-					final_base_stats.push(1400);
-					break;
-				case 9: // end_regen
-					final_base_stats.push(0);
 					break;
 				case 10: // crit_damage
 					final_base_stats.push(50);
@@ -461,16 +542,16 @@ export class StatCollection {
 			}
 		}
 
-		return final_base_stats;
+		return final_base_stats as BaseStats14Number;
 	}
 
 	/**
 	 * Calculates the extra atk percent stats required to reach the final stats, given the base_atk_stats.
-	 * @param {string[]} final_stats - Final stats as seen on the character screen.
+	 * @param {BaseStats16} final_stats - Final stats as seen on the character screen.
 	 * @param {number[]} base_atk_stats - Base atk stats as seen on the character screen.
 	 * @returns Calculated extra stats.
 	 */
-	calc_extra_atk_from(final_stats: string[], base_atk_stats: number[]): StatCollection {
+	calc_extra_atk_from(final_stats: BaseStats16, base_atk_stats: AtkStats5Number): StatCollection {
 		// iterate through base_atk_stats
 		const new_data: StatData = {};
 
