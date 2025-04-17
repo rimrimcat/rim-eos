@@ -47,6 +47,7 @@
 
 	// color scheme
 	let styles = $state({});
+	let update_ready = $state(false);
 
 	onMount(async () => {
 		// get font size and check if mobile
@@ -73,17 +74,17 @@
 		// processing
 		await loadStatConstants(); // need this for gear proecssing
 		// create gear views
-		Promise.all($user_gears.map((gear) => createGearView(gear, false))).then((gearViews) => {
-			$gear_views = gearViews;
-			console.log('Done processing user_gears');
-		});
+		$gear_views = await Promise.all($user_gears.map((gear) => createGearView(gear, false)));
+		console.log('Gear Views processed');
 
 		// create weapon and matrix views
 		await updateWeaponMatrix();
+		update_ready = true;
 	});
 
 	// update for equipped_gear_views
 	$effect(() => {
+		if (!update_ready) return;
 		$equipped_gear_views = getEquippedGearViews($user_loadouts[$current_loadout].equipped_gears);
 	});
 
