@@ -5,7 +5,10 @@ import type {
 	BaseStats14Number,
 	BaseStats16,
 	BaseStats16Number,
+	Elements,
 	GearView,
+	LumpedKey,
+	LumpedStatData,
 	StatData,
 	StatGearFinal,
 	StatGearFinalUseful,
@@ -23,7 +26,6 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	res_percent: 'Res',
 	atk: 'ATK',
 	atk_percent: 'ATK',
-	dmg_percent: 'Dmg',
 	ele_dmg_percent: 'Ele Dmg',
 	phys_atk: 'Phys Atk',
 	phys_atk_percent: 'Phys Atk',
@@ -598,5 +600,91 @@ export class StatCollection {
 		}
 
 		return new StatCollection(new_data);
+	}
+
+	/**
+	 * Lumps the atk and ele_dmg stats to their respective elements
+	 */
+	lump(level: number = 100) {
+		const new_data: LumpedStatData = {};
+
+		// atk
+		new_data.phys_atk = this.get('phys_atk') + this.get('atk');
+		new_data.flame_atk = this.get('flame_atk') + this.get('atk');
+		new_data.frost_atk = this.get('frost_atk') + this.get('atk');
+		new_data.volt_atk = this.get('volt_atk') + this.get('atk');
+		new_data.alt_atk =
+			Math.max(new_data.phys_atk, new_data.flame_atk, new_data.frost_atk, new_data.volt_atk) +
+			this.get('alt_atk');
+
+		// atk percent
+		new_data.phys_atk_percent = this.get('phys_atk_percent') + this.get('atk_percent');
+		new_data.flame_atk_percent = this.get('flame_atk_percent') + this.get('atk_percent');
+		new_data.frost_atk_percent = this.get('frost_atk_percent') + this.get('atk_percent');
+		new_data.volt_atk_percent = this.get('volt_atk_percent') + this.get('atk_percent');
+		new_data.alt_atk_percent = this.get('alt_atk_percent');
+
+		// ele_dmg
+		new_data.phys_dmg_percent = this.get('phys_dmg_percent') + this.get('ele_dmg_percent');
+		new_data.flame_dmg_percent = this.get('flame_dmg_percent') + this.get('ele_dmg_percent');
+		new_data.frost_dmg_percent = this.get('frost_dmg_percent') + this.get('ele_dmg_percent');
+		new_data.volt_dmg_percent = this.get('volt_dmg_percent') + this.get('ele_dmg_percent');
+		new_data.alt_dmg_percent = this.get('alt_dmg_percent') + this.get('ele_dmg_percent');
+
+		new_data.final_dmg_percent = this.get('final_dmg_percent');
+
+		return new LumpedStatCollection(new_data);
+	}
+}
+
+export class LumpedStatCollection {
+	public data: LumpedStatData = {};
+
+	constructor(data: LumpedStatData) {
+		if (data) {
+			this.data = data;
+		}
+	}
+
+	get(stat: LumpedKey): number {
+		return this.data[stat] ?? 0;
+	}
+
+	put(stat: LumpedKey, value: number) {
+		this.data[stat] = value;
+	}
+
+	pop(stat: LumpedKey) {
+		const value = this.data[stat];
+		delete this.data[stat];
+		return value;
+	}
+
+	clone_data(): LumpedStatData {
+		return { ...this.data };
+	}
+
+	clone(): LumpedStatCollection {
+		return new LumpedStatCollection(this.data);
+	}
+
+	/**
+	 * Calculates the multipliers of stat collection to determine improvement over current stats
+	 * @param other_col - object's multipliers to calculate. Must not be part of the original collection
+	 * @param element
+	 */
+	total_multiplier_of(other_col: LumpedStatCollection, element: Elements) {
+		let multiplier = 1;
+
+		// base atk
+		multiplier *= 1 + other_col.get(`${element}_atk`) / this.get(`${element}_atk`);
+		// atk percent
+		multiplier *=
+			1 + other_col.get(`${element}_atk_percent`) / (1 + this.get(`${element}_atk_percent`));
+		// ele percent
+		multiplier *=
+			1 + other_col.get(`${element}_dmg_percent`) / (1 + this.get(`${element}_dmg_percent`));
+
+		return multiplier;
 	}
 }
