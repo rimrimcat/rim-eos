@@ -386,15 +386,82 @@ export class StatCollection {
 	 * @param {number[]} base_atk_stats - Base atk stats as seen on the character screen.
 	 * @returns
 	 */
-	calc_real_base_stats(base_atk_stats: number[]): StatCollection {
+	calc_real_base_stats(final_stats: string[], base_atk_stats: number[]): number[] {
 		// iterate through base_atk_stats
-		const new_data: StatData = {};
+		const final_base_stats: number[] = [];
 
-		for (let i = 0; i < base_atk_stats.length - 1; i++) {
-			new_data[KEYS_ATK[i]] = base_atk_stats[i] - this.get(KEYS_ATK[i]) - this.get('atk');
+		for (let i = 0; i < final_stats.length; i++) {
+			switch (i) {
+				case 0: // hp
+					final_base_stats.push(
+						parseInt(final_stats[i]) / (1 + this.get('hp_percent') / 100) - this.get('hp')
+					);
+					break;
+				case 1: // crit
+					final_base_stats.push(parseInt(final_stats[i]) - this.get('crit'));
+					break;
+				case 2: // crit_percent
+					final_base_stats.push(parseFloat(final_stats[i]) - this.get('crit_percent'));
+					break;
+				case 3: // phys_atk
+					final_base_stats.push(base_atk_stats[0] - this.get(KEYS_ATK[0]) - this.get('atk'));
+					break;
+				case 4: // flame_atk
+					final_base_stats.push(base_atk_stats[1] - this.get(KEYS_ATK[1]) - this.get('atk'));
+					break;
+				case 5: // frost_atk
+					final_base_stats.push(base_atk_stats[2] - this.get(KEYS_ATK[2]) - this.get('atk'));
+					break;
+				case 6: // volt_atk
+					final_base_stats.push(base_atk_stats[3] - this.get(KEYS_ATK[3]) - this.get('atk'));
+					break;
+				case 7: // alt atk
+					final_base_stats.push(Math.max(...final_base_stats.slice(3, 7)));
+					break;
+				case 8: // end
+					final_base_stats.push(1400);
+					break;
+				case 9: // end_regen
+					final_base_stats.push(0);
+					break;
+				case 10: // crit_damage
+					final_base_stats.push(50);
+					break;
+				case 11: // phys_res
+					final_base_stats.push(
+						parseInt(final_stats[i]) / (1 + this.get('phys_res_percent') / 100) -
+							this.get('phys_res')
+					);
+					break;
+				case 12: // flame_res
+					final_base_stats.push(
+						parseInt(final_stats[i]) / (1 + this.get('flame_res_percent') / 100) -
+							this.get('flame_res')
+					);
+					break;
+				case 13: // frost_res
+					final_base_stats.push(
+						parseInt(final_stats[i]) / (1 + this.get('frost_res_percent') / 100) -
+							this.get('frost_res')
+					);
+					break;
+				case 14: // volt_res
+					final_base_stats.push(
+						parseInt(final_stats[i]) / (1 + this.get('volt_res_percent') / 100) -
+							this.get('volt_res')
+					);
+					break;
+				case 15: // alt_res
+					final_base_stats.push(
+						parseInt(final_stats[i]) / (1 + this.get('alt_res_percent') / 100) - this.get('alt_res')
+					);
+					break;
+				default:
+					break;
+			}
 		}
 
-		return new StatCollection(new_data);
+		return final_base_stats;
 	}
 
 	/**

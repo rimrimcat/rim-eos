@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader';
+	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader';
 	import { dedupeMatEffs } from '$lib/scripts/loadout';
 	import { STAT_LABELS, StatCollection } from '$lib/scripts/stats';
 	import {
@@ -41,6 +41,11 @@
 
 	// adjustment only for base atk!
 	let manual_base_atk_inputs: string[] = $state([]);
+	let base_atk_inputs: number[] = $derived(
+		manual_base_atk_inputs.map((value) => {
+			return parseInt(value) || 0;
+		})
+	);
 
 	// other adjustments
 	let adjust_for_gear = $state(true);
@@ -109,16 +114,19 @@
 
 			// extra_stat comes from other sources that idk
 			// will be saved for stat adjustment
-			const extra_stat = stat_col.calc_extra_atk_from(
-				unadjusted_stats,
-				manual_base_atk_inputs.map((value) => {
-					return parseInt(value) || 0;
-				})
-			);
+			const extra_stat = stat_col.calc_extra_atk_from(unadjusted_stats, base_atk_inputs);
+			const real_base = stat_col.calc_real_base_stats(unadjusted_stats, base_atk_inputs);
 
-			console.log('EXTRA_STATS', extra_stat);
+			$user_loadouts[$current_loadout].base_stats = real_base.map((value) => value.toString());
+			$user_loadouts[$current_loadout].stat_adj = {
+				unaccounted: extra_stat.data,
+				supercompute: parseInt(supercompute_adjust),
+				use_blade_shot: adjust_for_blade_shot
+			};
+			saveObject('loadouts_v1', $user_loadouts);
+			unadjusted_stats = [];
 
-			// TODO: calculate real base atk stats
+			open = false;
 		} else {
 			open = false;
 		}
@@ -149,8 +157,6 @@
 		if (supercompute_adjust) {
 			stat_col = stat_col.add(new StatCollection({ atk_percent: parseInt(supercompute_adjust) }));
 		}
-
-		console.log('COMBINED_PERCENTS', stat_col);
 
 		adj_raw_attributes = stat_col.calc_loadout_base_stats(unadjusted_stats);
 	});
