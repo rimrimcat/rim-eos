@@ -101,7 +101,8 @@
 	<div
 		class="vertical content-container"
 		class:mobile={is_mobile}
-		style="translate: 0 {$toolbar_transform}px; padding-bottom: {$toolbar_transform}px"
+		style="translate: 0 {$toolbar_transform}px; padding-bottom: {$toolbar_transform +
+			$font_size * 3}px"
 		onscroll={(e: UIEvent) => {
 			$scroll_y = (e.target as HTMLElement).scrollTop;
 		}}
