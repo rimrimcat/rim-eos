@@ -382,6 +382,22 @@ export class StatCollection {
 	}
 
 	/**
+	 * Calculates the real base stats
+	 * @param {number[]} base_atk_stats - Base atk stats as seen on the character screen.
+	 * @returns
+	 */
+	calc_real_base_stats(base_atk_stats: number[]): StatCollection {
+		// iterate through base_atk_stats
+		const new_data: StatData = {};
+
+		for (let i = 0; i < base_atk_stats.length - 1; i++) {
+			new_data[KEYS_ATK[i]] = base_atk_stats[i] - this.get(KEYS_ATK[i]) - this.get('atk');
+		}
+
+		return new StatCollection(new_data);
+	}
+
+	/**
 	 * Calculates the extra atk percent stats required to reach the final stats, given the base_atk_stats.
 	 * @param {string[]} final_stats - Final stats as seen on the character screen.
 	 * @param {number[]} base_atk_stats - Base atk stats as seen on the character screen.
