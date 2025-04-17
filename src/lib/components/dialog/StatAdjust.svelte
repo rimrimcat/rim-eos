@@ -11,7 +11,7 @@
 		weapon_views
 	} from '$lib/scripts/stores';
 	import type { CharacterStat, ValidGearPart } from '$lib/types/index';
-	import { ShirtIcon, SlashIcon, SwordIcon } from '@lucide/svelte';
+	import { ShirtIcon, SlashIcon, SwordIcon, SyringeIcon } from '@lucide/svelte';
 	import type { Component } from 'svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
@@ -45,6 +45,8 @@
 	// other adjustments
 	let adjust_for_gear = $state(true);
 	let adjust_for_weapon = $state(true);
+	let adjust_for_blade_shot = $state(false);
+	let supercompute_adjust = $state('16');
 
 	function getGearTotal() {
 		let stat_col = new StatCollection();
@@ -97,6 +99,14 @@
 				stat_col = stat_col.add(getWeaponTotal());
 			}
 
+			if (adjust_for_blade_shot) {
+				stat_col = stat_col.add(new StatCollection({ atk_percent: 3.5 }));
+			}
+
+			if (supercompute_adjust) {
+				stat_col = stat_col.add(new StatCollection({ atk_percent: parseInt(supercompute_adjust) }));
+			}
+
 			// extra_stat comes from other sources that idk
 			// will be saved for stat adjustment
 			const extra_stat = stat_col.calc_extra_atk_from(
@@ -131,9 +141,14 @@
 		if (adjust_for_weapon) {
 			stat_col = stat_col.add(getWeaponTotal());
 		}
-		// if adjust for mia...
-		// if adjust for blade shot...
-		// if adjust for enhanced blade shot...
+		if (adjust_for_blade_shot) {
+			// TODO: not enhanced one
+			stat_col = stat_col.add(new StatCollection({ atk_percent: 3.5 }));
+		}
+
+		if (supercompute_adjust) {
+			stat_col = stat_col.add(new StatCollection({ atk_percent: parseInt(supercompute_adjust) }));
+		}
 
 		console.log('COMBINED_PERCENTS', stat_col);
 
@@ -149,12 +164,13 @@
 	Lucide: Component,
 	id: string,
 	txt1: string,
-	txt2: string
+	txt2: string,
+	flip_icon: boolean = false
 )}
 	<button class="toggle" class:selected={toggle} {id} {onclick} style="margin-top: 0.5rem;">
 		<div class="button-content">
 			<div style="position: relative;">
-				<Lucide />
+				<Lucide style={flip_icon ? 'transform: rotate(90deg);' : ''} />
 				{#if !toggle}
 					<div style="position: absolute; top: 0%; left: 0%;">
 						<SlashIcon />
@@ -248,6 +264,25 @@
 					'Adjust for weapon',
 					"Don't adjust for weapon"
 				)}
+				{@render make_button(
+					adjust_for_blade_shot,
+					() => {
+						adjust_for_blade_shot = !adjust_for_blade_shot;
+					},
+					SyringeIcon,
+					'adjust-for-blade-shot',
+					'Adjust for drug (3.5%)',
+					"Don't adjust for drug (3.5%)",
+					true
+				)}
+				<div class="horizontal center-hori" style="margin-top: 2.5rem;">
+					<label for="supercompute-adjust" style="font-weight: bold; ">Supercompute (%):</label>
+					<input
+						id="supercompute-adjust"
+						bind:value={supercompute_adjust}
+						style="width: 4ch; text-align: right;"
+					/>
+				</div>
 			</div>
 		</FlexGrid>
 	{:else}
