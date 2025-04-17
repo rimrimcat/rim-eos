@@ -6,25 +6,30 @@ const projectRoot = process.cwd();
 
 const settings: TJS.PartialArgs = {
 	required: true,
-	noExtraProps: true
+	noExtraProps: true,
+	ignoreErrors: true
 };
 
-const inputTypes = path.join(projectRoot, 'src/lib/scripts/json-types.ts');
+const compilerOptions: TJS.CompilerOptions = {
+	strictNullChecks: true
+};
+
 const schemaDir = path.join(projectRoot, 'src/lib/schemas');
 
 if (!fs.existsSync(schemaDir)) {
 	fs.mkdirSync(schemaDir, { recursive: true });
 }
 
-const program = TJS.getProgramFromFiles([inputTypes], {
-	strictNullChecks: true
-});
+const program = TJS.getProgramFromFiles(
+	[path.join(projectRoot, 'src/lib/types/index.d.ts')],
+	compilerOptions
+);
 
-const schema_reso_effects = TJS.generateSchema(program, 'ResoEffects', settings);
-const schema_weapon_effects = TJS.generateSchema(program, 'WeaponEffects', settings);
-const schema_matrix_effects = TJS.generateSchema(program, 'MatrixEffects', settings);
-const schema_weapons = TJS.generateSchema(program, 'Weapons', settings);
-const schema_matrix = TJS.generateSchema(program, 'Matrices', settings);
+const schema_reso_effects = TJS.generateSchema(program, 'ResoEffect', settings);
+const schema_weapon_effects = TJS.generateSchema(program, 'WeaponEffect', settings);
+const schema_matrix_effects = TJS.generateSchema(program, 'MatrixEffect', settings);
+const schema_weapons = TJS.generateSchema(program, 'Weapon', settings);
+const schema_matrix = TJS.generateSchema(program, 'Matrix', settings);
 
 fs.writeFileSync(
 	path.join(schemaDir, 'reso_effect.schema.json'),
