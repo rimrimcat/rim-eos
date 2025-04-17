@@ -1,5 +1,5 @@
 import type { ValidGearPart } from '../scripts/gears';
-import type { BaseStats14, StatData } from './stat-types';
+import type { BaseStats14, Elements, StatData } from './stat-types';
 import type { UserMatrix, UserWeapon } from './weapon-types';
 
 export type EquippedGear = {
@@ -7,7 +7,7 @@ export type EquippedGear = {
 };
 
 // this should determine what element to optimize for
-export type LoadoutType = 'flame' | 'frost' | 'volt' | 'phys' | 'alt' | 'atk';
+export type LoadoutType = Elements | 'atk';
 
 export type StatAdjustments = {
 	unaccounted: StatData; // buffs with unknown sources, added on top of base stat

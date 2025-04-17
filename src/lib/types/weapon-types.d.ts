@@ -6,9 +6,9 @@ import type {
 	WeaponsIds
 } from '../generated/ids';
 import type { StatCollection } from '../scripts/stats';
-import type { StatData, StatGearUser, StatKey, StatNonGear } from './stat-types';
+import type { Elements, StatData, StatGearUser, StatKey, StatNonGear } from './stat-types';
 
-export type ResoElement = 'phys' | 'flame' | 'frost' | 'volt' | 'alt' | 'none';
+export type ResoElement = Elements | 'none';
 export type ResoRole = 'atk' | 'fort' | 'bene' | 'none';
 export type ResoExtra = 'armor-dissolve' | 'force-impact';
 export type ResoTriggers = ResoElement | ResoRole | ResoExtra;
