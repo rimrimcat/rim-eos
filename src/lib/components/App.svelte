@@ -232,6 +232,14 @@
 		justify-content: center;
 	}
 
+	:global(div.horizontal.center-hori) {
+		align-items: center;
+	}
+
+	:global(div.horizontal.center-vert) {
+		justify-content: center;
+	}
+
 	:global(div.hori-item) {
 		display: flex;
 		align-items: center;
