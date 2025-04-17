@@ -1,6 +1,7 @@
-# TOF-GEAR (Working Title)
+# Rim's Easy Optimizer for Stats
 
-some webapp im making since no more content at TOF
+some webapp im making since no more content at TOF.
+also still thinking of a better name later on
 
 ## TODO-List
 
@@ -21,14 +22,13 @@ some webapp im making since no more content at TOF
 - [x] Gear: show equipped gears (2025-04-10)
 - [x] Stat: sync with loadout (2025-04-10)
 - [x] Loadout: add my loadout as example (2025-04-10)
-- [ ] Loadout: add way to change weapons/matrices
+- [x] Loadout: add way to change weapons/matrices (2025-04-16)
+- [ ] Stat: toggle to adjust stat based on buffs
 - [ ] Loadout: add some weapons and matrices
-- [ ] Main Page: add good guide/tutorial
-- [ ] Stat: select between uploading base stats or uploading stats with gears
+- [ ] Main Page: add good guide/tutorials
 - [ ] Stat: toggle to show only attack stats
 - [ ] Stat: toggle to show attack percent or (base attack + attack percent)
 - [ ] Stat: toggle to show damage percent
-- [ ] Stat: toggle to adjust stat based on buffs
 - [ ] Loading: add something to the loading screen
 - [ ] Gear: add way to manually add gears
 - [ ] Gear: make more accessible for mobile users

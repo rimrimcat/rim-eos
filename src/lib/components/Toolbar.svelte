@@ -85,7 +85,7 @@
 			{/if}
 		</button>
 		<div class="logo">
-			<span class="logo-text">GearComp</span>
+			<span class="logo-text">Rim EOS</span>
 		</div>
 	</div>
 
