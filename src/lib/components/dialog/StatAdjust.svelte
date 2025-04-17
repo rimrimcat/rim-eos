@@ -151,7 +151,7 @@
 	txt1: string,
 	txt2: string
 )}
-	<button class="toggle" class:selected={toggle} {id} {onclick}>
+	<button class="toggle" class:selected={toggle} {id} {onclick} style="margin-top: 0.5rem;">
 		<div class="button-content">
 			<div style="position: relative;">
 				<Lucide />
@@ -174,74 +174,82 @@
 	{onButtonPress}
 >
 	{#if unadjusted_stats.length > 0}
-		<div style="padding: 0.5rem;">
-			<FlexGrid
-				horizontal_gap="0.9rem"
-				vertical_gap="1rem"
-				min_cols={1}
-				max_cols={1}
-				prefer_divisible={false}
-			>
-				{#each raw_attribute_view.slice(3, 8) as attribute, index}
-					<div class="item-flex">
-						<div class="attribute-icon">
-							<img src={attribute.icon} alt={attribute.name + ' icon'} />
-						</div>
-						<div class="vertical-left">
-							<div class="stat-name">Base {attribute.name}</div>
-							<div class="stat-value-text">
-								{attribute.value}
+		<FlexGrid
+			horizontal_gap="0.9rem"
+			vertical_gap="1rem"
+			min_cols={1}
+			max_cols={2}
+			prefer_divisible={false}
+		>
+			<div style="padding: 0.5rem;">
+				<FlexGrid
+					horizontal_gap="0.9rem"
+					vertical_gap="1rem"
+					min_cols={1}
+					max_cols={1}
+					prefer_divisible={false}
+				>
+					{#each raw_attribute_view.slice(3, 8) as attribute, index}
+						<div class="item-flex">
+							<div class="attribute-icon">
+								<img src={attribute.icon} alt={attribute.name + ' icon'} />
+							</div>
+							<div class="vertical-left">
+								<div class="stat-name">Base {attribute.name}</div>
+								<div class="stat-value-text">
+									{attribute.value}
 
-								{#if index <= 3}
-									{'➜ '}
-									<input
-										type="text"
-										class="stat-value"
-										bind:value={manual_base_atk_inputs[index]}
-										onblur={() => {
-											manual_base_atk_inputs[4] = Math.max(
-												...manual_base_atk_inputs.slice(0, 4).map((value) => {
-													return parseInt(value) || 0;
-												})
-											).toString();
-										}}
-										style="width: 8ch"
-									/>
-								{:else if index === 4}
-									{'➜ '}
-									{manual_base_atk_inputs[4]}
-								{/if}
+									{#if index <= 3}
+										{'➜ '}
+										<input
+											type="text"
+											class="stat-value"
+											bind:value={manual_base_atk_inputs[index]}
+											onblur={() => {
+												manual_base_atk_inputs[4] = Math.max(
+													...manual_base_atk_inputs.slice(0, 4).map((value) => {
+														return parseInt(value) || 0;
+													})
+												).toString();
+											}}
+											style="width: 8ch"
+										/>
+									{:else if index === 4}
+										{'➜ '}
+										{manual_base_atk_inputs[4]}
+									{/if}
+								</div>
 							</div>
 						</div>
-					</div>
-				{/each}
-			</FlexGrid>
-		</div>
+					{/each}
+				</FlexGrid>
+			</div>
 
-		<h3>Adjustments</h3>
+			<div class="vertical">
+				<h3>Adjustments</h3>
 
-		<div class="horizontal" style="margin-top: 1rem;">
-			{@render make_button(
-				adjust_for_gear,
-				() => {
-					adjust_for_gear = !adjust_for_gear;
-				},
-				ShirtIcon,
-				'adjust-for-weapon',
-				'Adjust for weapon',
-				"Don't adjust for weapon"
-			)}
-			{@render make_button(
-				adjust_for_weapon,
-				() => {
-					adjust_for_weapon = !adjust_for_weapon;
-				},
-				SwordIcon,
-				'adjust-for-weapon',
-				'Adjust for weapon',
-				"Don't adjust for weapon"
-			)}
-		</div>
+				{@render make_button(
+					adjust_for_gear,
+					() => {
+						adjust_for_gear = !adjust_for_gear;
+					},
+					ShirtIcon,
+					'adjust-for-gear',
+					'Adjust for gear',
+					"Don't adjust for gear"
+				)}
+				{@render make_button(
+					adjust_for_weapon,
+					() => {
+						adjust_for_weapon = !adjust_for_weapon;
+					},
+					SwordIcon,
+					'adjust-for-weapon',
+					'Adjust for weapon',
+					"Don't adjust for weapon"
+				)}
+			</div>
+		</FlexGrid>
 	{:else}
 		<p>No stat to adjust, upload a screenshot first!</p>
 	{/if}
