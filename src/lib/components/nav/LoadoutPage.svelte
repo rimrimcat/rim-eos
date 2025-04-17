@@ -40,7 +40,6 @@
 	} from '$lib/types/index';
 	import {
 		ArrowRightLeftIcon,
-		ChartNoAxesColumnIcon,
 		CopyPlusIcon,
 		PencilIcon,
 		RotateCcwIcon,
@@ -440,10 +439,11 @@
 		<h2>Weapon Presets</h2>
 		<div class="vertical-left" style="margin-bottom: 2rem;">
 			<!-- button for mobile players since not enough space -->
-			<button class="image border" style="width:fit-content;">
+
+			<!-- <button class="image border" style="width:fit-content;">
 				<ChartNoAxesColumnIcon />
 				<label class="in-button" for="">Stat Breakdown</label>
-			</button>
+			</button> -->
 		</div>
 
 		<div class="horizontal">
