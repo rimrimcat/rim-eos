@@ -1,16 +1,23 @@
 <script lang="ts">
-	import { TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader';
+	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader';
+	import { getGearTotal, getWeaponTotal } from '$lib/scripts/loadout';
 	import { STAT_LABELS, StatCollection } from '$lib/scripts/stats';
-	import { current_loadout, gear_views, user_loadouts } from '$lib/scripts/stores';
-	import type { CharacterStat, ValidGearPart } from '$lib/types/index';
-	import { ShirtIcon, SlashIcon, SwordIcon } from '@lucide/svelte';
+	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
+	import type {
+		AtkStats5,
+		AtkStats5Number,
+		BaseStats14,
+		BaseStats16,
+		CharacterStat
+	} from '$lib/types/index';
+	import { ShirtIcon, SlashIcon, SwordIcon, SyringeIcon } from '@lucide/svelte';
 	import type { Component } from 'svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
 	let {
 		open = $bindable(false),
-		unadjusted_stats = $bindable([] as string[])
+		unadjusted_stats = $bindable(null as null | BaseStats16)
 		// TODO: variable that controls adjustment
 	} = $props();
 
@@ -20,7 +27,7 @@
 			return {
 				...attr,
 				name: STAT_LABELS[attr.key],
-				value: unadjusted_stats[index]
+				value: unadjusted_stats ? unadjusted_stats[index] : '0'
 			};
 		})
 	);
@@ -32,49 +39,81 @@
 	);
 
 	// adjustment only for base atk!
-	let manual_base_atk_inputs: string[] = $state([]);
+	let manual_base_atk_inputs: AtkStats5 = $state(['0', '0', '0', '0', '0']);
+	// @ts-expect-error
+	let base_atk_inputs: AtkStats5Number = $derived(
+		manual_base_atk_inputs.map((value) => {
+			return parseInt(value) || 0;
+		})
+	);
 
 	// other adjustments
 	let adjust_for_gear = $state(true);
 	let adjust_for_weapon = $state(true);
-
-	function getGearTotal() {
-		let stat_col = new StatCollection();
-
-		const equipped_gears = $user_loadouts[$current_loadout].equipped_gears;
-		for (const part in equipped_gears) {
-			const gear_id = equipped_gears[part as ValidGearPart];
-			if (gear_id !== null && gear_id !== -1) {
-				const new_stat = new StatCollection($gear_views[gear_id]);
-				stat_col = stat_col.add(new_stat);
-			}
-		}
-		return stat_col;
-	}
+	let adjust_for_blade_shot = $state(false);
+	let supercompute_adjust = $state('16');
 
 	function onButtonPress(btn: string | 'Finalize' | 'Cancel') {
 		if (btn === 'Finalize') {
+			if (!unadjusted_stats) {
+				return;
+			}
+
 			// save adjusted stats
-			// lets see what was calculated
-			const extra_stat = getGearTotal().calc_extra_atk_from(
-				unadjusted_stats,
-				manual_base_atk_inputs.map((value) => {
-					return parseInt(value) || 0;
-				})
+			let stat_col = new StatCollection();
+
+			if (adjust_for_gear) {
+				stat_col = stat_col.add(getGearTotal());
+			}
+
+			if (adjust_for_weapon) {
+				stat_col = stat_col.add(getWeaponTotal());
+			}
+
+			if (adjust_for_blade_shot) {
+				stat_col = stat_col.add(new StatCollection('atk_percent', 3.5));
+			}
+
+			if (supercompute_adjust) {
+				stat_col = stat_col.add(new StatCollection('atk_percent', parseInt(supercompute_adjust)));
+			}
+
+			// extra_stat comes from other sources that idk
+			// will be saved for stat adjustment
+			const extra_stat = stat_col.calc_extra_atk_from(unadjusted_stats, base_atk_inputs);
+
+			const real_base = stat_col.calc_real_base_stats(
+				unadjusted_stats as BaseStats16,
+				base_atk_inputs
 			);
 
-			console.log('Calculated extra_stat:', extra_stat);
+			$user_loadouts[$current_loadout].base_stats = real_base.map((value) =>
+				value.toString()
+			) as BaseStats14;
+			$user_loadouts[$current_loadout].stat_adj = {
+				unaccounted: extra_stat.data,
+				supercompute: parseInt(supercompute_adjust),
+				use_blade_shot: adjust_for_blade_shot
+			};
+			saveObject('loadouts_v1', $user_loadouts);
+			unadjusted_stats = null;
+
+			open = false;
 		} else {
 			open = false;
 		}
 	}
 
 	$effect(() => {
-		manual_base_atk_inputs = adj_raw_attributes_view.slice(3, 8);
+		manual_base_atk_inputs = adj_raw_attributes_view.slice(3, 8) as AtkStats5;
 	});
 
 	$effect(() => {
 		if (!$current_loadout) {
+			return;
+		}
+
+		if (!unadjusted_stats) {
 			return;
 		}
 
@@ -83,11 +122,20 @@
 		if (adjust_for_gear) {
 			stat_col = stat_col.add(getGearTotal());
 		}
+		if (adjust_for_weapon) {
+			stat_col = stat_col.add(getWeaponTotal());
+		}
+		if (adjust_for_blade_shot) {
+			// TODO: not enhanced one
+			stat_col = stat_col.add(new StatCollection({ atk_percent: 3.5 }));
+		}
 
-		adj_raw_attributes = stat_col.calc_base_from(unadjusted_stats);
+		if (supercompute_adjust) {
+			stat_col = stat_col.add(new StatCollection({ atk_percent: parseInt(supercompute_adjust) }));
+		}
+
+		adj_raw_attributes = stat_col.calc_loadout_base_stats(unadjusted_stats as BaseStats16);
 	});
-
-	$inspect('unadjusted stats', unadjusted_stats);
 </script>
 
 {#snippet make_button(
@@ -96,12 +144,13 @@
 	Lucide: Component,
 	id: string,
 	txt1: string,
-	txt2: string
+	txt2: string,
+	flip_icon: boolean = false
 )}
-	<button class="toggle" class:selected={toggle} {id} {onclick}>
+	<button class="toggle" class:selected={toggle} {id} {onclick} style="margin-top: 0.5rem;">
 		<div class="button-content">
 			<div style="position: relative;">
-				<Lucide />
+				<Lucide style={flip_icon ? 'transform: rotate(90deg);' : ''} />
 				{#if !toggle}
 					<div style="position: absolute; top: 0%; left: 0%;">
 						<SlashIcon />
@@ -116,79 +165,106 @@
 <Dialog
 	title="Stat Adjustment"
 	bind:open
-	buttons={unadjusted_stats.length > 0 ? ['Finalize', 'Cancel'] : ['Cancel']}
+	buttons={unadjusted_stats ? ['Finalize', 'Cancel'] : ['Cancel']}
 	primary="Finalize"
 	{onButtonPress}
 >
-	{#if unadjusted_stats.length > 0}
-		<div style="padding: 0.5rem;">
-			<FlexGrid
-				horizontal_gap="0.9rem"
-				vertical_gap="1rem"
-				min_cols={1}
-				max_cols={1}
-				prefer_divisible={false}
-			>
-				{#each raw_attribute_view.slice(3, 8) as attribute, index}
-					<div class="item-flex">
-						<div class="attribute-icon">
-							<img src={attribute.icon} alt={attribute.name + ' icon'} />
-						</div>
-						<div class="vertical-left">
-							<div class="stat-name">Base {attribute.name}</div>
-							<div class="stat-value-text">
-								{attribute.value}
+	{#if unadjusted_stats}
+		<FlexGrid
+			horizontal_gap="0.9rem"
+			vertical_gap="1rem"
+			min_cols={1}
+			max_cols={2}
+			prefer_divisible={false}
+		>
+			<div style="padding: 0.5rem;">
+				<FlexGrid
+					horizontal_gap="0.9rem"
+					vertical_gap="1rem"
+					min_cols={1}
+					max_cols={1}
+					prefer_divisible={false}
+				>
+					{#each raw_attribute_view.slice(3, 8) as attribute, index}
+						<div class="item-flex">
+							<div class="attribute-icon">
+								<img src={attribute.icon} alt={attribute.name + ' icon'} />
+							</div>
+							<div class="vertical-left">
+								<div class="stat-name">Base {attribute.name}</div>
+								<div class="stat-value-text">
+									{attribute.value}
 
-								{#if index <= 3}
-									{'➜ '}
-									<input
-										type="text"
-										class="stat-value"
-										bind:value={manual_base_atk_inputs[index]}
-										onblur={() => {
-											manual_base_atk_inputs[4] = Math.max(
-												...manual_base_atk_inputs.slice(0, 4).map((value) => {
-													return parseInt(value) || 0;
-												})
-											).toString();
-										}}
-										style="width: 8ch"
-									/>
-								{:else if index === 4}
-									{'➜ '}
-									{manual_base_atk_inputs[4]}
-								{/if}
+									{#if index <= 3}
+										{'➜ '}
+										<input
+											type="text"
+											class="stat-value"
+											bind:value={manual_base_atk_inputs[index]}
+											onblur={() => {
+												manual_base_atk_inputs[4] = Math.max(
+													...manual_base_atk_inputs.slice(0, 4).map((value) => {
+														return parseInt(value) || 0;
+													})
+												).toString();
+											}}
+											style="width: 8ch"
+										/>
+									{:else if index === 4}
+										{'➜ '}
+										{manual_base_atk_inputs[4]}
+									{/if}
+								</div>
 							</div>
 						</div>
-					</div>
-				{/each}
-			</FlexGrid>
-		</div>
+					{/each}
+				</FlexGrid>
+			</div>
 
-		<h3>Adjustments</h3>
+			<div class="vertical">
+				<h3>Adjustments</h3>
 
-		<div class="horizontal" style="margin-top: 1rem;">
-			{@render make_button(
-				adjust_for_gear,
-				() => {
-					adjust_for_gear = !adjust_for_gear;
-				},
-				ShirtIcon,
-				'adjust-for-weapon',
-				'Adjust for weapon',
-				"Don't adjust for weapon"
-			)}
-			{@render make_button(
-				adjust_for_weapon,
-				() => {
-					adjust_for_weapon = !adjust_for_weapon;
-				},
-				SwordIcon,
-				'adjust-for-weapon',
-				'Adjust for weapon',
-				"Don't adjust for weapon"
-			)}
-		</div>
+				{@render make_button(
+					adjust_for_gear,
+					() => {
+						adjust_for_gear = !adjust_for_gear;
+					},
+					ShirtIcon,
+					'adjust-for-gear',
+					'Adjust for gear',
+					"Don't adjust for gear"
+				)}
+				{@render make_button(
+					adjust_for_weapon,
+					() => {
+						adjust_for_weapon = !adjust_for_weapon;
+					},
+					SwordIcon,
+					'adjust-for-weapon',
+					'Adjust for weapon',
+					"Don't adjust for weapon"
+				)}
+				{@render make_button(
+					adjust_for_blade_shot,
+					() => {
+						adjust_for_blade_shot = !adjust_for_blade_shot;
+					},
+					SyringeIcon,
+					'adjust-for-blade-shot',
+					'Adjust for drug (3.5%)',
+					"Don't adjust for drug (3.5%)",
+					true
+				)}
+				<div class="horizontal center-hori" style="margin-top: 2.5rem;">
+					<label for="supercompute-adjust" style="font-weight: bold; ">Supercompute (%):</label>
+					<input
+						id="supercompute-adjust"
+						bind:value={supercompute_adjust}
+						style="width: 4ch; text-align: right;"
+					/>
+				</div>
+			</div>
+		</FlexGrid>
 	{:else}
 		<p>No stat to adjust, upload a screenshot first!</p>
 	{/if}

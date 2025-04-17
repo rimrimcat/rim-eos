@@ -1,7 +1,14 @@
 import type {
 	AllStats,
+	AtkStats5Number,
+	BaseStats14,
+	BaseStats14Number,
+	BaseStats16,
+	BaseStats16Number,
 	GearView,
 	StatData,
+	StatGearFinal,
+	StatGearFinalUseful,
 	StatGearTitan,
 	StatGearUser,
 	StatKey
@@ -217,6 +224,41 @@ const KEYS_ATK_PERCENT: StatGearUser[] = [
 	'volt_atk_percent',
 	'alt_atk_percent'
 ];
+const STAT_GEAR_FINAL_KEYS: StatGearFinalUseful[] = [
+	'hp',
+	'crit',
+	'crit_percent',
+	'phys_atk',
+	'flame_atk',
+	'frost_atk',
+	'volt_atk',
+	'alt_atk',
+	'crit_dmg_percent',
+	'phys_res',
+	'flame_res',
+	'frost_res',
+	'volt_res',
+	'alt_res'
+];
+
+export const TEMPLATE_USER_ATTRIBUTES: { key: StatGearFinal; icon: string }[] = [
+	{ key: 'hp', icon: './stat/hp.webp' },
+	{ key: 'crit', icon: './stat/crit.webp' },
+	{ key: 'crit_percent', icon: './stat/crit.webp' },
+	{ key: 'phys_atk', icon: './stat/physatk.webp' },
+	{ key: 'flame_atk', icon: './stat/flameatk.webp' },
+	{ key: 'frost_atk', icon: './stat/frostatk.webp' },
+	{ key: 'volt_atk', icon: './stat/voltatk.webp' },
+	{ key: 'alt_atk', icon: './stat/placeholder.webp' },
+	{ key: 'end', icon: './stat/placeholder.webp' },
+	{ key: 'end_regen', icon: './stat/placeholder.webp' },
+	{ key: 'crit_dmg_percent', icon: './stat/placeholder.webp' },
+	{ key: 'phys_res', icon: './stat/physres.webp' },
+	{ key: 'flame_res', icon: './stat/flameres.webp' },
+	{ key: 'frost_res', icon: './stat/frostres.webp' },
+	{ key: 'volt_res', icon: './stat/voltres.webp' },
+	{ key: 'alt_res', icon: './stat/placeholder.webp' }
+];
 
 export class StatCollection {
 	public data: StatData = {};
@@ -224,14 +266,35 @@ export class StatCollection {
 	constructor();
 	constructor(stat: StatData);
 	constructor(stat: GearView);
-	constructor(stat: StatGearUser, value: number);
+	constructor(stat: BaseStats14);
+	constructor(stat: BaseStats14Number);
+	constructor(stat: StatKey, value: number);
 	constructor(stat: StatGearTitan, value: number);
-	constructor(stat?: StatKey | StatGearTitan | StatData | GearView, value?: number) {
+	constructor(
+		stat?: StatKey | StatGearTitan | StatData | GearView | BaseStats14 | BaseStats14Number,
+		value?: number
+	) {
 		if (stat === undefined) {
 			this.data = {};
 		} else if (typeof stat === 'string') {
 			this.data = {};
 			this.data[stat.replace('titan_', '') as StatGearUser] = value ?? 0;
+		} else if (Array.isArray(stat)) {
+			this.data = {};
+
+			if (stat.length === 14) {
+				if (typeof stat[0] === 'string') {
+					for (let i = 0; i < 14; i++) {
+						this.data[STAT_GEAR_FINAL_KEYS[i]] = parseFloat(stat[i] as string);
+					}
+				} else {
+					for (let i = 0; i < 14; i++) {
+						this.data[STAT_GEAR_FINAL_KEYS[i]] = stat[i] as number;
+					}
+				}
+			} else {
+				throw new Error('Invalid base stats length!');
+			}
 		} else if (typeof stat === 'object') {
 			if ('derived' in stat) {
 				this.data = {};
@@ -250,6 +313,16 @@ export class StatCollection {
 
 	get(stat: StatKey): number {
 		return this.data[stat] ?? 0;
+	}
+
+	put(stat: StatKey, value: number) {
+		this.data[stat] = value;
+	}
+
+	pop(stat: StatKey) {
+		const value = this.data[stat];
+		delete this.data[stat];
+		return value;
 	}
 
 	clone_data(): StatData {
@@ -292,28 +365,69 @@ export class StatCollection {
 		return new StatCollection(new_data);
 	}
 
-	/**
-	 * Calculates the base stat assuming that this (StatCollection) encompasses all buffs.
-	 * @param {string[]} final_stats - Stats as seen on the character screen.
-	 * @returns Calculated base stats
-	 */
-	calc_base_from(final_stats: string[]): number[] {
-		if (Object.keys(this.data).length === 0) {
-			return final_stats.map((value) => parseFloat(value));
+	to_displayed_stats(): BaseStats14Number {
+		const new_d = this.clone_data();
+		new_d.hp = this.get('hp') * (1 + this.get('hp_percent') / 100);
+		new_d.crit = this.get('crit');
+		new_d.crit_percent = this.get('crit_percent');
+		new_d.phys_atk =
+			(this.get('atk') + this.get('phys_atk')) *
+			(1 + (this.get('atk_percent') + this.get('phys_atk_percent')) / 100);
+		new_d.flame_atk =
+			(this.get('atk') + this.get('flame_atk')) *
+			(1 + (this.get('atk_percent') + this.get('flame_atk_percent')) / 100);
+		new_d.frost_atk =
+			(this.get('atk') + this.get('frost_atk')) *
+			(1 + (this.get('atk_percent') + this.get('frost_atk_percent')) / 100);
+		new_d.volt_atk =
+			(this.get('atk') + this.get('volt_atk')) *
+			(1 + (this.get('atk_percent') + this.get('volt_atk_percent')) / 100);
+		new_d.alt_atk =
+			(Math.max(new_d.phys_atk, new_d.flame_atk, new_d.frost_atk, new_d.volt_atk) +
+				this.get('alt_atk')) *
+			(1 + this.get('alt_atk_percent') / 100);
+		new_d.crit_dmg_percent = this.get('crit_dmg_percent');
+		new_d.phys_res =
+			(this.get('res') + this.get('phys_res')) *
+			(1 + this.get('res_percent') / 100 + this.get('phys_res_percent') / 100);
+		new_d.flame_res =
+			(this.get('res') + this.get('flame_res')) *
+			(1 + this.get('res_percent') / 100 + this.get('flame_res_percent') / 100);
+		new_d.frost_res =
+			(this.get('res') + this.get('frost_res')) *
+			(1 + this.get('res_percent') / 100 + this.get('frost_res_percent') / 100);
+		new_d.volt_res =
+			(this.get('res') + this.get('volt_res')) *
+			(1 + this.get('res_percent') / 100 + this.get('volt_res_percent') / 100);
+		new_d.alt_res =
+			(this.get('res') + this.get('alt_res')) *
+			(1 + this.get('res_percent') / 100 + this.get('alt_res_percent') / 100);
+
+		const base_stats: number[] = [];
+
+		for (const key of STAT_GEAR_FINAL_KEYS) {
+			base_stats.push((new_d as { [key in StatGearFinalUseful]: number })[key]);
 		}
 
+		return base_stats as BaseStats14Number;
+	}
+
+	/**
+	 * Calculates the base stat assuming that this encompasses all buffs.
+	 * @param {BaseStats16} final_stats - Stats as seen on the character screen.
+	 * @returns Calculated base stats
+	 */
+	calc_loadout_base_stats(final_stats: BaseStats16): BaseStats16Number {
 		// value correspond to index in StatGearFinal
 		const base_stats: number[] = [];
 
 		for (let i = 0; i < final_stats.length; i++) {
 			switch (i) {
 				case 0: // hp
-					base_stats.push(
-						parseInt(final_stats[i]) / (1 + this.get('hp_percent') / 100) - this.get('hp')
-					);
+					base_stats.push(parseInt(final_stats[i]) / (1 + this.get('hp_percent') / 100));
 					break;
 				case 1: // crit
-					base_stats.push(parseInt(final_stats[i]) - this.get('crit'));
+					base_stats.push(parseInt(final_stats[i]));
 					break;
 				case 2: // crit_percent
 					base_stats.push(parseFloat(final_stats[i]) - this.get('crit_percent'));
@@ -321,35 +435,30 @@ export class StatCollection {
 				case 3: // phys_atk
 					base_stats.push(
 						parseInt(final_stats[i]) /
-							(1 + this.get('phys_atk_percent') / 100 + this.get('atk_percent') / 100) -
-							(this.get('phys_atk') + this.get('atk'))
+							(1 + this.get('phys_atk_percent') / 100 + this.get('atk_percent') / 100)
 					);
 					break;
 				case 4: // flame_atk
 					base_stats.push(
 						parseInt(final_stats[i]) /
-							(1 + this.get('flame_atk_percent') / 100 + this.get('atk_percent') / 100) -
-							(this.get('flame_atk') + this.get('atk'))
+							(1 + this.get('flame_atk_percent') / 100 + this.get('atk_percent') / 100)
 					);
 					break;
 				case 5: // frost_atk
 					base_stats.push(
 						parseInt(final_stats[i]) /
-							(1 + this.get('frost_atk_percent') / 100 + this.get('atk_percent') / 100) -
-							(this.get('frost_atk') + this.get('atk'))
+							(1 + this.get('frost_atk_percent') / 100 + this.get('atk_percent') / 100)
 					);
 					break;
 				case 6: // volt_atk
 					base_stats.push(
 						parseInt(final_stats[i]) /
-							(1 + this.get('volt_atk_percent') / 100 + this.get('atk_percent') / 100) -
-							(this.get('volt_atk') + this.get('atk'))
+							(1 + this.get('volt_atk_percent') / 100 + this.get('atk_percent') / 100)
 					);
 					break;
 				case 7: {
-					// alt_atk
-					const alt_atk = Math.max(...base_stats.slice(3, 7));
-					base_stats.push(alt_atk / (1 + this.get('alt_atk_percent') / 100) - this.get('alt_atk'));
+					// alt_atk, shouldnt matter anyway
+					base_stats.push(Math.max(...base_stats.slice(3, 7)));
 					break;
 				}
 				case 8: // end
@@ -362,40 +471,129 @@ export class StatCollection {
 					base_stats.push(parseFloat(final_stats[i]) - this.get('crit_dmg_percent'));
 					break;
 				case 11: // phys_res
-					base_stats.push(parseInt(final_stats[i]) - this.get('phys_res') - this.get('res'));
+					base_stats.push(parseInt(final_stats[i]) / (1 + this.get('phys_res_percent') / 100));
 					break;
 				case 12: // flame_res
-					base_stats.push(parseInt(final_stats[i]) - this.get('flame_res') - this.get('res'));
+					base_stats.push(parseInt(final_stats[i]) / (1 + this.get('flame_res_percent') / 100));
 					break;
 				case 13: // frost_res
-					base_stats.push(parseInt(final_stats[i]) - this.get('frost_res') - this.get('res'));
+					base_stats.push(parseInt(final_stats[i]) / (1 + this.get('frost_res_percent') / 100));
 					break;
 				case 14: // volt_res
-					base_stats.push(parseInt(final_stats[i]) - this.get('volt_res') - this.get('res'));
+					base_stats.push(parseInt(final_stats[i]) / (1 + this.get('volt_res_percent') / 100));
 					break;
 				case 15: // alt_res
-					base_stats.push(parseInt(final_stats[i]) - this.get('alt_res') - this.get('res'));
+					base_stats.push(parseInt(final_stats[i]) / (1 + this.get('alt_res_percent') / 100));
 					break;
 			}
 		}
 
-		return base_stats;
+		return base_stats as BaseStats16Number;
+	}
+
+	/**
+	 * Calculates the real base stats
+	 * @param {number[]} base_atk_stats - Base atk stats as seen on the character screen.
+	 * @returns
+	 */
+	calc_real_base_stats(
+		final_stats: BaseStats16,
+		base_atk_stats: AtkStats5Number
+	): BaseStats14Number {
+		// iterate through base_atk_stats
+		const final_base_stats: number[] = [];
+
+		for (let i = 0; i < final_stats.length; i++) {
+			switch (i) {
+				case 0: // hp
+					final_base_stats.push(
+						parseInt(final_stats[i]) / (1 + this.get('hp_percent') / 100) - this.get('hp')
+					);
+					break;
+				case 1: // crit
+					final_base_stats.push(parseInt(final_stats[i]) - this.get('crit'));
+					break;
+				case 2: // crit_percent
+					final_base_stats.push(parseFloat(final_stats[i]) - this.get('crit_percent'));
+					break;
+				case 3: // phys_atk
+					final_base_stats.push(base_atk_stats[0] - this.get(KEYS_ATK[0]) - this.get('atk'));
+					break;
+				case 4: // flame_atk
+					final_base_stats.push(base_atk_stats[1] - this.get(KEYS_ATK[1]) - this.get('atk'));
+					break;
+				case 5: // frost_atk
+					final_base_stats.push(base_atk_stats[2] - this.get(KEYS_ATK[2]) - this.get('atk'));
+					break;
+				case 6: // volt_atk
+					final_base_stats.push(base_atk_stats[3] - this.get(KEYS_ATK[3]) - this.get('atk'));
+					break;
+				case 7: // alt atk
+					final_base_stats.push(0);
+					break;
+				case 10: // crit_damage
+					final_base_stats.push(50);
+					break;
+				case 11: // phys_res
+					final_base_stats.push(
+						parseInt(final_stats[i]) / (1 + this.get('phys_res_percent') / 100) -
+							this.get('phys_res')
+					);
+					break;
+				case 12: // flame_res
+					final_base_stats.push(
+						parseInt(final_stats[i]) / (1 + this.get('flame_res_percent') / 100) -
+							this.get('flame_res')
+					);
+					break;
+				case 13: // frost_res
+					final_base_stats.push(
+						parseInt(final_stats[i]) / (1 + this.get('frost_res_percent') / 100) -
+							this.get('frost_res')
+					);
+					break;
+				case 14: // volt_res
+					final_base_stats.push(
+						parseInt(final_stats[i]) / (1 + this.get('volt_res_percent') / 100) -
+							this.get('volt_res')
+					);
+					break;
+				case 15: // alt_res
+					final_base_stats.push(
+						parseInt(final_stats[i]) / (1 + this.get('alt_res_percent') / 100) - this.get('alt_res')
+					);
+					break;
+				default:
+					break;
+			}
+		}
+
+		// round stats to nearest integer
+		final_base_stats.forEach((value, index) => {
+			if (index === 2 || index === 8) {
+				return;
+			}
+
+			final_base_stats[index] = Math.round(value);
+		});
+
+		return final_base_stats as BaseStats14Number;
 	}
 
 	/**
 	 * Calculates the extra atk percent stats required to reach the final stats, given the base_atk_stats.
-	 * @param {string[]} final_stats - Final stats as seen on the character screen.
+	 * @param {BaseStats16} final_stats - Final stats as seen on the character screen.
 	 * @param {number[]} base_atk_stats - Base atk stats as seen on the character screen.
 	 * @returns Calculated extra stats.
 	 */
-	calc_extra_atk_from(final_stats: string[], base_atk_stats: number[]): StatCollection {
+	calc_extra_atk_from(final_stats: BaseStats16, base_atk_stats: AtkStats5Number): StatCollection {
 		// iterate through base_atk_stats
 		const new_data: StatData = {};
 
 		for (let i = 0; i < base_atk_stats.length - 1; i++) {
 			new_data[KEYS_ATK_PERCENT[i]] =
-				(parseInt(final_stats[i + 3]) / (base_atk_stats[i] + this.get(KEYS_ATK[i])) -
-					(1 + this.get(KEYS_ATK_PERCENT[i]) / 100)) *
+				(parseInt(final_stats[i + 3]) / base_atk_stats[i] -
+					(1 + (this.get(KEYS_ATK_PERCENT[i]) + this.get('atk_percent')) / 100)) *
 				100;
 		}
 

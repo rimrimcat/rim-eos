@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { createGearView } from '$lib/scripts/gears';
 	import { loadStatConstants } from '$lib/scripts/json-loader';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
+	import { updateWeaponMatrix } from '$lib/scripts/loadout';
 	import {
 		current_loadout,
 		font_size,
@@ -15,7 +17,6 @@
 	import { AppWindowIcon } from '@lucide/svelte';
 	import { onMount, type Component } from 'svelte';
 	import Dialog from './Dialog.svelte';
-	import { createGearView } from './nav/GearPage.svelte';
 	import ReadySignal from './ReadySignal.svelte';
 	import Toolbar from './Toolbar.svelte';
 
@@ -70,12 +71,13 @@
 
 		// processing
 		await loadStatConstants(); // need this for gear proecssing
-		Promise.all(
-			$user_gears.map((gear) => createGearView(gear, false, $user_loadouts, $current_loadout))
-		).then((gearViews) => {
+		Promise.all($user_gears.map((gear) => createGearView(gear, false))).then((gearViews) => {
 			$gear_views = gearViews;
 			console.log('Done processing user_gears');
 		});
+
+		// create gear and matrix views
+		await updateWeaponMatrix();
 	});
 </script>
 
@@ -99,7 +101,8 @@
 	<div
 		class="vertical content-container"
 		class:mobile={is_mobile}
-		style="translate: 0 {$toolbar_transform}px; padding-bottom: {$toolbar_transform}px"
+		style="translate: 0 {$toolbar_transform}px; padding-bottom: {$toolbar_transform +
+			$font_size * 3}px"
 		onscroll={(e: UIEvent) => {
 			$scroll_y = (e.target as HTMLElement).scrollTop;
 		}}
@@ -227,6 +230,14 @@
 	}
 
 	:global(.horizontal.center) {
+		justify-content: center;
+	}
+
+	:global(div.horizontal.center-hori) {
+		align-items: center;
+	}
+
+	:global(div.horizontal.center-vert) {
 		justify-content: center;
 	}
 

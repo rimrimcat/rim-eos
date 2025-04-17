@@ -76,6 +76,25 @@ export type StatGearTitan =
 /**
  * Stats that are finalized on character screen
  */
+export type StatGearFinalUseful =
+	| 'hp'
+	| 'crit'
+	| 'crit_percent'
+	| 'phys_atk'
+	| 'flame_atk'
+	| 'frost_atk'
+	| 'volt_atk'
+	| 'alt_atk'
+	| 'crit_dmg_percent'
+	| 'phys_res'
+	| 'flame_res'
+	| 'frost_res'
+	| 'volt_res'
+	| 'alt_res';
+
+/**
+ * Stats that are finalized on character screen
+ */
 export type StatGearFinal =
 	| 'hp'
 	| 'crit'
@@ -156,3 +175,79 @@ export type StatConstants = Record<StatGearUser, StatConstant>;
 export type StatData = {
 	[key in StatKey]?: number;
 };
+
+// still thinking where to move these
+export type BaseStats14 = [
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string
+];
+
+export type BaseStats14Number = [
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number
+];
+
+export type BaseStats16 = [
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string,
+	string
+];
+
+export type BaseStats16Number = [
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number,
+	number
+];
+
+export type AtkStats5 = [string, string, string, string, string];
+export type AtkStats5Number = [number, number, number, number, number];

@@ -1,22 +1,34 @@
 <script lang="ts">
-	import ActionToolbar from '$lib/components/ActionToolbar.svelte';
 	import StatAdjust from '$lib/components/dialog/StatAdjust.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
-	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader.ts';
-	import { ActionType } from '$lib/scripts/nav-metadata';
-	import { STAT_LABELS } from '$lib/scripts/stats';
+	import { saveObject } from '$lib/scripts/loader.ts';
+	import { createAttributeView } from '$lib/scripts/loadout';
 	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
-	import { formatValue } from '$lib/scripts/validation.ts';
-	import type { CharacterStat } from '$lib/types/index';
-	import { ChartNoAxesColumn, ImagePlus, Trash2 } from '@lucide/svelte';
+	import type { BaseStats14, BaseStats16, CharacterStat } from '$lib/types/index';
+	import { ChartNoAxesColumnIcon, ImagePlusIcon } from '@lucide/svelte';
 	import type * as OpenCV from '@techstark/opencv-js';
 	import cv from '@techstark/opencv-js';
 	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
 
 	// State
-	let base_stats: string[] = $state([]);
+	let base_stats: BaseStats14 = $state([
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0',
+		'0'
+	]);
 	let attribute_view: CharacterStat[] = $state([]);
 
 	// Screenshot Dialog
@@ -26,21 +38,7 @@
 
 	// Stat Adjust Dialog
 	let stat_adjust_dialog_open = $state(false);
-	let unadjusted_stats: string[] = $state([]);
-
-	function processAttributes() {
-		// TODO: later on, this should adjust depending on the not-yet created Loadout.stat_adj object
-		attribute_view = TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
-			const __val = base_stats[index];
-			const __use_percent = index === 2 || index === 10;
-
-			return {
-				...attr,
-				name: STAT_LABELS[attr.key],
-				value: __use_percent ? formatValue('float3d', __val) : formatValue('int', __val)
-			};
-		});
-	}
+	let unadjusted_stats: null | BaseStats16 = $state(null);
 
 	function saveAttributes() {
 		$user_loadouts[$current_loadout].base_stats = base_stats;
@@ -52,7 +50,7 @@
 		const box_width = Math.round(0.23 * w);
 		const box_height = Math.round(0.047 * h);
 
-		const box_start_x = Math.round(0.061 * w) + off_x;
+		const box_start_x = Math.round(0.062 * w) + off_x;
 		const box_start_y = 0.922 * h + off_y;
 
 		const box_start_x_2 = Math.round(0.625 * w) + off_x;
@@ -83,6 +81,24 @@
 		imageUpdateCallback: ((img: OpenCV.Mat) => Promise<void>) | null = null
 	) {
 		const attr_arr: number[] = [7, 15, 6, 14, 5, 13, 4, 12, 3, 11, 2, 10, 1, 9, 0, 8];
+		unadjusted_stats = [
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0',
+			'0'
+		];
 
 		const worker = await createWorker('eng');
 		let done_tasks = 0;
@@ -96,6 +112,10 @@
 			const data_url = canvas.toDataURL();
 
 			const ret = await worker.recognize(data_url);
+
+			if (!unadjusted_stats) {
+				throw new Error('unadjusted_stats is null!');
+			}
 			unadjusted_stats[attr_arr[index]] = ret.data.text.replace('%', '').replace('/', '');
 			console.log('OCR Text:', ret.data.text);
 
@@ -137,9 +157,8 @@
 			}
 			await worker.terminate();
 
-			// TODO: add a new prompt here asking if user wants to save stats
 			saveAttributes();
-			processAttributes();
+			attribute_view = createAttributeView(base_stats);
 			process_text = 'Done!';
 		}
 	}
@@ -303,32 +322,10 @@
 		// processAttributes();
 	}
 
-	const ACTIONS = [
-		{
-			id: 'screenshot',
-			label: 'From Screenshot',
-			lucide: ImagePlus,
-			type: ActionType.BUTTON,
-			callback: () => (screenshot_dialog_open = true)
-		},
-		{
-			id: 'adjust',
-			label: 'Adjust Attack Stats',
-			lucide: ChartNoAxesColumn,
-			type: ActionType.BUTTON,
-			callback: () => (stat_adjust_dialog_open = true)
-		},
-		{ id: 'reset', label: 'Reset', lucide: Trash2, type: ActionType.BUTTON, callback: resetStats }
-		// { id: 'share', label: 'Share' }
-	];
-
 	onMount(() => {
-		// load and process attributes
-		// TODO: change the way of loading after setting up
 		if (Object.keys($user_loadouts).length > 0) {
 			base_stats = $user_loadouts[$current_loadout].base_stats;
-			unadjusted_stats = base_stats; // TEMPORARY!!!
-			processAttributes();
+			attribute_view = createAttributeView(base_stats);
 		}
 	});
 </script>
@@ -339,7 +336,34 @@
 
 <div class="stat-panel">
 	<h1>Character Stats</h1>
-	<p>This page might undergo overhaul soon, just waiting for gear page to be completed.</p>
+
+	{#if unadjusted_stats && unadjusted_stats.length > 0}
+		<p>
+			Unadjusted stats are shown in the table below. Uploaded stats won't be effective until
+			adjustment is done.
+		</p>
+		<div style="margin-bottom: 1.5rem;">
+			<button
+				class="image border"
+				id="stat-adjustment"
+				onclick={() => (stat_adjust_dialog_open = true)}
+			>
+				<ChartNoAxesColumnIcon />
+				<label class="in-button" for="stat-adjustment">Stat Adjustment</label>
+			</button>
+		</div>
+	{:else}
+		<div style="margin-bottom: 1.5rem;">
+			<button
+				class="image border"
+				id="upload-stats"
+				onclick={() => (screenshot_dialog_open = true)}
+			>
+				<ImagePlusIcon />
+				<label class="in-button" for="upload-stats">Upload Stats</label>
+			</button>
+		</div>
+	{/if}
 
 	<FlexGrid
 		horizontal_gap="0.9rem"
@@ -363,7 +387,11 @@
 								role="textbox"
 								tabindex={10 + index}
 							>
-								{attribute.value}
+								{#if unadjusted_stats}
+									<input type="text" bind:value={unadjusted_stats[index]} style="width: 8ch;" />
+								{:else}
+									{attribute.value}
+								{/if}
 							</span>
 						</div>
 					</div>
@@ -384,7 +412,7 @@
 
 <StatAdjust bind:open={stat_adjust_dialog_open} bind:unadjusted_stats />
 
-<ActionToolbar actions={ACTIONS} />
+<!-- <ActionToolbar actions={ACTIONS} /> -->
 
 <style>
 	.stat-panel {

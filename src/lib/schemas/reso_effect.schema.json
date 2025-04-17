@@ -193,6 +193,9 @@
         "phys_res_percent": {
           "type": "number"
         },
+        "crit_dmg_percent": {
+          "type": "number"
+        },
         "atk_percent": {
           "type": "number"
         },
@@ -203,9 +206,6 @@
           "type": "number"
         },
         "ele_dmg_percent": {
-          "type": "number"
-        },
-        "crit_dmg_percent": {
           "type": "number"
         },
         "healing_percent": {

@@ -1,175 +1,3 @@
-<script module lang="ts">
-	export const RAINBOW_TITAN_STATS: TitanStat[] = [
-		'titan_flame_atk',
-		'titan_frost_atk',
-		'titan_volt_atk',
-		'titan_phys_atk'
-	];
-
-	export function getRollValue(stat: Stat, value: number): number {
-		const stc = STAT_CONSTANTS[stat];
-		return ((value - stc.base) * 2) / (stc.high_roll + stc.low_roll);
-	}
-
-	export function getTitanValue(stat: Stat, value: number): number {
-		const stc = STAT_CONSTANTS[stat];
-		return stc.titan_base + stc.titan_multiplier * (value - stc.base);
-	}
-
-	export function reverseTitanValue(stat: Stat, titanValue: number): number {
-		const stc = STAT_CONSTANTS[stat];
-		return (
-			(titanValue - stc.titan_base + stc.titan_multiplier * stc.base) / (1 + stc.titan_multiplier)
-		);
-	}
-
-	export async function createGearView(
-		gear: UserGear,
-		equip: boolean = false,
-		user_loadouts: AllLoadouts,
-		current_loadout: string
-	): Promise<GearView> {
-		const stats: GearViewStatLong[] = [];
-		const derived: GearViewStatShort[] = [];
-		let id: number = -1;
-		let part: GearPart = GearPart.UNKNOWN;
-		let hash = '';
-
-		Object.entries(gear).forEach(([key, value]) => {
-			switch (key) {
-				case 'id':
-					id = value as number;
-					break;
-				case 'part':
-					part = value as GearPart;
-					hash += value;
-					break;
-				case 'dateAdded':
-					break;
-				default:
-					const isTitan = key.startsWith('titan_');
-					const value_format = key.includes('_percent') ? 'float3d' : 'int';
-
-					let _stat: Stat;
-					let _stat_value: number;
-					let stat_label: string;
-					let stat_value_label: string;
-
-					let titan_key: TitanStat;
-					let titan_label: string;
-					let titan_value: number;
-					let titan_value_label: string;
-
-					if (isTitan) {
-						// derive normal stat from corresponding titan stat
-						titan_key = key as TitanStat;
-						titan_label = STAT_LABELS[titan_key] ?? key;
-						titan_value = Number(value);
-						titan_value_label = formatValue(value_format, value as string);
-
-						_stat = key.replace('titan_', '') as Stat;
-						_stat_value = reverseTitanValue(_stat, titan_value);
-						stat_label = STAT_LABELS[_stat] ?? key;
-						stat_value_label = formatValue(value_format, _stat_value.toString());
-					} else {
-						_stat = key as Stat;
-						_stat_value = Number(value);
-						stat_label = STAT_LABELS[_stat] ?? key;
-						stat_value_label = formatValue(value_format, _stat_value.toString());
-
-						titan_key = 'titan_' + _stat;
-						titan_label = 'Titan ' + stat_label;
-						titan_value = getTitanValue(_stat, _stat_value) + _stat_value;
-						titan_value_label = formatValue(value_format, titan_value.toString());
-					}
-
-					stats.push({
-						stat: _stat,
-						stat_label,
-						value: _stat_value,
-						value_label: stat_value_label,
-						roll: getRollValue(_stat, _stat_value),
-						titan_stat_label: titan_label,
-						titan_value_label: titan_value_label
-					});
-
-					// normal stat
-					derived.push({
-						stat: _stat,
-						stat_label,
-						value: _stat_value,
-						value_label: stat_value_label
-					});
-
-					// titan stat
-					derived.push({
-						stat: titan_key as TitanStat,
-						stat_label: titan_label,
-						value: titan_value,
-						value_label: titan_value_label
-					});
-
-					hash += _stat + stat_value_label;
-
-					break;
-			}
-		});
-		stats.sort((a, b) => (b.roll ?? 0) - (a.roll ?? 0));
-
-		// get highest roll stat
-		const bestRoll = stats[0];
-
-		if (bestRoll.stat.includes('_atk') && !bestRoll.stat.includes('percent')) {
-			const eleAtkStats = stats.filter(
-				(stat) => stat.stat.includes('_atk') && !stat.stat.includes('percent')
-			);
-
-			if (eleAtkStats.length >= 2) {
-				// rainbow gear!
-
-				const rainbowTitanValue =
-					getTitanValue(bestRoll.stat, bestRoll.value) * 0.95 + bestRoll.value;
-				const rainbowTitanValueLabel = formatValue('int', rainbowTitanValue.toString());
-				RAINBOW_TITAN_STATS.forEach((rainbowStat) => {
-					const statIdx = derived.findIndex((der) => der.stat === rainbowStat);
-
-					if (statIdx === -1) {
-						// add rainbow stat if missing
-						derived.push({
-							stat: rainbowStat,
-							stat_label: STAT_LABELS[rainbowStat],
-							value: rainbowTitanValue,
-							value_label: rainbowTitanValueLabel
-						});
-					} else {
-						// replace value if rainbow is higher
-						if (rainbowTitanValue > derived[statIdx].value) {
-							derived[statIdx].value = rainbowTitanValue;
-							derived[statIdx].value_label = rainbowTitanValueLabel;
-						}
-					}
-				});
-			}
-
-			// todo: the same for atk%
-		}
-
-		const isEquipped =
-			equip ||
-			(part !== GearPart.UNKNOWN &&
-				user_loadouts[current_loadout].equipped_gears[gear.part as ValidGearPart] === gear.id);
-
-		return {
-			id,
-			part,
-			stats,
-			hash,
-			derived,
-			isEquipped
-		};
-	}
-</script>
-
 <script lang="ts">
 	import ActionToolbar from '$lib/components/ActionToolbar.svelte';
 	import GearInfo from '$lib/components/dialog/GearInfo.svelte';
@@ -177,11 +5,14 @@
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
 	import StatIcon from '$lib/components/StatIcon.svelte';
-	import { ALL_STATS_REGEX, GearPart, VALID_GEAR_PARTS } from '$lib/scripts/gears.ts';
-	import { STAT_CONSTANTS } from '$lib/scripts/json-loader';
+	import {
+		ALL_STATS_REGEX,
+		createGearView,
+		GearPart,
+		VALID_GEAR_PARTS
+	} from '$lib/scripts/gears.ts';
 	import { saveObject } from '$lib/scripts/loader.ts';
 	import { ActionType } from '$lib/scripts/nav-metadata';
-	import { STAT_LABELS } from '$lib/scripts/stats.ts';
 	import {
 		current_loadout,
 		gear_views,
@@ -189,20 +20,16 @@
 		user_gears,
 		user_loadouts
 	} from '$lib/scripts/stores';
-	import { formatValue } from '$lib/scripts/validation.ts';
 	import type {
-		AllLoadouts,
 		AllStats,
+		GearAugment,
 		GearSearchView,
 		GearView,
-		GearViewStatLong,
-		GearViewStatShort,
 		StatGearUser as Stat,
-		StatGearTitan as TitanStat,
 		UserGear,
 		ValidGearPart
 	} from '$lib/types/index';
-	import { eval as evall, parse } from '@casbin/expression-eval';
+	import { eval as evil, parse } from '@casbin/expression-eval';
 	import {
 		CaseSensitiveIcon,
 		DiamondIcon,
@@ -249,7 +76,7 @@
 		{ position: 'bottom-right', index: 3 }
 	];
 
-	const OCR_KEY_MAP = {
+	const OCR_RANDOM_STAT_MAP: Record<string, string> = {
 		hp: 'hp',
 		atk: 'atk',
 		crit: 'crit',
@@ -269,7 +96,22 @@
 		'volt resistance': 'volt_res',
 		'physical resistance': 'phys_res',
 		'alt resistance': 'alt_res'
-	} as const;
+	};
+
+	const OCR_AUGMENT_STAT_MAP: Record<string, GearAugment> = {
+		delay: 'delay',
+		'increased healing': 'increased_healing',
+		lifesteal: 'lifesteal',
+		'hp recovery': 'hp_recovery',
+		block: 'block',
+		'damage reduction': 'dmg_reduction',
+		'damage boost': 'dmg_boost',
+		'weak point damage boost': 'weakpoint',
+		'normal attack damage boost': 'normal_atk_dmg_boost',
+		'dodge attack damage boost': 'dodge_atk_dmg_boost',
+		'skill damage boost': 'skill_dmg_boost',
+		'discharge damage boost': 'discharge_dmg_boost'
+	};
 
 	const OCR_PART_MAP: Record<string, GearPart> = {
 		helm: GearPart.HELMET,
@@ -289,13 +131,6 @@
 		exoskeleton: GearPart.EXOSKELETON,
 		microreactor: GearPart.REACTOR
 	};
-
-	const RAINBOW_TITAN_STATS: TitanStat[] = [
-		'titan_flame_atk',
-		'titan_frost_atk',
-		'titan_volt_atk',
-		'titan_phys_atk'
-	];
 
 	function decrementGearId(start: number = 0) {
 		if (start == $user_gears.length) {
@@ -336,149 +171,6 @@
 		}
 
 		saveObject('loadouts_v1', $user_loadouts);
-	}
-
-	async function createGearView(gear: UserGear, equip: boolean = false): Promise<GearView> {
-		const stats: GearViewStatLong[] = [];
-		const derived: GearViewStatShort[] = [];
-		let id: number = -1;
-		let part: GearPart = GearPart.UNKNOWN;
-		let hash = '';
-
-		Object.entries(gear).forEach(([key, value]) => {
-			switch (key) {
-				case 'id':
-					id = value as number;
-					break;
-				case 'part':
-					part = value as GearPart;
-					hash += value;
-					break;
-				case 'dateAdded':
-					break;
-				default:
-					const isTitan = key.startsWith('titan_');
-					const value_format = key.includes('_percent') ? 'float3d' : 'int';
-
-					let _stat: Stat;
-					let _stat_value: number;
-					let stat_label: string;
-					let stat_value_label: string;
-
-					let titan_key: TitanStat;
-					let titan_label: string;
-					let titan_value: number;
-					let titan_value_label: string;
-
-					if (isTitan) {
-						// derive normal stat from corresponding titan stat
-						titan_key = key as TitanStat;
-						titan_label = STAT_LABELS[titan_key] ?? key;
-						titan_value = Number(value);
-						titan_value_label = formatValue(value_format, value as string);
-
-						_stat = key.replace('titan_', '') as Stat;
-						_stat_value = reverseTitanValue(_stat, titan_value);
-						stat_label = STAT_LABELS[_stat] ?? key;
-						stat_value_label = formatValue(value_format, _stat_value.toString());
-					} else {
-						_stat = key as Stat;
-						_stat_value = Number(value);
-						stat_label = STAT_LABELS[_stat] ?? key;
-						stat_value_label = formatValue(value_format, _stat_value.toString());
-
-						titan_key = 'titan_' + _stat;
-						titan_label = 'Titan ' + stat_label;
-						titan_value = getTitanValue(_stat, _stat_value) + _stat_value;
-						titan_value_label = formatValue(value_format, titan_value.toString());
-					}
-
-					stats.push({
-						stat: _stat,
-						stat_label,
-						value: _stat_value,
-						value_label: stat_value_label,
-						roll: getRollValue(_stat, _stat_value),
-						titan_stat_label: titan_label,
-						titan_value_label: titan_value_label
-					});
-
-					// normal stat
-					derived.push({
-						stat: _stat,
-						stat_label,
-						value: _stat_value,
-						value_label: stat_value_label
-					});
-
-					// titan stat
-					derived.push({
-						stat: titan_key as TitanStat,
-						stat_label: titan_label,
-						value: titan_value,
-						value_label: titan_value_label
-					});
-
-					hash += _stat + stat_value_label;
-
-					break;
-			}
-		});
-		stats.sort((a, b) => (b.roll ?? 0) - (a.roll ?? 0));
-
-		// get highest roll stat
-		const bestRoll = stats[0];
-
-		if (bestRoll.stat.includes('_atk') && !bestRoll.stat.includes('percent')) {
-			const eleAtkStats = stats.filter(
-				(stat) => stat.stat.includes('_atk') && !stat.stat.includes('percent')
-			);
-
-			if (eleAtkStats.length >= 2) {
-				// rainbow gear!
-
-				const rainbowTitanValue =
-					getTitanValue(bestRoll.stat, bestRoll.value) * 0.95 + bestRoll.value;
-				const rainbowTitanValueLabel = formatValue('int', rainbowTitanValue.toString());
-				RAINBOW_TITAN_STATS.forEach((rainbowStat) => {
-					const statIdx = derived.findIndex((der) => der.stat === rainbowStat);
-
-					if (statIdx === -1) {
-						// add rainbow stat if missing
-						derived.push({
-							stat: rainbowStat,
-							stat_label: STAT_LABELS[rainbowStat],
-							value: rainbowTitanValue,
-							value_label: rainbowTitanValueLabel
-						});
-					} else {
-						// replace value if rainbow is higher
-						if (rainbowTitanValue > derived[statIdx].value) {
-							derived[statIdx].value = rainbowTitanValue;
-							derived[statIdx].value_label = rainbowTitanValueLabel;
-						}
-					}
-				});
-			}
-
-			// todo: the same for atk%
-		}
-
-		// TODO: add other derived stats
-
-		const isEquipped =
-			equip ||
-			(part !== GearPart.UNKNOWN &&
-				$user_loadouts[$current_loadout].equipped_gears[gear.part as ValidGearPart] === gear.id);
-
-		return {
-			id,
-			part,
-			stats,
-			hash,
-			derived,
-			isEquipped
-		};
 	}
 
 	function addNewGear(gear: UserGear, equip: boolean = false) {
@@ -593,31 +285,32 @@
 			$user_loadouts[$current_loadout].equipped_gears[part] === null;
 		const dateAdded = new Date().toISOString();
 
-		// console.log('part text clean', partCleanedStr);
-		// console.log('Titan', isTitan);
-		// console.log('Equipped', equip);
-		// console.log('Text has equip', txt[0].includes('equipped'));
-		// console.log('Part is null', $user_loadouts[$current_loadout].equipped_gear[part] === null);
-		// console.log('TEXT', txt);
-
 		const newGear: UserGear = {
 			id,
 			part,
 			dateAdded
 		};
 
-		const rsIndex = txt.findIndex((line) => line.includes('random stats'));
+		// console.log('part text clean', partCleanedStr);
+		// console.log('Titan', isTitan);
+		// console.log('Equipped', equip);
+		// console.log('Text has equip', txt[0].includes('equipped'));
+		// console.log('Part is null', $user_loadouts[$current_loadout].equipped_gear[part] === null);
+		console.log('TEXT', txt);
+
+		const random_stats_index = txt.findIndex((line) => line.includes('random stats'));
+		const augment_stat_index = txt.findIndex((line) => line.includes('augmentation stats'));
+
 		let foundStats = 0;
-		if (rsIndex) {
-			const statLines = txt.slice(rsIndex + 1);
+		if (random_stats_index) {
+			const statLines = txt.slice(random_stats_index + 1);
 
 			for (let _i = 0; _i < statLines.length; _i++) {
 				const line = statLines[_i];
 
 				const _spl = line.split('+');
 
-				// @ts-expect-error
-				const _base = OCR_KEY_MAP[_spl[0].trim()];
+				const _base = OCR_RANDOM_STAT_MAP[_spl[0].trim()];
 				if (_spl[1] && _base) {
 					const _stat =
 						(isTitan ? 'titan_' : '') + _base + (_spl[1].includes('%') ? '_percent' : '');
@@ -631,15 +324,40 @@
 						console.error('bad OCR or empty line?:', line);
 						continue;
 					}
-					console.log('Found 4 stats, assuming we are done here.');
+
+					console.log('Found all stats, assuming we are done here.');
 					break;
 				}
+			}
+
+			if (foundStats < 4) {
+				console.error('Found less than 4 stats!');
+				process_text = 'Failed to OCR!';
+				return;
+			} else {
+				console.log('Found all stats?', foundStats);
 			}
 		} else {
 			console.error('I CANT FIND RANDOM STATS!');
 			console.error('Perhaps I should go for reverse order...');
 			console.error('(I havent encountered this yet)');
 			return;
+		}
+
+		if (augment_stat_index) {
+			const augmentLines = txt.slice(augment_stat_index + 1);
+
+			for (let _i = 0; _i < augmentLines.length; _i++) {
+				const line = augmentLines[_i];
+
+				const _spl = line.split('+');
+				const _base = OCR_AUGMENT_STAT_MAP[_spl[0].trim()];
+				if (_spl[1] && _base) {
+					newGear.augment = [_base, parseInt(_spl[1].trim())];
+					console.log('Found augment.');
+					break;
+				}
+			}
 		}
 
 		addNewGear(newGear, equip);
@@ -696,12 +414,7 @@
 
 			// @ts-expect-error
 			const new_query = query.replace(ALL_STATS_REGEX, (match) => variables[match].toString());
-
-			console.log('query', new_query);
-			const expr = parse(new_query);
-			console.log('EXPR', expr);
-			const result = evall(expr, {});
-			console.log('result', result);
+			const result = evil(parse(new_query), {});
 
 			if (result) {
 				search_views.push({
@@ -804,6 +517,8 @@
 			}
 		}
 	];
+
+	$inspect('gear_views', $gear_views);
 </script>
 
 {#snippet gear_actions(gear: GearView)}

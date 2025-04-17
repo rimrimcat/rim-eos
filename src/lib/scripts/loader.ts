@@ -1,4 +1,10 @@
-import type { AllLoadouts, CharacterStat, StatGearFinal, UserGear } from '$lib/types/index';
+import type {
+	AllLoadouts,
+	BaseStats14,
+	CharacterStat,
+	StatGearFinal,
+	UserGear
+} from '$lib/types/index';
 
 // Keys
 export type LocalStorageKey = 'gears_v1' | 'loadouts_v1' | 'styles';
@@ -29,7 +35,7 @@ export const TEMPLATE_USER_ATTRIBUTES: { key: StatGearFinal; icon: string }[] = 
 
 // Defaults
 // TODO: replace this
-export const DEFAULT_STATS_RIM = [
+export const DEFAULT_STATS_RIM: BaseStats14 = [
 	'1955732',
 	'20384',
 	'0.000',
@@ -38,8 +44,6 @@ export const DEFAULT_STATS_RIM = [
 	'78061',
 	'73991',
 	'78061',
-	'1300',
-	'0.000',
 	'50.000',
 	'18633',
 	'15308',

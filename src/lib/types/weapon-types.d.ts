@@ -52,11 +52,18 @@ export type ResoEffect = BaseEffect & {
 export type MatrixStatData = {
 	[key in StatKey]?: [number, number, number, number];
 };
-export type MatrixResoFunction = (reso_trigger_counts: ResoTriggerCounts) => MatrixStatData;
+export type MatrixExprData = {
+	[key in StatKey]?: [
+		ResoTriggers | string,
+		ResoTriggers | string,
+		ResoTriggers | string,
+		ResoTriggers | string
+	];
+};
 
 export type MatrixEffect = BaseEffect & {
 	id: MatrixEffectsIds;
-	stats: MatrixStatData | MatrixResoFunction;
+	stats: MatrixStatData | MatrixExprData;
 };
 
 export type MatrixFinalEffect = BaseEffect & {
