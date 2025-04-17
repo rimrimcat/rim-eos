@@ -1,0 +1,18 @@
+{
+	"id": "voidpiercer-4p-weap",
+	"stats": {
+		"final_dmg_percent": [
+			8,
+			8,
+			8,
+			8
+		],
+		"crit_dmg_percent": [
+			15,
+			15,
+			15,
+			15
+		]
+	},
+	"require_weapon": "voidpiercer"
+}

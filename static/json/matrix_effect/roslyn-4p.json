@@ -1,0 +1,7 @@
+{
+	"id": "roslyn-4p",
+	"stats": {
+		"frost_atk_percent": [30, 32, 34, 36]
+	},
+	"require_weapon": "roslyn"
+}

@@ -1,0 +1,7 @@
+{
+	"id": "roslyn-4p-extra",
+	"stats": {
+		"final_dmg_percent": ["frost * 5", "frost * 5", "frost * 5", "frost * 5"]
+	},
+	"require_weapon": "roslyn"
+}
