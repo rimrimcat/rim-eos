@@ -10,6 +10,7 @@
 		prefer_divisible = false,
 		by_column = true,
 		has_measured = $bindable(false),
+		style = '',
 		children
 	} = $props();
 
@@ -241,7 +242,7 @@
 	bind:this={container}
 	role="grid"
 	aria-colcount={columns}
-	style="column-gap: {horizontal_gap}; row-gap: {vertical_gap};"
+	style="column-gap: {horizontal_gap}; row-gap: {vertical_gap}; {style}"
 >
 	{@render children()}
 </div>
