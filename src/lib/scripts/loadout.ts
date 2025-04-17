@@ -7,6 +7,7 @@ import type {
 	CharacterStat,
 	EquippedGear,
 	GearView,
+	Loadout,
 	MatrixEffect,
 	MatrixEffectsIds,
 	MatrixFinalEffect,
@@ -547,6 +548,37 @@ export function getWeaponTotal() {
 	});
 
 	return stat_col;
+}
+
+export function getAllStats(
+	selected_loadout: Loadout,
+	equipped_gear_views: GearView[],
+	weapon_views: WeaponView[],
+	matrix_views: MatrixView[],
+	reso_effects: ResoEffect[]
+) {
+	const stat_adj = selected_loadout.stat_adj;
+
+	let gwmr_totals = new StatCollection();
+	equipped_gear_views.forEach((gear) => {
+		gwmr_totals = gwmr_totals.add(new StatCollection(gear));
+	});
+	[
+		...weapon_views.flatMap((weapon) => weapon.effects),
+		...dedupeMatEffs(matrix_views.flatMap((matrix) => matrix.effects)),
+		...reso_effects
+	].forEach((eff) => {
+		gwmr_totals = gwmr_totals.add(new StatCollection(eff.stats));
+	});
+	weapon_views.forEach((weapon) => {
+		gwmr_totals = gwmr_totals.add(weapon.base_stat);
+	});
+
+	return new StatCollection(selected_loadout.base_stats)
+		.add(new StatCollection(stat_adj?.unaccounted ?? {}))
+		.add(new StatCollection('atk_percent', stat_adj?.supercompute ?? 0))
+		.add(new StatCollection('atk_percent', stat_adj?.use_blade_shot ? 3.5 : 0))
+		.add(gwmr_totals);
 }
 
 export function createAttributeView(base_stats_14: BaseStats14): CharacterStat[] {

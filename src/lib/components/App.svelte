@@ -2,18 +2,22 @@
 	import { createGearView } from '$lib/scripts/gears';
 	import { loadStatConstants } from '$lib/scripts/json-loader';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
-	import { getEquippedGearViews, updateWeaponMatrix } from '$lib/scripts/loadout';
+	import { getAllStats, getEquippedGearViews, updateWeaponMatrix } from '$lib/scripts/loadout';
 	import {
+		all_stats,
 		current_loadout,
 		equipped_gear_views,
 		font_size,
 		gear_views,
 		inner_width,
 		is_mobile,
+		matrix_views,
+		reso_effects,
 		scroll_y,
 		toolbar_transform,
 		user_gears,
-		user_loadouts
+		user_loadouts,
+		weapon_views
 	} from '$lib/scripts/stores';
 	import { AppWindowIcon } from '@lucide/svelte';
 	import { onMount, type Component } from 'svelte';
@@ -88,7 +92,19 @@
 		$equipped_gear_views = getEquippedGearViews($user_loadouts[$current_loadout].equipped_gears);
 	});
 
+	$effect(() => {
+		if (!update_ready) return;
+		$all_stats = getAllStats(
+			$user_loadouts[$current_loadout],
+			$equipped_gear_views,
+			$weapon_views,
+			$matrix_views,
+			$reso_effects
+		);
+	});
+
 	$inspect('Equipped Gear Views', $equipped_gear_views);
+	$inspect('All stat totals', $all_stats.to_displayed_stats());
 </script>
 
 <svelte:window bind:innerWidth={$inner_width} />
