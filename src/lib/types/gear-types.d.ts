@@ -2,14 +2,29 @@ import type { GearPart, ValidGearPart } from '../scripts/gears';
 import type { StatGearTitan, StatGearUser } from './stat-types';
 export type { GearPart, ValidGearPart } from '../scripts/gears';
 
+export type GearAugment =
+	| 'delay'
+	| 'increased_healing'
+	| 'lifesteal'
+	| 'hp_recovery'
+	| 'block'
+	| 'dmg_reduction'
+	| 'dmg_boost'
+	| 'weakpoint'
+	| 'normal_atk_dmg_boost'
+	| 'dodge_atk_dmg_boost'
+	| 'skill_dmg_boost'
+	| 'discharge_dmg_boost';
+
 /**
- * Identification for a gear piece
+ * Basic info for a gear piece
  * @property {number} id - Unique numerical identifier
  * @property {GearParts} part - Gear slot
  */
-export type GearId = {
+export type GearBase = {
 	id: number;
 	part: ValidGearPart | GearPart.UNKNOWN | 'U';
+	augment?: [GearAugment, number];
 };
 
 /**
@@ -56,7 +71,7 @@ export type GearViewStatShort = {
  * Represents raw gear data as stored/input by the user
  * @property {string} dateAdded - Date the gear was added, in ISO string
  */
-export type UserGear = GearValidStats & GearId & { dateAdded: string };
+export type UserGear = GearValidStats & GearBase & { dateAdded: string };
 
 /**
  * Processed gear data for display and sorting
@@ -65,7 +80,7 @@ export type UserGear = GearValidStats & GearId & { dateAdded: string };
  * @property {string} hash - Unique identifier for the gear
  * @property {boolean} isEquipped - Indicates if the gear is currently equipped, see also AllLoadouts
  */
-export type GearView = GearId & {
+export type GearView = GearBase & {
 	stats: GearViewStatLong[];
 	derived: GearViewStatShort[];
 	hash: string;
@@ -78,6 +93,6 @@ export type GearView = GearId & {
  * @property {GearPart} part - Gear slot
  * @property {GearViewStatShort[]} stats - Array of processed stat items, references GearView's derived key
  */
-export type GearSearchView = GearId & {
+export type GearSearchView = GearBase & {
 	stats: GearViewStatShort[];
 };
