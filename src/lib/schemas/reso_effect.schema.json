@@ -57,7 +57,9 @@
         "merylx",
         "nanyin",
         "nola",
-        "none"
+        "none",
+        "roslyn",
+        "voidpiercer"
       ],
       "type": "string"
     },

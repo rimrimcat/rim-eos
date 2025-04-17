@@ -1,0 +1,8 @@
+{
+	"id": "voidpiercer",
+	"name": "Voidpiercer",
+	"base_stat": "crit-med",
+	"resonances": ["none", "none"],
+	"effects": [],
+	"reso_effects": []
+}

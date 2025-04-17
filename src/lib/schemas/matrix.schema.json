@@ -33,7 +33,8 @@
         "merylx-4p",
         "nanyin-4p",
         "nola-4p",
-        "none"
+        "none",
+        "roslyn-4p"
       ],
       "type": "string"
     },
@@ -73,7 +74,13 @@
         "nanyin-4p",
         "nola-2p",
         "nola-4p",
-        "nola-4p-skill"
+        "nola-4p-skill",
+        "roslyn-2p",
+        "roslyn-4p",
+        "roslyn-4p-extra",
+        "voidpiercer-2p",
+        "voidpiercer-4p",
+        "voidpiercer-4p-weap"
       ],
       "type": "string"
     }

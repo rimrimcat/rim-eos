@@ -1,0 +1,8 @@
+{
+	"id": "roslyn-a6",
+	"stats": {
+		"frost_res_ignore_percent": 15,
+		"final_dmg_percent": 18
+	},
+	"require_adv": 6
+}

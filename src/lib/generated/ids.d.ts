@@ -32,7 +32,8 @@ export type WeaponEffectsIds =
 	| 'nanyin-inhabit'
 	| 'nola-a3'
 	| 'nola-a6'
-	| 'nola-frost-skill';
+	| 'nola-frost-skill'
+	| 'roslyn-a6';
 export type MatrixEffectsIds =
 	| 'anka-2p'
 	| 'anka-4p-weap'
@@ -68,7 +69,13 @@ export type MatrixEffectsIds =
 	| 'nanyin-4p'
 	| 'nola-2p'
 	| 'nola-4p-skill'
-	| 'nola-4p';
+	| 'nola-4p'
+	| 'roslyn-2p'
+	| 'roslyn-4p-extra'
+	| 'roslyn-4p'
+	| 'voidpiercer-2p'
+	| 'voidpiercer-4p-weap'
+	| 'voidpiercer-4p';
 export type ResoEffectsIds =
 	| 'armor-dissolve-teamplay'
 	| 'armor-dissolve'
@@ -96,7 +103,9 @@ export type WeaponsIds =
 	| 'grayfox'
 	| 'merylx'
 	| 'nanyin'
-	| 'nola';
+	| 'nola'
+	| 'roslyn'
+	| 'voidpiercer';
 export type MatrixIds =
 	| 'none'
 	| 'anka-4p'
@@ -108,4 +117,5 @@ export type MatrixIds =
 	| 'grayfox-4p'
 	| 'merylx-4p'
 	| 'nanyin-4p'
-	| 'nola-4p';
+	| 'nola-4p'
+	| 'roslyn-4p';

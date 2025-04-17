@@ -70,7 +70,9 @@
         "merylx",
         "nanyin",
         "nola",
-        "none"
+        "none",
+        "roslyn",
+        "voidpiercer"
       ],
       "type": "string"
     },
@@ -129,7 +131,13 @@
         "nanyin-4p",
         "nola-2p",
         "nola-4p",
-        "nola-4p-skill"
+        "nola-4p-skill",
+        "roslyn-2p",
+        "roslyn-4p",
+        "roslyn-4p-extra",
+        "voidpiercer-2p",
+        "voidpiercer-4p",
+        "voidpiercer-4p-weap"
       ],
       "type": "string"
     },

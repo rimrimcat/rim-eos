@@ -70,7 +70,9 @@
         "merylx",
         "nanyin",
         "nola",
-        "none"
+        "none",
+        "roslyn",
+        "voidpiercer"
       ],
       "type": "string"
     },
@@ -131,7 +133,8 @@
         "nanyin-inhabit",
         "nola-a3",
         "nola-a6",
-        "nola-frost-skill"
+        "nola-frost-skill",
+        "roslyn-a6"
       ],
       "type": "string"
     },

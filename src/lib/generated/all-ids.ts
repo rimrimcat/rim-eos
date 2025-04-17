@@ -40,7 +40,8 @@ export const AllWeaponEffectIds: WeaponEffectsIds[] = [
 	'nanyin-inhabit',
 	'nola-a3',
 	'nola-a6',
-	'nola-frost-skill'
+	'nola-frost-skill',
+	'roslyn-a6'
 ];
 export const AllMatrixEffectIds: MatrixEffectsIds[] = [
 	'anka-2p',
@@ -77,7 +78,13 @@ export const AllMatrixEffectIds: MatrixEffectsIds[] = [
 	'nanyin-4p',
 	'nola-2p',
 	'nola-4p-skill',
-	'nola-4p'
+	'nola-4p',
+	'roslyn-2p',
+	'roslyn-4p-extra',
+	'roslyn-4p',
+	'voidpiercer-2p',
+	'voidpiercer-4p-weap',
+	'voidpiercer-4p'
 ];
 export const AllResoEffectIds: ResoEffectsIds[] = [
 	'armor-dissolve-teamplay',
@@ -107,7 +114,8 @@ export const AllMatrixIds: MatrixIds[] = [
 	'grayfox-4p',
 	'merylx-4p',
 	'nanyin-4p',
-	'nola-4p'
+	'nola-4p',
+	'roslyn-4p'
 ];
 export const AllWeaponIds: WeaponsIds[] = [
 	'none',
@@ -120,5 +128,7 @@ export const AllWeaponIds: WeaponsIds[] = [
 	'grayfox',
 	'merylx',
 	'nanyin',
-	'nola'
+	'nola',
+	'roslyn',
+	'voidpiercer'
 ];
