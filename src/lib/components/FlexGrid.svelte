@@ -10,6 +10,7 @@
 		prefer_divisible = false,
 		by_column = true,
 		has_measured = $bindable(false),
+		expand_width = true,
 		style = '',
 		children
 	} = $props();
@@ -242,7 +243,9 @@
 	bind:this={container}
 	role="grid"
 	aria-colcount={columns}
-	style="column-gap: {horizontal_gap}; row-gap: {vertical_gap}; {style}"
+	style="column-gap: {horizontal_gap}; row-gap: {vertical_gap}; width: {expand_width
+		? '100%'
+		: 'fit-content'} {style}"
 >
 	{@render children()}
 </div>
@@ -250,7 +253,6 @@
 <style>
 	.flex-grid {
 		display: grid;
-		width: 100%;
 		grid-template-columns: 1fr;
 		overflow: hidden;
 	}
