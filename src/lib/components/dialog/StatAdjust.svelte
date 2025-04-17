@@ -7,7 +7,6 @@
 		AtkStats5,
 		AtkStats5Number,
 		BaseStats14,
-		BaseStats14Number,
 		BaseStats16,
 		CharacterStat
 	} from '$lib/types/index';
@@ -61,7 +60,6 @@
 			}
 
 			// save adjusted stats
-			// lets see what was calculated
 			let stat_col = new StatCollection();
 
 			if (adjust_for_gear) {
@@ -84,23 +82,13 @@
 			// will be saved for stat adjustment
 			const extra_stat = stat_col.calc_extra_atk_from(unadjusted_stats, base_atk_inputs);
 
-			console.log('OBTAINED_EXTRA', extra_stat);
-
 			const real_base = stat_col.calc_real_base_stats(
 				unadjusted_stats as BaseStats16,
 				base_atk_inputs
 			);
 
-			const backcalc = new StatCollection(real_base as BaseStats14Number)
-				.add(extra_stat)
-				.add(getGearTotal())
-				.add(getWeaponTotal())
-				.add(new StatCollection('atk_percent', parseInt(supercompute_adjust)));
-			console.log('BACK CALC DICT', backcalc);
-			console.log('BACK CALC DISPLAY', backcalc.to_displayed_stats());
-
 			$user_loadouts[$current_loadout].base_stats = real_base.map((value) =>
-				value.toFixed(4)
+				value.toString()
 			) as BaseStats14;
 			$user_loadouts[$current_loadout].stat_adj = {
 				unaccounted: extra_stat.data,
@@ -148,8 +136,6 @@
 
 		adj_raw_attributes = stat_col.calc_loadout_base_stats(unadjusted_stats as BaseStats16);
 	});
-
-	$inspect('unadjusted stats', unadjusted_stats);
 </script>
 
 {#snippet make_button(

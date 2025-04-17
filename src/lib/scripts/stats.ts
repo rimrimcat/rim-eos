@@ -403,12 +403,6 @@ export class StatCollection {
 			(this.get('res') + this.get('alt_res')) *
 			(1 + this.get('res_percent') / 100 + this.get('alt_res_percent') / 100);
 
-		console.log('TOTALS', this.clone_data());
-		console.log(
-			'max value for alt',
-			Math.max(new_d.phys_atk, new_d.flame_atk, new_d.frost_atk, new_d.volt_atk)
-		);
-
 		const base_stats: number[] = [];
 
 		for (const key of STAT_GEAR_FINAL_KEYS) {
