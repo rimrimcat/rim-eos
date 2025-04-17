@@ -2,6 +2,9 @@ import { eval as evil, parse } from '@casbin/expression-eval';
 import { get } from 'svelte/store';
 import type {
 	BaseEffect,
+	BaseStats14,
+	BaseStats16,
+	CharacterStat,
 	MatrixEffect,
 	MatrixEffectsIds,
 	MatrixFinalEffect,
@@ -11,6 +14,7 @@ import type {
 	ResoTriggerCounts,
 	StatKey,
 	UserWeapon,
+	ValidGearPart,
 	WeaponEffect,
 	WeaponEffectsIds,
 	WeaponSettingStuff,
@@ -23,10 +27,11 @@ import {
 	getWeapon,
 	getWeaponEffect
 } from './json-loader';
-import { StatCollection } from './stats';
+import { STAT_LABELS, StatCollection, TEMPLATE_USER_ATTRIBUTES } from './stats';
 import {
 	base_weapons,
 	current_loadout,
+	gear_views,
 	matrix_views,
 	reso_counts,
 	reso_effects,
@@ -34,6 +39,7 @@ import {
 	user_loadouts,
 	weapon_views
 } from './stores';
+import { formatValue } from './validation';
 import { WEAPON_BASE_STATS } from './weapons';
 // import { user_loadouts, current_loadout, base_weapons, reso_counts, reso_effects, reso_stat, weapon_views, matrix_views } from './stores';
 
@@ -504,4 +510,74 @@ export async function updateWeaponMatrix() {
 
 	// ... and matrices
 	await updateMatrixViews();
+}
+
+export function getGearTotal() {
+	let stat_col = new StatCollection();
+
+	const equipped_gears = get(user_loadouts)[get(current_loadout)].equipped_gears;
+	for (const part in equipped_gears) {
+		const gear_id = equipped_gears[part as ValidGearPart];
+		if (gear_id !== null && gear_id !== -1) {
+			const new_stat = new StatCollection(get(gear_views)[gear_id]);
+			stat_col = stat_col.add(new_stat);
+		}
+	}
+
+	return stat_col;
+}
+
+export function getWeaponTotal() {
+	let stat_col = new StatCollection();
+
+	const all_effects = [
+		...get(weapon_views).flatMap((weapon) => weapon.effects),
+		...dedupeMatEffs(get(matrix_views).flatMap((matrix) => matrix.effects)),
+		...get(reso_effects)
+	];
+	all_effects.forEach((eff) => {
+		stat_col = stat_col.add(new StatCollection(eff.stats));
+	});
+
+	// add base stats
+	get(weapon_views).forEach((weapon) => {
+		stat_col = stat_col.add(weapon.base_stat);
+	});
+
+	return stat_col;
+}
+
+export function createAttributeView(base_stats_14: BaseStats14): CharacterStat[] {
+	const stat_adj = get(user_loadouts)[get(current_loadout)].stat_adj;
+
+	console.log('BASE14', base_stats_14);
+
+	const total_base_stats = new StatCollection(base_stats_14 as BaseStats14) // base stats
+		.add(new StatCollection(stat_adj ? stat_adj.unaccounted : {})) // unaccounted
+		.add(new StatCollection('atk_percent', stat_adj ? stat_adj.supercompute : 0)) // supercompute
+		.add(new StatCollection('atk_percent', stat_adj && stat_adj.use_blade_shot ? 3.5 : 0)) // blade shot
+		.add(getGearTotal()) // gear
+		.add(getWeaponTotal()) // weapon + matrix + reso
+		.to_displayed_stats();
+	const base_stats_ = [
+		...total_base_stats.slice(0, 8),
+		'1400',
+		'0',
+		...total_base_stats.slice(8, 14)
+	] as BaseStats16;
+
+	if (base_stats_.length !== 16) {
+		throw new Error('Invalid base stats length!');
+	}
+
+	return TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
+		const __val = base_stats_[index];
+		const __use_percent = index === 2 || index === 10;
+
+		return {
+			...attr,
+			name: STAT_LABELS[attr.key],
+			value: __use_percent ? formatValue('float3d', __val) : formatValue('int', __val)
+		};
+	});
 }

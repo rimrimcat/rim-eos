@@ -1,22 +1,15 @@
 <script lang="ts">
 	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader';
-	import { dedupeMatEffs } from '$lib/scripts/loadout';
+	import { getGearTotal, getWeaponTotal } from '$lib/scripts/loadout';
 	import { STAT_LABELS, StatCollection } from '$lib/scripts/stats';
-	import {
-		current_loadout,
-		gear_views,
-		matrix_views,
-		reso_effects,
-		user_loadouts,
-		weapon_views
-	} from '$lib/scripts/stores';
+	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
 	import type {
 		AtkStats5,
 		AtkStats5Number,
 		BaseStats14,
+		BaseStats14Number,
 		BaseStats16,
-		CharacterStat,
-		ValidGearPart
+		CharacterStat
 	} from '$lib/types/index';
 	import { ShirtIcon, SlashIcon, SwordIcon, SyringeIcon } from '@lucide/svelte';
 	import type { Component } from 'svelte';
@@ -61,43 +54,6 @@
 	let adjust_for_blade_shot = $state(false);
 	let supercompute_adjust = $state('16');
 
-	function getGearTotal() {
-		let stat_col = new StatCollection();
-
-		const equipped_gears = $user_loadouts[$current_loadout].equipped_gears;
-		for (const part in equipped_gears) {
-			const gear_id = equipped_gears[part as ValidGearPart];
-			if (gear_id !== null && gear_id !== -1) {
-				const new_stat = new StatCollection($gear_views[gear_id]);
-				stat_col = stat_col.add(new_stat);
-			}
-		}
-
-		return stat_col;
-	}
-
-	function getWeaponTotal() {
-		let stat_col = new StatCollection();
-
-		const all_effects = [
-			...$weapon_views.flatMap((weapon) => weapon.effects),
-			...dedupeMatEffs($matrix_views.flatMap((matrix) => matrix.effects)),
-			...$reso_effects
-		];
-		all_effects.forEach((eff) => {
-			stat_col = stat_col.add(new StatCollection(eff.stats));
-		});
-
-		// add base stats
-		$weapon_views.forEach((weapon) => {
-			stat_col = stat_col.add(weapon.base_stat);
-		});
-
-		console.log('WEAPON_PERCENTS', stat_col);
-
-		return stat_col;
-	}
-
 	function onButtonPress(btn: string | 'Finalize' | 'Cancel') {
 		if (btn === 'Finalize') {
 			if (!unadjusted_stats) {
@@ -117,23 +73,34 @@
 			}
 
 			if (adjust_for_blade_shot) {
-				stat_col = stat_col.add(new StatCollection({ atk_percent: 3.5 }));
+				stat_col = stat_col.add(new StatCollection('atk_percent', 3.5));
 			}
 
 			if (supercompute_adjust) {
-				stat_col = stat_col.add(new StatCollection({ atk_percent: parseInt(supercompute_adjust) }));
+				stat_col = stat_col.add(new StatCollection('atk_percent', parseInt(supercompute_adjust)));
 			}
 
 			// extra_stat comes from other sources that idk
 			// will be saved for stat adjustment
 			const extra_stat = stat_col.calc_extra_atk_from(unadjusted_stats, base_atk_inputs);
+
+			console.log('OBTAINED_EXTRA', extra_stat);
+
 			const real_base = stat_col.calc_real_base_stats(
 				unadjusted_stats as BaseStats16,
 				base_atk_inputs
 			);
 
+			const backcalc = new StatCollection(real_base as BaseStats14Number)
+				.add(extra_stat)
+				.add(getGearTotal())
+				.add(getWeaponTotal())
+				.add(new StatCollection('atk_percent', parseInt(supercompute_adjust)));
+			console.log('BACK CALC DICT', backcalc);
+			console.log('BACK CALC DISPLAY', backcalc.to_displayed_stats());
+
 			$user_loadouts[$current_loadout].base_stats = real_base.map((value) =>
-				value.toString()
+				value.toFixed(4)
 			) as BaseStats14;
 			$user_loadouts[$current_loadout].stat_adj = {
 				unaccounted: extra_stat.data,

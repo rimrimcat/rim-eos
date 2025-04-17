@@ -5,7 +5,6 @@ import type {
 	BaseStats14Number,
 	BaseStats16,
 	BaseStats16Number,
-	CharacterStat,
 	GearView,
 	StatData,
 	StatGearFinal,
@@ -14,7 +13,6 @@ import type {
 	StatGearUser,
 	StatKey
 } from '../types/index';
-import { formatValue } from './validation';
 
 export const STAT_LABELS: Record<AllStats, string> = {
 	hp: 'HP',
@@ -262,45 +260,20 @@ export const TEMPLATE_USER_ATTRIBUTES: { key: StatGearFinal; icon: string }[] = 
 	{ key: 'alt_res', icon: './stat/placeholder.webp' }
 ];
 
-export function createAttributeView(base_stats_: BaseStats14 | BaseStats16): CharacterStat[] {
-	// TODO: later on, this should adjust depending on the not-yet created Loadout.stat_adj object
-
-	// TODO: add weapon and gear stats on top of base stats
-
-	if (base_stats_.length === 14) {
-		base_stats_ = [
-			...base_stats_.slice(0, 8),
-			'1400',
-			'0',
-			...base_stats_.slice(8, 14)
-		] as BaseStats16;
-	}
-
-	if (base_stats_.length !== 16) {
-		throw new Error('Invalid base stats length!');
-	}
-
-	return TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
-		const __val = base_stats_[index];
-		const __use_percent = index === 2 || index === 10;
-
-		return {
-			...attr,
-			name: STAT_LABELS[attr.key],
-			value: __use_percent ? formatValue('float3d', __val) : formatValue('int', __val)
-		};
-	});
-}
-
 export class StatCollection {
 	public data: StatData = {};
 
 	constructor();
 	constructor(stat: StatData);
 	constructor(stat: GearView);
-	constructor(stat: StatGearUser, value: number);
+	constructor(stat: BaseStats14);
+	constructor(stat: BaseStats14Number);
+	constructor(stat: StatKey, value: number);
 	constructor(stat: StatGearTitan, value: number);
-	constructor(stat?: StatKey | StatGearTitan | StatData | GearView | BaseStats14, value?: number) {
+	constructor(
+		stat?: StatKey | StatGearTitan | StatData | GearView | BaseStats14 | BaseStats14Number,
+		value?: number
+	) {
 		if (stat === undefined) {
 			this.data = {};
 		} else if (typeof stat === 'string') {
@@ -310,8 +283,14 @@ export class StatCollection {
 			this.data = {};
 
 			if (stat.length === 14) {
-				for (let i = 0; i < 14; i++) {
-					this.data[STAT_GEAR_FINAL_KEYS[i]] = parseInt(stat[i]);
+				if (typeof stat[0] === 'string') {
+					for (let i = 0; i < 14; i++) {
+						this.data[STAT_GEAR_FINAL_KEYS[i]] = parseFloat(stat[i] as string);
+					}
+				} else {
+					for (let i = 0; i < 14; i++) {
+						this.data[STAT_GEAR_FINAL_KEYS[i]] = stat[i] as number;
+					}
 				}
 			} else {
 				throw new Error('Invalid base stats length!');
@@ -384,6 +363,59 @@ export class StatCollection {
 		}
 
 		return new StatCollection(new_data);
+	}
+
+	to_displayed_stats(): BaseStats14Number {
+		const new_d = this.clone_data();
+		new_d.hp = this.get('hp') * (1 + this.get('hp_percent') / 100);
+		new_d.crit = this.get('crit');
+		new_d.crit_percent = this.get('crit_percent');
+		new_d.phys_atk =
+			(this.get('atk') + this.get('phys_atk')) *
+			(1 + (this.get('atk_percent') + this.get('phys_atk_percent')) / 100);
+		new_d.flame_atk =
+			(this.get('atk') + this.get('flame_atk')) *
+			(1 + (this.get('atk_percent') + this.get('flame_atk_percent')) / 100);
+		new_d.frost_atk =
+			(this.get('atk') + this.get('frost_atk')) *
+			(1 + (this.get('atk_percent') + this.get('frost_atk_percent')) / 100);
+		new_d.volt_atk =
+			(this.get('atk') + this.get('volt_atk')) *
+			(1 + (this.get('atk_percent') + this.get('volt_atk_percent')) / 100);
+		new_d.alt_atk =
+			(Math.max(new_d.phys_atk, new_d.flame_atk, new_d.frost_atk, new_d.volt_atk) +
+				this.get('alt_atk')) *
+			(1 + this.get('alt_atk_percent') / 100);
+		new_d.crit_dmg_percent = this.get('crit_dmg_percent');
+		new_d.phys_res =
+			(this.get('res') + this.get('phys_res')) *
+			(1 + this.get('res_percent') / 100 + this.get('phys_res_percent') / 100);
+		new_d.flame_res =
+			(this.get('res') + this.get('flame_res')) *
+			(1 + this.get('res_percent') / 100 + this.get('flame_res_percent') / 100);
+		new_d.frost_res =
+			(this.get('res') + this.get('frost_res')) *
+			(1 + this.get('res_percent') / 100 + this.get('frost_res_percent') / 100);
+		new_d.volt_res =
+			(this.get('res') + this.get('volt_res')) *
+			(1 + this.get('res_percent') / 100 + this.get('volt_res_percent') / 100);
+		new_d.alt_res =
+			(this.get('res') + this.get('alt_res')) *
+			(1 + this.get('res_percent') / 100 + this.get('alt_res_percent') / 100);
+
+		console.log('TOTALS', this.clone_data());
+		console.log(
+			'max value for alt',
+			Math.max(new_d.phys_atk, new_d.flame_atk, new_d.frost_atk, new_d.volt_atk)
+		);
+
+		const base_stats: number[] = [];
+
+		for (const key of STAT_GEAR_FINAL_KEYS) {
+			base_stats.push((new_d as { [key in StatGearFinalUseful]: number })[key]);
+		}
+
+		return base_stats as BaseStats14Number;
 	}
 
 	/**
@@ -503,7 +535,7 @@ export class StatCollection {
 					final_base_stats.push(base_atk_stats[3] - this.get(KEYS_ATK[3]) - this.get('atk'));
 					break;
 				case 7: // alt atk
-					final_base_stats.push(Math.max(...final_base_stats.slice(3, 7)));
+					final_base_stats.push(0);
 					break;
 				case 10: // crit_damage
 					final_base_stats.push(50);
@@ -542,6 +574,15 @@ export class StatCollection {
 			}
 		}
 
+		// round stats to nearest integer
+		final_base_stats.forEach((value, index) => {
+			if (index === 2 || index === 8) {
+				return;
+			}
+
+			final_base_stats[index] = Math.round(value);
+		});
+
 		return final_base_stats as BaseStats14Number;
 	}
 
@@ -557,8 +598,8 @@ export class StatCollection {
 
 		for (let i = 0; i < base_atk_stats.length - 1; i++) {
 			new_data[KEYS_ATK_PERCENT[i]] =
-				(parseInt(final_stats[i + 3]) / (base_atk_stats[i] + this.get(KEYS_ATK[i])) -
-					(1 + this.get(KEYS_ATK_PERCENT[i]) / 100)) *
+				(parseInt(final_stats[i + 3]) / base_atk_stats[i] -
+					(1 + (this.get(KEYS_ATK_PERCENT[i]) + this.get('atk_percent')) / 100)) *
 				100;
 		}
 

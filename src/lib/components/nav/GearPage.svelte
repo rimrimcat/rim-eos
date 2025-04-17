@@ -26,7 +26,6 @@
 		GearSearchView,
 		GearView,
 		StatGearUser as Stat,
-		StatGearTitan as TitanStat,
 		UserGear,
 		ValidGearPart
 	} from '$lib/types/index';
@@ -132,13 +131,6 @@
 		exoskeleton: GearPart.EXOSKELETON,
 		microreactor: GearPart.REACTOR
 	};
-
-	const RAINBOW_TITAN_STATS: TitanStat[] = [
-		'titan_flame_atk',
-		'titan_frost_atk',
-		'titan_volt_atk',
-		'titan_phys_atk'
-	];
 
 	function decrementGearId(start: number = 0) {
 		if (start == $user_gears.length) {
@@ -342,6 +334,8 @@
 				console.error('Found less than 4 stats!');
 				process_text = 'Failed to OCR!';
 				return;
+			} else {
+				console.log('Found all stats?', foundStats);
 			}
 		} else {
 			console.error('I CANT FIND RANDOM STATS!');
@@ -523,6 +517,8 @@
 			}
 		}
 	];
+
+	$inspect('gear_views', $gear_views);
 </script>
 
 {#snippet gear_actions(gear: GearView)}

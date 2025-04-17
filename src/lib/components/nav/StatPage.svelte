@@ -4,8 +4,8 @@
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
 	import { saveObject } from '$lib/scripts/loader.ts';
+	import { createAttributeView } from '$lib/scripts/loadout';
 	import { ActionType } from '$lib/scripts/nav-metadata';
-	import { createAttributeView } from '$lib/scripts/stats';
 	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
 	import type { BaseStats14, BaseStats16, CharacterStat } from '$lib/types/index';
 	import { ChartNoAxesColumn, ImagePlus, Trash2 } from '@lucide/svelte';
