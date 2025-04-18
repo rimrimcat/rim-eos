@@ -76,7 +76,7 @@ export const VALID_GEAR_PARTS: ValidGearPart[] = [
 	'R'
 ];
 
-export const GEAR_STATS: StatGearUser[] = [
+const GEAR_STATS: StatGearUser[] = [
 	'hp',
 	'hp_percent',
 	'atk',
@@ -110,7 +110,7 @@ export const GEAR_STATS: StatGearUser[] = [
 	'alt_res_percent',
 	'phys_res_percent'
 ];
-export const GEAR_STATS_TITAN: StatGearTitan[] = [
+const GEAR_STATS_TITAN: StatGearTitan[] = [
 	'titan_hp',
 	'titan_hp_percent',
 	'titan_atk',
@@ -144,10 +144,9 @@ export const GEAR_STATS_TITAN: StatGearTitan[] = [
 	'titan_alt_res_percent',
 	'titan_phys_res_percent'
 ];
-export const GEAR_STATS_EXTRA: StatGearExtra[] = ['multiplier', 'multiplier_percent'];
+const GEAR_STATS_EXTRA: StatGearExtra[] = ['multiplier', 'multiplier_percent'];
 
-const EXTRA_STATS_LIST: StatGearExtra[] = ['multiplier', 'multiplier_percent'];
-const ALL_STATS_LIST = [...GEAR_STATS, ...GEAR_STATS_TITAN, ...EXTRA_STATS_LIST];
+const ALL_STATS_LIST = [...GEAR_STATS, ...GEAR_STATS_TITAN, ...GEAR_STATS_EXTRA];
 
 export const ALL_STATS_REGEX = new RegExp(`\\b(${ALL_STATS_LIST.join('|')}|gear)\\b`, 'g');
 
