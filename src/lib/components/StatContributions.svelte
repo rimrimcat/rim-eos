@@ -108,10 +108,6 @@
 						// transform base atks to percent improvement so can plot on same graph
 						const combinedKey = `${group}:${key}`;
 
-						if (key.includes('atk')) {
-							console.log('log:', key);
-						}
-
 						if (!acc.map.has(combinedKey)) {
 							const entry = {
 								group,
