@@ -643,22 +643,32 @@ export async function applyExtraGearViewStats() {
 		gear_views_.map(async (gear) => {
 			const new_gear = { ...gear };
 
-			// multiplier
+			// multipliers
 			const multiplier_index = new_gear.derived.findIndex((stat) => stat.stat === 'multiplier');
-			const multiplier_percent =
-				(all_stats_lump.total_multiplier_of(new StatCollection(new_gear).lump(), loadout_element) -
-					1) *
-				100;
+			const multiplier_value = all_stats_lump.total_multiplier_of(
+				new StatCollection(new_gear).lump(),
+				loadout_element
+			);
+			const multiplier_value_percent = (multiplier_value - 1) * 100;
+
 			const multiplier_stat: GearViewStatShort = {
 				stat: 'multiplier',
 				stat_label: 'Multiplier',
-				value: multiplier_percent,
-				value_label: formatValue('float3d', multiplier_percent.toString())
+				value: multiplier_value,
+				value_label: formatValue('float3d', multiplier_value)
+			};
+			const multiplier_percent_stat: GearViewStatShort = {
+				stat: 'multiplier_percent',
+				stat_label: 'Multiplier Percent',
+				value: multiplier_value_percent,
+				value_label: formatValue('float2d', multiplier_value_percent)
 			};
 			if (multiplier_index === -1) {
 				new_gear.derived.push(multiplier_stat);
+				new_gear.derived.push(multiplier_percent_stat);
 			} else {
 				new_gear.derived[multiplier_index] = multiplier_stat;
+				new_gear.derived[multiplier_index + 1] = multiplier_percent_stat;
 			}
 
 			return new_gear;
