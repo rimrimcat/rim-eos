@@ -44,7 +44,6 @@
 		SquareIcon,
 		Trash2Icon
 	} from '@lucide/svelte';
-	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
 
 	let prev_search_query: string = $state('');
@@ -531,12 +530,6 @@
 		}
 	];
 
-	onMount(() => {
-		setTimeout(() => {
-			has_measured = false;
-		}, 2000);
-	});
-
 	$inspect('has_measured', has_measured);
 	$inspect('gear view', $gear_views);
 </script>
@@ -571,13 +564,13 @@
 			{#if gear}
 				<button class="gear-button icon" onclick={() => showGearInfo(gear.id)} style="opacity: 1">
 					<img
-						src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
+						src="./{bound_objects.titanMode ? 'gear/titan' : 'gear'}/{gear.part}.png"
 						alt="Gear"
 					/>
 				</button>
 			{:else}
 				<img
-					src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{partIfNoGear}.png"
+					src="./{bound_objects.titanMode ? 'gear/titan' : 'gear'}/{partIfNoGear}.png"
 					alt="Gear"
 					style="filter:grayscale(100%)"
 				/>
