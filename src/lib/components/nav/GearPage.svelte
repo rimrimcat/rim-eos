@@ -44,6 +44,7 @@
 		SquareIcon,
 		Trash2Icon
 	} from '@lucide/svelte';
+	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
 
 	let prev_search_query: string = $state('');
@@ -529,6 +530,12 @@
 			}
 		}
 	];
+
+	onMount(() => {
+		setTimeout(() => {
+			has_measured = false;
+		}, 3000);
+	});
 
 	$inspect('has_measured', has_measured);
 	$inspect('gear view', $gear_views);
