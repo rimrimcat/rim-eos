@@ -706,13 +706,13 @@
 
 						<div class="single-stat">
 							<div class="stat-content" class:icon={bound_objects.iconStats}>
-								{#if bound_objects.iconStats}
+								<!-- {#if bound_objects.iconStats}
 									<div class="stat-icon">
 										<StatIcon stat={gear.stats[0].stat.replace('titan_', '') as Stat} size="75%" />
 									</div>
 								{:else}
 									{gear.stats[0].stat_label ?? ''}
-								{/if}
+								{/if} -->
 								+{gear.stats[0].value_label ?? ''}
 							</div>
 						</div>
