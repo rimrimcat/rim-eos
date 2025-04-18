@@ -1,12 +1,12 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+	import type { GuideItem } from '$lib/types';
 	import { onMount, tick } from 'svelte';
 	import { Spring } from 'svelte/motion';
 
 	let {
 		title = $bindable('Floating Window'),
 		open = $bindable(true),
-		guide_content = null as (Snippet | string)[] | null,
+		guide_content = null as GuideItem[] | null,
 		minWidth = 200,
 		minHeight = 150,
 		initialX = window.innerWidth / 2 - 200,
@@ -295,7 +295,18 @@
 		return cleanupMeasuringElement;
 	});
 
-	$inspect('guide content', typeof guide_content?.[0] === 'function');
+	$effect(() => {
+		if (guide_content && guide_content[guide_index].proceed_on) {
+			const unsubscribe = guide_content[guide_index].proceed_on.subscribe((value) => {
+				if (value) {
+					nextStep();
+				}
+			});
+			return () => {
+				unsubscribe();
+			};
+		}
+	});
 </script>
 
 {#if open}
@@ -318,10 +329,10 @@
 
 		<div class="window-content" bind:this={contentElement}>
 			{#if guide_content}
-				{#if typeof guide_content[guide_index] === 'function'}
-					{@render guide_content[guide_index]()}
+				{#if guide_content[guide_index].snippet}
+					{@render guide_content[guide_index].snippet()}
 				{:else}
-					<p>{guide_content[guide_index]}</p>
+					<p>{guide_content[guide_index].text}</p>
 				{/if}
 			{:else}
 				{@render children()}
@@ -342,7 +353,8 @@
 				<button
 					class="guide-nav-button"
 					onclick={nextStep}
-					disabled={guide_index === guide_content.length - 1}
+					disabled={guide_content[guide_index].disable_next ||
+						guide_index === guide_content.length - 1}
 					aria-label="Next step"
 				>
 					Next
