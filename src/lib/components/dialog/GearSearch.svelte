@@ -147,7 +147,6 @@
 				selectedElement = 'Flame';
 			}
 		} else if (selectedStat == 'MULTIPLIER') {
-			selectedOthers.delete('Percent');
 			selectedOthers.delete('Titan');
 			selectedElement = null;
 		}
