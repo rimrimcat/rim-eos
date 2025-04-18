@@ -201,9 +201,6 @@
         "atk_percent": {
           "type": "number"
         },
-        "dmg_percent": {
-          "type": "number"
-        },
         "final_dmg_percent": {
           "type": "number"
         },
