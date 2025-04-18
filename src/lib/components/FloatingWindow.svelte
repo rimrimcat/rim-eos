@@ -297,6 +297,7 @@
 
 	$effect(() => {
 		if (guide_content && guide_content[guide_index].proceed_on) {
+			// @ts-expect-error
 			const unsubscribe = guide_content[guide_index].proceed_on.subscribe((value) => {
 				if (value) {
 					nextStep();
@@ -304,6 +305,8 @@
 			});
 			return () => {
 				unsubscribe();
+				guide_content[guide_index].proceed_on = undefined;
+				guide_content[guide_index].disable_next = false;
 			};
 		}
 	});
