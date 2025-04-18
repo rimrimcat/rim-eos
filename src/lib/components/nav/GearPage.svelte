@@ -723,7 +723,7 @@
 				{#each equipped_gears as gearId, partIndex}
 					<div class="gear-cell gear-id-{gearId}">
 						<span style="max-width: {span_length * 0.75}rem; width: {span_length * 0.75}rem"
-							>{gearId}</span
+							>{gearId === -1 ? '' : gearId}</span
 						>
 						{@render gear_icon($gear_views[gearId], VALID_GEAR_PARTS[partIndex])}
 
