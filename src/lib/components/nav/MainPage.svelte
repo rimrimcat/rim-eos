@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { guide_content, guide_open, guide_title } from '$lib/scripts/stores';
+	import { GUIDE_GEAR_ELEMENT } from '../InteractiveGuide.svelte';
 </script>
 
 <div class="main-page">
@@ -13,7 +15,14 @@
 	<h1>Getting started</h1>
 	<p>Depending on what you want to optimize: (you may click on the blocks)</p>
 
-	<button class="image border helper">
+	<button
+		class="image border helper"
+		onclick={() => {
+			$guide_title = 'Optimizing gears';
+			$guide_open = true;
+			$guide_content = GUIDE_GEAR_ELEMENT;
+		}}
+	>
 		<h2>Optimizing gears for a specific element</h2>
 		<ol>
 			<li>Upload your equipped gears</li>

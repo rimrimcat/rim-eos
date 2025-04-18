@@ -15,6 +15,9 @@
 		equipped_gear_views,
 		font_size,
 		gear_views,
+		guide_content,
+		guide_open,
+		guide_title,
 		inner_width,
 		is_mobile,
 		matrix_views,
@@ -28,7 +31,7 @@
 	} from '$lib/scripts/stores';
 	import { AppWindowIcon } from '@lucide/svelte';
 	import { onMount, type Component } from 'svelte';
-	import Dialog from './Dialog.svelte';
+	import FloatingWindow from './FloatingWindow.svelte';
 	import ReadySignal from './ReadySignal.svelte';
 	import Toolbar from './Toolbar.svelte';
 
@@ -54,7 +57,6 @@
 	} as NavItem);
 
 	// Dialogs
-	let dialog_open = $state(true);
 
 	// color scheme
 	let styles = $state({});
@@ -127,28 +129,9 @@
 		);
 		applyExtraGearViewStats();
 	});
-
-	// TODO: make stat page use $all_stats
-
-	// $inspect('Equipped Gear Views', $equipped_gear_views);
-	// $inspect('All stat totals', $all_stats.to_displayed_stats());
-
-	// $inspect('Lumped Stats', $all_stats.lump());
 </script>
 
 <svelte:window bind:innerWidth={$inner_width} />
-
-<Dialog
-	bind:open={dialog_open}
-	title="Note"
-	blocking={true}
-	blur={true}
-	closable={true}
-	buttons={['OK', 'Cancel']}
->
-	<h3>This WebApp is under development</h3>
-	<p>Will be missing some features.</p>
-</Dialog>
 
 <div class="app-container">
 	<Toolbar bind:active_component bind:is_collapsed />
@@ -170,9 +153,14 @@
 
 <ReadySignal bind:signal />
 
-<!-- <FloatingWindow>
+<FloatingWindow
+	title={$guide_title}
+	open={$guide_open}
+	guide_content={$guide_content}
+	autoResize={true}
+>
 	<p>test</p>
-</FloatingWindow> -->
+</FloatingWindow>
 
 <style>
 	:global(body) {
