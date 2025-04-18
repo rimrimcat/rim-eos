@@ -17,7 +17,7 @@
 
 	const ELEMENTS = ['Flame', 'Frost', 'Volt', 'Phys', 'Alt'] as const;
 	const STATS = ['ATK', 'TOTAL ATK', 'DMG', 'RES', 'CRIT', 'MULTIPLIER'] as const;
-	const OTHERS = ['Titan', 'Percent', 'Rainbow'] as const;
+	const OTHERS = ['Titan', 'Percent', 'Rainbow', 'Equipped'] as const;
 	const PARTS = [
 		'Helmet',
 		'Spaulders',
@@ -50,15 +50,16 @@
 		const gear = _selectedGear // @ts-expect-error
 			? `( 'gear' == '${GearPart[_selectedGear.toUpperCase()]}' ) * `
 			: '';
+		const equipped = _selectedOthers.has('Equipped') ? 'isEquipped * ' : '';
 		const titan = selectedOthers.has('Titan') ? 'titan_' : '';
 		const stat = _selectedStat.toLowerCase();
 		const element = _selectedElement ? _selectedElement.toLowerCase() + '_' : '';
 		const percent = selectedOthers.has('Percent') ? '_percent' : '';
 
 		if (_selectedStat !== 'TOTAL ATK') {
-			return rainbow + gear + titan + element + stat + percent;
+			return rainbow + gear + equipped + titan + element + stat + percent;
 		} else {
-			return rainbow + gear + '( ' + titan + element + 'atk' + ' + ' + titan + 'atk )';
+			return rainbow + gear + equipped + '( ' + titan + element + 'atk' + ' + ' + titan + 'atk )';
 		}
 	}
 

@@ -406,7 +406,10 @@
 		const extractedVars = [...new Set(query.match(ALL_STATS_REGEX))] as AllStats[];
 
 		function doFiltering(gear: GearView) {
-			const variables: { [key in AllStats]?: number } & { gear?: ValidGearPart } = {};
+			const variables: { [key in AllStats]?: number } & {
+				gear?: ValidGearPart;
+				isEquipped?: boolean;
+			} = {};
 
 			extractedVars.forEach((varName) => {
 				variables[varName] = gear.derived.find((stat) => stat.stat === varName)?.value ?? 0;
@@ -416,6 +419,7 @@
 				return;
 			}
 			variables.gear = gear.part;
+			variables.isEquipped = gear.isEquipped;
 
 			// @ts-expect-error
 			const new_query = query.replace(ALL_STATS_REGEX, (match) => variables[match].toString());

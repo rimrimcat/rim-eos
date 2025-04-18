@@ -159,6 +159,10 @@ export type StatDebuffs =
 	| 'shield_dmg_reduction_ignore_percent';
 
 export type StatKey = StatGearUser | StatNonGear | StatDebuffs;
+
+/**
+ *  Only used to type STAT_LABELS
+ */
 export type AllStats = StatKey | StatGearTitan | StatGearFinal;
 
 export type StatConstant = {
