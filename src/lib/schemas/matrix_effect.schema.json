@@ -239,7 +239,7 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "volt_atk": {
+        "phys_atk": {
           "type": "array",
           "items": [
             {
@@ -258,7 +258,7 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "phys_atk": {
+        "volt_atk": {
           "type": "array",
           "items": [
             {
@@ -334,7 +334,7 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "volt_atk_percent": {
+        "phys_atk_percent": {
           "type": "array",
           "items": [
             {
@@ -353,7 +353,7 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "phys_atk_percent": {
+        "volt_atk_percent": {
           "type": "array",
           "items": [
             {
@@ -429,7 +429,7 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "volt_dmg_percent": {
+        "phys_dmg_percent": {
           "type": "array",
           "items": [
             {
@@ -448,7 +448,7 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "phys_dmg_percent": {
+        "volt_dmg_percent": {
           "type": "array",
           "items": [
             {
@@ -581,6 +581,25 @@
           "minItems": 4,
           "maxItems": 4
         },
+        "phys_res": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
         "volt_res": {
           "type": "array",
           "items": [
@@ -601,25 +620,6 @@
           "maxItems": 4
         },
         "alt_res": {
-          "type": "array",
-          "items": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
-        "phys_res": {
           "type": "array",
           "items": [
             {
@@ -695,6 +695,25 @@
           "minItems": 4,
           "maxItems": 4
         },
+        "phys_res_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
         "volt_res_percent": {
           "type": "array",
           "items": [
@@ -715,25 +734,6 @@
           "maxItems": 4
         },
         "alt_res_percent": {
-          "type": "array",
-          "items": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
-        "phys_res_percent": {
           "type": "array",
           "items": [
             {
@@ -885,25 +885,6 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "phys_res_ignore_percent": {
-          "type": "array",
-          "items": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
         "flame_res_ignore_percent": {
           "type": "array",
           "items": [
@@ -924,6 +905,25 @@
           "maxItems": 4
         },
         "frost_res_ignore_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "phys_res_ignore_percent": {
           "type": "array",
           "items": [
             {
@@ -1018,25 +1018,6 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "phys_dmg_taken_percent": {
-          "type": "array",
-          "items": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
         "flame_dmg_taken_percent": {
           "type": "array",
           "items": [
@@ -1057,6 +1038,25 @@
           "maxItems": 4
         },
         "frost_dmg_taken_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "phys_dmg_taken_percent": {
           "type": "array",
           "items": [
             {
@@ -1152,6 +1152,120 @@
           "maxItems": 4
         },
         "shield_dmg_reduction_ignore_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "base_atk_improvement_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "base_flame_atk_improvement_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "base_frost_atk_improvement_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "base_phys_atk_improvement_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "base_volt_atk_improvement_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "base_alt_atk_improvement_percent": {
           "type": "array",
           "items": [
             {
@@ -1271,7 +1385,7 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "volt_atk": {
+        "phys_atk": {
           "type": "array",
           "items": [
             {
@@ -1290,7 +1404,7 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "phys_atk": {
+        "volt_atk": {
           "type": "array",
           "items": [
             {
@@ -1366,7 +1480,7 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "volt_atk_percent": {
+        "phys_atk_percent": {
           "type": "array",
           "items": [
             {
@@ -1385,7 +1499,7 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "phys_atk_percent": {
+        "volt_atk_percent": {
           "type": "array",
           "items": [
             {
@@ -1461,7 +1575,7 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "volt_dmg_percent": {
+        "phys_dmg_percent": {
           "type": "array",
           "items": [
             {
@@ -1480,7 +1594,7 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "phys_dmg_percent": {
+        "volt_dmg_percent": {
           "type": "array",
           "items": [
             {
@@ -1613,6 +1727,25 @@
           "minItems": 4,
           "maxItems": 4
         },
+        "phys_res": {
+          "type": "array",
+          "items": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
         "volt_res": {
           "type": "array",
           "items": [
@@ -1633,25 +1766,6 @@
           "maxItems": 4
         },
         "alt_res": {
-          "type": "array",
-          "items": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
-        "phys_res": {
           "type": "array",
           "items": [
             {
@@ -1727,6 +1841,25 @@
           "minItems": 4,
           "maxItems": 4
         },
+        "phys_res_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
         "volt_res_percent": {
           "type": "array",
           "items": [
@@ -1747,25 +1880,6 @@
           "maxItems": 4
         },
         "alt_res_percent": {
-          "type": "array",
-          "items": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
-        "phys_res_percent": {
           "type": "array",
           "items": [
             {
@@ -1917,25 +2031,6 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "phys_res_ignore_percent": {
-          "type": "array",
-          "items": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
         "flame_res_ignore_percent": {
           "type": "array",
           "items": [
@@ -1956,6 +2051,25 @@
           "maxItems": 4
         },
         "frost_res_ignore_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "phys_res_ignore_percent": {
           "type": "array",
           "items": [
             {
@@ -2050,25 +2164,6 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "phys_dmg_taken_percent": {
-          "type": "array",
-          "items": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
         "flame_dmg_taken_percent": {
           "type": "array",
           "items": [
@@ -2089,6 +2184,25 @@
           "maxItems": 4
         },
         "frost_dmg_taken_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "phys_dmg_taken_percent": {
           "type": "array",
           "items": [
             {
@@ -2184,6 +2298,120 @@
           "maxItems": 4
         },
         "shield_dmg_reduction_ignore_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "base_atk_improvement_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "base_flame_atk_improvement_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "base_frost_atk_improvement_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "base_phys_atk_improvement_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "base_volt_atk_improvement_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "base_alt_atk_improvement_percent": {
           "type": "array",
           "items": [
             {

@@ -4,6 +4,7 @@ import type {
 	BaseEffect,
 	BaseStats16,
 	EquippedGear,
+	GearEffect,
 	GearView,
 	GearViewStatShort,
 	Loadout,
@@ -14,6 +15,7 @@ import type {
 	ResoEffect,
 	ResoEffectsIds,
 	ResoTriggerCounts,
+	StatAtkImprovement,
 	StatKey,
 	UserWeapon,
 	ValidGearPart,
@@ -637,6 +639,33 @@ export function getEquippedGearViews(equipped_gears: EquippedGear): GearView[] {
 		}
 	}
 	return equipped_gear_views;
+}
+
+const TRANSFORMABLE_KEYS = ['atk', 'phys_atk', 'flame_atk', 'frost_atk', 'volt_atk', 'alt_atk'];
+
+export function turnGearToEffect(gear: GearView): GearEffect {
+	if (gear.part === 'U') throw new Error('Cannot turn UNKNOWN gear into effect!');
+
+	const gear_stat_col = new StatCollection(gear);
+
+	// iterate through the keys
+	Object.keys(gear_stat_col.data).forEach((key) => {
+		if (TRANSFORMABLE_KEYS.includes(key as (typeof TRANSFORMABLE_KEYS)[number])) {
+			gear_stat_col.put(
+				`base_${key}_improvement_percent` as StatAtkImprovement,
+				// @ts-expect-error : key is guaranteed to exist
+				gear_stat_col.pop(key) / 100
+			);
+		} else {
+			// @ts-expect-error : key is guaranteed to exist
+			gear_stat_col.pop(key);
+		}
+	});
+
+	return {
+		id: `gear-${gear.part}`,
+		stats: gear_stat_col.data
+	};
 }
 
 export async function applyExtraGearViewStats() {

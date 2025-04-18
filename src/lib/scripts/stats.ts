@@ -112,11 +112,11 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	alt_dmg_taken_percent: 'Alt Dmg Taken',
 	// Attack Improvements
 	base_atk_improvement_percent: 'Base Atk',
-	base_phys_atk_improvement_percent: 'Phys Atk',
-	base_flame_atk_improvement_percent: 'Flame Atk',
-	base_frost_atk_improvement_percent: 'Frost Atk',
-	base_volt_atk_improvement_percent: 'Volt Atk',
-	base_alt_atk_improvement_percent: 'Alt Atk'
+	base_phys_atk_improvement_percent: 'Base Phys Atk',
+	base_flame_atk_improvement_percent: 'Base Flame Atk',
+	base_frost_atk_improvement_percent: 'Base Frost Atk',
+	base_volt_atk_improvement_percent: 'Base Volt Atk',
+	base_alt_atk_improvement_percent: 'Base Alt Atk'
 };
 
 export const USER_STATS_LIST: StatGearUser[] = [

@@ -1,14 +1,21 @@
 <script lang="ts">
-	import { AllMatrixEffectIds, AllResoEffectIds, AllWeaponEffectIds } from '$lib/generated/all-ids';
+	import {
+		AllGearEffectIds,
+		AllMatrixEffectIds,
+		AllResoEffectIds,
+		AllWeaponEffectIds
+	} from '$lib/generated/all-ids';
 	import { STAT_LABELS, StatCollection } from '$lib/scripts/stats';
 	import type {
 		BaseEffect,
+		GearEffect,
 		MatrixEffectsIds,
 		MatrixFinalEffect,
 		ResoEffect,
 		ResoEffectsIds,
 		StatData,
 		StatKey,
+		ValidGearEffectIds,
 		WeaponEffect,
 		WeaponEffectsIds,
 		WeaponsIds
@@ -18,20 +25,25 @@
 	import { DiffIcon, GroupIcon, PinIcon, PinOffIcon, SlashIcon } from '@lucide/svelte';
 
 	let {
-		all_effects = $bindable([] as (ResoEffect | WeaponEffect | MatrixFinalEffect)[]),
+		all_effects = $bindable([] as (ResoEffect | WeaponEffect | MatrixFinalEffect | GearEffect)[]),
 		chart_width = $bindable(500)
 	} = $props();
+
+	function groupBySource(eff: TaggedEffect) {
+		if (eff.is_weapon) return 'Weapon';
+		if (eff.is_matrix) return 'Matrix';
+		if (eff.is_reso) return 'Resonance';
+		if (eff.is_gear) return 'Gear';
+		return 'Unknown';
+	}
 
 	// options
 	let grouping_fcn_index: number = $state(0);
 	const GROUPING_FUNCTION_NAMES = ['Source', 'Character', 'Character-Source'];
 	const GROUPING_FUNCTIONS: ((eff: TaggedEffect) => string)[] = [
-		(eff: TaggedEffect) => (eff.is_weapon ? 'Weapon' : eff.is_matrix ? 'Matrix' : 'Reso'),
+		groupBySource,
 		(eff: TaggedEffect) => eff.character ?? 'none',
-		(eff: TaggedEffect) =>
-			eff.character
-				? `${eff.character}-${eff.is_weapon ? 'weapon' : eff.is_matrix ? 'matrix' : ''}`
-				: 'others'
+		(eff: TaggedEffect) => (eff.character ? `${eff.character}-${groupBySource(eff)}` : 'others')
 	];
 
 	let pin_axis = $state(false);
@@ -51,15 +63,16 @@
 		is_matrix?: boolean;
 		is_weapon?: boolean;
 		is_reso?: boolean;
+		is_gear?: boolean;
 	};
 
 	type TaggedEffect = BaseEffect &
 		ETags & {
-			id: ResoEffectsIds | WeaponEffectsIds | MatrixEffectsIds;
+			id: ResoEffectsIds | WeaponEffectsIds | MatrixEffectsIds | ValidGearEffectIds;
 			stats: StatData;
 		};
 
-	function tagEffect(eff: ResoEffect | WeaponEffect | MatrixFinalEffect) {
+	function tagEffect(eff: ResoEffect | WeaponEffect | MatrixFinalEffect | GearEffect) {
 		const tags: ETags = {};
 
 		if (AllWeaponEffectIds.includes(eff.id as WeaponEffectsIds)) {
@@ -70,6 +83,8 @@
 			tags.character = eff.id.split('-')[0] as WeaponsIds;
 		} else if (AllResoEffectIds.includes(eff.id as ResoEffectsIds)) {
 			tags.is_reso = true;
+		} else if (AllGearEffectIds.includes(eff.id as ValidGearEffectIds)) {
+			tags.is_gear = true;
 		} else {
 			console.log('FAILED TO TAG!');
 		}
@@ -85,6 +100,7 @@
 				Object.keys(eff.stats)
 					.filter((key) => key_filter(key as StatKey))
 					.forEach((key) => {
+						// transform base atks to percent improvement so can plot on same graph
 						const combinedKey = `${group}:${key}`;
 
 						if (!acc.map.has(combinedKey)) {
@@ -119,7 +135,7 @@
 
 	function getDiff(prev_eff: TaggedEffect[], curr_eff: TaggedEffect[]): TaggedEffect[] {
 		type DiffIdMap = {
-			id: ResoEffectsIds | WeaponEffectsIds | MatrixEffectsIds;
+			id: ResoEffectsIds | WeaponEffectsIds | MatrixEffectsIds | ValidGearEffectIds;
 			eff_in_prev?: TaggedEffect;
 			eff_in_curr?: TaggedEffect;
 		};

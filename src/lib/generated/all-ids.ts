@@ -132,3 +132,17 @@ export const AllWeaponIds: WeaponsIds[] = [
 	'roslyn',
 	'voidpiercer'
 ];
+export const AllGearEffectIds = [
+	'gear-A',
+	'gear-B',
+	'gear-C',
+	'gear-H',
+	'gear-L',
+	'gear-S',
+	'gear-T',
+	'gear-V',
+	'gear-X',
+	'gear-N',
+	'gear-R',
+	'gear-G'
+];
