@@ -148,12 +148,13 @@ const GEAR_STATS_TITAN: StatGearTitan[] = [
 ];
 // extra stats
 const GEAR_STATS_EXTRA: StatGearExtra[] = ['multiplier', 'multiplier_percent'];
-// other literals
+// other literals, MUST NOT BE INCLUDED IN REGEX
 const GEAR_OTHER = ['gear', 'isEquipped'];
 
-const ALL_STATS_LIST = [...GEAR_STATS, ...GEAR_STATS_TITAN, ...GEAR_STATS_EXTRA, ...GEAR_OTHER];
+const ALL_STATS_LIST = [...GEAR_STATS, ...GEAR_STATS_TITAN, ...GEAR_STATS_EXTRA];
 
-export const ALL_STATS_REGEX = new RegExp(`\\b(${ALL_STATS_LIST.join('|')})\\b`, 'g');
+const _ALL_WITH_OTHERS = [...ALL_STATS_LIST, ...GEAR_OTHER];
+export const ALL_STATS_REGEX = new RegExp(`\\b(${_ALL_WITH_OTHERS.join('|')})\\b`, 'g');
 
 const __allowedRegexLits = [
 	'\\+',
