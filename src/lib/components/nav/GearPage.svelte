@@ -64,7 +64,7 @@
 
 	// Gear Info Dialog
 	let gear_info_dialog_open = $state(false);
-	let gear_info_gear: GearView | null = $state(null);
+	let gear_info_index = $state(-1);
 
 	let has_measured = $state(false); // for triggering flexGrid itemWidth update
 
@@ -242,6 +242,7 @@
 		saveObject('loadouts_v1', $user_loadouts);
 	}
 
+	// TODO: USE EQUIPPED GEARS FROM STORE
 	function updateEquippedGears() {
 		equipped_gears = [];
 		for (const part in VALID_GEAR_PARTS) {
@@ -452,8 +453,8 @@
 		await advancedGearSearch(query as AllStats);
 	}
 
-	function showGearInfo(gear: GearView) {
-		gear_info_gear = gear;
+	function showGearInfo(index: number) {
+		gear_info_index = index;
 		gear_info_dialog_open = true;
 	}
 
@@ -518,7 +519,7 @@
 		}
 	];
 
-	$inspect('gear_views', $gear_views);
+	$inspect('gear_views FROM GEAR PAGE', $gear_views);
 </script>
 
 {#snippet gear_actions(gear: GearView)}
@@ -545,11 +546,19 @@
 	{/if}
 {/snippet}
 
-{#snippet gear_icon(gear: GearView, partIfNoGear: ValidGearPart = GearPart.HELMET)}
+{#snippet gear_icon(
+	gear: GearView,
+	gear_index: number,
+	partIfNoGear: ValidGearPart = GearPart.HELMET
+)}
 	<div class="gear-icon">
 		<div class="icon-container">
 			{#if gear}
-				<button class="gear-button icon" onclick={() => showGearInfo(gear)} style="opacity: 1">
+				<button
+					class="gear-button icon"
+					onclick={() => showGearInfo(gear_index)}
+					style="opacity: 1"
+				>
 					<img
 						src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
 						alt="Gear"
@@ -640,7 +649,7 @@
 				{#each $gear_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
 						<span style="width: {span_length * 0.75}rem">{gear.id}</span>
-						{@render gear_icon(gear)}
+						{@render gear_icon(gear, gear.id)}
 
 						{#if bound_objects.fourStatMode}
 							<div class="stats-container">
@@ -694,7 +703,7 @@
 				{#each search_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
 						<span style="width: {span_length * 0.75}rem">{gear.id}</span>
-						{@render gear_icon($gear_views[gear.id])}
+						{@render gear_icon($gear_views[gear.id], gear.id)}
 
 						<div class="single-stat">
 							<div class="stat-content" class:icon={bound_objects.iconStats}>
@@ -720,7 +729,7 @@
 						<span style="max-width: {span_length * 0.75}rem; width: {span_length * 0.75}rem"
 							>{gearId}</span
 						>
-						{@render gear_icon($gear_views[gearId], VALID_GEAR_PARTS[partIndex])}
+						{@render gear_icon($gear_views[gearId], gearId, VALID_GEAR_PARTS[partIndex])}
 
 						{@render gear_actions($gear_views[gearId])}
 					</div>
@@ -750,7 +759,7 @@
 
 <GearInfo
 	bind:open={gear_info_dialog_open}
-	bind:gear={gear_info_gear}
+	bind:gear={$gear_views[gear_info_index]}
 	onRemoveGear={removeGear}
 	onEquipGear={equipGear}
 	onUnequipGear={unequipGear}
