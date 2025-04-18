@@ -61,7 +61,6 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	titan_volt_atk: 'Titan Volt Atk',
 	titan_phys_atk: 'Titan Phys Atk',
 	titan_alt_atk: 'Titan Alt Atk',
-	titan_atk_percent: 'Titan ATK',
 	titan_flame_atk_percent: 'Titan Flame Atk',
 	titan_frost_atk_percent: 'Titan Frost Atk',
 	titan_volt_atk_percent: 'Titan Volt Atk',
@@ -89,6 +88,7 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	// other stat screen stuff
 	end: 'Endurance',
 	end_regen: 'Endurance Regen',
+	// buffs
 	crit_dmg_percent: 'Crit Dmg',
 	final_dmg_percent: 'Final Dmg',
 	crit_res_reduction_percent: 'Crit Res Red',
@@ -109,7 +109,14 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	flame_dmg_taken_percent: 'Flame Dmg Taken',
 	frost_dmg_taken_percent: 'Frost Dmg Taken',
 	volt_dmg_taken_percent: 'Volt Dmg Taken',
-	alt_dmg_taken_percent: 'Alt Dmg Taken'
+	alt_dmg_taken_percent: 'Alt Dmg Taken',
+	// Attack Improvements
+	base_atk_improvement_percent: 'Base Atk',
+	base_phys_atk_improvement_percent: 'Phys Atk',
+	base_flame_atk_improvement_percent: 'Flame Atk',
+	base_frost_atk_improvement_percent: 'Frost Atk',
+	base_volt_atk_improvement_percent: 'Volt Atk',
+	base_alt_atk_improvement_percent: 'Alt Atk'
 };
 
 export const USER_STATS_LIST: StatGearUser[] = [
@@ -208,6 +215,9 @@ export function getCritRate(crit: number, flat_rate_percent: number = 0, lvl: nu
 	return Math.min(crit / crit_constant + flat_rate_percent / 100, 1);
 }
 
+/**
+ * StatCollection class allows for easy addition and subtraction of stats.
+ */
 export class StatCollection {
 	public data: StatData = {};
 
@@ -589,6 +599,11 @@ export class StatCollection {
 	}
 }
 
+/**
+ * LumpedStatCollection allows for calculation of multipliers.
+ * The reference is all stats except the one being calculated;
+ * Multiplier = Stat / (Total Player Stat - Stat)
+ */
 export class LumpedStatCollection {
 	public data: LumpedStatData = {};
 
@@ -602,16 +617,6 @@ export class LumpedStatCollection {
 
 	get(stat: LumpedKey): number {
 		return this.data[stat] ?? 0;
-	}
-
-	put(stat: LumpedKey, value: number) {
-		this.data[stat] = value;
-	}
-
-	pop(stat: LumpedKey) {
-		const value = this.data[stat];
-		delete this.data[stat];
-		return value;
 	}
 
 	clone_data(): LumpedStatData {

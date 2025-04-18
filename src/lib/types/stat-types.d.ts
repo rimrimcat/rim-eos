@@ -187,27 +187,22 @@ export type AtkStats5 = [string, string, string, string, string];
 export type AtkStats5Number = [number, number, number, number, number];
 
 export type MultiplierTypes = 'base_atk' | 'atk_percent' | 'final_dmg_percent' | 'ele_dmg_percent';
+
+/**
+ * For use with LumpedCollection
+ */
 export type LumpedKey =
-	| 'phys_atk'
-	| 'flame_atk'
-	| 'frost_atk'
-	| 'volt_atk'
-	| 'alt_atk'
-	| 'phys_atk_percent'
-	| 'flame_atk_percent'
-	| 'frost_atk_percent'
-	| 'volt_atk_percent'
-	| 'alt_atk_percent'
-	| 'phys_dmg_percent'
-	| 'flame_dmg_percent'
-	| 'frost_dmg_percent'
-	| 'volt_dmg_percent'
-	| 'alt_dmg_percent'
+	| `${Elements}_atk`
+	| `${Elements}_atk_percent`
+	| `${Elements}_dmg_percent`
 	| 'crit'
 	| 'crit_percent'
 	| 'crit_dmg_percent'
 	| 'final_dmg_percent';
 
+/**
+ * For use with LumpedCollection
+ */
 export type LumpedStatData = {
 	[key in LumpedKey]?: number;
 };
