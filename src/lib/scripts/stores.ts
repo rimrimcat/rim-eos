@@ -1,3 +1,4 @@
+import type { Snippet } from 'svelte';
 import { writable } from 'svelte/store';
 import type {
 	AllLoadouts,
@@ -17,6 +18,10 @@ export const is_mobile = writable<boolean>(false);
 export const font_size = writable<number>(16);
 export const inner_width = writable<number>(1000);
 export const toolbar_transform = writable<number>(0);
+
+// interactive guide
+export const guide_open = writable<boolean>(false);
+export const guide_content = writable<(Snippet | string)[] | null>(null);
 
 // user data
 export const user_gears = writable<UserGear[]>([]);
