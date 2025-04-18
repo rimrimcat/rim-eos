@@ -29,11 +29,17 @@ import {
 	getWeapon,
 	getWeaponEffect
 } from './json-loader';
-import { STAT_LABELS, StatCollection, TEMPLATE_USER_ATTRIBUTES } from './stats';
+import {
+	LumpedStatCollection,
+	STAT_LABELS,
+	StatCollection,
+	TEMPLATE_USER_ATTRIBUTES
+} from './stats';
 import {
 	all_stats,
 	base_weapons,
 	current_loadout,
+	equipped_gear_views,
 	gear_views,
 	matrix_views,
 	reso_counts,
@@ -636,7 +642,33 @@ export function getEquippedGearViews(equipped_gears: EquippedGear): GearView[] {
 export async function applyExtraGearViewStats() {
 	const gear_views_ = get(gear_views);
 
-	const all_stats_lump = get(all_stats).lump();
+	// create map of gear to equipped
+	const all_stats_ = get(all_stats);
+	const eq_gear_views = get(equipped_gear_views);
+
+	const all_stats_minus_eq_gear: Record<ValidGearPart, LumpedStatCollection> = {
+		H: new LumpedStatCollection(),
+		S: new LumpedStatCollection(),
+		A: new LumpedStatCollection(),
+		C: new LumpedStatCollection(),
+		B: new LumpedStatCollection(),
+		L: new LumpedStatCollection(),
+		G: new LumpedStatCollection(),
+		T: new LumpedStatCollection(),
+		V: new LumpedStatCollection(),
+		N: new LumpedStatCollection(),
+		X: new LumpedStatCollection(),
+		R: new LumpedStatCollection()
+	};
+	await Promise.all(
+		eq_gear_views.map(async (gear) => {
+			if (gear.part === 'U') {
+				return;
+			}
+			all_stats_minus_eq_gear[gear.part] = all_stats_.subtract(new StatCollection(gear)).lump();
+		})
+	);
+
 	const loadout_element = get(user_loadouts)[get(current_loadout)].element;
 
 	const new_gear_views_ = Promise.all(
@@ -645,10 +677,9 @@ export async function applyExtraGearViewStats() {
 
 			// multipliers
 			const multiplier_index = new_gear.derived.findIndex((stat) => stat.stat === 'multiplier');
-			const multiplier_value = all_stats_lump.total_multiplier_of(
-				new StatCollection(new_gear).lump(),
-				loadout_element
-			);
+			const multiplier_value = all_stats_minus_eq_gear[
+				gear.part as ValidGearPart
+			].total_multiplier_of(new StatCollection(new_gear).lump(), loadout_element);
 			const multiplier_value_percent = (multiplier_value - 1) * 100;
 
 			const multiplier_stat: GearViewStatShort = {

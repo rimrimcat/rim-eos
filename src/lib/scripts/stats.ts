@@ -534,7 +534,7 @@ export class StatCollection {
 	/**
 	 * Lumps the atk and ele_dmg stats to their respective elements
 	 */
-	lump(level: number = 100) {
+	lump() {
 		const new_data: LumpedStatData = {};
 
 		// atk
@@ -560,6 +560,12 @@ export class StatCollection {
 		new_data.volt_dmg_percent = this.get('volt_dmg_percent') + this.get('ele_dmg_percent');
 		new_data.alt_dmg_percent = this.get('alt_dmg_percent') + this.get('ele_dmg_percent');
 
+		// crit
+		new_data.crit = this.get('crit');
+		new_data.crit_percent = this.get('crit_percent');
+		new_data.crit_dmg_percent = this.get('crit_dmg_percent');
+
+		// dmg_percent
 		new_data.final_dmg_percent = this.get('final_dmg_percent');
 
 		return new LumpedStatCollection(new_data);
@@ -569,9 +575,11 @@ export class StatCollection {
 export class LumpedStatCollection {
 	public data: LumpedStatData = {};
 
-	constructor(data: LumpedStatData) {
+	constructor(data?: LumpedStatData) {
 		if (data) {
 			this.data = data;
+		} else {
+			this.data = {};
 		}
 	}
 

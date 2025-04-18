@@ -269,7 +269,9 @@ export type LumpedKey =
 	| 'frost_dmg_percent'
 	| 'volt_dmg_percent'
 	| 'alt_dmg_percent'
+	| 'crit'
 	| 'crit_percent'
+	| 'crit_dmg_percent'
 	| 'final_dmg_percent';
 
 export type LumpedStatData = {
