@@ -1,13 +1,12 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import { onMount, tick } from 'svelte';
 	import { Spring } from 'svelte/motion';
 
-	// Props with defaults
 	let {
 		title = $bindable('Floating Window'),
 		open = $bindable(true),
-		initialWidth = 400,
-		initialHeight = 300,
+		guide_content = null as (Snippet | string)[] | null,
 		minWidth = 200,
 		minHeight = 150,
 		initialX = window.innerWidth / 2 - 200,
@@ -15,25 +14,26 @@
 		resizable = true,
 		draggable = true,
 		closable = true,
+		autoResize = false,
 		animatePosition = true,
 		onClose = () => {},
 		children
 	} = $props();
 
 	// State variables
+	let guide_index = $state(0);
+	let contentElement: HTMLElement | null = $state(null);
 	let windowElement: HTMLElement | null = $state(null);
 	let headerElement: HTMLElement | null = $state(null);
 	let isDragging = $state(false);
 	let isResizing = $state(false);
 	let dragOffset = $state({ x: 0, y: 0 });
 	let resizeDirection = $state({ x: 0, y: 0 });
+	let measuringElement: HTMLElement | null = null;
 
 	// Use spring animation for smooth position changes
 	let position = new Spring({ x: initialX, y: initialY }, { stiffness: 0.1, damping: 0.6 });
-	let dimensions = new Spring(
-		{ width: initialWidth, height: initialHeight },
-		{ stiffness: 0.1, damping: 0.6 }
-	);
+	let dimensions = new Spring({ width: 400, height: 300 }, { stiffness: 0.1, damping: 0.6 });
 
 	// Move window to a specific position (useful for guide functionality)
 	function moveWindow(x: number, y: number, animate = animatePosition) {
@@ -134,7 +134,6 @@
 			}
 		}
 
-		// Update position and dimensions
 		position.set({ x: newX, y: newY });
 		dimensions.set({ width: newWidth, height: newHeight });
 
@@ -143,7 +142,6 @@
 		dragOffset.y = event.clientY;
 	}
 
-	// End drag/resize operations
 	function endDragOrResize() {
 		isDragging = false;
 		isResizing = false;
@@ -154,8 +152,77 @@
 		onClose();
 	}
 
+	function nextStep() {
+		if (guide_content && guide_index < guide_content.length - 1) {
+			guide_index++;
+			if (autoResize) {
+				measureAndResize();
+			}
+		}
+	}
+
+	function prevStep() {
+		if (guide_content && guide_index > 0) {
+			guide_index--;
+			if (autoResize) {
+				measureAndResize();
+			}
+		}
+	}
+
+	async function measureAndResize() {
+		if (!autoResize || !contentElement || !windowElement) return;
+
+		await tick(); // Wait for DOM to update with new content
+
+		// Create a measuring container if it doesn't exist
+		if (!measuringElement) {
+			measuringElement = document.createElement('div');
+			measuringElement.className = 'measuring-container';
+			measuringElement.style.position = 'absolute';
+			measuringElement.style.visibility = 'hidden';
+			measuringElement.style.pointerEvents = 'none';
+			measuringElement.style.width = `${dimensions.current.width}px`;
+			measuringElement.style.padding = getComputedStyle(contentElement).padding;
+			document.body.appendChild(measuringElement);
+		}
+
+		// Clone the content
+		const headerHeight = headerElement ? headerElement.offsetHeight : 0;
+		const navigationHeight = guide_content && guide_content.length > 1 ? 60 : 0;
+		const contentClone = contentElement.cloneNode(true);
+
+		// Reset the measuring element
+		measuringElement.innerHTML = '';
+		measuringElement.style.width = `${dimensions.current.width}px`;
+		measuringElement.appendChild(contentClone);
+
+		// Measure the actual rendered content height
+		await tick(); // Wait for clone to render
+		const contentHeight = measuringElement.scrollHeight;
+
+		// Calculate total height needed
+		const totalHeight = contentHeight + headerHeight + navigationHeight - 40;
+
+		// Apply minimum constraints
+		const newHeight = Math.max(totalHeight, minHeight);
+
+		// Only update if height actually changed by more than a threshold
+		if (Math.abs(dimensions.current.height - newHeight) > 5) {
+			// Use current width and new calculated height
+			resizeWindow(dimensions.current.width, newHeight);
+		}
+
+		// Clean up
+		if (measuringElement.parentNode) {
+			measuringElement.innerHTML = '';
+		}
+
+		adjustPosition();
+	}
+
 	// Check if window is out of bounds after resize
-	function adjustPositionIfNeeded() {
+	function adjustPosition() {
 		const maxX = window.innerWidth - dimensions.current.width;
 		const maxY = window.innerHeight - dimensions.current.height;
 
@@ -167,16 +234,30 @@
 		}
 	}
 
-	// Set up event listeners
+	// Clean up resources
+	function cleanupMeasuringElement() {
+		if (measuringElement && measuringElement.parentNode) {
+			document.body.removeChild(measuringElement);
+			measuringElement = null;
+		}
+	}
+
 	onMount(() => {
 		window.addEventListener('mousemove', handleMouseMove);
 		window.addEventListener('mouseup', handleMouseUp);
 		window.addEventListener('resize', handleWindowResize);
 
+		if (autoResize) {
+			tick().then(() => {
+				setTimeout(measureAndResize, 50);
+			});
+		}
+
 		return () => {
 			window.removeEventListener('mousemove', handleMouseMove);
 			window.removeEventListener('mouseup', handleMouseUp);
 			window.removeEventListener('resize', handleWindowResize);
+			cleanupMeasuringElement();
 		};
 	});
 
@@ -193,25 +274,28 @@
 	}
 
 	function handleWindowResize() {
-		tick().then(adjustPositionIfNeeded);
+		tick().then(adjustPosition);
 	}
-
-	// Expose methods to parent
-	function exportMethods() {
-		return {
-			move: moveWindow,
-			resize: resizeWindow,
-			close: closeWindow
-		};
-	}
-
-	// Bind to 'this' to make methods accessible
-	let thisComponent = exportMethods();
 
 	$effect(() => {
 		dimensions.current;
-		adjustPositionIfNeeded();
+		adjustPosition();
 	});
+
+	$effect(() => {
+		if (autoResize && guide_content && open) {
+			tick().then(() => {
+				setTimeout(measureAndResize, 50);
+			});
+		}
+	});
+
+	// Clean up on component destruction
+	onMount(() => {
+		return cleanupMeasuringElement;
+	});
+
+	$inspect('guide content', typeof guide_content?.[0] === 'function');
 </script>
 
 {#if open}
@@ -232,9 +316,39 @@
 			{/if}
 		</div>
 
-		<div class="window-content">
-			{@render children()}
+		<div class="window-content" bind:this={contentElement}>
+			{#if guide_content}
+				{#if typeof guide_content[guide_index] === 'function'}
+					{@render guide_content[guide_index]()}
+				{:else}
+					<p>{guide_content[guide_index]}</p>
+				{/if}
+			{:else}
+				{@render children()}
+			{/if}
 		</div>
+
+		{#if guide_content && guide_content.length > 1}
+			<div class="guide-navigation">
+				<button
+					class="guide-nav-button"
+					onclick={prevStep}
+					disabled={guide_index === 0}
+					aria-label="Previous step"
+				>
+					Previous
+				</button>
+				<span class="guide-position">{guide_index + 1} / {guide_content.length}</span>
+				<button
+					class="guide-nav-button"
+					onclick={nextStep}
+					disabled={guide_index === guide_content.length - 1}
+					aria-label="Next step"
+				>
+					Next
+				</button>
+			</div>
+		{/if}
 
 		{#if resizable}
 			<!-- Resize handles -->
@@ -314,7 +428,37 @@
 		overscroll-behavior: contain;
 	}
 
-	/* Resize handles */
+	.guide-navigation {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.75rem 1.25rem;
+		border-top: 0.1rem solid var(--border-color);
+	}
+
+	.guide-nav-button {
+		padding: 0.5rem 1rem;
+		background-color: var(--button-bg, #f0f0f0);
+		border: 1px solid var(--button-border, #ccc);
+		border-radius: 0.25rem;
+		cursor: pointer;
+		font-weight: 500;
+	}
+
+	.guide-nav-button:hover:not(:disabled) {
+		background-color: var(--button-hover-bg, #e0e0e0);
+	}
+
+	.guide-nav-button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.guide-position {
+		font-size: 0.9rem;
+		color: var(--text-secondary, #666);
+	}
+
 	.resize-handle {
 		position: absolute;
 		background-color: transparent;
