@@ -360,7 +360,22 @@
 {/snippet}
 
 <div class="loadout-page">
-	<h1>Loadout</h1>
+	<div class="horizontal center-hori">
+		<h1>Loadout</h1>
+		<!-- <div class="edit-button-container"> -->
+
+		<div style="display: flex; flex: 1; justify-content: flex-end; margin-right: 4rem;">
+			{#if is_editing}
+				<button class="edit-button" onclick={toggleEditing} title="Save changes">
+					<Save size={18} />
+				</button>
+			{:else}
+				<button class="edit-button" onclick={toggleEditing} title="Edit loadout">
+					<PencilIcon size={18} />
+				</button>
+			{/if}
+		</div>
+	</div>
 
 	<div class="loadout-container">
 		<div class="loadout-content">
@@ -403,18 +418,6 @@
 							<p>{loadout_desc}</p>
 						</div>
 					{/if}
-
-					<div class="edit-button-container">
-						{#if is_editing}
-							<button class="edit-button" onclick={toggleEditing} title="Save changes">
-								<Save size={18} />
-							</button>
-						{:else}
-							<button class="edit-button" onclick={toggleEditing} title="Edit loadout">
-								<PencilIcon size={18} />
-							</button>
-						{/if}
-					</div>
 				</div>
 			</div>
 
