@@ -71,7 +71,8 @@ export type MatrixFinalEffect = BaseEffect & {
 	advancement: number;
 };
 
+export type ValidGearEffectIds = `gear-${ValidGearPart}`;
 export type GearEffect = BaseEffect & {
-	id: ValidGearPart;
+	id: ValidGearEffectIds;
 	stats: StatData;
 };
