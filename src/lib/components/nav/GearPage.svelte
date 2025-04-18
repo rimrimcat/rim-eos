@@ -522,8 +522,6 @@
 			}
 		}
 	];
-
-	$inspect('equipped gears idx', equipped_gears);
 </script>
 
 {#snippet gear_actions(gear: GearView)}
@@ -615,7 +613,7 @@
 				</button>
 				<button class="border" id="start-search" onclick={() => (search_dialog_open = true)}>
 					<SearchIcon />
-					<label class="in-button" for="start-search">Search Gear</label>
+					<label class="in-button" for="start-search">Search & Sort Gear</label>
 				</button>
 				<button
 					class="border"
