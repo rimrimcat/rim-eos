@@ -16,7 +16,7 @@
 	let query = $derived(getQuery(selectedElement, selectedStat, selectedOthers, selectedSlot));
 
 	const ELEMENTS = ['Flame', 'Frost', 'Volt', 'Phys', 'Alt'] as const;
-	const STATS = ['ATK', 'TOTAL ATK', 'DMG', 'RES', 'CRIT'] as const;
+	const STATS = ['ATK', 'TOTAL ATK', 'DMG', 'RES', 'CRIT', 'MULTIPLIER'] as const;
 	const OTHERS = ['Titan', 'Percent', 'Rainbow'] as const;
 	const PARTS = [
 		'Helmet',
@@ -146,6 +146,10 @@
 			if (selectedElement === null || selectedElement === 'Alt') {
 				selectedElement = 'Flame';
 			}
+		} else if (selectedStat == 'MULTIPLIER') {
+			selectedOthers.delete('Percent');
+			selectedOthers.delete('Titan');
+			selectedElement = null;
 		}
 
 		const invalid = query.replaceAll(ALLOWED_REGEX_VARS, '').replaceAll(ALLOWED_REGEX_OPS, '');

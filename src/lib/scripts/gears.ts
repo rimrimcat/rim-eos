@@ -3,6 +3,7 @@ import type {
 	GearView,
 	GearViewStatLong,
 	GearViewStatShort,
+	StatGearExtra,
 	StatGearTitan,
 	StatGearUser,
 	UserGear
@@ -75,7 +76,10 @@ export const VALID_GEAR_PARTS: ValidGearPart[] = [
 	'R'
 ];
 
-export const ALL_STATS_REGEX = new RegExp(`\\b(${ALL_STATS_LIST.join('|')}|gear)\\b`, 'g');
+const EXTRA_STATS_LIST: StatGearExtra[] = ['multiplier', 'multiplier_percent'];
+const ALL_ALL_STATS_LIST = [...ALL_STATS_LIST, ...EXTRA_STATS_LIST];
+
+export const ALL_STATS_REGEX = new RegExp(`\\b(${ALL_ALL_STATS_LIST.join('|')}|gear)\\b`, 'g');
 
 const __allowedRegexLits = [
 	'\\+',
@@ -91,7 +95,7 @@ const __allowedRegexLits = [
 	"'gear'",
 	...Object.values(GearPart).map((value) => `'${value}'`)
 ].join('|');
-const __allowedRegexVars = [...ALL_STATS_LIST].join('|');
+const __allowedRegexVars = [...ALL_ALL_STATS_LIST].join('|');
 
 export const ALLOWED_REGEX_VARS = new RegExp(`\\b(${__allowedRegexVars})\\b`, 'g');
 export const ALLOWED_REGEX_OPS = new RegExp(`(${__allowedRegexLits})`, 'g');
@@ -247,6 +251,8 @@ export async function createGearView(gear: UserGear, equip: boolean = false): Pr
 	});
 	stats.sort((a, b) => (b.roll ?? 0) - (a.roll ?? 0));
 
+	// if base_stats are defined, calculate contributions
+
 	// get highest roll stat
 	const bestRoll = stats[0];
 
@@ -278,8 +284,6 @@ export async function createGearView(gear: UserGear, equip: boolean = false): Pr
 			applyRainbow(RAINBOW_TITAN_ATK_PERCENT, derived, rainbowTitanValue, rainbowTitanValueLabel);
 		}
 	}
-
-	// TODO: add other derived stats
 
 	const isEquipped =
 		equip ||
