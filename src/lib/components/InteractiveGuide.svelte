@@ -1,7 +1,23 @@
 <script module>
-	import type { Snippet } from 'svelte';
-	// @ts-expect-error
-	export const GUIDE_GEAR_ELEMENT: (Snippet | string)[] = [gear_element_req, 'some string'];
+	import type { GuideItem } from '$lib/types';
+	import { writable } from 'svelte/store';
+
+	export const on_loadout_page = writable(false);
+
+	export const GUIDE_GEAR_ELEMENT: GuideItem[] = [
+		{
+			// @ts-expect-error
+			snippet: gear_element_req
+		},
+		{
+			text: "First, let's go to loadout page.",
+			disable_next: true,
+			proceed_on: on_loadout_page
+		},
+		{
+			text: 'test'
+		}
+	];
 </script>
 
 <script lang="ts">
