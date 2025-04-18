@@ -38,43 +38,10 @@ export type StatGearUser =
 /**
  * Gear stats that are derived from the user's stats
  */
-export type StatGearTitan =
-	| 'titan_hp'
-	| 'titan_hp_percent'
-	| 'titan_atk'
-	| 'titan_flame_atk'
-	| 'titan_frost_atk'
-	| 'titan_volt_atk'
-	| 'titan_phys_atk'
-	| 'titan_alt_atk'
-	| 'titan_atk_percent'
-	| 'titan_flame_atk_percent'
-	| 'titan_frost_atk_percent'
-	| 'titan_volt_atk_percent'
-	| 'titan_phys_atk_percent'
-	| 'titan_alt_atk_percent'
-	| 'titan_flame_dmg_percent'
-	| 'titan_frost_dmg_percent'
-	| 'titan_volt_dmg_percent'
-	| 'titan_phys_dmg_percent'
-	| 'titan_alt_dmg_percent'
-	| 'titan_crit'
-	| 'titan_crit_percent'
-	| 'titan_res'
-	| 'titan_flame_res'
-	| 'titan_frost_res'
-	| 'titan_volt_res'
-	| 'titan_alt_res'
-	| 'titan_phys_res'
-	| 'titan_res_percent'
-	| 'titan_flame_res_percent'
-	| 'titan_frost_res_percent'
-	| 'titan_volt_res_percent'
-	| 'titan_alt_res_percent'
-	| 'titan_phys_res_percent';
+export type StatGearTitan = `titan_${StatGearUser}`;
 
 /**
- * Stats that are finalized on character screen
+ * Stats that are finalized on character screen, except endurance
  */
 export type StatGearFinalUseful =
 	| 'hp'
@@ -95,23 +62,7 @@ export type StatGearFinalUseful =
 /**
  * Stats that are finalized on character screen
  */
-export type StatGearFinal =
-	| 'hp'
-	| 'crit'
-	| 'crit_percent'
-	| 'phys_atk'
-	| 'flame_atk'
-	| 'frost_atk'
-	| 'volt_atk'
-	| 'alt_atk'
-	| 'end'
-	| 'end_regen'
-	| 'crit_dmg_percent'
-	| 'phys_res'
-	| 'flame_res'
-	| 'frost_res'
-	| 'volt_res'
-	| 'alt_res';
+export type StatGearFinal = StatGearFinalUseful | 'end' | 'end_regen';
 
 /*
  * Temporary typing for character stat screen
