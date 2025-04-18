@@ -10,7 +10,7 @@ import type {
 } from '$lib/types';
 import { get } from 'svelte/store';
 import { STAT_CONSTANTS } from './json-loader';
-import { ALL_STATS_LIST, STAT_LABELS } from './stats';
+import { STAT_LABELS } from './stats';
 import { current_loadout, user_loadouts } from './stores';
 import { formatValue } from './validation';
 
@@ -76,10 +76,80 @@ export const VALID_GEAR_PARTS: ValidGearPart[] = [
 	'R'
 ];
 
-const EXTRA_STATS_LIST: StatGearExtra[] = ['multiplier', 'multiplier_percent'];
-const ALL_ALL_STATS_LIST = [...ALL_STATS_LIST, ...EXTRA_STATS_LIST];
+export const GEAR_STATS: StatGearUser[] = [
+	'hp',
+	'hp_percent',
+	'atk',
+	'flame_atk',
+	'frost_atk',
+	'volt_atk',
+	'phys_atk',
+	'alt_atk',
+	'flame_atk_percent',
+	'frost_atk_percent',
+	'volt_atk_percent',
+	'phys_atk_percent',
+	'alt_atk_percent',
+	'flame_dmg_percent',
+	'frost_dmg_percent',
+	'volt_dmg_percent',
+	'phys_dmg_percent',
+	'alt_dmg_percent',
+	'crit',
+	'crit_percent',
+	'res',
+	'flame_res',
+	'frost_res',
+	'volt_res',
+	'alt_res',
+	'phys_res',
+	'res_percent',
+	'flame_res_percent',
+	'frost_res_percent',
+	'volt_res_percent',
+	'alt_res_percent',
+	'phys_res_percent'
+];
+export const GEAR_STATS_TITAN: StatGearTitan[] = [
+	'titan_hp',
+	'titan_hp_percent',
+	'titan_atk',
+	'titan_flame_atk',
+	'titan_frost_atk',
+	'titan_volt_atk',
+	'titan_phys_atk',
+	'titan_alt_atk',
+	'titan_flame_atk_percent',
+	'titan_frost_atk_percent',
+	'titan_volt_atk_percent',
+	'titan_phys_atk_percent',
+	'titan_alt_atk_percent',
+	'titan_flame_dmg_percent',
+	'titan_frost_dmg_percent',
+	'titan_volt_dmg_percent',
+	'titan_phys_dmg_percent',
+	'titan_alt_dmg_percent',
+	'titan_crit',
+	'titan_crit_percent',
+	'titan_res',
+	'titan_flame_res',
+	'titan_frost_res',
+	'titan_volt_res',
+	'titan_alt_res',
+	'titan_phys_res',
+	'titan_res_percent',
+	'titan_flame_res_percent',
+	'titan_frost_res_percent',
+	'titan_volt_res_percent',
+	'titan_alt_res_percent',
+	'titan_phys_res_percent'
+];
+export const GEAR_STATS_EXTRA: StatGearExtra[] = ['multiplier', 'multiplier_percent'];
 
-export const ALL_STATS_REGEX = new RegExp(`\\b(${ALL_ALL_STATS_LIST.join('|')}|gear)\\b`, 'g');
+const EXTRA_STATS_LIST: StatGearExtra[] = ['multiplier', 'multiplier_percent'];
+const ALL_STATS_LIST = [...GEAR_STATS, ...GEAR_STATS_TITAN, ...EXTRA_STATS_LIST];
+
+export const ALL_STATS_REGEX = new RegExp(`\\b(${ALL_STATS_LIST.join('|')}|gear)\\b`, 'g');
 
 const __allowedRegexLits = [
 	'\\+',
@@ -95,7 +165,7 @@ const __allowedRegexLits = [
 	"'gear'",
 	...Object.values(GearPart).map((value) => `'${value}'`)
 ].join('|');
-const __allowedRegexVars = [...ALL_ALL_STATS_LIST].join('|');
+const __allowedRegexVars = [...ALL_STATS_LIST].join('|');
 
 export const ALLOWED_REGEX_VARS = new RegExp(`\\b(${__allowedRegexVars})\\b`, 'g');
 export const ALLOWED_REGEX_OPS = new RegExp(`(${__allowedRegexLits})`, 'g');
