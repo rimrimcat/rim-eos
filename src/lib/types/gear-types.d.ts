@@ -2,6 +2,8 @@ import type { GearPart, ValidGearPart } from '../scripts/gears';
 import type { StatGearTitan, StatGearUser } from './stat-types';
 export type { GearPart, ValidGearPart } from '../scripts/gears';
 
+export type StatGearExtra = 'multiplier';
+
 export type GearAugment =
 	| 'delay'
 	| 'increased_healing'
@@ -61,7 +63,7 @@ export type GearViewStatLong = {
  * @property {string} value_label - Formatted string representation of the value
  */
 export type GearViewStatShort = {
-	stat: StatGearUser | StatGearTitan;
+	stat: StatGearUser | StatGearTitan | StatGearExtra;
 	stat_label: string;
 	value: number;
 	value_label: string;

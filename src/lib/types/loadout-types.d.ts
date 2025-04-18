@@ -7,7 +7,7 @@ export type EquippedGear = {
 };
 
 // this should determine what element to optimize for
-export type LoadoutType = Elements | 'atk';
+export type LoadoutType = Elements | 'atk'; // for now, unused
 
 export type StatAdjustments = {
 	unaccounted: StatData; // buffs with unknown sources, added on top of base stat
@@ -18,7 +18,7 @@ export type StatAdjustments = {
 export type Loadout = {
 	name: string;
 	description: string;
-	element: LoadoutType;
+	element: Elements;
 	equipped_gears: EquippedGear;
 	equipped_weapons: UserWeapon[];
 	equipped_matrices: UserMatrix[];

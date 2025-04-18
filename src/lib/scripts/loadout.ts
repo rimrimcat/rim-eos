@@ -2,11 +2,10 @@ import { eval as evil, parse } from '@casbin/expression-eval';
 import { get } from 'svelte/store';
 import type {
 	BaseEffect,
-	BaseStats14,
 	BaseStats16,
-	CharacterStat,
 	EquippedGear,
 	GearView,
+	GearViewStatShort,
 	Loadout,
 	MatrixEffect,
 	MatrixEffectsIds,
@@ -32,6 +31,7 @@ import {
 } from './json-loader';
 import { STAT_LABELS, StatCollection, TEMPLATE_USER_ATTRIBUTES } from './stats';
 import {
+	all_stats,
 	base_weapons,
 	current_loadout,
 	gear_views,
@@ -620,40 +620,6 @@ export function createStatView(
 	});
 }
 
-export function createAttributeView(base_stats_14: BaseStats14): CharacterStat[] {
-	const stat_adj = get(user_loadouts)[get(current_loadout)].stat_adj;
-
-	const total_base_stats = new StatCollection(base_stats_14 as BaseStats14) // base stats
-		.add(new StatCollection(stat_adj ? stat_adj.unaccounted : {})) // unaccounted
-		.add(new StatCollection('atk_percent', stat_adj ? stat_adj.supercompute : 0)) // supercompute
-		.add(new StatCollection('atk_percent', stat_adj && stat_adj.use_blade_shot ? 3.5 : 0)) // blade shot
-		.add(getGearTotal()) // gear
-		.add(getWeaponTotal()) // weapon + matrix + reso
-		.to_displayed_stats();
-
-	const base_stats_ = [
-		...total_base_stats.slice(0, 8),
-		'1400',
-		'0',
-		...total_base_stats.slice(8, 14)
-	] as BaseStats16;
-
-	if (base_stats_.length !== 16) {
-		throw new Error('Invalid base stats length!');
-	}
-
-	return TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
-		const __val = base_stats_[index];
-		const __use_percent = index === 2 || index === 10;
-
-		return {
-			...attr,
-			name: STAT_LABELS[attr.key],
-			value: __use_percent ? formatValue('float3d', __val) : formatValue('int', __val)
-		};
-	});
-}
-
 export function getEquippedGearViews(equipped_gears: EquippedGear): GearView[] {
 	const gear_views_ = get(gear_views);
 
@@ -667,4 +633,40 @@ export function getEquippedGearViews(equipped_gears: EquippedGear): GearView[] {
 	return equipped_gear_views;
 }
 
-export async function applyExtraGearViewStats() {}
+export async function applyExtraGearViewStats() {
+	const gear_views_ = get(gear_views);
+
+	const all_stats_lump = get(all_stats).lump();
+	const loadout_element = get(user_loadouts)[get(current_loadout)].element;
+
+	const new_gear_views_ = Promise.all(
+		gear_views_.map(async (gear) => {
+			const new_gear = { ...gear };
+
+			// multiplier
+			const multiplier_index = new_gear.derived.findIndex((stat) => stat.stat === 'multiplier');
+			const multiplier_percent =
+				(all_stats_lump.total_multiplier_of(new StatCollection(new_gear).lump(), loadout_element) -
+					1) *
+				100;
+			const multiplier_stat: GearViewStatShort = {
+				stat: 'multiplier',
+				stat_label: 'Multiplier',
+				value: multiplier_percent,
+				value_label: formatValue('float3d', multiplier_percent.toString())
+			};
+			if (multiplier_index === -1) {
+				new_gear.derived.push(multiplier_stat);
+			} else {
+				new_gear.derived[multiplier_index] = multiplier_stat;
+			}
+
+			return new_gear;
+		})
+	);
+
+	gear_views.set(await new_gear_views_);
+	console.log('extra gear view stats applied.');
+
+	// calculate stat contribution
+}

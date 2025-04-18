@@ -3,6 +3,7 @@
 	import { loadStatConstants } from '$lib/scripts/json-loader';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
 	import {
+		applyExtraGearViewStats,
 		createStatView,
 		getAllStats,
 		getEquippedGearViews,
@@ -83,11 +84,11 @@
 
 		// processing
 		await loadStatConstants(); // need this for gear proecssing
-		// create gear views
+		// create initial gear views
 		$gear_views = await Promise.all($user_gears.map((gear) => createGearView(gear, false)));
 		console.log('Gear Views processed');
 
-		// create weapon and matrix views
+		// create initial weapon and matrix views
 		await updateWeaponMatrix();
 		update_ready = true;
 	});
@@ -98,6 +99,7 @@
 		$equipped_gear_views = getEquippedGearViews($user_loadouts[$current_loadout].equipped_gears);
 	});
 
+	// update for stats
 	$effect(() => {
 		if (!update_ready) return;
 		$all_stats = getAllStats(
@@ -114,12 +116,14 @@
 			$matrix_views,
 			$reso_effects
 		);
+		applyExtraGearViewStats();
 	});
 
 	// TODO: make stat page use $all_stats
 
-	$inspect('Equipped Gear Views', $equipped_gear_views);
-	$inspect('All stat totals', $all_stats.to_displayed_stats());
+	// $inspect('Equipped Gear Views', $equipped_gear_views);
+	// $inspect('All stat totals', $all_stats.to_displayed_stats());
+	$inspect('Gear Views', $gear_views);
 </script>
 
 <svelte:window bind:innerWidth={$inner_width} />
