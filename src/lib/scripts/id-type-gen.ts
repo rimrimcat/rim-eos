@@ -1,3 +1,4 @@
+import type { ValidGearEffectIds } from '$lib/types';
 import fs from 'fs';
 import path from 'path';
 
@@ -37,6 +38,20 @@ const matrix_ids = [
 		.filter((file) => file.endsWith('.json') && file !== 'none.json')
 		.map((file) => path.basename(file, '.json'))
 ];
+const gear_effect_ids: ValidGearEffectIds[] = [
+	'gear-A',
+	'gear-B',
+	'gear-C',
+	'gear-H',
+	'gear-L',
+	'gear-S',
+	'gear-T',
+	'gear-V',
+	'gear-X',
+	'gear-N',
+	'gear-R',
+	'gear-G'
+];
 
 const typeDefs = `// Auto-generated file
 
@@ -57,6 +72,7 @@ export const AllMatrixEffectIds: MatrixEffectsIds[] = ${JSON.stringify(matrix_ef
 export const AllResoEffectIds: ResoEffectsIds[] = ${JSON.stringify(reso_effects_ids)};
 export const AllMatrixIds: MatrixIds[] = ${JSON.stringify(matrix_ids)};
 export const AllWeaponIds: WeaponsIds[] = ${JSON.stringify(weapons_ids)};
+export const AllGearEffectIds = ${JSON.stringify(gear_effect_ids)};
 
 `;
 

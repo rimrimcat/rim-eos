@@ -2,9 +2,12 @@ import { eval as evil, parse } from '@casbin/expression-eval';
 import { get } from 'svelte/store';
 import type {
 	BaseEffect,
-	BaseStats14,
 	BaseStats16,
-	CharacterStat,
+	EquippedGear,
+	GearEffect,
+	GearView,
+	GearViewStatShort,
+	Loadout,
 	MatrixEffect,
 	MatrixEffectsIds,
 	MatrixFinalEffect,
@@ -12,6 +15,7 @@ import type {
 	ResoEffect,
 	ResoEffectsIds,
 	ResoTriggerCounts,
+	StatAtkImprovement,
 	StatKey,
 	UserWeapon,
 	ValidGearPart,
@@ -27,10 +31,17 @@ import {
 	getWeapon,
 	getWeaponEffect
 } from './json-loader';
-import { STAT_LABELS, StatCollection, TEMPLATE_USER_ATTRIBUTES } from './stats';
 import {
+	LumpedStatCollection,
+	STAT_LABELS,
+	StatCollection,
+	TEMPLATE_USER_ATTRIBUTES
+} from './stats';
+import {
+	all_stats,
 	base_weapons,
 	current_loadout,
+	equipped_gear_views,
 	gear_views,
 	matrix_views,
 	reso_counts,
@@ -194,7 +205,7 @@ export function dedupeMatEffs(effects: MatrixFinalEffect[]) {
 	}, [] as MatrixFinalEffect[]);
 }
 
-export async function updateBaseWeapons() {
+export async function updateBaseWeapons_() {
 	base_weapons.set(
 		await Promise.all(
 			get(user_loadouts)[get(current_loadout)].equipped_weapons.map((weapon) =>
@@ -497,7 +508,7 @@ export async function updateSingleMatrixView(index: number) {
 // creates gearView and updates loadout_resonance_stat
 export async function updateWeaponMatrix() {
 	// update base weapons
-	await updateBaseWeapons();
+	await updateBaseWeapons_();
 
 	// create counts of resonance triggers
 	await updateResoCounts();
@@ -547,18 +558,53 @@ export function getWeaponTotal() {
 	return stat_col;
 }
 
-export function createAttributeView(base_stats_14: BaseStats14): CharacterStat[] {
-	const stat_adj = get(user_loadouts)[get(current_loadout)].stat_adj;
+export function getAllStats(
+	selected_loadout: Loadout,
+	equipped_gear_views: GearView[],
+	weapon_views: WeaponView[],
+	matrix_views: MatrixView[],
+	reso_effects: ResoEffect[]
+) {
+	const stat_adj = selected_loadout.stat_adj;
 
-	console.log('BASE14', base_stats_14);
+	let gwmr_totals = new StatCollection();
+	equipped_gear_views.forEach((gear) => {
+		// gear titan stats
+		gwmr_totals = gwmr_totals.add(new StatCollection(gear));
+	});
+	[
+		...weapon_views.flatMap((weapon) => weapon.effects), // weapon effects
+		...dedupeMatEffs(matrix_views.flatMap((matrix) => matrix.effects)), // matrix effects
+		...reso_effects // reso effects
+	].forEach((eff) => {
+		gwmr_totals = gwmr_totals.add(new StatCollection(eff.stats));
+	});
+	weapon_views.forEach((weapon) => {
+		gwmr_totals = gwmr_totals.add(weapon.base_stat); // weapon base stats
+	});
 
-	const total_base_stats = new StatCollection(base_stats_14 as BaseStats14) // base stats
-		.add(new StatCollection(stat_adj ? stat_adj.unaccounted : {})) // unaccounted
-		.add(new StatCollection('atk_percent', stat_adj ? stat_adj.supercompute : 0)) // supercompute
-		.add(new StatCollection('atk_percent', stat_adj && stat_adj.use_blade_shot ? 3.5 : 0)) // blade shot
-		.add(getGearTotal()) // gear
-		.add(getWeaponTotal()) // weapon + matrix + reso
-		.to_displayed_stats();
+	return new StatCollection(selected_loadout.base_stats) // base stats
+		.add(new StatCollection(stat_adj?.unaccounted ?? {})) // unaccounted
+		.add(new StatCollection('atk_percent', stat_adj?.supercompute ?? 0)) // supercompute
+		.add(new StatCollection('atk_percent', stat_adj?.use_blade_shot ? 3.5 : 0)) // blade shot
+		.add(gwmr_totals);
+}
+
+export function createStatView(
+	selected_loadout: Loadout,
+	equipped_gear_views: GearView[],
+	weapon_views: WeaponView[],
+	matrix_views: MatrixView[],
+	reso_effects: ResoEffect[]
+) {
+	const total_base_stats = getAllStats(
+		selected_loadout,
+		equipped_gear_views,
+		weapon_views,
+		matrix_views,
+		reso_effects
+	).to_displayed_stats();
+
 	const base_stats_ = [
 		...total_base_stats.slice(0, 8),
 		'1400',
@@ -580,4 +626,117 @@ export function createAttributeView(base_stats_14: BaseStats14): CharacterStat[]
 			value: __use_percent ? formatValue('float3d', __val) : formatValue('int', __val)
 		};
 	});
+}
+
+export function getEquippedGearViews(equipped_gears: EquippedGear): GearView[] {
+	const gear_views_ = get(gear_views);
+
+	const equipped_gear_views: GearView[] = [];
+	for (const part in equipped_gears) {
+		const gear_id = equipped_gears[part as ValidGearPart];
+		if (gear_id !== null && gear_id !== -1) {
+			equipped_gear_views.push(gear_views_[gear_id]);
+		}
+	}
+	return equipped_gear_views;
+}
+
+const TRANSFORMABLE_KEYS = ['atk', 'phys_atk', 'flame_atk', 'frost_atk', 'volt_atk', 'alt_atk'];
+
+export function turnGearToEffect(gear: GearView): GearEffect {
+	if (gear.part === 'U') throw new Error('Cannot turn UNKNOWN gear into effect!');
+
+	const gear_stat_col = new StatCollection(gear);
+
+	// iterate through the keys
+	Object.keys(gear_stat_col.data).forEach((key) => {
+		if (TRANSFORMABLE_KEYS.includes(key as (typeof TRANSFORMABLE_KEYS)[number])) {
+			gear_stat_col.put(
+				`base_${key}_improvement_percent` as StatAtkImprovement,
+				// @ts-expect-error : key is guaranteed to exist
+				gear_stat_col.pop(key) / 100
+			);
+		} else {
+			// @ts-expect-error : key is guaranteed to exist
+			gear_stat_col.pop(key);
+		}
+	});
+
+	return {
+		id: `gear-${gear.part}`,
+		stats: gear_stat_col.data
+	};
+}
+
+export async function applyExtraGearViewStats() {
+	const gear_views_ = get(gear_views);
+
+	// create map of gear to equipped
+	const all_stats_ = get(all_stats);
+	const eq_gear_views = get(equipped_gear_views);
+
+	const all_stats_minus_eq_gear: Record<ValidGearPart, LumpedStatCollection> = {
+		H: new LumpedStatCollection(),
+		S: new LumpedStatCollection(),
+		A: new LumpedStatCollection(),
+		C: new LumpedStatCollection(),
+		B: new LumpedStatCollection(),
+		L: new LumpedStatCollection(),
+		G: new LumpedStatCollection(),
+		T: new LumpedStatCollection(),
+		V: new LumpedStatCollection(),
+		N: new LumpedStatCollection(),
+		X: new LumpedStatCollection(),
+		R: new LumpedStatCollection()
+	};
+	await Promise.all(
+		eq_gear_views.map(async (gear) => {
+			if (gear.part === 'U') {
+				return;
+			}
+			all_stats_minus_eq_gear[gear.part] = all_stats_.subtract(new StatCollection(gear)).lump();
+		})
+	);
+
+	const loadout_element = get(user_loadouts)[get(current_loadout)].element;
+
+	const new_gear_views_ = Promise.all(
+		gear_views_.map(async (gear) => {
+			const new_gear = { ...gear };
+
+			// multipliers
+			const multiplier_index = new_gear.derived.findIndex((stat) => stat.stat === 'multiplier');
+			const multiplier_value = all_stats_minus_eq_gear[
+				gear.part as ValidGearPart
+			].total_multiplier_of(new StatCollection(new_gear).lump(), loadout_element);
+			const multiplier_value_percent = (multiplier_value - 1) * 100;
+
+			const multiplier_stat: GearViewStatShort = {
+				stat: 'multiplier',
+				stat_label: 'Multiplier',
+				value: multiplier_value,
+				value_label: formatValue('float3d', multiplier_value)
+			};
+			const multiplier_percent_stat: GearViewStatShort = {
+				stat: 'multiplier_percent',
+				stat_label: 'Multiplier Percent',
+				value: multiplier_value_percent,
+				value_label: formatValue('float2d', multiplier_value_percent)
+			};
+			if (multiplier_index === -1) {
+				new_gear.derived.push(multiplier_stat);
+				new_gear.derived.push(multiplier_percent_stat);
+			} else {
+				new_gear.derived[multiplier_index] = multiplier_stat;
+				new_gear.derived[multiplier_index + 1] = multiplier_percent_stat;
+			}
+
+			return new_gear;
+		})
+	);
+
+	gear_views.set(await new_gear_views_);
+	console.log('extra gear view stats applied.');
+
+	// calculate stat contribution
 }

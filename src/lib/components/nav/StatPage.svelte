@@ -2,34 +2,15 @@
 	import StatAdjust from '$lib/components/dialog/StatAdjust.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
-	import { saveObject } from '$lib/scripts/loader.ts';
-	import { createAttributeView } from '$lib/scripts/loadout';
-	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
-	import type { BaseStats14, BaseStats16, CharacterStat } from '$lib/types/index';
-	import { ChartNoAxesColumnIcon, ImagePlusIcon } from '@lucide/svelte';
+	import { stat_view } from '$lib/scripts/stores';
+	import type { BaseStats16 } from '$lib/types/index';
+	import { ChartNoAxesColumnIcon, Grid2X2XIcon, ImagePlusIcon, SwordsIcon } from '@lucide/svelte';
 	import type * as OpenCV from '@techstark/opencv-js';
 	import cv from '@techstark/opencv-js';
-	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
 
 	// State
-	let base_stats: BaseStats14 = $state([
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0'
-	]);
-	let attribute_view: CharacterStat[] = $state([]);
+	let show_offensive_only = $state(true);
 
 	// Screenshot Dialog
 	let screenshot_dialog_open = $state(false);
@@ -39,11 +20,6 @@
 	// Stat Adjust Dialog
 	let stat_adjust_dialog_open = $state(false);
 	let unadjusted_stats: null | BaseStats16 = $state(null);
-
-	function saveAttributes() {
-		$user_loadouts[$current_loadout].base_stats = base_stats;
-		saveObject('loadouts_v1', $user_loadouts);
-	}
 
 	// actions
 	function* iterateBoxes(w: number, h: number, off_x: number = 0, off_y: number = 0) {
@@ -157,8 +133,6 @@
 			}
 			await worker.terminate();
 
-			saveAttributes();
-			attribute_view = createAttributeView(base_stats);
 			process_text = 'Done!';
 		}
 	}
@@ -315,19 +289,6 @@
 			});
 		}
 	}
-
-	function resetStats() {
-		// user_attributes = loadObject('stats_main', true);
-		// saveObject('stats_main', user_attributes);
-		// processAttributes();
-	}
-
-	onMount(() => {
-		if (Object.keys($user_loadouts).length > 0) {
-			base_stats = $user_loadouts[$current_loadout].base_stats;
-			attribute_view = createAttributeView(base_stats);
-		}
-	});
 </script>
 
 <div style="display: none">
@@ -337,12 +298,12 @@
 <div class="stat-panel">
 	<h1>Character Stats</h1>
 
-	{#if unadjusted_stats && unadjusted_stats.length > 0}
-		<p>
-			Unadjusted stats are shown in the table below. Uploaded stats won't be effective until
-			adjustment is done.
-		</p>
-		<div style="margin-bottom: 1.5rem;">
+	<div class="horizontal" style="margin-bottom: 1.5rem;">
+		{#if unadjusted_stats && unadjusted_stats.length > 0}
+			<p>
+				Unadjusted stats are shown in the table below. Uploaded stats won't be effective until
+				adjustment is done.
+			</p>
 			<button
 				class="image border"
 				id="stat-adjustment"
@@ -351,9 +312,7 @@
 				<ChartNoAxesColumnIcon />
 				<label class="in-button" for="stat-adjustment">Stat Adjustment</label>
 			</button>
-		</div>
-	{:else}
-		<div style="margin-bottom: 1.5rem;">
+		{:else}
 			<button
 				class="image border"
 				id="upload-stats"
@@ -362,41 +321,56 @@
 				<ImagePlusIcon />
 				<label class="in-button" for="upload-stats">Upload Stats</label>
 			</button>
-		</div>
-	{/if}
+		{/if}
+		<button
+			class="image border"
+			id="offensive-only"
+			onclick={() => (show_offensive_only = !show_offensive_only)}
+		>
+			{#if show_offensive_only}
+				<SwordsIcon />
+				<label class="in-button" for="offensive-only">Showing Offensive Stats</label>
+			{:else}
+				<Grid2X2XIcon />
+				<label class="in-button" for="offensive-only">Showing All Stats</label>
+			{/if}
+		</button>
+	</div>
 
 	<FlexGrid
 		horizontal_gap="0.9rem"
 		vertical_gap="1rem"
 		min_cols={1}
-		max_cols={2}
+		max_cols={show_offensive_only ? 1 : 2}
 		prefer_divisible={false}
 	>
-		{#each attribute_view as attribute, index}
-			<div class="stat-cell">
-				<div class="stat-content">
-					<div class="stat-icon">
-						<img src={attribute.icon} alt={attribute.name + ' icon'} />
-					</div>
-					<div class="stat-info">
-						<div class="stat-name">{attribute.name}</div>
-						<div class="stat-value-container">
-							<span
-								class="stat-value-text"
-								style="font-size: 1.25rem"
-								role="textbox"
-								tabindex={10 + index}
-							>
-								{#if unadjusted_stats}
-									<input type="text" bind:value={unadjusted_stats[index]} style="width: 8ch;" />
-								{:else}
-									{attribute.value}
-								{/if}
-							</span>
+		{#each $stat_view as attribute, index}
+			{#if show_offensive_only ? [1, 2, 3, 4, 5, 6, 7, 10].includes(index) : true}
+				<div class="stat-cell">
+					<div class="stat-content">
+						<div class="stat-icon">
+							<img src={attribute.icon} alt={attribute.name + ' icon'} />
+						</div>
+						<div class="stat-info">
+							<div class="stat-name">{attribute.name}</div>
+							<div class="stat-value-container">
+								<span
+									class="stat-value-text"
+									style="font-size: 1.25rem"
+									role="textbox"
+									tabindex={10 + index}
+								>
+									{#if unadjusted_stats}
+										<input type="text" bind:value={unadjusted_stats[index]} style="width: 8ch;" />
+									{:else}
+										{attribute.value}
+									{/if}
+								</span>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
+			{/if}
 		{/each}
 	</FlexGrid>
 </div>

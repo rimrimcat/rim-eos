@@ -1,22 +1,4 @@
 <script lang="ts">
-	import { registerComponent, type ComponentMetadata } from '$lib/scripts/nav-metadata';
-	import { AppWindowIcon } from '@lucide/svelte';
-	import { onMount } from 'svelte';
-
-	// register
-	const id = 'main-page';
-	const metadata: ComponentMetadata = {
-		id,
-		label: 'Main Page',
-		lucide: AppWindowIcon,
-		showInNav: true,
-		order: 0,
-		actions: []
-	};
-
-	onMount(() => {
-		registerComponent(id, metadata);
-	});
 </script>
 
 <div class="main-page">

@@ -23,12 +23,11 @@ also still thinking of a better name later on
 - [x] Stat: sync with loadout (2025-04-10)
 - [x] Loadout: add my loadout as example (2025-04-10)
 - [x] Loadout: add way to change weapons/matrices (2025-04-16)
-- [ ] Stat: toggle to adjust stat based on buffs
+- [x] Stat: Show only offensive stats (2025-04-18)
+- [ ] Main Page: add interactive tutorial
+- [ ] Matrix: add base matrix stat
 - [ ] Loadout: add some weapons and matrices
-- [ ] Main Page: add good guide/tutorials
-- [ ] Stat: toggle to show only attack stats
 - [ ] Stat: toggle to show attack percent or (base attack + attack percent)
-- [ ] Stat: toggle to show damage percent
 - [ ] Loading: add something to the loading screen
 - [ ] Gear: add way to manually add gears
 - [ ] Gear: make more accessible for mobile users

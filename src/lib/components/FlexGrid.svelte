@@ -39,6 +39,11 @@
 	const _RESIZE_ARR = Array.from({ length: 1 + max_cols - min_cols + 1 }, (_, i) => i + min_cols);
 	let size_arr = $derived(_RESIZE_ARR.map((value) => value * item_width + (value - 1) * gap_px));
 
+	// Computed width when expand_width is false
+	let computed_width = $derived(
+		has_measured ? `${item_width * columns + (columns - 1) * gap_px}px` : 'auto'
+	);
+
 	// Function to check if items have changed
 	function checkItemsChanged() {
 		if (!container) return;
@@ -245,7 +250,7 @@
 	aria-colcount={columns}
 	style="column-gap: {horizontal_gap}; row-gap: {vertical_gap}; width: {expand_width
 		? '100%'
-		: 'fit-content'} {style}"
+		: computed_width}; {style}"
 >
 	{@render children()}
 </div>

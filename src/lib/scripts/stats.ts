@@ -5,7 +5,10 @@ import type {
 	BaseStats14Number,
 	BaseStats16,
 	BaseStats16Number,
+	Elements,
 	GearView,
+	LumpedKey,
+	LumpedStatData,
 	StatData,
 	StatGearFinal,
 	StatGearFinalUseful,
@@ -23,7 +26,6 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	res_percent: 'Res',
 	atk: 'ATK',
 	atk_percent: 'ATK',
-	dmg_percent: 'Dmg',
 	ele_dmg_percent: 'Ele Dmg',
 	phys_atk: 'Phys Atk',
 	phys_atk_percent: 'Phys Atk',
@@ -59,7 +61,6 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	titan_volt_atk: 'Titan Volt Atk',
 	titan_phys_atk: 'Titan Phys Atk',
 	titan_alt_atk: 'Titan Alt Atk',
-	titan_atk_percent: 'Titan ATK',
 	titan_flame_atk_percent: 'Titan Flame Atk',
 	titan_frost_atk_percent: 'Titan Frost Atk',
 	titan_volt_atk_percent: 'Titan Volt Atk',
@@ -87,6 +88,7 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	// other stat screen stuff
 	end: 'Endurance',
 	end_regen: 'Endurance Regen',
+	// buffs
 	crit_dmg_percent: 'Crit Dmg',
 	final_dmg_percent: 'Final Dmg',
 	crit_res_reduction_percent: 'Crit Res Red',
@@ -107,7 +109,14 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	flame_dmg_taken_percent: 'Flame Dmg Taken',
 	frost_dmg_taken_percent: 'Frost Dmg Taken',
 	volt_dmg_taken_percent: 'Volt Dmg Taken',
-	alt_dmg_taken_percent: 'Alt Dmg Taken'
+	alt_dmg_taken_percent: 'Alt Dmg Taken',
+	// Attack Improvements
+	base_atk_improvement_percent: 'Base Atk',
+	base_phys_atk_improvement_percent: 'Base Phys Atk',
+	base_flame_atk_improvement_percent: 'Base Flame Atk',
+	base_frost_atk_improvement_percent: 'Base Frost Atk',
+	base_volt_atk_improvement_percent: 'Base Volt Atk',
+	base_alt_atk_improvement_percent: 'Base Alt Atk'
 };
 
 export const USER_STATS_LIST: StatGearUser[] = [
@@ -143,77 +152,6 @@ export const USER_STATS_LIST: StatGearUser[] = [
 	'volt_res_percent',
 	'alt_res_percent',
 	'phys_res_percent'
-];
-
-export const ALL_STATS_LIST = [
-	'hp',
-	'hp_percent',
-	'atk',
-	'flame_atk',
-	'frost_atk',
-	'volt_atk',
-	'phys_atk',
-	'alt_atk',
-	'atk_percent',
-	'flame_atk_percent',
-	'frost_atk_percent',
-	'volt_atk_percent',
-	'phys_atk_percent',
-	'alt_atk_percent',
-	'dmg_percent',
-	'flame_dmg_percent',
-	'frost_dmg_percent',
-	'volt_dmg_percent',
-	'phys_dmg_percent',
-	'alt_dmg_percent',
-	'crit',
-	'crit_percent',
-	'res',
-	'flame_res',
-	'frost_res',
-	'volt_res',
-	'alt_res',
-	'phys_res',
-	'res_percent',
-	'flame_res_percent',
-	'frost_res_percent',
-	'volt_res_percent',
-	'alt_res_percent',
-	'phys_res_percent',
-	'titan_hp',
-	'titan_hp_percent',
-	'titan_atk',
-	'titan_flame_atk',
-	'titan_frost_atk',
-	'titan_volt_atk',
-	'titan_phys_atk',
-	'titan_alt_atk',
-	'titan_atk_percent',
-	'titan_flame_atk_percent',
-	'titan_frost_atk_percent',
-	'titan_volt_atk_percent',
-	'titan_phys_atk_percent',
-	'titan_alt_atk_percent',
-	'titan_dmg_percent',
-	'titan_flame_dmg_percent',
-	'titan_frost_dmg_percent',
-	'titan_volt_dmg_percent',
-	'titan_phys_dmg_percent',
-	'titan_alt_dmg_percent',
-	'titan_crit',
-	'titan_crit_percent',
-	'titan_res',
-	'titan_flame_res',
-	'titan_frost_res',
-	'titan_volt_res',
-	'titan_alt_res',
-	'titan_phys_res',
-	'titan_res_percent',
-	'titan_flame_res_percent',
-	'titan_frost_res_percent',
-	'titan_volt_res_percent',
-	'titan_alt_res_percent',
-	'titan_phys_res_percent'
 ];
 
 const KEYS_ATK: StatGearUser[] = ['phys_atk', 'flame_atk', 'frost_atk', 'volt_atk', 'alt_atk'];
@@ -260,6 +198,26 @@ export const TEMPLATE_USER_ATTRIBUTES: { key: StatGearFinal; icon: string }[] = 
 	{ key: 'alt_res', icon: './stat/placeholder.webp' }
 ];
 
+export function getCritRate(crit: number, flat_rate_percent: number = 0, lvl: number = 100) {
+	let crit_constant = 0;
+
+	if (lvl >= 80) {
+		crit_constant = -3.71 * lvl ** 2 + 1151 * lvl - 49787;
+	} else if (lvl > 40) {
+		crit_constant = -0.163 * lvl ** 2 + 285 * lvl - 3215;
+	} else if (lvl > 10) {
+		crit_constant = -4 * lvl ** 2 + 408 * lvl - 2078;
+	} else {
+		console.error('Invalid level!');
+		crit_constant = 10000000;
+	}
+
+	return Math.min(crit / crit_constant + flat_rate_percent / 100, 1);
+}
+
+/**
+ * StatCollection class allows for easy addition and subtraction of stats.
+ */
 export class StatCollection {
 	public data: StatData = {};
 
@@ -598,5 +556,104 @@ export class StatCollection {
 		}
 
 		return new StatCollection(new_data);
+	}
+
+	/**
+	 * Lumps the atk and ele_dmg stats to their respective elements
+	 */
+	lump() {
+		const new_data: LumpedStatData = {};
+
+		// atk
+		new_data.phys_atk = this.get('phys_atk') + this.get('atk');
+		new_data.flame_atk = this.get('flame_atk') + this.get('atk');
+		new_data.frost_atk = this.get('frost_atk') + this.get('atk');
+		new_data.volt_atk = this.get('volt_atk') + this.get('atk');
+		new_data.alt_atk =
+			Math.max(new_data.phys_atk, new_data.flame_atk, new_data.frost_atk, new_data.volt_atk) +
+			this.get('alt_atk');
+
+		// atk percent
+		new_data.phys_atk_percent = this.get('phys_atk_percent') + this.get('atk_percent');
+		new_data.flame_atk_percent = this.get('flame_atk_percent') + this.get('atk_percent');
+		new_data.frost_atk_percent = this.get('frost_atk_percent') + this.get('atk_percent');
+		new_data.volt_atk_percent = this.get('volt_atk_percent') + this.get('atk_percent');
+		new_data.alt_atk_percent = this.get('alt_atk_percent');
+
+		// ele_dmg
+		new_data.phys_dmg_percent = this.get('phys_dmg_percent') + this.get('ele_dmg_percent');
+		new_data.flame_dmg_percent = this.get('flame_dmg_percent') + this.get('ele_dmg_percent');
+		new_data.frost_dmg_percent = this.get('frost_dmg_percent') + this.get('ele_dmg_percent');
+		new_data.volt_dmg_percent = this.get('volt_dmg_percent') + this.get('ele_dmg_percent');
+		new_data.alt_dmg_percent = this.get('alt_dmg_percent') + this.get('ele_dmg_percent');
+
+		// crit
+		new_data.crit = this.get('crit');
+		new_data.crit_percent = this.get('crit_percent');
+		new_data.crit_dmg_percent = this.get('crit_dmg_percent');
+
+		// dmg_percent
+		new_data.final_dmg_percent = this.get('final_dmg_percent');
+
+		return new LumpedStatCollection(new_data);
+	}
+}
+
+/**
+ * LumpedStatCollection allows for calculation of multipliers.
+ * The reference is all stats except the one being calculated;
+ * Multiplier = Stat / (Total Player Stat - Stat)
+ */
+export class LumpedStatCollection {
+	public data: LumpedStatData = {};
+
+	constructor(data?: LumpedStatData) {
+		if (data) {
+			this.data = data;
+		} else {
+			this.data = {};
+		}
+	}
+
+	get(stat: LumpedKey): number {
+		return this.data[stat] ?? 0;
+	}
+
+	clone_data(): LumpedStatData {
+		return { ...this.data };
+	}
+
+	clone(): LumpedStatCollection {
+		return new LumpedStatCollection(this.data);
+	}
+
+	/**
+	 * Calculates the multipliers of stat collection to determine improvement over current stats
+	 * @param other_col - object's multipliers to calculate. Must not be part of the original collection
+	 * @param element
+	 */
+	total_multiplier_of(other_col: LumpedStatCollection, element: Elements, level: number = 100) {
+		let multiplier = 1;
+
+		// base atk
+		multiplier *= 1 + other_col.get(`${element}_atk`) / this.get(`${element}_atk`);
+		// atk percent
+		multiplier *=
+			1 + other_col.get(`${element}_atk_percent`) / (1 + this.get(`${element}_atk_percent`));
+		// ele percent
+		multiplier *=
+			1 + other_col.get(`${element}_dmg_percent`) / (1 + this.get(`${element}_dmg_percent`));
+		// crit
+		const r0 = getCritRate(this.get('crit'), this.get('crit_percent'), level);
+		const r1 = getCritRate(
+			this.get('crit') + other_col.get('crit'),
+			this.get('crit_percent') + other_col.get('crit_percent'),
+			level
+		);
+		const d0 = this.get('crit_dmg_percent') / 100;
+		const d1 = (this.get('crit_dmg_percent') + other_col.get('crit_dmg_percent')) / 100;
+		multiplier *= (1 + r1 * d1) / (1 + r0 * d0);
+
+		return multiplier;
 	}
 }

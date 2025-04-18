@@ -3,13 +3,14 @@ import type {
 	GearView,
 	GearViewStatLong,
 	GearViewStatShort,
+	StatGearExtra,
 	StatGearTitan,
 	StatGearUser,
 	UserGear
 } from '$lib/types';
 import { get } from 'svelte/store';
 import { STAT_CONSTANTS } from './json-loader';
-import { ALL_STATS_LIST, STAT_LABELS } from './stats';
+import { STAT_LABELS } from './stats';
 import { current_loadout, user_loadouts } from './stores';
 import { formatValue } from './validation';
 
@@ -75,7 +76,85 @@ export const VALID_GEAR_PARTS: ValidGearPart[] = [
 	'R'
 ];
 
-export const ALL_STATS_REGEX = new RegExp(`\\b(${ALL_STATS_LIST.join('|')}|gear)\\b`, 'g');
+// normal stats
+const GEAR_STATS: StatGearUser[] = [
+	'hp',
+	'hp_percent',
+	'atk',
+	'flame_atk',
+	'frost_atk',
+	'volt_atk',
+	'phys_atk',
+	'alt_atk',
+	'flame_atk_percent',
+	'frost_atk_percent',
+	'volt_atk_percent',
+	'phys_atk_percent',
+	'alt_atk_percent',
+	'flame_dmg_percent',
+	'frost_dmg_percent',
+	'volt_dmg_percent',
+	'phys_dmg_percent',
+	'alt_dmg_percent',
+	'crit',
+	'crit_percent',
+	'res',
+	'flame_res',
+	'frost_res',
+	'volt_res',
+	'alt_res',
+	'phys_res',
+	'res_percent',
+	'flame_res_percent',
+	'frost_res_percent',
+	'volt_res_percent',
+	'alt_res_percent',
+	'phys_res_percent'
+];
+// titan stats
+const GEAR_STATS_TITAN: StatGearTitan[] = [
+	'titan_hp',
+	'titan_hp_percent',
+	'titan_atk',
+	'titan_flame_atk',
+	'titan_frost_atk',
+	'titan_volt_atk',
+	'titan_phys_atk',
+	'titan_alt_atk',
+	'titan_flame_atk_percent',
+	'titan_frost_atk_percent',
+	'titan_volt_atk_percent',
+	'titan_phys_atk_percent',
+	'titan_alt_atk_percent',
+	'titan_flame_dmg_percent',
+	'titan_frost_dmg_percent',
+	'titan_volt_dmg_percent',
+	'titan_phys_dmg_percent',
+	'titan_alt_dmg_percent',
+	'titan_crit',
+	'titan_crit_percent',
+	'titan_res',
+	'titan_flame_res',
+	'titan_frost_res',
+	'titan_volt_res',
+	'titan_alt_res',
+	'titan_phys_res',
+	'titan_res_percent',
+	'titan_flame_res_percent',
+	'titan_frost_res_percent',
+	'titan_volt_res_percent',
+	'titan_alt_res_percent',
+	'titan_phys_res_percent'
+];
+// extra stats
+const GEAR_STATS_EXTRA: StatGearExtra[] = ['multiplier', 'multiplier_percent'];
+// other literals, MUST NOT BE INCLUDED IN REGEX
+const GEAR_OTHER = ['gear', 'isEquipped'];
+
+const ALL_STATS_LIST = [...GEAR_STATS, ...GEAR_STATS_TITAN, ...GEAR_STATS_EXTRA];
+
+const _ALL_WITH_OTHERS = [...ALL_STATS_LIST, ...GEAR_OTHER];
+export const ALL_STATS_REGEX = new RegExp(`\\b(${_ALL_WITH_OTHERS.join('|')})\\b`, 'g');
 
 const __allowedRegexLits = [
 	'\\+',
@@ -88,12 +167,15 @@ const __allowedRegexLits = [
 	'\\*',
 	'\\d',
 	'\\!',
-	"'gear'",
+	"'gear'", // will be replaced by string character for equality comparison
+	'isEquipped', // 0 or 1
 	...Object.values(GearPart).map((value) => `'${value}'`)
 ].join('|');
 const __allowedRegexVars = [...ALL_STATS_LIST].join('|');
 
+// used by Gear Search
 export const ALLOWED_REGEX_VARS = new RegExp(`\\b(${__allowedRegexVars})\\b`, 'g');
+// used by Gear Search
 export const ALLOWED_REGEX_OPS = new RegExp(`(${__allowedRegexLits})`, 'g');
 
 // gear views
@@ -247,7 +329,6 @@ export async function createGearView(gear: UserGear, equip: boolean = false): Pr
 	});
 	stats.sort((a, b) => (b.roll ?? 0) - (a.roll ?? 0));
 
-	// get highest roll stat
 	const bestRoll = stats[0];
 
 	// FOR NOW, LENIENT MAX STAT DETECTION
@@ -278,8 +359,6 @@ export async function createGearView(gear: UserGear, equip: boolean = false): Pr
 			applyRainbow(RAINBOW_TITAN_ATK_PERCENT, derived, rainbowTitanValue, rainbowTitanValueLabel);
 		}
 	}
-
-	// TODO: add other derived stats
 
 	const isEquipped =
 		equip ||

@@ -2,17 +2,29 @@
 	import { createGearView } from '$lib/scripts/gears';
 	import { loadStatConstants } from '$lib/scripts/json-loader';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
-	import { updateWeaponMatrix } from '$lib/scripts/loadout';
 	import {
+		applyExtraGearViewStats,
+		createStatView,
+		getAllStats,
+		getEquippedGearViews,
+		updateWeaponMatrix
+	} from '$lib/scripts/loadout';
+	import {
+		all_stats,
 		current_loadout,
+		equipped_gear_views,
 		font_size,
 		gear_views,
 		inner_width,
 		is_mobile,
+		matrix_views,
+		reso_effects,
 		scroll_y,
+		stat_view,
 		toolbar_transform,
 		user_gears,
-		user_loadouts
+		user_loadouts,
+		weapon_views
 	} from '$lib/scripts/stores';
 	import { AppWindowIcon } from '@lucide/svelte';
 	import { onMount, type Component } from 'svelte';
@@ -46,6 +58,7 @@
 
 	// color scheme
 	let styles = $state({});
+	let update_ready = $state(false);
 
 	onMount(async () => {
 		// get font size and check if mobile
@@ -71,14 +84,46 @@
 
 		// processing
 		await loadStatConstants(); // need this for gear proecssing
-		Promise.all($user_gears.map((gear) => createGearView(gear, false))).then((gearViews) => {
-			$gear_views = gearViews;
-			console.log('Done processing user_gears');
-		});
+		// create initial gear views
+		$gear_views = await Promise.all($user_gears.map((gear) => createGearView(gear, false)));
+		console.log('Gear Views processed');
 
-		// create gear and matrix views
+		// create initial weapon and matrix views
 		await updateWeaponMatrix();
+		update_ready = true;
 	});
+
+	// update for equipped_gear_views
+	$effect(() => {
+		if (!update_ready) return;
+		$equipped_gear_views = getEquippedGearViews($user_loadouts[$current_loadout].equipped_gears);
+	});
+
+	// update for stats
+	$effect(() => {
+		if (!update_ready) return;
+		$all_stats = getAllStats(
+			$user_loadouts[$current_loadout],
+			$equipped_gear_views,
+			$weapon_views,
+			$matrix_views,
+			$reso_effects
+		);
+		$stat_view = createStatView(
+			$user_loadouts[$current_loadout],
+			$equipped_gear_views,
+			$weapon_views,
+			$matrix_views,
+			$reso_effects
+		);
+		applyExtraGearViewStats();
+	});
+
+	// TODO: make stat page use $all_stats
+
+	// $inspect('Equipped Gear Views', $equipped_gear_views);
+	// $inspect('All stat totals', $all_stats.to_displayed_stats());
+	$inspect('Gear Views', $gear_views);
 </script>
 
 <svelte:window bind:innerWidth={$inner_width} />

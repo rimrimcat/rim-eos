@@ -64,7 +64,7 @@
 
 	// Gear Info Dialog
 	let gear_info_dialog_open = $state(false);
-	let gear_info_gear: GearView | null = $state(null);
+	let gear_info_index = $state(-1);
 
 	let has_measured = $state(false); // for triggering flexGrid itemWidth update
 
@@ -225,6 +225,8 @@
 		if (saveAfter) {
 			saveObject('loadouts_v1', $user_loadouts);
 		}
+
+		updateEquippedGears();
 	}
 
 	function removeGear(id: number) {
@@ -240,8 +242,11 @@
 
 		saveObject('gears_v1', $user_gears);
 		saveObject('loadouts_v1', $user_loadouts);
+
+		updateEquippedGears();
 	}
 
+	// TODO: USE EQUIPPED GEARS FROM STORE
 	function updateEquippedGears() {
 		equipped_gears = [];
 		for (const part in VALID_GEAR_PARTS) {
@@ -401,7 +406,10 @@
 		const extractedVars = [...new Set(query.match(ALL_STATS_REGEX))] as AllStats[];
 
 		function doFiltering(gear: GearView) {
-			const variables: { [key in AllStats]?: number } & { gear?: ValidGearPart } = {};
+			const variables: { [key in AllStats]?: number } & {
+				gear?: ValidGearPart;
+				isEquipped?: number;
+			} = {};
 
 			extractedVars.forEach((varName) => {
 				variables[varName] = gear.derived.find((stat) => stat.stat === varName)?.value ?? 0;
@@ -411,6 +419,7 @@
 				return;
 			}
 			variables.gear = gear.part;
+			variables.isEquipped = gear.isEquipped ? 1 : 0;
 
 			// @ts-expect-error
 			const new_query = query.replace(ALL_STATS_REGEX, (match) => variables[match].toString());
@@ -452,8 +461,8 @@
 		await advancedGearSearch(query as AllStats);
 	}
 
-	function showGearInfo(gear: GearView) {
-		gear_info_gear = gear;
+	function showGearInfo(index: number) {
+		gear_info_index = index;
 		gear_info_dialog_open = true;
 	}
 
@@ -517,8 +526,6 @@
 			}
 		}
 	];
-
-	$inspect('gear_views', $gear_views);
 </script>
 
 {#snippet gear_actions(gear: GearView)}
@@ -549,7 +556,7 @@
 	<div class="gear-icon">
 		<div class="icon-container">
 			{#if gear}
-				<button class="gear-button icon" onclick={() => showGearInfo(gear)} style="opacity: 1">
+				<button class="gear-button icon" onclick={() => showGearInfo(gear.id)} style="opacity: 1">
 					<img
 						src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
 						alt="Gear"
@@ -610,7 +617,7 @@
 				</button>
 				<button class="border" id="start-search" onclick={() => (search_dialog_open = true)}>
 					<SearchIcon />
-					<label class="in-button" for="start-search">Search Gear</label>
+					<label class="in-button" for="start-search">Search & Sort Gear</label>
 				</button>
 				<button
 					class="border"
@@ -635,6 +642,7 @@
 			vertical_gap="0rem"
 			horizontal_gap="5rem"
 			bind:has_measured
+			expand_width={false}
 		>
 			{#if $gear_views.length !== 0 && !is_searching && !is_showing_equipped_gears}
 				{#each $gear_views as gear}
@@ -698,13 +706,13 @@
 
 						<div class="single-stat">
 							<div class="stat-content" class:icon={bound_objects.iconStats}>
-								{#if bound_objects.iconStats}
+								<!-- {#if bound_objects.iconStats}
 									<div class="stat-icon">
 										<StatIcon stat={gear.stats[0].stat.replace('titan_', '') as Stat} size="75%" />
 									</div>
 								{:else}
 									{gear.stats[0].stat_label ?? ''}
-								{/if}
+								{/if} -->
 								+{gear.stats[0].value_label ?? ''}
 							</div>
 						</div>
@@ -718,7 +726,7 @@
 				{#each equipped_gears as gearId, partIndex}
 					<div class="gear-cell gear-id-{gearId}">
 						<span style="max-width: {span_length * 0.75}rem; width: {span_length * 0.75}rem"
-							>{gearId}</span
+							>{gearId === -1 ? '' : gearId}</span
 						>
 						{@render gear_icon($gear_views[gearId], VALID_GEAR_PARTS[partIndex])}
 
@@ -750,7 +758,7 @@
 
 <GearInfo
 	bind:open={gear_info_dialog_open}
-	bind:gear={gear_info_gear}
+	bind:gear={$gear_views[gear_info_index]}
 	onRemoveGear={removeGear}
 	onEquipGear={equipGear}
 	onUnequipGear={unequipGear}

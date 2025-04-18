@@ -156,10 +156,10 @@
         "frost_atk": {
           "type": "number"
         },
-        "volt_atk": {
+        "phys_atk": {
           "type": "number"
         },
-        "phys_atk": {
+        "volt_atk": {
           "type": "number"
         },
         "alt_atk": {
@@ -171,10 +171,10 @@
         "frost_atk_percent": {
           "type": "number"
         },
-        "volt_atk_percent": {
+        "phys_atk_percent": {
           "type": "number"
         },
-        "phys_atk_percent": {
+        "volt_atk_percent": {
           "type": "number"
         },
         "alt_atk_percent": {
@@ -186,10 +186,10 @@
         "frost_dmg_percent": {
           "type": "number"
         },
-        "volt_dmg_percent": {
+        "phys_dmg_percent": {
           "type": "number"
         },
-        "phys_dmg_percent": {
+        "volt_dmg_percent": {
           "type": "number"
         },
         "alt_dmg_percent": {
@@ -210,13 +210,13 @@
         "frost_res": {
           "type": "number"
         },
+        "phys_res": {
+          "type": "number"
+        },
         "volt_res": {
           "type": "number"
         },
         "alt_res": {
-          "type": "number"
-        },
-        "phys_res": {
           "type": "number"
         },
         "res_percent": {
@@ -228,22 +228,19 @@
         "frost_res_percent": {
           "type": "number"
         },
+        "phys_res_percent": {
+          "type": "number"
+        },
         "volt_res_percent": {
           "type": "number"
         },
         "alt_res_percent": {
           "type": "number"
         },
-        "phys_res_percent": {
-          "type": "number"
-        },
         "crit_dmg_percent": {
           "type": "number"
         },
         "atk_percent": {
-          "type": "number"
-        },
-        "dmg_percent": {
           "type": "number"
         },
         "final_dmg_percent": {
@@ -261,13 +258,13 @@
         "res_ignore_percent": {
           "type": "number"
         },
-        "phys_res_ignore_percent": {
-          "type": "number"
-        },
         "flame_res_ignore_percent": {
           "type": "number"
         },
         "frost_res_ignore_percent": {
+          "type": "number"
+        },
+        "phys_res_ignore_percent": {
           "type": "number"
         },
         "volt_res_ignore_percent": {
@@ -282,13 +279,13 @@
         "ele_dmg_taken_percent": {
           "type": "number"
         },
-        "phys_dmg_taken_percent": {
-          "type": "number"
-        },
         "flame_dmg_taken_percent": {
           "type": "number"
         },
         "frost_dmg_taken_percent": {
+          "type": "number"
+        },
+        "phys_dmg_taken_percent": {
           "type": "number"
         },
         "volt_dmg_taken_percent": {
@@ -304,6 +301,24 @@
           "type": "number"
         },
         "shield_dmg_reduction_ignore_percent": {
+          "type": "number"
+        },
+        "base_atk_improvement_percent": {
+          "type": "number"
+        },
+        "base_flame_atk_improvement_percent": {
+          "type": "number"
+        },
+        "base_frost_atk_improvement_percent": {
+          "type": "number"
+        },
+        "base_phys_atk_improvement_percent": {
+          "type": "number"
+        },
+        "base_volt_atk_improvement_percent": {
+          "type": "number"
+        },
+        "base_alt_atk_improvement_percent": {
           "type": "number"
         }
       },
