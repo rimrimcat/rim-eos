@@ -125,8 +125,6 @@ export type CharacterStat = {
 
 /**
  * Stats that are not present on gear
- * TODO: subdivide dmg_percent to different multipliers
- * Elemental atk === Atk
  */
 export type StatNonGear =
 	| 'atk_percent'

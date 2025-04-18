@@ -4,6 +4,7 @@ import type {
 	WeaponEffectsIds,
 	WeaponsIds
 } from '../generated/ids';
+import type { ValidGearPart } from './gear-types';
 import type { Elements, StatData, StatKey } from './stat-types';
 
 export type ResoElement = Elements | 'none';
@@ -68,4 +69,9 @@ export type MatrixFinalEffect = BaseEffect & {
 	id: MatrixEffectsIds;
 	stats: StatData;
 	advancement: number;
+};
+
+export type GearEffect = BaseEffect & {
+	id: ValidGearPart;
+	stats: StatData;
 };
