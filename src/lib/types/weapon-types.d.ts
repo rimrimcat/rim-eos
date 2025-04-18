@@ -12,7 +12,7 @@ import type {
 	ResoTriggers,
 	WeaponEffect
 } from './effect-types';
-import type { StatGearUser, StatNonGear } from './stat-types';
+import type { StatBuffs, StatGearUser } from './stat-types';
 
 /**
  * BaseStatType naming convetion:
@@ -28,7 +28,7 @@ export type BaseStatType =
 	| 'res-med'
 	| 'res-high';
 export type BaseStatValue = {
-	[key in StatGearUser | StatNonGear]?: [number, number];
+	[key in StatGearUser | StatBuffs]?: [number, number];
 };
 
 export type WeaponSettingStuff = {

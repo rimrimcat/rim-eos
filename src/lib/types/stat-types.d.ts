@@ -1,39 +1,24 @@
 /**
+ * Pretty self explanatory
+ */
+export type Elements = 'phys' | 'flame' | 'frost' | 'volt' | 'alt';
+
+/**
  * Gear stats that can be added by the user
  */
 export type StatGearUser =
 	| 'hp'
 	| 'hp_percent'
 	| 'atk'
-	| 'flame_atk'
-	| 'frost_atk'
-	| 'volt_atk'
-	| 'phys_atk'
-	| 'alt_atk'
-	| 'flame_atk_percent'
-	| 'frost_atk_percent'
-	| 'volt_atk_percent'
-	| 'phys_atk_percent'
-	| 'alt_atk_percent'
-	| 'flame_dmg_percent'
-	| 'frost_dmg_percent'
-	| 'volt_dmg_percent'
-	| 'phys_dmg_percent'
-	| 'alt_dmg_percent'
+	| `${Elements}_atk`
+	| `${Elements}_atk_percent`
+	| `${Elements}_dmg_percent`
 	| 'crit'
 	| 'crit_percent'
 	| 'res'
-	| 'flame_res'
-	| 'frost_res'
-	| 'volt_res'
-	| 'alt_res'
-	| 'phys_res'
+	| `${Elements}_res`
 	| 'res_percent'
-	| 'flame_res_percent'
-	| 'frost_res_percent'
-	| 'volt_res_percent'
-	| 'alt_res_percent'
-	| 'phys_res_percent';
+	| `${Elements}_res_percent`;
 
 /**
  * Gear stats that are derived from the user's stats
@@ -47,17 +32,9 @@ export type StatGearFinalUseful =
 	| 'hp'
 	| 'crit'
 	| 'crit_percent'
-	| 'phys_atk'
-	| 'flame_atk'
-	| 'frost_atk'
-	| 'volt_atk'
-	| 'alt_atk'
+	| `${Elements}_atk`
 	| 'crit_dmg_percent'
-	| 'phys_res'
-	| 'flame_res'
-	| 'frost_res'
-	| 'volt_res'
-	| 'alt_res';
+	| `${Elements}_res`;
 
 /**
  * Stats that are finalized on character screen
@@ -77,7 +54,7 @@ export type CharacterStat = {
 /**
  * Stats that are not present on gear
  */
-export type StatNonGear =
+export type StatBuffs =
 	| 'atk_percent'
 	| 'final_dmg_percent'
 	| 'ele_dmg_percent'
@@ -85,29 +62,34 @@ export type StatNonGear =
 	| 'healing_percent'
 	| 'shatter';
 
+/**
+ * Debuffs
+ */
 export type StatDebuffs =
 	// res ignores
 	| 'res_ignore_percent' // all elements
-	| 'phys_res_ignore_percent'
-	| 'flame_res_ignore_percent'
-	| 'frost_res_ignore_percent'
-	| 'volt_res_ignore_percent'
-	| 'alt_res_ignore_percent'
+	| `${Elements}_res_ignore_percent`
+
 	// dmg increase debuff
 	| 'final_dmg_increase_percent' // separate from ele
+
 	// ele dmg increase debuffs
 	| 'ele_dmg_taken_percent'
-	| 'phys_dmg_taken_percent'
-	| 'flame_dmg_taken_percent'
-	| 'frost_dmg_taken_percent'
-	| 'volt_dmg_taken_percent'
-	| 'alt_dmg_taken_percent'
+	| `${Elements}_dmg_taken_percent`
+
 	// others
 	| 'res_reduction_percent'
 	| 'crit_res_reduction_percent'
 	| 'shield_dmg_reduction_ignore_percent';
 
-export type StatKey = StatGearUser | StatNonGear | StatDebuffs;
+/**
+ * Allows for quantification of base atk stats as percent
+ */
+export type StatAtkImprovement =
+	| 'base_atk_improvement_percent'
+	| `base_${Elements}_atk_improvement_percent`;
+
+export type StatKey = StatGearUser | StatBuffs | StatDebuffs | StatAtkImprovement;
 
 /**
  *  Only used to type STAT_LABELS
@@ -204,7 +186,6 @@ export type BaseStats16Number = [
 export type AtkStats5 = [string, string, string, string, string];
 export type AtkStats5Number = [number, number, number, number, number];
 
-export type Elements = 'phys' | 'flame' | 'frost' | 'volt' | 'alt';
 export type MultiplierTypes = 'base_atk' | 'atk_percent' | 'final_dmg_percent' | 'ele_dmg_percent';
 export type LumpedKey =
 	| 'phys_atk'
