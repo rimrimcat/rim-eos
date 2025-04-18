@@ -638,6 +638,7 @@
 			vertical_gap="0rem"
 			horizontal_gap="5rem"
 			bind:has_measured
+			expand_width={false}
 		>
 			{#if $gear_views.length !== 0 && !is_searching && !is_showing_equipped_gears}
 				{#each $gear_views as gear}
