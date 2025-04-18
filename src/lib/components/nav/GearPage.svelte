@@ -546,19 +546,11 @@
 	{/if}
 {/snippet}
 
-{#snippet gear_icon(
-	gear: GearView,
-	gear_index: number,
-	partIfNoGear: ValidGearPart = GearPart.HELMET
-)}
+{#snippet gear_icon(gear: GearView, partIfNoGear: ValidGearPart = GearPart.HELMET)}
 	<div class="gear-icon">
 		<div class="icon-container">
 			{#if gear}
-				<button
-					class="gear-button icon"
-					onclick={() => showGearInfo(gear_index)}
-					style="opacity: 1"
-				>
+				<button class="gear-button icon" onclick={() => showGearInfo(gear.id)} style="opacity: 1">
 					<img
 						src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
 						alt="Gear"
@@ -649,7 +641,7 @@
 				{#each $gear_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
 						<span style="width: {span_length * 0.75}rem">{gear.id}</span>
-						{@render gear_icon(gear, gear.id)}
+						{@render gear_icon(gear)}
 
 						{#if bound_objects.fourStatMode}
 							<div class="stats-container">
@@ -703,7 +695,7 @@
 				{#each search_views as gear}
 					<div class="gear-cell gear-id-{gear.id}">
 						<span style="width: {span_length * 0.75}rem">{gear.id}</span>
-						{@render gear_icon($gear_views[gear.id], gear.id)}
+						{@render gear_icon($gear_views[gear.id])}
 
 						<div class="single-stat">
 							<div class="stat-content" class:icon={bound_objects.iconStats}>
@@ -729,7 +721,7 @@
 						<span style="max-width: {span_length * 0.75}rem; width: {span_length * 0.75}rem"
 							>{gearId}</span
 						>
-						{@render gear_icon($gear_views[gearId], gearId, VALID_GEAR_PARTS[partIndex])}
+						{@render gear_icon($gear_views[gearId], VALID_GEAR_PARTS[partIndex])}
 
 						{@render gear_actions($gear_views[gearId])}
 					</div>
