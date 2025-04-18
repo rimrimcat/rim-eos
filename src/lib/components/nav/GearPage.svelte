@@ -225,6 +225,8 @@
 		if (saveAfter) {
 			saveObject('loadouts_v1', $user_loadouts);
 		}
+
+		updateEquippedGears();
 	}
 
 	function removeGear(id: number) {
@@ -240,6 +242,8 @@
 
 		saveObject('gears_v1', $user_gears);
 		saveObject('loadouts_v1', $user_loadouts);
+
+		updateEquippedGears();
 	}
 
 	// TODO: USE EQUIPPED GEARS FROM STORE
@@ -519,7 +523,7 @@
 		}
 	];
 
-	$inspect('gear_views FROM GEAR PAGE', $gear_views);
+	$inspect('equipped gears idx', equipped_gears);
 </script>
 
 {#snippet gear_actions(gear: GearView)}
