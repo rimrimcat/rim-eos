@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createGearView } from '$lib/scripts/gears';
 	import { loadStatConstants } from '$lib/scripts/json-loader';
-	import { loadGearImages, loadObject, openImageDB } from '$lib/scripts/loader';
+	import { loadGearImages, loadObject, loadStatIcons, openImageDB } from '$lib/scripts/loader';
 	import {
 		applyExtraGearViewStats,
 		createStatView,
@@ -96,6 +96,9 @@
 		// gear images
 		loadGearImages().then(() => {
 			console.log('Gear Images loaded');
+		});
+		loadStatIcons().then(() => {
+			console.log('Stat Icons loaded');
 		});
 	});
 

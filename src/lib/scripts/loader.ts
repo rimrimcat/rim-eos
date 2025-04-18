@@ -538,3 +538,30 @@ export async function loadGearImages() {
 		})
 	);
 }
+
+export async function loadStatIcons() {
+	const icons = [
+		'alt',
+		'crit',
+		'flame',
+		'gatk',
+		'phys',
+		'res_flame',
+		'res_phys',
+		'res',
+		'atk',
+		'dmg',
+		'frost',
+		'hp',
+		'res_alt',
+		'res_frost',
+		'res_volt',
+		'volt'
+	];
+
+	return await Promise.all(
+		icons.map(async (icon) => {
+			return await fetch(`./stat_icon/${icon}.webp`);
+		})
+	);
+}
