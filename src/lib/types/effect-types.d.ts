@@ -15,6 +15,18 @@ export type OrderedResoTriggers = [ResoElement, ResoRole, ...ResoTriggers[]];
 export type Target = 'self' | 'ally' | 'team' | 'enemy';
 export type ResoTriggerCounts = { [key in ResoTriggers]?: number };
 
+export type MatrixStatData = {
+	[key in StatKey]?: [number, number, number, number];
+};
+export type MatrixExprData = {
+	[key in StatKey]?: [
+		ResoTriggers | string,
+		ResoTriggers | string,
+		ResoTriggers | string,
+		ResoTriggers | string
+	];
+};
+
 export type BaseEffect = {
 	id: string;
 	target?: Target; // defaults to self
@@ -45,18 +57,6 @@ export type ResoEffect = BaseEffect & {
 	id: ResoEffectsIds;
 	stats: StatData;
 	require_reso: ResoTriggers;
-};
-
-export type MatrixStatData = {
-	[key in StatKey]?: [number, number, number, number];
-};
-export type MatrixExprData = {
-	[key in StatKey]?: [
-		ResoTriggers | string,
-		ResoTriggers | string,
-		ResoTriggers | string,
-		ResoTriggers | string
-	];
 };
 
 export type MatrixEffect = BaseEffect & {
