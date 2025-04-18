@@ -166,13 +166,15 @@ const __allowedRegexLits = [
 	'\\*',
 	'\\d',
 	'\\!',
-	"'gear'", // will be replaced by string character
+	"'gear'", // will be replaced by string character for equality comparison
 	'isEquipped', // 0 or 1
 	...Object.values(GearPart).map((value) => `'${value}'`)
 ].join('|');
 const __allowedRegexVars = [...ALL_STATS_LIST].join('|');
 
+// used by Gear Search
 export const ALLOWED_REGEX_VARS = new RegExp(`\\b(${__allowedRegexVars})\\b`, 'g');
+// used by Gear Search
 export const ALLOWED_REGEX_OPS = new RegExp(`(${__allowedRegexLits})`, 'g');
 
 // gear views
