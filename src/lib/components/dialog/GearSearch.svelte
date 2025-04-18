@@ -149,6 +149,7 @@
 			}
 		} else if (selectedStat == 'MULTIPLIER') {
 			selectedOthers.delete('Titan');
+			selectedOthers.add('Percent');
 			selectedElement = null;
 		}
 
