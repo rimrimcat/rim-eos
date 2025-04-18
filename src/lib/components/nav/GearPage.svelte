@@ -278,6 +278,9 @@
 			.replace(/^[^\s]{1,3} /gm, '') // remove 2-3 characters followed by space at the start of a line
 			.split('\n'); // those characters are noise from trying to read symbols
 
+		const random_stats_index = txt.findIndex((line) => line.includes('random stats'));
+		const augment_stat_index = txt.findIndex((line) => line.includes('augmentation stats'));
+
 		const id = $user_gears.length;
 
 		const partCleanedStr = txt[0]
@@ -287,7 +290,7 @@
 			.replace('combat ', '')
 			.split(' ')[0];
 		const part = OCR_PART_MAP[partCleanedStr] ?? GearPart.UNKNOWN;
-		const isTitan = txt[0].includes('titan');
+		const isTitan = txt[0].includes('titan') || augment_stat_index !== -1; // also include augmented gear as titan
 		const equip =
 			txt[0].includes('equipped') && // check if any gear is equipped in current loadout
 			part !== GearPart.UNKNOWN &&
@@ -306,9 +309,6 @@
 		// console.log('Text has equip', txt[0].includes('equipped'));
 		// console.log('Part is null', $user_loadouts[$current_loadout].equipped_gear[part] === null);
 		console.log('TEXT', txt);
-
-		const random_stats_index = txt.findIndex((line) => line.includes('random stats'));
-		const augment_stat_index = txt.findIndex((line) => line.includes('augmentation stats'));
 
 		let foundStats = 0;
 		if (random_stats_index) {
