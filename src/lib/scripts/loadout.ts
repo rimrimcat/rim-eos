@@ -561,24 +561,63 @@ export function getAllStats(
 
 	let gwmr_totals = new StatCollection();
 	equipped_gear_views.forEach((gear) => {
+		// gear titan stats
 		gwmr_totals = gwmr_totals.add(new StatCollection(gear));
 	});
 	[
-		...weapon_views.flatMap((weapon) => weapon.effects),
-		...dedupeMatEffs(matrix_views.flatMap((matrix) => matrix.effects)),
-		...reso_effects
+		...weapon_views.flatMap((weapon) => weapon.effects), // weapon effects
+		...dedupeMatEffs(matrix_views.flatMap((matrix) => matrix.effects)), // matrix effects
+		...reso_effects // reso effects
 	].forEach((eff) => {
 		gwmr_totals = gwmr_totals.add(new StatCollection(eff.stats));
 	});
 	weapon_views.forEach((weapon) => {
-		gwmr_totals = gwmr_totals.add(weapon.base_stat);
+		gwmr_totals = gwmr_totals.add(weapon.base_stat); // weapon base stats
 	});
 
-	return new StatCollection(selected_loadout.base_stats)
-		.add(new StatCollection(stat_adj?.unaccounted ?? {}))
-		.add(new StatCollection('atk_percent', stat_adj?.supercompute ?? 0))
-		.add(new StatCollection('atk_percent', stat_adj?.use_blade_shot ? 3.5 : 0))
+	return new StatCollection(selected_loadout.base_stats) // base stats
+		.add(new StatCollection(stat_adj?.unaccounted ?? {})) // unaccounted
+		.add(new StatCollection('atk_percent', stat_adj?.supercompute ?? 0)) // supercompute
+		.add(new StatCollection('atk_percent', stat_adj?.use_blade_shot ? 3.5 : 0)) // blade shot
 		.add(gwmr_totals);
+}
+
+export function createStatView(
+	selected_loadout: Loadout,
+	equipped_gear_views: GearView[],
+	weapon_views: WeaponView[],
+	matrix_views: MatrixView[],
+	reso_effects: ResoEffect[]
+) {
+	const total_base_stats = getAllStats(
+		selected_loadout,
+		equipped_gear_views,
+		weapon_views,
+		matrix_views,
+		reso_effects
+	).to_displayed_stats();
+
+	const base_stats_ = [
+		...total_base_stats.slice(0, 8),
+		'1400',
+		'0',
+		...total_base_stats.slice(8, 14)
+	] as BaseStats16;
+
+	if (base_stats_.length !== 16) {
+		throw new Error('Invalid base stats length!');
+	}
+
+	return TEMPLATE_USER_ATTRIBUTES.map((attr, index) => {
+		const __val = base_stats_[index];
+		const __use_percent = index === 2 || index === 10;
+
+		return {
+			...attr,
+			name: STAT_LABELS[attr.key],
+			value: __use_percent ? formatValue('float3d', __val) : formatValue('int', __val)
+		};
+	});
 }
 
 export function createAttributeView(base_stats_14: BaseStats14): CharacterStat[] {

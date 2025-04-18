@@ -2,7 +2,12 @@
 	import { createGearView } from '$lib/scripts/gears';
 	import { loadStatConstants } from '$lib/scripts/json-loader';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
-	import { getAllStats, getEquippedGearViews, updateWeaponMatrix } from '$lib/scripts/loadout';
+	import {
+		createStatView,
+		getAllStats,
+		getEquippedGearViews,
+		updateWeaponMatrix
+	} from '$lib/scripts/loadout';
 	import {
 		all_stats,
 		current_loadout,
@@ -14,6 +19,7 @@
 		matrix_views,
 		reso_effects,
 		scroll_y,
+		stat_view,
 		toolbar_transform,
 		user_gears,
 		user_loadouts,
@@ -101,7 +107,16 @@
 			$matrix_views,
 			$reso_effects
 		);
+		$stat_view = createStatView(
+			$user_loadouts[$current_loadout],
+			$equipped_gear_views,
+			$weapon_views,
+			$matrix_views,
+			$reso_effects
+		);
 	});
+
+	// TODO: make stat page use $all_stats
 
 	$inspect('Equipped Gear Views', $equipped_gear_views);
 	$inspect('All stat totals', $all_stats.to_displayed_stats());

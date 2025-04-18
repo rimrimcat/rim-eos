@@ -2,34 +2,14 @@
 	import StatAdjust from '$lib/components/dialog/StatAdjust.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
-	import { saveObject } from '$lib/scripts/loader.ts';
-	import { createAttributeView } from '$lib/scripts/loadout';
-	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
-	import type { BaseStats14, BaseStats16, CharacterStat } from '$lib/types/index';
+	import { stat_view } from '$lib/scripts/stores';
+	import type { BaseStats16 } from '$lib/types/index';
 	import { ChartNoAxesColumnIcon, ImagePlusIcon } from '@lucide/svelte';
 	import type * as OpenCV from '@techstark/opencv-js';
 	import cv from '@techstark/opencv-js';
-	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
 
 	// State
-	let base_stats: BaseStats14 = $state([
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0',
-		'0'
-	]);
-	let attribute_view: CharacterStat[] = $state([]);
 
 	// Screenshot Dialog
 	let screenshot_dialog_open = $state(false);
@@ -39,11 +19,6 @@
 	// Stat Adjust Dialog
 	let stat_adjust_dialog_open = $state(false);
 	let unadjusted_stats: null | BaseStats16 = $state(null);
-
-	function saveAttributes() {
-		$user_loadouts[$current_loadout].base_stats = base_stats;
-		saveObject('loadouts_v1', $user_loadouts);
-	}
 
 	// actions
 	function* iterateBoxes(w: number, h: number, off_x: number = 0, off_y: number = 0) {
@@ -157,8 +132,6 @@
 			}
 			await worker.terminate();
 
-			saveAttributes();
-			attribute_view = createAttributeView(base_stats);
 			process_text = 'Done!';
 		}
 	}
@@ -321,13 +294,6 @@
 		// saveObject('stats_main', user_attributes);
 		// processAttributes();
 	}
-
-	onMount(() => {
-		if (Object.keys($user_loadouts).length > 0) {
-			base_stats = $user_loadouts[$current_loadout].base_stats;
-			attribute_view = createAttributeView(base_stats);
-		}
-	});
 </script>
 
 <div style="display: none">
@@ -372,7 +338,7 @@
 		max_cols={2}
 		prefer_divisible={false}
 	>
-		{#each attribute_view as attribute, index}
+		{#each $stat_view as attribute, index}
 			<div class="stat-cell">
 				<div class="stat-content">
 					<div class="stat-icon">
