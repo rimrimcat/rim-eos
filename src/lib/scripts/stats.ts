@@ -191,6 +191,23 @@ export const TEMPLATE_USER_ATTRIBUTES: { key: StatGearFinal; icon: string }[] = 
 	{ key: 'alt_res', icon: './stat/placeholder.webp' }
 ];
 
+export function getCritRate(crit: number, flat_rate_percent: number = 0, lvl: number = 100) {
+	let crit_constant = 0;
+
+	if (lvl >= 80) {
+		crit_constant = -3.71 * lvl ** 2 + 1151 * lvl - 49787;
+	} else if (lvl > 40) {
+		crit_constant = -0.163 * lvl ** 2 + 285 * lvl - 3215;
+	} else if (lvl > 10) {
+		crit_constant = -4 * lvl ** 2 + 408 * lvl - 2078;
+	} else {
+		console.error('Invalid level!');
+		crit_constant = 10000000;
+	}
+
+	return Math.min(crit / crit_constant + flat_rate_percent / 100, 1);
+}
+
 export class StatCollection {
 	public data: StatData = {};
 
@@ -610,7 +627,7 @@ export class LumpedStatCollection {
 	 * @param other_col - object's multipliers to calculate. Must not be part of the original collection
 	 * @param element
 	 */
-	total_multiplier_of(other_col: LumpedStatCollection, element: Elements) {
+	total_multiplier_of(other_col: LumpedStatCollection, element: Elements, level: number = 100) {
 		let multiplier = 1;
 
 		// base atk
@@ -621,6 +638,16 @@ export class LumpedStatCollection {
 		// ele percent
 		multiplier *=
 			1 + other_col.get(`${element}_dmg_percent`) / (1 + this.get(`${element}_dmg_percent`));
+		// crit
+		const r0 = getCritRate(this.get('crit'), this.get('crit_percent'), level);
+		const r1 = getCritRate(
+			this.get('crit') + other_col.get('crit'),
+			this.get('crit_percent') + other_col.get('crit_percent'),
+			level
+		);
+		const d0 = this.get('crit_dmg_percent') / 100;
+		const d1 = (this.get('crit_dmg_percent') + other_col.get('crit_dmg_percent')) / 100;
+		multiplier *= (1 + r1 * d1) / (1 + r0 * d0);
 
 		return multiplier;
 	}
