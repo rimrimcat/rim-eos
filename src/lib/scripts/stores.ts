@@ -1,9 +1,9 @@
-import type { Snippet } from 'svelte';
 import { writable } from 'svelte/store';
 import type {
 	AllLoadouts,
 	CharacterStat,
 	GearView,
+	GuideItem,
 	MatrixView,
 	ResoEffect,
 	ResoTriggerCounts,
@@ -22,7 +22,7 @@ export const toolbar_transform = writable<number>(0);
 // interactive guide
 export const guide_title = writable<string>('');
 export const guide_open = writable<boolean>(false);
-export const guide_content = writable<(Snippet | string)[] | null>(null);
+export const guide_content = writable<GuideItem[] | null>(null);
 
 // user data
 export const user_gears = writable<UserGear[]>([]);
