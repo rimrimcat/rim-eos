@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { createGearView } from '$lib/scripts/gears';
 	import { loadStatConstants } from '$lib/scripts/json-loader';
-	import { loadObject, openImageDB } from '$lib/scripts/loader';
+	import { loadGearImages, loadObject, openImageDB } from '$lib/scripts/loader';
 	import {
 		applyExtraGearViewStats,
 		createStatView,
@@ -91,6 +91,12 @@
 		// create initial weapon and matrix views
 		await updateWeaponMatrix();
 		update_ready = true;
+
+		// load resources
+		// gear images
+		loadGearImages().then(() => {
+			console.log('Gear Images loaded');
+		});
 	});
 
 	// update for equipped_gear_views
@@ -123,7 +129,8 @@
 
 	// $inspect('Equipped Gear Views', $equipped_gear_views);
 	// $inspect('All stat totals', $all_stats.to_displayed_stats());
-	$inspect('Gear Views', $gear_views);
+
+	// $inspect('Lumped Stats', $all_stats.lump());
 </script>
 
 <svelte:window bind:innerWidth={$inner_width} />
@@ -159,6 +166,10 @@
 </div>
 
 <ReadySignal bind:signal />
+
+<!-- <FloatingWindow>
+	<p>test</p>
+</FloatingWindow> -->
 
 <style>
 	:global(body) {

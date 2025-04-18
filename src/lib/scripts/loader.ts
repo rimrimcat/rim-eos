@@ -5,6 +5,7 @@ import type {
 	StatGearFinal,
 	UserGear
 } from '$lib/types/index';
+import { GearPart } from './gears';
 
 // Keys
 export type LocalStorageKey = 'gears_v1' | 'loadouts_v1' | 'styles';
@@ -523,4 +524,17 @@ export async function saveObject(
 
 export function cloneObject(obj: object) {
 	return JSON.parse(JSON.stringify(obj));
+}
+
+export async function loadGearImages() {
+	const gear_parts = Object.values(GearPart).filter((part) => part !== GearPart.UNKNOWN);
+	const dirs = ['./gear/', './gear/titan/'];
+
+	const imgs_to_load = gear_parts.flatMap((part) => dirs.map((dir) => `${dir}${part}.png`));
+
+	return await Promise.all(
+		imgs_to_load.map(async (img) => {
+			return await fetch(img);
+		})
+	);
 }
