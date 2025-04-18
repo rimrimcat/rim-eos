@@ -13,6 +13,7 @@
 	} from '$lib/scripts/loader';
 	import {
 		dedupeMatEffs,
+		turnGearToEffect,
 		updateSingleMatrixView,
 		updateSingleWeaponView,
 		updateWeaponMatrix
@@ -21,6 +22,7 @@
 	import {
 		base_weapons,
 		current_loadout,
+		equipped_gear_views,
 		font_size,
 		inner_width,
 		matrix_views,
@@ -29,6 +31,7 @@
 		weapon_views
 	} from '$lib/scripts/stores';
 	import type {
+		Elements,
 		LoadoutType,
 		MatrixIds,
 		MatrixView,
@@ -68,7 +71,8 @@
 	let all_effects = $derived([
 		...$weapon_views.flatMap((weapon) => weapon.effects),
 		...dedupeMatEffs($matrix_views.flatMap((matrix) => matrix.effects)),
-		...$reso_effects
+		...$reso_effects,
+		...$equipped_gear_views.flatMap((gear) => turnGearToEffect(gear))
 	]);
 
 	let is_editing = $state(false);
@@ -106,7 +110,7 @@
 			const prevSelectedLoadout = $current_loadout;
 			$user_loadouts[prevSelectedLoadout].name = loadout_name;
 			$user_loadouts[prevSelectedLoadout].description = loadout_desc;
-			$user_loadouts[prevSelectedLoadout].element = loadout_icon as LoadoutType;
+			$user_loadouts[prevSelectedLoadout].element = loadout_icon as Elements;
 
 			const sanitizedLoadoutName = sanitizeLoadoutKey(loadout_name);
 
@@ -290,12 +294,6 @@
 			loadout_image = await getImageUrlFromDB($current_loadout);
 		}
 	});
-
-	// $inspect('weapmatcomb', loadout_weapmat_combined);
-	// $inspect(
-	// 	'all effects anka',
-	// 	all_effects.filter((eff) => eff.id.includes('anka'))
-	// );
 </script>
 
 {#snippet matrix4p(matrix: MatrixView)}
