@@ -50,7 +50,7 @@
 		const gear = _selectedGear // @ts-expect-error
 			? `( 'gear' == '${GearPart[_selectedGear.toUpperCase()]}' ) * `
 			: '';
-		const equipped = _selectedOthers.has('Equipped') ? 'isEquipped * ' : '';
+		const equipped = _selectedOthers.has('Equipped') ? `isEquipped * ` : '';
 		const titan = selectedOthers.has('Titan') ? 'titan_' : '';
 		const stat = _selectedStat.toLowerCase();
 		const element = _selectedElement ? _selectedElement.toLowerCase() + '_' : '';

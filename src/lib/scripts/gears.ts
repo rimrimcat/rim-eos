@@ -76,6 +76,7 @@ export const VALID_GEAR_PARTS: ValidGearPart[] = [
 	'R'
 ];
 
+// normal stats
 const GEAR_STATS: StatGearUser[] = [
 	'hp',
 	'hp_percent',
@@ -110,6 +111,7 @@ const GEAR_STATS: StatGearUser[] = [
 	'alt_res_percent',
 	'phys_res_percent'
 ];
+// titan stats
 const GEAR_STATS_TITAN: StatGearTitan[] = [
 	'titan_hp',
 	'titan_hp_percent',
@@ -144,11 +146,14 @@ const GEAR_STATS_TITAN: StatGearTitan[] = [
 	'titan_alt_res_percent',
 	'titan_phys_res_percent'
 ];
+// extra stats
 const GEAR_STATS_EXTRA: StatGearExtra[] = ['multiplier', 'multiplier_percent'];
+// other literals
+const GEAR_OTHER = ['gear', 'isEquipped'];
 
-const ALL_STATS_LIST = [...GEAR_STATS, ...GEAR_STATS_TITAN, ...GEAR_STATS_EXTRA];
+const ALL_STATS_LIST = [...GEAR_STATS, ...GEAR_STATS_TITAN, ...GEAR_STATS_EXTRA, ...GEAR_OTHER];
 
-export const ALL_STATS_REGEX = new RegExp(`\\b(${ALL_STATS_LIST.join('|')}|gear)\\b`, 'g');
+export const ALL_STATS_REGEX = new RegExp(`\\b(${ALL_STATS_LIST.join('|')})\\b`, 'g');
 
 const __allowedRegexLits = [
 	'\\+',
@@ -161,7 +166,8 @@ const __allowedRegexLits = [
 	'\\*',
 	'\\d',
 	'\\!',
-	"'gear'",
+	"'gear'", // will be replaced by string character
+	'isEquipped', // 0 or 1
 	...Object.values(GearPart).map((value) => `'${value}'`)
 ].join('|');
 const __allowedRegexVars = [...ALL_STATS_LIST].join('|');
@@ -320,9 +326,6 @@ export async function createGearView(gear: UserGear, equip: boolean = false): Pr
 	});
 	stats.sort((a, b) => (b.roll ?? 0) - (a.roll ?? 0));
 
-	// if base_stats are defined, calculate contributions
-
-	// get highest roll stat
 	const bestRoll = stats[0];
 
 	// FOR NOW, LENIENT MAX STAT DETECTION

@@ -408,7 +408,7 @@
 		function doFiltering(gear: GearView) {
 			const variables: { [key in AllStats]?: number } & {
 				gear?: ValidGearPart;
-				isEquipped?: boolean;
+				isEquipped?: number;
 			} = {};
 
 			extractedVars.forEach((varName) => {
@@ -419,7 +419,7 @@
 				return;
 			}
 			variables.gear = gear.part;
-			variables.isEquipped = gear.isEquipped;
+			variables.isEquipped = gear.isEquipped ? 1 : 0;
 
 			// @ts-expect-error
 			const new_query = query.replace(ALL_STATS_REGEX, (match) => variables[match].toString());
