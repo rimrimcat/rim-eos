@@ -44,6 +44,7 @@
 		SquareIcon,
 		Trash2Icon
 	} from '@lucide/svelte';
+	import { onMount } from 'svelte';
 	import { createWorker } from 'tesseract.js';
 
 	let prev_search_query: string = $state('');
@@ -181,8 +182,10 @@
 				return;
 			}
 
-			$user_gears.push(gear);
-			$gear_views.push(gearView);
+			// force update
+			user_gears.update((gears) => [...gears, gear]);
+			gear_views.update((views) => [...views, gearView]);
+
 			if (equip) {
 				equipGear(gear.id);
 			}
@@ -192,6 +195,7 @@
 			search_views = [];
 			prev_search_query = '';
 			is_searching = false;
+			console.log('Gear added!');
 		});
 	}
 
@@ -526,6 +530,15 @@
 			}
 		}
 	];
+
+	onMount(() => {
+		setTimeout(() => {
+			has_measured = false;
+		}, 2000);
+	});
+
+	$inspect('has_measured', has_measured);
+	$inspect('gear view', $gear_views);
 </script>
 
 {#snippet gear_actions(gear: GearView)}
@@ -706,13 +719,6 @@
 
 						<div class="single-stat">
 							<div class="stat-content" class:icon={bound_objects.iconStats}>
-								<!-- {#if bound_objects.iconStats}
-									<div class="stat-icon">
-										<StatIcon stat={gear.stats[0].stat.replace('titan_', '') as Stat} size="75%" />
-									</div>
-								{:else}
-									{gear.stats[0].stat_label ?? ''}
-								{/if} -->
 								+{gear.stats[0].value_label ?? ''}
 							</div>
 						</div>
