@@ -244,8 +244,20 @@
 		onClose();
 	}
 
+	function removeGlow() {
+		if (guide_content) {
+			for (const id of guide_content[guide_index].make_glow || []) {
+				const element = document.getElementById(id);
+				if (element) {
+					element.classList.remove('glowing');
+				}
+			}
+		}
+	}
+
 	function nextStep() {
 		if (guide_content && guide_index < guide_content.length - 1) {
+			removeGlow();
 			guide_index++;
 			if (autoResize) {
 				measureAndResize();
@@ -255,6 +267,7 @@
 
 	function prevStep() {
 		if (guide_content && guide_index > 0) {
+			removeGlow();
 			guide_index--;
 			if (autoResize) {
 				measureAndResize();
@@ -416,6 +429,22 @@
 		const move_to = guide_content[guide_index].move_to;
 		if (move_to) {
 			moveWindowCenter(move_to.x, move_to.y, true);
+		}
+	});
+	// effect for guide_content make_glow
+	$effect(() => {
+		if (!guide_content) {
+			return;
+		}
+
+		const make_glow = guide_content[guide_index].make_glow;
+		if (make_glow) {
+			for (const id of make_glow) {
+				const element = document.getElementById(id);
+				if (element) {
+					element.classList.add('glowing');
+				}
+			}
 		}
 	});
 

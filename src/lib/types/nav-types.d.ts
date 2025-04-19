@@ -8,4 +8,5 @@ export type GuideItem = {
 	move_to?: { x: number | string; y: number | string }; // move window position
 	disable_next?: boolean; // disable next button
 	proceed_on?: Writable<boolean>; // proceed when this writable is true
+	make_glow?: string[]; // element ids to make glow
 };
