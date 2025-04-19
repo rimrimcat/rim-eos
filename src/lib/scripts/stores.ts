@@ -27,6 +27,7 @@ export const guide_content = writable<GuideItem[] | null>(null);
 // some stuff interactive guide can access
 export const loadout_new_or_duplicate_dialog_open = writable<boolean>(false);
 export const loadout_is_editing = writable<boolean>(false);
+export const stat_adjustment_dialog_open = writable<boolean>(false);
 
 // check if page is fully loaded
 export const gear_page_loaded = writable<boolean>(false);

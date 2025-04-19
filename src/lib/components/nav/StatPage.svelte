@@ -3,7 +3,7 @@
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
 	import { loadStatIcons } from '$lib/scripts/loader';
-	import { stat_page_loaded, stat_view } from '$lib/scripts/stores';
+	import { stat_adjustment_dialog_open, stat_page_loaded, stat_view } from '$lib/scripts/stores';
 	import type { BaseStats16, StatGearFinal } from '$lib/types/index';
 	import { ChartNoAxesColumnIcon, Grid2X2XIcon, ImagePlusIcon, SwordsIcon } from '@lucide/svelte';
 	import type * as OpenCV from '@techstark/opencv-js';
@@ -292,6 +292,10 @@
 			});
 		}
 	}
+
+	$effect(() => {
+		$stat_adjustment_dialog_open = stat_adjust_dialog_open;
+	});
 
 	onDestroy(() => {
 		$stat_page_loaded = false;
