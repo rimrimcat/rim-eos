@@ -242,6 +242,8 @@
 
 	function closeWindow() {
 		open = false;
+		removeGlow();
+		guide_index = 0;
 		onClose();
 	}
 
