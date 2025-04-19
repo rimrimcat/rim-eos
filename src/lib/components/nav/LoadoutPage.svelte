@@ -247,8 +247,9 @@
 		delete $user_loadouts[$current_loadout];
 		deleteImageFromDB($current_loadout);
 
+		// fix reactivity problem
 		saveObject('loadouts_v1', $user_loadouts);
-		// $user_loadouts = loadObject('loadouts_v1');
+		$user_loadouts = { ...$user_loadouts };
 
 		$current_loadout = Object.keys($user_loadouts)[0];
 		switchLoadout($current_loadout);
