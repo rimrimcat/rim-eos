@@ -473,7 +473,7 @@
 		if (preload) {
 			for (const url of preload) {
 				(async () => {
-					await fetch(url);
+					document.getElementById('preload-img')?.setAttribute('src', url);
 				})();
 			}
 		}
@@ -550,6 +550,8 @@
 		{/if}
 	</div>
 {/if}
+
+<img id="preload-img" src="" style="display: none;" alt="Preloaded" />
 
 <style>
 	.floating-window {
