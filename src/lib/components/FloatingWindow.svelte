@@ -486,14 +486,16 @@
 
 		{#if guide_content && guide_content.length > 1}
 			<div class="guide-navigation">
-				<button
-					class="guide-nav-button"
-					onclick={prevStep}
-					disabled={guide_index === 0 || guide_content[guide_index].proceed_on !== undefined}
-					aria-label="Previous step"
-				>
-					Previous
-				</button>
+				{#if guide_index !== 0 && guide_content[guide_index].proceed_on === undefined}
+					<button
+						class="guide-nav-button"
+						onclick={prevStep}
+						disabled={guide_index === 0 || guide_content[guide_index].proceed_on !== undefined}
+						aria-label="Previous step"
+					>
+						Previous
+					</button>
+				{/if}
 				<span class="guide-position">{guide_index + 1} / {guide_content.length}</span>
 				<button
 					class="guide-nav-button"
