@@ -456,19 +456,4 @@
 		border-radius: 1rem;
 		background-color: rgb(99 99 99);
 	}
-
-	:global(.compose-below) {
-		position: relative;
-	}
-
-	:global(.compose-above) {
-		position: absolute;
-		top: 0;
-		left: 0;
-	}
-
-	:global(.compose-border) {
-		border-radius: 1rem;
-		background-color: rgb(99 99 99);
-	}
 </style>

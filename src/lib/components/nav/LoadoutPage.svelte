@@ -338,7 +338,7 @@
 
 {#snippet matrix4p(matrix: MatrixView)}
 	{#each [0, 1, 2, 3] as index}
-		<div class="compose-above" style="top: -0.5rem; left: {-0.75 + 0.5 * index}rem">
+		<div class="compose above" style="top: -0.5rem; left: {-0.75 + 0.5 * index}rem">
 			<img
 				src="./matrix/{matrix.id.replace('-4p', '')}.webp"
 				alt="Matrix"
@@ -620,7 +620,7 @@
 													updateSingleWeaponView(index);
 												}}
 											>
-												<div class="compose-above" style="top: 6.5rem; left:{1 + advIndex}rem">
+												<div class="compose above" style="top: 6.5rem; left:{1 + advIndex}rem">
 													<StarIcon
 														size={$font_size}
 														fill={weapon.advancement >= advSetValue ? 'white' : 'none'}
