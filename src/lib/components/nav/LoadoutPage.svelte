@@ -28,6 +28,7 @@
 		equipped_gear_views,
 		font_size,
 		inner_width,
+		loadout_is_editing,
 		loadout_new_or_duplicate_dialog_open,
 		loadout_page_loaded,
 		matrix_views,
@@ -51,7 +52,7 @@
 		CopyPlusIcon,
 		PencilIcon,
 		RotateCcwIcon,
-		Save,
+		SaveIcon,
 		StarIcon,
 		Trash2Icon
 	} from '@lucide/svelte';
@@ -247,6 +248,7 @@
 		deleteImageFromDB($current_loadout);
 
 		saveObject('loadouts_v1', $user_loadouts);
+		// $user_loadouts = loadObject('loadouts_v1');
 
 		$current_loadout = Object.keys($user_loadouts)[0];
 		switchLoadout($current_loadout);
@@ -329,6 +331,9 @@
 
 	$effect(() => {
 		$loadout_new_or_duplicate_dialog_open = new_or_duplicate_dialog_open;
+	});
+	$effect(() => {
+		$loadout_is_editing = is_editing;
 	});
 
 	onMount(async () => {
@@ -460,14 +465,14 @@
 
 			<div class="horizontal">
 				{#if is_editing}
-					<button class="image border" id="save" onclick={toggleEditing}>
-						<Save />
-						<label class="in-button" for="save">Save Edits</label>
+					<button class="image border" id="save-loadout" onclick={toggleEditing}>
+						<SaveIcon />
+						<label class="in-button" for="save-loadout">Save Edits</label>
 					</button>
 				{:else}
-					<button class="image border" id="edit" onclick={toggleEditing}>
+					<button class="image border" id="edit-loadout" onclick={toggleEditing}>
 						<PencilIcon />
-						<label class="in-button" for="edit">Edit Current Loadout</label>
+						<label class="in-button" for="edit-loadout">Edit Current Loadout</label>
 					</button>
 				{/if}
 			</div>
