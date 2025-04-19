@@ -21,6 +21,7 @@
 	} = $props();
 
 	// State variables
+	let slow_mode = $state(0); // dont switch too fast
 	let guide_index = $state(0);
 	let contentElement: HTMLElement | null = $state(null);
 	let windowElement: HTMLElement | null = $state(null);
@@ -255,12 +256,26 @@
 		}
 	}
 
+	function _nextStep() {
+		removeGlow();
+		guide_index++;
+		if (autoResize) {
+			measureAndResize();
+		}
+
+		setTimeout(() => {
+			slow_mode--;
+		}, 1000);
+	}
+
 	function nextStep() {
+		console.log('Next step called at index', guide_index, 'slow_mode', slow_mode);
 		if (guide_content && guide_index < guide_content.length - 1) {
-			removeGlow();
-			guide_index++;
-			if (autoResize) {
-				measureAndResize();
+			if (slow_mode) {
+				return;
+			} else {
+				_nextStep();
+				slow_mode++;
 			}
 		}
 	}
@@ -409,7 +424,7 @@
 		if (guide_content && guide_content[guide_index].proceed_on) {
 			// @ts-expect-error
 			const unsubscribe = guide_content[guide_index].proceed_on.subscribe((value) => {
-				if (value || !open) {
+				if (value !== (guide_content[guide_index].require_false ?? false) || !open) {
 					nextStep();
 				}
 			});
