@@ -393,15 +393,6 @@
 
 	// effect for guide_content proceed_on
 	$effect(() => {
-		if (!guide_content) {
-			return;
-		}
-
-		const move_to = guide_content[guide_index].move_to;
-		if (move_to) {
-			moveWindowCenter(move_to.x, move_to.y, true);
-		}
-
 		if (guide_content && guide_content[guide_index].proceed_on) {
 			// @ts-expect-error
 			const unsubscribe = guide_content[guide_index].proceed_on.subscribe((value) => {
@@ -414,6 +405,17 @@
 				guide_content[guide_index].proceed_on = undefined;
 				guide_content[guide_index].disable_next = false;
 			};
+		}
+	});
+	// effect for guide_content move_to
+	$effect(() => {
+		if (!guide_content) {
+			return;
+		}
+
+		const move_to = guide_content[guide_index].move_to;
+		if (move_to) {
+			moveWindowCenter(move_to.x, move_to.y, true);
 		}
 	});
 
