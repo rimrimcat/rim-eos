@@ -269,7 +269,6 @@
 	}
 
 	function nextStep() {
-		console.log('Next step called at index', guide_index, 'slow_mode', slow_mode);
 		if (guide_content && guide_index < guide_content.length - 1) {
 			if (slow_mode) {
 				return;
