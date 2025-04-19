@@ -439,10 +439,14 @@
 		const make_glow = guide_content[guide_index].make_glow;
 		if (make_glow) {
 			for (const id of make_glow) {
-				const element = document.getElementById(id);
-				if (element) {
-					element.classList.add('glowing');
-				}
+				setTimeout(() => {
+					const element = document.getElementById(id);
+					if (element) {
+						element.classList.add('glowing');
+					} else {
+						console.error('Element not found:', id);
+					}
+				}, 500);
 			}
 		}
 	});
