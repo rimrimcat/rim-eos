@@ -8,6 +8,7 @@
 	import { ChartNoAxesColumnIcon, Grid2X2XIcon, ImagePlusIcon, SwordsIcon } from '@lucide/svelte';
 	import type * as OpenCV from '@techstark/opencv-js';
 	import cv from '@techstark/opencv-js';
+	import { onDestroy } from 'svelte';
 	import { createWorker } from 'tesseract.js';
 	import StatIcon from '../StatIcon.svelte';
 
@@ -291,6 +292,10 @@
 			});
 		}
 	}
+
+	onDestroy(() => {
+		$stat_page_loaded = false;
+	});
 </script>
 
 <div style="display: none">

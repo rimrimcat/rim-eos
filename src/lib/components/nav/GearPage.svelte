@@ -45,6 +45,7 @@
 		SquareIcon,
 		Trash2Icon
 	} from '@lucide/svelte';
+	import { onDestroy } from 'svelte';
 	import { createWorker } from 'tesseract.js';
 
 	let prev_search_query: string = $state('');
@@ -469,6 +470,10 @@
 		gear_info_index = index;
 		gear_info_dialog_open = true;
 	}
+
+	onDestroy(() => {
+		$gear_page_loaded = false;
+	});
 
 	// register
 	let bound_objects = $state({

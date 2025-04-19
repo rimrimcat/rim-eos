@@ -54,7 +54,7 @@
 		StarIcon,
 		Trash2Icon
 	} from '@lucide/svelte';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import SwitchWeapMatrix from '../dialog/SwitchWeapMatrix.svelte';
 	import StatContributions from '../StatContributions.svelte';
 
@@ -337,6 +337,10 @@
 			user_matrices = $user_loadouts[$current_loadout].equipped_matrices;
 			loadout_image = await getImageUrlFromDB($current_loadout);
 		}
+	});
+
+	onDestroy(() => {
+		$loadout_page_loaded = false;
 	});
 </script>
 
