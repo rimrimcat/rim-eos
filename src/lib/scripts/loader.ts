@@ -1,6 +1,10 @@
 import type { AllLoadouts, BaseStats14, CharacterStat, UserGear } from '$lib/types/index';
 import { GearPart } from './gears';
 
+// States to avoid loading the same stuff twice
+export let gear_images_loaded = false;
+export let stat_icons_loaded = false;
+
 // Keys
 export type LocalStorageKey = 'gears_v1' | 'loadouts_v1' | 'styles';
 
@@ -504,11 +508,13 @@ export function cloneObject(obj: object) {
  * Loads gear images by fetching them
  */
 export async function loadGearImages() {
+	if (gear_images_loaded) return;
 	const gear_parts = Object.values(GearPart).filter((part) => part !== GearPart.UNKNOWN);
 	const dirs = ['./gear/', './gear/titan/'];
 
 	const imgs_to_load = gear_parts.flatMap((part) => dirs.map((dir) => `${dir}${part}.png`));
 
+	gear_images_loaded = true;
 	return await Promise.all(
 		imgs_to_load.map(async (img) => {
 			return await fetch(img);
@@ -520,6 +526,7 @@ export async function loadGearImages() {
  * Loads stat icons by fetching them
  */
 export async function loadStatIcons() {
+	if (stat_icons_loaded) return;
 	const icons = [
 		'alt',
 		'crit',
@@ -539,6 +546,7 @@ export async function loadStatIcons() {
 		'volt'
 	];
 
+	stat_icons_loaded = true;
 	return await Promise.all(
 		icons.map(async (icon) => {
 			return await fetch(`./stat_icon/${icon}.webp`);
