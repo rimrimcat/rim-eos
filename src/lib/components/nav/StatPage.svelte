@@ -3,11 +3,12 @@
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
 	import { stat_view } from '$lib/scripts/stores';
-	import type { BaseStats16 } from '$lib/types/index';
+	import type { BaseStats16, StatGearFinal } from '$lib/types/index';
 	import { ChartNoAxesColumnIcon, Grid2X2XIcon, ImagePlusIcon, SwordsIcon } from '@lucide/svelte';
 	import type * as OpenCV from '@techstark/opencv-js';
 	import cv from '@techstark/opencv-js';
 	import { createWorker } from 'tesseract.js';
+	import StatIcon from '../StatIcon.svelte';
 
 	// State
 	let show_offensive_only = $state(true);
@@ -349,7 +350,7 @@
 				<div class="stat-cell">
 					<div class="stat-content">
 						<div class="stat-icon">
-							<img src={attribute.icon} alt={attribute.name + ' icon'} />
+							<StatIcon stat={attribute.key as StatGearFinal} size="100%" />
 						</div>
 						<div class="stat-info">
 							<div class="stat-name">{attribute.name}</div>
