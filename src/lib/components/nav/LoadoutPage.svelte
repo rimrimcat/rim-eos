@@ -205,6 +205,7 @@
 	 * @param switchToNew - whether to switch to the new loadout after creating
 	 */
 	function createNewLoadout(switchToNew: boolean = true) {
+		console.error('Creating new loadout');
 		let newLoadoutName = DEFAULT_LOADOUT.name;
 		let sanitizedLoadoutName = sanitizeLoadoutKey(newLoadoutName);
 		let counter = 1;
@@ -263,9 +264,19 @@
 
 		$current_loadout = loadout;
 
-		loadout_name = $user_loadouts[loadout].name;
-		loadout_desc = $user_loadouts[loadout].description;
-		loadout_icon = $user_loadouts[loadout].element;
+		updateAllFromStores();
+		updateWeaponMatrix();
+	}
+
+	/**
+	 * Updates local states from stores
+	 */
+	function updateAllFromStores() {
+		loadout_name = $user_loadouts[$current_loadout].name;
+		loadout_desc = $user_loadouts[$current_loadout].description;
+		loadout_icon = $user_loadouts[$current_loadout].element;
+		user_weapons = $user_loadouts[$current_loadout].equipped_weapons;
+		user_matrices = $user_loadouts[$current_loadout].equipped_matrices;
 		getImageUrlFromDB($current_loadout).then((imageUrl) => {
 			if (imageUrl) {
 				loadout_image = imageUrl;
@@ -341,18 +352,18 @@
 		if (Object.keys($user_loadouts).length === 0) {
 			// skip if preload
 		} else {
-			loadout_name = $user_loadouts[$current_loadout].name;
-			loadout_desc = $user_loadouts[$current_loadout].description;
-			loadout_icon = $user_loadouts[$current_loadout].element;
-			user_weapons = $user_loadouts[$current_loadout].equipped_weapons;
-			user_matrices = $user_loadouts[$current_loadout].equipped_matrices;
-			loadout_image = await getImageUrlFromDB($current_loadout);
+			updateAllFromStores();
 		}
 	});
 
 	onDestroy(() => {
 		$loadout_page_loaded = false;
 	});
+
+	$inspect('Full loadout', $user_loadouts[$current_loadout]);
+	$inspect('loadout', $current_loadout);
+	$inspect('weapon views from LOADOUT', $weapon_views);
+	$inspect('loadout weapmat arr from LOADOUT', loadout_weapmat_combined);
 </script>
 
 {#snippet matrix4p(matrix: MatrixView)}
