@@ -700,19 +700,21 @@ export async function applyExtraGearViewStats() {
 	const all_stats_ = get(all_stats);
 	const eq_gear_views = get(equipped_gear_views);
 
+	const all_stats_lump = all_stats_.lump();
+
 	const all_stats_minus_eq_gear: Record<ValidGearPart, LumpedStatCollection> = {
-		H: new LumpedStatCollection(),
-		S: new LumpedStatCollection(),
-		A: new LumpedStatCollection(),
-		C: new LumpedStatCollection(),
-		B: new LumpedStatCollection(),
-		L: new LumpedStatCollection(),
-		G: new LumpedStatCollection(),
-		T: new LumpedStatCollection(),
-		V: new LumpedStatCollection(),
-		N: new LumpedStatCollection(),
-		X: new LumpedStatCollection(),
-		R: new LumpedStatCollection()
+		H: all_stats_lump,
+		S: all_stats_lump,
+		A: all_stats_lump,
+		C: all_stats_lump,
+		B: all_stats_lump,
+		L: all_stats_lump,
+		G: all_stats_lump,
+		T: all_stats_lump,
+		V: all_stats_lump,
+		N: all_stats_lump,
+		X: all_stats_lump,
+		R: all_stats_lump
 	};
 	await Promise.all(
 		eq_gear_views.map(async (gear) => {
