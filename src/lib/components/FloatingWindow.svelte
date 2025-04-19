@@ -393,9 +393,18 @@
 
 	// effect for guide_content proceed_on
 	$effect(() => {
-		if (guide_content && guide_content[guide_index].proceed_on) {
-			// @ts-expect-error
-			const unsubscribe = guide_content[guide_index].proceed_on.subscribe((value) => {
+		if (!guide_content) {
+			return;
+		}
+
+		const move_to = guide_content[guide_index].move_to;
+		if (move_to) {
+			moveWindowCenter(move_to.x, move_to.y, true);
+		}
+
+		const proceed_on = guide_content[guide_index].proceed_on;
+		if (proceed_on) {
+			const unsubscribe = proceed_on.subscribe((value) => {
 				if (value || !open) {
 					nextStep();
 				}
