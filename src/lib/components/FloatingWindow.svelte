@@ -415,7 +415,6 @@
 			});
 			return () => {
 				unsubscribe();
-				guide_content[guide_index].proceed_on = undefined;
 				guide_content[guide_index].disable_next = false;
 			};
 		}
@@ -486,7 +485,7 @@
 				<button
 					class="guide-nav-button"
 					onclick={prevStep}
-					disabled={guide_index === 0}
+					disabled={guide_index === 0 || guide_content[guide_index].proceed_on !== undefined}
 					aria-label="Previous step"
 				>
 					Previous
