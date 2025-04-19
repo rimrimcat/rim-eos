@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { createGearView } from '$lib/scripts/gears';
+	import { createAllGearViewsFromLoadout } from '$lib/scripts/gears';
 	import { loadStatConstants } from '$lib/scripts/json-loader';
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
 	import {
@@ -14,7 +14,6 @@
 		current_loadout,
 		equipped_gear_views,
 		font_size,
-		gear_views,
 		guide_content,
 		guide_open,
 		guide_title,
@@ -84,7 +83,8 @@
 		// processing
 		await loadStatConstants(); // need this for gear proecssing
 		// create initial gear views
-		$gear_views = await Promise.all($user_gears.map((gear) => createGearView(gear, false)));
+
+		await createAllGearViewsFromLoadout();
 		console.log('Gear Views processed');
 
 		// create initial weapon and matrix views
@@ -103,22 +103,23 @@
 </script>
 
 <svelte:window bind:innerWidth={$inner_width} />
+<div class="vertical center-hori app-bg">
+	<div class="app-container">
+		<Toolbar bind:active_component bind:is_collapsed />
 
-<div class="app-container">
-	<Toolbar bind:active_component bind:is_collapsed />
-
-	<div
-		class="vertical content-container"
-		class:mobile={is_mobile}
-		style="translate: 0 {$toolbar_transform}px; padding-bottom: {$toolbar_transform +
-			$font_size * 3}px;"
-		onscroll={(e: UIEvent) => {
-			$scroll_y = (e.target as HTMLElement).scrollTop;
-		}}
-	>
-		{#await import(`./nav/${active_component.import_name}.svelte`) then { default: Nav }}
-			<Nav />
-		{/await}
+		<div
+			class="vertical content-container"
+			class:mobile={is_mobile}
+			style="translate: 0 {$toolbar_transform}px; padding-bottom: {$toolbar_transform +
+				$font_size * 3}px;"
+			onscroll={(e: UIEvent) => {
+				$scroll_y = (e.target as HTMLElement).scrollTop;
+			}}
+		>
+			{#await import(`./nav/${active_component.import_name}.svelte`) then { default: Nav }}
+				<Nav />
+			{/await}
+		</div>
 	</div>
 </div>
 
@@ -365,6 +366,15 @@
 		border-radius: 1rem;
 	}
 
+	.app-bg {
+		display: flex;
+		height: 100vh;
+		overflow: hidden;
+		background-color: var(--bg-color);
+		color: var(--text-color);
+		overscroll-behavior-x: none;
+	}
+
 	.app-container {
 		display: flex;
 		height: 100vh;
@@ -372,6 +382,20 @@
 		background-color: var(--bg-color);
 		color: var(--text-color);
 		overscroll-behavior-x: none;
+	}
+
+	@media (max-width: 991px) {
+		.app-container {
+			min-width: 100%;
+			width: 100%;
+		}
+	}
+
+	@media (min-width: 992px) {
+		.app-container {
+			min-width: 900px;
+			width: 900px;
+		}
 	}
 
 	.content-container {
@@ -384,6 +408,7 @@
 		transition:
 			translate 0.3s cubic-bezier(0.16, 1, 0.3, 1),
 			padding-bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+		max-width: 900px;
 	}
 
 	.content-container.mobile {
