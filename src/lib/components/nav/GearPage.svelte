@@ -16,6 +16,7 @@
 	import {
 		current_loadout,
 		gear_page_loaded,
+		gear_search_dialog_open,
 		gear_views,
 		is_mobile,
 		user_gears,
@@ -535,6 +536,10 @@
 			}
 		}
 	];
+
+	$effect(() => {
+		$gear_search_dialog_open = search_dialog_open;
+	});
 
 	$inspect('has_measured', has_measured);
 	$inspect('gear view', $gear_views);
