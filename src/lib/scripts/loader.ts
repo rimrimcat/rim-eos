@@ -15,20 +15,20 @@ const IMAGE_STORE = 'images';
 // Defaults
 // TODO: replace this
 export const DEFAULT_STATS_RIM: BaseStats14 = [
-	'1955732',
-	'20384',
-	'0.000',
-	'72588',
-	'69071',
-	'78061',
-	'73991',
-	'78061',
-	'50.000',
-	'18633',
-	'15308',
-	'17701',
-	'13092',
-	'9375'
+	'1579827',
+	'8081',
+	'0',
+	'18903',
+	'18725',
+	'17762',
+	'19071',
+	'0',
+	'50',
+	'18712',
+	'14455',
+	'13262',
+	'9677',
+	'9746'
 ];
 export const DEFAULT_STYLES: Record<string, string> = {
 	'main-bg-color': '#2F2F37',
