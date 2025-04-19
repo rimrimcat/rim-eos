@@ -31,17 +31,109 @@
 	let resizeDirection = $state({ x: 0, y: 0 });
 	let measuringElement: HTMLElement | null = null;
 
-	// Use spring animation for smooth position changes
 	let position = new Spring({ x: initialX, y: initialY }, { stiffness: 0.1, damping: 0.6 });
 	let dimensions = new Spring({ width: 400, height: 300 }, { stiffness: 0.1, damping: 0.6 });
 
-	// Move window to a specific position (useful for guide functionality)
-	function moveWindow(x: number, y: number, animate = animatePosition) {
-		if (animate) {
-			position.set({ x, y });
+	function moveWindow(x: number | string, y: number | string, animate = animatePosition) {
+		let xPixels: number;
+		let yPixels: number;
+
+		// Handle x coordinate
+		if (typeof x === 'string') {
+			if (x.endsWith('vw')) {
+				const vwValue = parseFloat(x);
+				xPixels = (window.innerWidth * vwValue) / 100;
+			} else if (x.endsWith('vh')) {
+				const vhValue = parseFloat(x);
+				xPixels = (window.innerHeight * vhValue) / 100;
+			} else if (x.endsWith('%')) {
+				const percentValue = parseFloat(x);
+				xPixels = (window.innerWidth * percentValue) / 100;
+			} else {
+				xPixels = parseFloat(x) || position.current.x;
+			}
 		} else {
-			position.set({ x, y }, { hard: true });
+			xPixels = x;
 		}
+
+		if (typeof y === 'string') {
+			if (y.endsWith('vh')) {
+				const vhValue = parseFloat(y);
+				yPixels = (window.innerHeight * vhValue) / 100;
+			} else if (y.endsWith('vw')) {
+				const vwValue = parseFloat(y);
+				yPixels = (window.innerWidth * vwValue) / 100;
+			} else if (y.endsWith('%')) {
+				const percentValue = parseFloat(y);
+				yPixels = (window.innerHeight * percentValue) / 100;
+			} else {
+				yPixels = parseFloat(y) || position.current.y;
+			}
+		} else {
+			yPixels = y;
+		}
+
+		// Keep window within viewport bounds
+		const maxX = window.innerWidth - dimensions.current.width;
+		const maxY = window.innerHeight - dimensions.current.height;
+
+		xPixels = Math.min(Math.max(0, xPixels), maxX);
+		yPixels = Math.min(Math.max(0, yPixels), maxY);
+
+		if (animate) {
+			position.set({ x: xPixels, y: yPixels });
+		} else {
+			position.set({ x: xPixels, y: yPixels }, { hard: true });
+		}
+	}
+
+	function moveWindowCenter(
+		centerX: number | string,
+		centerY: number | string,
+		animate = animatePosition
+	) {
+		let centerXPixels: number;
+		let centerYPixels: number;
+
+		if (typeof centerX === 'string') {
+			if (centerX.endsWith('vw')) {
+				const vwValue = parseFloat(centerX);
+				centerXPixels = (window.innerWidth * vwValue) / 100;
+			} else if (centerX.endsWith('vh')) {
+				const vhValue = parseFloat(centerX);
+				centerXPixels = (window.innerHeight * vhValue) / 100;
+			} else if (centerX.endsWith('%')) {
+				const percentValue = parseFloat(centerX);
+				centerXPixels = (window.innerWidth * percentValue) / 100;
+			} else {
+				centerXPixels = parseFloat(centerX) || position.current.x + dimensions.current.width / 2;
+			}
+		} else {
+			centerXPixels = centerX;
+		}
+
+		if (typeof centerY === 'string') {
+			if (centerY.endsWith('vh')) {
+				const vhValue = parseFloat(centerY);
+				centerYPixels = (window.innerHeight * vhValue) / 100;
+			} else if (centerY.endsWith('vw')) {
+				const vwValue = parseFloat(centerY);
+				centerYPixels = (window.innerWidth * vwValue) / 100;
+			} else if (centerY.endsWith('%')) {
+				const percentValue = parseFloat(centerY);
+				centerYPixels = (window.innerHeight * percentValue) / 100;
+			} else {
+				centerYPixels = parseFloat(centerY) || position.current.y + dimensions.current.height / 2;
+			}
+		} else {
+			centerYPixels = centerY;
+		}
+
+		const topLeftX = centerXPixels - dimensions.current.width / 2;
+		const topLeftY = centerYPixels - dimensions.current.height / 2;
+
+		// Use the existing moveWindow function to handle bounds checking and animation
+		moveWindow(topLeftX, topLeftY, animate);
 	}
 
 	// Resize window to specific dimensions
