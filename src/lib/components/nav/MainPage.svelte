@@ -49,7 +49,15 @@
 		text-align: left;
 		height: fit-content;
 		font-size: medium;
-		padding-top: 0;
-		padding-left: 1rem;
+		padding: 1rem;
+	}
+
+	@media (max-width: 600px) {
+		button.helper {
+			padding: 1rem;
+			align-items: center;
+			justify-content: center;
+			flex-direction: column;
+		}
 	}
 </style>
