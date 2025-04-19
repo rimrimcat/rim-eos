@@ -130,6 +130,14 @@
 		overflow: hidden;
 	}
 
+	@media (min-width: 992px) {
+		.mobile-toolbar {
+			left: 50%;
+			transform: translateX(-50%);
+			width: 900px;
+		}
+	}
+
 	.mobile-header {
 		display: flex;
 		align-items: center;
