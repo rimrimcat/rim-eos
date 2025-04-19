@@ -543,10 +543,6 @@
 	$effect(() => {
 		$gear_search_dialog_open = search_dialog_open;
 	});
-
-	$inspect('loadout from GEAR PAGE', $user_loadouts[$current_loadout]);
-	$inspect('gear view from GEAR PAGE', $gear_views);
-	$inspect('equipped gears from GEAR', equipped_gears);
 </script>
 
 {#snippet gear_actions(gear: GearView)}

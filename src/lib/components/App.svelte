@@ -95,14 +95,11 @@
 	// update for stats
 	$effect(() => {
 		if (!$stat_autoupdate) return;
-		console.error('STAT AUTOUPDATE CALLED');
 		$equipped_gear_views = getEquippedGearViews($user_loadouts[$current_loadout].equipped_gears);
 		$all_stats = getAllStatsFromStore();
 		$stat_view = createStatViewFromStore();
 		applyExtraGearViewStats();
 	});
-
-	$inspect('guide open (APP)', $guide_open);
 </script>
 
 <svelte:window bind:innerWidth={$inner_width} />

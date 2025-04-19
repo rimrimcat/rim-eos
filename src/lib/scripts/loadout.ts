@@ -693,7 +693,6 @@ export function turnGearToEffect(gear: GearView): GearEffect {
  * Takes in gear_views, all_stats, and equipped_gear_views from store, then modifies gear_views again
  */
 export async function applyExtraGearViewStats() {
-	console.log('APPLY EXTRA GEAR VIEW STATS');
 	const gear_views_ = get(gear_views);
 
 	// create map of gear to equipped
