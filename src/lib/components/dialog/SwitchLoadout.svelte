@@ -1,6 +1,46 @@
+<script module>
+	export const DEFAULT_LOADOUT: Loadout = {
+		name: 'New Loadout',
+		description: 'New loadout',
+		element: 'phys',
+		equipped_gears: {
+			H: null,
+			S: null,
+			A: null,
+			C: null,
+			B: null,
+			L: null,
+			G: null,
+			T: null,
+			V: null,
+			N: null,
+			X: null,
+			R: null
+		},
+		base_stats: [
+			'1579827',
+			'8081',
+			'0',
+			'18903',
+			'18725',
+			'17762',
+			'19071',
+			'0',
+			'50',
+			'18712',
+			'14455',
+			'13262',
+			'9677',
+			'9746'
+		],
+		equipped_weapons: [{ id: 'none' }, { id: 'none' }, { id: 'none' }],
+		equipped_matrices: [{ id: 'none' }, { id: 'none' }, { id: 'none' }]
+	};
+</script>
+
 <script lang="ts">
 	import { user_loadouts } from '$lib/scripts/stores';
-	import type { StatGearUser } from '$lib/types/index';
+	import type { Loadout, StatGearUser } from '$lib/types/index';
 	import { ArrowRightIcon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
@@ -9,6 +49,7 @@
 	let {
 		open = $bindable(false),
 		selected_loadout = $bindable(''),
+		duplicate_or_new = false,
 		onSwitchLoadout = (loadoutKey: string) => {}
 	} = $props();
 
@@ -16,13 +57,37 @@
 		onSwitchLoadout(loadoutKey);
 		open = false;
 	}
+
+	function dupeNewChoiceView(loadoutArr: [string, Loadout][]) {
+		const CREATE_DEFAULT_LOADOUT = { ...DEFAULT_LOADOUT };
+		CREATE_DEFAULT_LOADOUT.name = 'Create New Loadout';
+		CREATE_DEFAULT_LOADOUT.description = 'Create a new loadout';
+
+		const newView = [['__NEW__', CREATE_DEFAULT_LOADOUT] as [string, Loadout]];
+
+		loadoutArr.forEach((loadout) => {
+			const DUPLICATE_LOADOUT = { ...loadout[1] };
+			DUPLICATE_LOADOUT.name = `Duplicate ${loadout[1].name}`;
+
+			newView.push([loadout[0], DUPLICATE_LOADOUT] as [string, Loadout]);
+			console.log('pushing key', loadout[0]);
+		});
+
+		return newView;
+	}
+
+	let choices = $derived(
+		!duplicate_or_new
+			? Object.entries($user_loadouts)
+			: dupeNewChoiceView(Object.entries($user_loadouts))
+	);
 </script>
 
-<Dialog title="Switch Loadout" bind:open>
+<Dialog title={duplicate_or_new ? 'New or Duplicate Loadout' : 'Switch Loadout'} bind:open>
 	<div class="switch-loadout-dialog">
 		<FlexGrid max_cols={3} horizontal_gap="1rem" vertical_gap="1rem">
 			{#if Object.keys($user_loadouts).length > 0}
-				{#each Object.entries($user_loadouts) as [loadoutKey, loadout]}
+				{#each choices as [loadoutKey, loadout]}
 					<div
 						class="loadout-item"
 						class:selected={loadoutKey === selected_loadout}

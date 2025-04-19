@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ActionToolbar from '$lib/components/ActionToolbar.svelte';
-	import SwitchLoadout from '$lib/components/dialog/SwitchLoadout.svelte';
+	import SwitchLoadout, { DEFAULT_LOADOUT } from '$lib/components/dialog/SwitchLoadout.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import StatIcon from '$lib/components/StatIcon.svelte';
 	import {
@@ -80,6 +80,7 @@
 	// Dialog
 	let upload_dialog_open = $state(false);
 	let switch_loadout_dialog_open = $state(false);
+	let new_or_duplicate_dialog_open = $state(false);
 
 	let switch_gear_matrix_dialog_open = $state(false);
 	let switching: 'matrix' | 'weapon' = $state('matrix');
@@ -155,7 +156,11 @@
 		return key.replace(/[^a-zA-Z0-9]/g, '');
 	}
 
-	function duplicateLoadout(switchToDupe: boolean = true) {
+	/**
+	 * Duplicates the current loadout
+	 * @param switchToDupe - whether to switch to the new loadout after duplicating
+	 */
+	function duplicateLoadout(key: string = loadout_name, switchToDupe: boolean = true) {
 		let newLoadoutName = loadout_name;
 		let sanitizedLoadoutName = sanitizeLoadoutKey(newLoadoutName);
 		let counter = 1;
@@ -167,8 +172,6 @@
 				: `${loadout_name} ${counter}`;
 			sanitizedLoadoutName = sanitizeLoadoutKey(newLoadoutName);
 		}
-
-		console.error('sanitized', sanitizedLoadoutName);
 
 		$user_loadouts[sanitizedLoadoutName] = cloneObject($user_loadouts[$current_loadout]);
 		$user_loadouts[sanitizedLoadoutName].name = newLoadoutName;
@@ -188,6 +191,43 @@
 		saveObject('loadouts_v1', $user_loadouts);
 		if (switchToDupe) {
 			switchLoadout(sanitizedLoadoutName);
+		}
+	}
+
+	/**
+	 * Creates a new loadout
+	 * @param switchToNew - whether to switch to the new loadout after creating
+	 */
+	function createNewLoadout(switchToNew: boolean = true) {
+		let newLoadoutName = DEFAULT_LOADOUT.name;
+		let sanitizedLoadoutName = sanitizeLoadoutKey(newLoadoutName);
+		let counter = 1;
+
+		while ($user_loadouts[sanitizedLoadoutName]) {
+			counter++;
+			newLoadoutName = loadout_name.match(/(.*)\s(\d+)$/)
+				? loadout_name.replace(/(\d+)$/, String(counter))
+				: `${loadout_name} ${counter}`;
+			sanitizedLoadoutName = sanitizeLoadoutKey(newLoadoutName);
+		}
+
+		console.error('sanitized', sanitizedLoadoutName);
+
+		$user_loadouts[sanitizedLoadoutName] = cloneObject(DEFAULT_LOADOUT);
+		$user_loadouts[sanitizedLoadoutName].name = newLoadoutName;
+		$user_loadouts[sanitizedLoadoutName].description = DEFAULT_LOADOUT.description;
+
+		saveObject('loadouts_v1', $user_loadouts);
+		if (switchToNew) {
+			switchLoadout(sanitizedLoadoutName);
+		}
+	}
+
+	function onNewDupeChoice(loadoutKey: string) {
+		if (loadoutKey === '__NEW__') {
+			createNewLoadout(true);
+		} else {
+			duplicateLoadout(loadoutKey, true);
 		}
 	}
 
@@ -238,33 +278,33 @@
 	}
 
 	const ACTIONS = [
-		{
-			id: 'switch',
-			label: 'Switch Loadout',
-			lucide: ArrowRightLeftIcon,
-			type: ActionType.BUTTON,
-			callback: () => {
-				switch_loadout_dialog_open = true;
-			}
-		},
-		{
-			id: 'duplicate',
-			label: 'Duplicate Loadout',
-			lucide: CopyPlusIcon,
-			type: ActionType.BUTTON,
-			callback: () => {
-				duplicateLoadout(true);
-			}
-		},
-		{
-			id: 'delete',
-			label: 'Delete Loadout',
-			lucide: Trash2Icon,
-			type: ActionType.BUTTON,
-			callback: () => {
-				deleteCurrentLoadout();
-			}
-		},
+		// {
+		// 	id: 'switch',
+		// 	label: 'Switch Loadout',
+		// 	lucide: ArrowRightLeftIcon,
+		// 	type: ActionType.BUTTON,
+		// 	callback: () => {
+		// 		switch_loadout_dialog_open = true;
+		// 	}
+		// },
+		// {
+		// 	id: 'duplicate',
+		// 	label: 'Duplicate Loadout',
+		// 	lucide: CopyPlusIcon,
+		// 	type: ActionType.BUTTON,
+		// 	callback: () => {
+		// 		duplicateLoadout(true);
+		// 	}
+		// },
+		// {
+		// 	id: 'delete',
+		// 	label: 'Delete Loadout',
+		// 	lucide: Trash2Icon,
+		// 	type: ActionType.BUTTON,
+		// 	callback: () => {
+		// 		deleteCurrentLoadout();
+		// 	}
+		// },
 		{
 			id: 'reset',
 			label: 'Reset to defaults',
@@ -360,18 +400,49 @@
 {/snippet}
 
 <div class="loadout-page">
-	<div class="horizontal center-hori">
+	<div class="vertical" style="gap: 0.5rem;">
 		<h1>Loadout</h1>
-		<!-- <div class="edit-button-container"> -->
 
-		<div style="display: flex; flex: 1; justify-content: flex-end; margin-right: 4rem;">
+		<div class="horizontal" style="gap: 0.5rem;">
+			<button
+				class="image border"
+				onclick={() => {
+					switch_loadout_dialog_open = true;
+				}}
+			>
+				<ArrowRightLeftIcon />
+				<label class="in-button" for="">Switch</label>
+			</button>
+			<button
+				class="image border"
+				onclick={() => {
+					new_or_duplicate_dialog_open = true;
+				}}
+			>
+				<CopyPlusIcon />
+				<label class="in-button" for="">New</label>
+			</button>
+			<button
+				class="image border"
+				onclick={() => {
+					deleteCurrentLoadout();
+				}}
+			>
+				<Trash2Icon />
+				<label class="in-button" for="">Delete</label>
+			</button>
+		</div>
+
+		<div class="horizontal">
 			{#if is_editing}
-				<button class="edit-button" onclick={toggleEditing} title="Save changes">
-					<Save size={18} />
+				<button class="image border" id="save" onclick={toggleEditing}>
+					<Save />
+					<label class="in-button" for="save">Save Edits</label>
 				</button>
 			{:else}
-				<button class="edit-button" onclick={toggleEditing} title="Edit loadout">
-					<PencilIcon size={18} />
+				<button class="image border" id="edit" onclick={toggleEditing}>
+					<PencilIcon />
+					<label class="in-button" for="edit">Edit Current Loadout</label>
 				</button>
 			{/if}
 		</div>
@@ -590,10 +661,19 @@
 	close_on_upload={true}
 />
 
+<!-- plain switching -->
 <SwitchLoadout
 	bind:open={switch_loadout_dialog_open}
 	bind:selected_loadout={$current_loadout}
 	onSwitchLoadout={switchLoadout}
+/>
+
+<!-- new or duplicate -->
+<SwitchLoadout
+	bind:open={new_or_duplicate_dialog_open}
+	bind:selected_loadout={$current_loadout}
+	duplicate_or_new={true}
+	onSwitchLoadout={onNewDupeChoice}
 />
 
 <SwitchWeapMatrix
@@ -675,26 +755,6 @@
 		padding: 0.5rem;
 		color: var(--text-secondary);
 		line-height: 1.5;
-	}
-
-	.edit-button-container {
-		position: absolute;
-		right: 0;
-		top: 0.5rem;
-		display: flex;
-		gap: 0.5rem;
-	}
-
-	.edit-button {
-		padding: 0.25rem;
-		background-color: transparent;
-		border: none;
-		cursor: pointer;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 0.25rem;
-		transition: background-color 0.2s;
 	}
 
 	.edit-button:hover {
