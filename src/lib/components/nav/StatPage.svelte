@@ -315,12 +315,14 @@
 	})()}
 		<p>Loading stuff, please wait...</p>
 	{:then}
+		{#if unadjusted_stats && unadjusted_stats.length > 0}
+			<p>
+				Unadjusted stats are shown in the table below. Uploaded stats won't be effective until
+				adjustment is done.
+			</p>
+		{/if}
 		<div class="horizontal" style="margin-bottom: 1.5rem;">
 			{#if unadjusted_stats && unadjusted_stats.length > 0}
-				<p>
-					Unadjusted stats are shown in the table below. Uploaded stats won't be effective until
-					adjustment is done.
-				</p>
 				<button
 					class="image border"
 					id="stat-adjustment"
