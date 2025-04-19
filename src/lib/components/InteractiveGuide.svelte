@@ -9,7 +9,6 @@
 		stat_page_loaded
 	} from '$lib/scripts/stores';
 	import type { GuideItem } from '$lib/types';
-	import { CopyPlusIcon } from '@lucide/svelte';
 
 	// exports
 
@@ -27,8 +26,7 @@
 			make_glow: ['toolbar-collapse-toggle', 'nav-item-loadout-page']
 		},
 		{
-			// @ts-expect-error
-			snippet: click_on_new_loadout,
+			text: "Let's create a new loadout. Click on the 'New' button",
 			proceed_on: loadout_new_or_duplicate_dialog_open,
 			make_glow: ['new-duplicate-loadout']
 		},
@@ -115,16 +113,6 @@
 		<li>Character stats (including shown base attack stats)</li>
 	</ul>
 	<p>If you do not have access to them, then you might not be able to complete the tutorial.</p>
-{/snippet}
-
-{#snippet click_on_new_loadout()}
-	<p>Let's create a new loadout. Click on the following button:</p>
-	<div class="horizontal">
-		<button class="image border">
-			<CopyPlusIcon />
-			<label class="in-button" for="">New</label>
-		</button>
-	</div>
 {/snippet}
 
 {#snippet upload_gear_example()}
