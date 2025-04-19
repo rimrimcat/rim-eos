@@ -1,9 +1,12 @@
+import { AllMatrixIds, AllWeaponIds } from '$lib/generated/all-ids';
 import type { AllLoadouts, BaseStats14, CharacterStat, UserGear } from '$lib/types/index';
 import { GearPart } from './gears';
 
 // States to avoid loading the same stuff twice
 export let gear_images_loaded = false;
 export let stat_icons_loaded = false;
+export let weapon_images_loaded = false;
+export let matrix_images_loaded = false;
 
 // Keys
 export type LocalStorageKey = 'gears_v1' | 'loadouts_v1' | 'styles';
@@ -550,6 +553,32 @@ export async function loadStatIcons() {
 	return await Promise.all(
 		icons.map(async (icon) => {
 			return await fetch(`./stat_icon/${icon}.webp`);
+		})
+	);
+}
+
+/**
+ * Loads all weapon images
+ */
+export async function loadWeaponImages() {
+	if (weapon_images_loaded) return;
+	weapon_images_loaded = true;
+	return await Promise.all(
+		AllWeaponIds.map(async (weapon) => {
+			await fetch(`./weapon/${weapon}.webp`);
+		})
+	);
+}
+
+/**
+ * Loads all matrix images
+ */
+export async function loadMatrixImages() {
+	if (matrix_images_loaded) return;
+	matrix_images_loaded = true;
+	return await Promise.all(
+		AllMatrixIds.map(async (matrix) => {
+			await fetch(`./matrix/${matrix.replace('-4p', '')}.webp`);
 		})
 	);
 }

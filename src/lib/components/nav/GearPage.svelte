@@ -15,6 +15,7 @@
 	import { ActionType } from '$lib/scripts/nav-metadata';
 	import {
 		current_loadout,
+		gear_page_loaded,
 		gear_views,
 		is_mobile,
 		user_gears,
@@ -581,9 +582,9 @@
 
 <div class="full-width">
 	{#await (async () => {
-		await loadGearImages();
-		await loadStatIcons();
+		await Promise.all([loadGearImages(), loadStatIcons()]);
 		has_measured = false;
+		$gear_page_loaded = true;
 	})()}
 		<div class="block">
 			<h1>Gear List</h1>

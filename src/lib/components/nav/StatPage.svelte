@@ -3,7 +3,7 @@
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
 	import { loadStatIcons } from '$lib/scripts/loader';
-	import { stat_view } from '$lib/scripts/stores';
+	import { stat_page_loaded, stat_view } from '$lib/scripts/stores';
 	import type { BaseStats16, StatGearFinal } from '$lib/types/index';
 	import { ChartNoAxesColumnIcon, Grid2X2XIcon, ImagePlusIcon, SwordsIcon } from '@lucide/svelte';
 	import type * as OpenCV from '@techstark/opencv-js';
@@ -300,7 +300,10 @@
 <div class="stat-panel">
 	<h1>Character Stats</h1>
 
-	{#await loadStatIcons()}
+	{#await (async () => {
+		await loadStatIcons();
+		$stat_page_loaded = true;
+	})()}
 		<p>Loading stuff, please wait...</p>
 	{:then}
 		<div class="horizontal" style="margin-bottom: 1.5rem;">

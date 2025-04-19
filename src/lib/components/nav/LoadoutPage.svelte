@@ -9,6 +9,9 @@
 		deleteImageFromDB,
 		getImageFromDB,
 		getImageUrlFromDB,
+		loadMatrixImages,
+		loadStatIcons,
+		loadWeaponImages,
 		saveObject
 	} from '$lib/scripts/loader';
 	import {
@@ -25,6 +28,7 @@
 		equipped_gear_views,
 		font_size,
 		inner_width,
+		loadout_page_loaded,
 		matrix_views,
 		reso_effects,
 		user_loadouts,
@@ -400,257 +404,269 @@
 {/snippet}
 
 <div class="loadout-page">
-	<div class="vertical" style="gap: 0.5rem;">
-		<h1>Loadout</h1>
-
-		<div class="horizontal" style="gap: 0.5rem;">
-			<button
-				class="image border"
-				onclick={() => {
-					switch_loadout_dialog_open = true;
-				}}
-			>
-				<ArrowRightLeftIcon />
-				<label class="in-button" for="">Switch</label>
-			</button>
-			<button
-				class="image border"
-				onclick={() => {
-					new_or_duplicate_dialog_open = true;
-				}}
-			>
-				<CopyPlusIcon />
-				<label class="in-button" for="">New</label>
-			</button>
-			<button
-				class="image border"
-				onclick={() => {
-					deleteCurrentLoadout();
-				}}
-			>
-				<Trash2Icon />
-				<label class="in-button" for="">Delete</label>
-			</button>
+	{#await (async () => {
+		await Promise.all([loadStatIcons(), loadWeaponImages(), loadMatrixImages()]);
+		$loadout_page_loaded = true;
+	})()}
+		<div class="vertical" style="gap: 0.5rem;">
+			<h1>Loadout</h1>
+			<p>Loading stuff, be patient...</p>
 		</div>
+	{:then}
+		<div class="vertical" style="gap: 0.5rem;">
+			<h1>Loadout</h1>
 
-		<div class="horizontal">
-			{#if is_editing}
-				<button class="image border" id="save" onclick={toggleEditing}>
-					<Save />
-					<label class="in-button" for="save">Save Edits</label>
+			<div class="horizontal" style="gap: 0.5rem;">
+				<button
+					class="image border"
+					onclick={() => {
+						switch_loadout_dialog_open = true;
+					}}
+				>
+					<ArrowRightLeftIcon />
+					<label class="in-button" for="">Switch</label>
 				</button>
-			{:else}
-				<button class="image border" id="edit" onclick={toggleEditing}>
-					<PencilIcon />
-					<label class="in-button" for="edit">Edit Current Loadout</label>
+				<button
+					class="image border"
+					onclick={() => {
+						new_or_duplicate_dialog_open = true;
+					}}
+				>
+					<CopyPlusIcon />
+					<label class="in-button" for="">New</label>
 				</button>
-			{/if}
-		</div>
-	</div>
-
-	<div class="loadout-container">
-		<div class="loadout-content">
-			<div class="loadout-info">
-				<div class="loadout-header">
-					{#if is_editing}
-						<div class="element-selector">
-							<select id="element-select" bind:value={loadout_icon}>
-								{#each ELEMENTS as element}
-									<option value={element.value}>{element.label}</option>
-								{/each}
-							</select>
-						</div>
-						<div class="editable-fields">
-							<input
-								id="loadout-name"
-								type="text"
-								bind:value={loadout_name}
-								placeholder="Enter loadout name"
-							/>
-							<textarea
-								id="loadout-description"
-								bind:value={loadout_desc}
-								placeholder="Enter loadout description"
-								rows="3"
-							></textarea>
-						</div>
-					{:else}
-						<div class="loadout-title-area">
-							<div class="element-display">
-								<div class="element-icon">
-									<StatIcon stat={loadout_icon as StatGearUser} size="2rem" />
-								</div>
-							</div>
-							<div class="loadout-name-display">
-								<span class="loadout-name">{loadout_name}</span>
-							</div>
-						</div>
-						<div class="loadout-description-display">
-							<p>{loadout_desc}</p>
-						</div>
-					{/if}
-				</div>
+				<button
+					class="image border"
+					onclick={() => {
+						deleteCurrentLoadout();
+					}}
+				>
+					<Trash2Icon />
+					<label class="in-button" for="">Delete</label>
+				</button>
 			</div>
 
-			{#if loadout_image}
-				<div class="loadout-image-container">
-					<button
-						class={loadout_image ? 'image' : 'image'}
-						onclick={() => (upload_dialog_open = true)}
-						disabled={!is_editing}
-						aria-label="Upload image"
-					>
-						<img class="user-upload" id="user-upload" src={loadout_image} alt="Loadout" />
+			<div class="horizontal">
+				{#if is_editing}
+					<button class="image border" id="save" onclick={toggleEditing}>
+						<Save />
+						<label class="in-button" for="save">Save Edits</label>
 					</button>
-				</div>
-			{/if}
+				{:else}
+					<button class="image border" id="edit" onclick={toggleEditing}>
+						<PencilIcon />
+						<label class="in-button" for="edit">Edit Current Loadout</label>
+					</button>
+				{/if}
+			</div>
 		</div>
-	</div>
 
-	<div class="loadout-settings">
-		<h2>Weapon Presets</h2>
-		<div class="vertical-left" style="margin-bottom: 2rem;">
-			<!-- button for mobile players since not enough space -->
+		<div class="loadout-container">
+			<div class="loadout-content">
+				<div class="loadout-info">
+					<div class="loadout-header">
+						{#if is_editing}
+							<div class="element-selector">
+								<select id="element-select" bind:value={loadout_icon}>
+									{#each ELEMENTS as element}
+										<option value={element.value}>{element.label}</option>
+									{/each}
+								</select>
+							</div>
+							<div class="editable-fields">
+								<input
+									id="loadout-name"
+									type="text"
+									bind:value={loadout_name}
+									placeholder="Enter loadout name"
+								/>
+								<textarea
+									id="loadout-description"
+									bind:value={loadout_desc}
+									placeholder="Enter loadout description"
+									rows="3"
+								></textarea>
+							</div>
+						{:else}
+							<div class="loadout-title-area">
+								<div class="element-display">
+									<div class="element-icon">
+										<StatIcon stat={loadout_icon as StatGearUser} size="2rem" />
+									</div>
+								</div>
+								<div class="loadout-name-display">
+									<span class="loadout-name">{loadout_name}</span>
+								</div>
+							</div>
+							<div class="loadout-description-display">
+								<p>{loadout_desc}</p>
+							</div>
+						{/if}
+					</div>
+				</div>
 
-			<!-- <button class="image border" style="width:fit-content;">
+				{#if loadout_image}
+					<div class="loadout-image-container">
+						<button
+							class={loadout_image ? 'image' : 'image'}
+							onclick={() => (upload_dialog_open = true)}
+							disabled={!is_editing}
+							aria-label="Upload image"
+						>
+							<img class="user-upload" id="user-upload" src={loadout_image} alt="Loadout" />
+						</button>
+					</div>
+				{/if}
+			</div>
+		</div>
+
+		<div class="loadout-settings">
+			<h2>Weapon Presets</h2>
+			<div class="vertical-left" style="margin-bottom: 2rem;">
+				<!-- button for mobile players since not enough space -->
+
+				<!-- <button class="image border" style="width:fit-content;">
 				<ChartNoAxesColumnIcon />
 				<label class="in-button" for="">Stat Breakdown</label>
 			</button> -->
-		</div>
+			</div>
 
-		<div class="horizontal">
-			<div class="vertical weapon-matrix-cell">
-				{#each loadout_weapmat_combined as [weapon, matrix], index}
-					<div class="horizontal cell-row" style="margin: 0.5rem;">
-						<div class="vertical center weapon-icon-name" style="width: 8rem;">
-							<span class="weapon-name"> {weapon.name} </span>
-							<div class="weapon-icon-container">
-								<div
-									class="compose below border"
-									style="width: 8rem; height: 8rem; margin-top: 0.4rem;"
-								>
+			<div class="horizontal">
+				<div class="vertical weapon-matrix-cell">
+					{#each loadout_weapmat_combined as [weapon, matrix], index}
+						<div class="horizontal cell-row" style="margin: 0.5rem;">
+							<div class="vertical center weapon-icon-name" style="width: 8rem;">
+								<span class="weapon-name"> {weapon.name} </span>
+								<div class="weapon-icon-container">
 									<div
-										class="compose above"
-										style="top:{weapon.id === 'none' ? '0rem' : '-0.5rem'}"
+										class="compose below border"
+										style="width: 8rem; height: 8rem; margin-top: 0.4rem;"
 									>
-										<button
-											class="image"
-											onclick={() => {
-												switching = 'weapon';
-												switch_index = index;
-												switch_gear_matrix_dialog_open = true;
-											}}
+										<div
+											class="compose above"
+											style="top:{weapon.id === 'none' ? '0rem' : '-0.5rem'}"
 										>
-											<img
-												src="./weapon/{weapon.id}.webp"
-												alt={weapon.name}
-												style="height:8rem; width:8rem; {weapon.id === 'none' ? 'opacity: 0;' : ''}"
-											/>
-										</button>
-									</div>
-									{#if weapon.setting && weapon.setting.length > 0}
-										<div class="compose above" style="top: 0.5rem; left: 0.5rem;">
-											{#each weapon.setting as setting, settingIndex}
+											<button
+												class="image"
+												onclick={() => {
+													switching = 'weapon';
+													switch_index = index;
+													switch_gear_matrix_dialog_open = true;
+												}}
+											>
+												<img
+													src="./weapon/{weapon.id}.webp"
+													alt={weapon.name}
+													style="height:8rem; width:8rem; {weapon.id === 'none'
+														? 'opacity: 0;'
+														: ''}"
+												/>
+											</button>
+										</div>
+										{#if weapon.setting && weapon.setting.length > 0}
+											<div class="compose above" style="top: 0.5rem; left: 0.5rem;">
+												{#each weapon.setting as setting, settingIndex}
+													<button
+														class="image"
+														onclick={() => {
+															// get keys in settings
+															if (!$base_weapons[index].setting) {
+																return;
+															}
+
+															const selected_keys = weapon.setting.map((setting) => setting.id);
+															const keys = Object.keys($base_weapons[index].setting.choices);
+
+															let currKey = setting.id;
+															let currInd = keys.indexOf(currKey);
+															const initialCurrInd = currInd;
+
+															while (selected_keys.indexOf(currKey) !== -1) {
+																currInd = (currInd + 1) % keys.length;
+																currKey = keys[currInd];
+
+																if (currInd === initialCurrInd) {
+																	// avoid catastrophe
+																	console.error('idk why but something went wrong');
+																	return;
+																}
+															}
+
+															if (!user_weapons[index].setting) {
+																user_weapons[index].setting = $base_weapons[index].setting.default;
+															}
+															user_weapons[index].setting[settingIndex] = currKey;
+															saveWeaponMatrixLoadout();
+															// nola can change elements and reso
+															updateWeaponMatrix();
+														}}
+													>
+														<div class="vertical center">
+															<img
+																src={setting.icon}
+																alt={setting.icon}
+																style="height: 1.5rem; width: 1.5rem; background-color: var(--button-bg); border-radius: 50%;"
+															/>
+														</div>
+													</button>
+												{/each}
+											</div>
+										{:else if weapon.id !== 'none'}
+											<div class="compose above" style="top: 0.5rem; left: 0.5rem">
+												<StatIcon
+													stat={weapon.resonances[0] as LoadoutType}
+													size="1.5rem"
+													style="background-color: var(--button-bg); border-radius: 50%;"
+												/>
+											</div>
+										{/if}
+
+										{#if weapon.id !== 'none'}
+											{#each [1, 2, 3, 4, 5, 6] as advSetValue, advIndex}
 												<button
 													class="image"
 													onclick={() => {
-														// get keys in settings
-														if (!$base_weapons[index].setting) {
-															return;
+														if (weapon.advancement === advSetValue) {
+															user_weapons[index].advancement = 0;
+														} else {
+															user_weapons[index].advancement = advSetValue;
 														}
-
-														const selected_keys = weapon.setting.map((setting) => setting.id);
-														const keys = Object.keys($base_weapons[index].setting.choices);
-
-														let currKey = setting.id;
-														let currInd = keys.indexOf(currKey);
-														const initialCurrInd = currInd;
-
-														while (selected_keys.indexOf(currKey) !== -1) {
-															currInd = (currInd + 1) % keys.length;
-															currKey = keys[currInd];
-
-															if (currInd === initialCurrInd) {
-																// avoid catastrophe
-																console.error('idk why but something went wrong');
-																return;
-															}
-														}
-
-														if (!user_weapons[index].setting) {
-															user_weapons[index].setting = $base_weapons[index].setting.default;
-														}
-														user_weapons[index].setting[settingIndex] = currKey;
 														saveWeaponMatrixLoadout();
-														// nola can change elements and reso
-														updateWeaponMatrix();
+														updateSingleWeaponView(index);
 													}}
 												>
-													<div class="vertical center">
-														<img
-															src={setting.icon}
-															alt={setting.icon}
-															style="height: 1.5rem; width: 1.5rem; background-color: var(--button-bg); border-radius: 50%;"
+													<div class="compose above" style="top: 6.5rem; left:{1 + advIndex}rem">
+														<StarIcon
+															size={$font_size}
+															fill={weapon.advancement >= advSetValue ? 'white' : 'none'}
 														/>
 													</div>
 												</button>
 											{/each}
-										</div>
-									{:else if weapon.id !== 'none'}
-										<div class="compose above" style="top: 0.5rem; left: 0.5rem">
-											<StatIcon
-												stat={weapon.resonances[0] as LoadoutType}
-												size="1.5rem"
-												style="background-color: var(--button-bg); border-radius: 50%;"
-											/>
-										</div>
-									{/if}
-
-									{#if weapon.id !== 'none'}
-										{#each [1, 2, 3, 4, 5, 6] as advSetValue, advIndex}
-											<button
-												class="image"
-												onclick={() => {
-													if (weapon.advancement === advSetValue) {
-														user_weapons[index].advancement = 0;
-													} else {
-														user_weapons[index].advancement = advSetValue;
-													}
-													saveWeaponMatrixLoadout();
-													updateSingleWeaponView(index);
-												}}
-											>
-												<div class="compose above" style="top: 6.5rem; left:{1 + advIndex}rem">
-													<StarIcon
-														size={$font_size}
-														fill={weapon.advancement >= advSetValue ? 'white' : 'none'}
-													/>
-												</div>
-											</button>
-										{/each}
-									{/if}
+										{/if}
+									</div>
 								</div>
+
+								{#if $inner_width < 500}
+									<div style="margin-top: 1rem; margin-bottom: 1.5rem;">
+										{@render showMatrices(matrix, index)}
+									</div>
+								{/if}
 							</div>
-
-							{#if $inner_width < 500}
-								<div style="margin-top: 1rem; margin-bottom: 1.5rem;">
-									{@render showMatrices(matrix, index)}
-								</div>
+							{#if $inner_width >= 500}
+								{@render showMatrices(matrix, index)}
 							{/if}
 						</div>
-						{#if $inner_width >= 500}
-							{@render showMatrices(matrix, index)}
-						{/if}
-					</div>
-				{/each}
-			</div>
-			{#if chart_width > 350}
-				<div class="vertical" style="margin-left: 2rem;">
-					<StatContributions bind:all_effects bind:chart_width />
+					{/each}
 				</div>
-			{/if}
+				{#if chart_width > 350}
+					<div class="vertical" style="margin-left: 2rem;">
+						<StatContributions bind:all_effects bind:chart_width />
+					</div>
+				{/if}
+			</div>
 		</div>
-	</div>
+	{/await}
 </div>
 
 <UploadScreenshot

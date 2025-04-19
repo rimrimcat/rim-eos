@@ -24,6 +24,11 @@ export const guide_title = writable<string>('');
 export const guide_open = writable<boolean>(false);
 export const guide_content = writable<GuideItem[] | null>(null);
 
+// check if page is fully loaded
+export const gear_page_loaded = writable<boolean>(false);
+export const loadout_page_loaded = writable<boolean>(false);
+export const stat_page_loaded = writable<boolean>(false);
+
 // user data
 export const user_gears = writable<UserGear[]>([]);
 export const user_loadouts = writable<AllLoadouts>({});
