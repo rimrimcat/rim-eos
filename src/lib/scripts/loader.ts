@@ -526,6 +526,9 @@ export function cloneObject(obj: object) {
 	return JSON.parse(JSON.stringify(obj));
 }
 
+/**
+ * Loads gear images by fetching them
+ */
 export async function loadGearImages() {
 	const gear_parts = Object.values(GearPart).filter((part) => part !== GearPart.UNKNOWN);
 	const dirs = ['./gear/', './gear/titan/'];
@@ -539,6 +542,9 @@ export async function loadGearImages() {
 	);
 }
 
+/**
+ * Loads stat icons by fetching them
+ */
 export async function loadStatIcons() {
 	const icons = [
 		'alt',
