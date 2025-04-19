@@ -418,23 +418,6 @@
 		margin-top: 3rem;
 	}
 
-	/* specific for attribute icons */
-	:global(.attribute-icon) {
-		width: 2.5rem;
-		height: 2.5rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	:global(.attribute-icon img) {
-		display: block;
-		width: 100%;
-		height: 100%;
-		object-fit: none;
-		filter: invert(75%);
-	}
-
 	/* for composing icons */
 
 	:global(.compose.below) {

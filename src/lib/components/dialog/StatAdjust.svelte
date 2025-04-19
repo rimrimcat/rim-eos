@@ -189,9 +189,7 @@
 				>
 					{#each raw_attribute_view.slice(3, 8) as attribute, index}
 						<div class="item-flex">
-							<div class="attribute-icon">
-								<StatIcon stat={attribute.key as StatGearFinal} size="100%" />
-							</div>
+							<StatIcon stat={attribute.key as StatGearFinal} size="100%" />
 							<div class="vertical-left">
 								<div class="stat-name">Base {attribute.name}</div>
 								<div class="stat-value-text">
