@@ -47,7 +47,6 @@ export type StatGearFinal = StatGearFinalUseful | 'end' | 'end_regen';
 export type CharacterStat = {
 	key: StatGearFinal;
 	name: string;
-	icon: string;
 	value: string;
 };
 
