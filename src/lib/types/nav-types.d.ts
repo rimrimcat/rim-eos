@@ -10,5 +10,7 @@ export type GuideItem = {
 	proceed_on?: Writable<boolean>; // proceed when this writable is true
 	require_false?: boolean; // if to proceed when store is false
 
+	preload?: string[]; // resources to preload
+
 	make_glow?: string[]; // element ids to make glow
 };

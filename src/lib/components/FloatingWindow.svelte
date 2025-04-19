@@ -463,6 +463,21 @@
 			}
 		}
 	});
+	// effect for guide_content preload
+	$effect(() => {
+		if (!guide_content) {
+			return;
+		}
+
+		const preload = guide_content[guide_index].preload;
+		if (preload) {
+			for (const url of preload) {
+				(async () => {
+					await fetch(url);
+				})();
+			}
+		}
+	});
 
 	$inspect('OPEN', open);
 </script>
