@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader';
+	import { saveObject } from '$lib/scripts/loader';
 	import { getGearTotal, getWeaponTotal } from '$lib/scripts/loadout';
-	import { STAT_LABELS, StatCollection } from '$lib/scripts/stats';
+	import { STAT_LABELS, StatCollection, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/stats';
 	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
 	import type {
 		AtkStats5,

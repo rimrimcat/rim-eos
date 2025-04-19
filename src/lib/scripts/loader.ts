@@ -1,10 +1,4 @@
-import type {
-	AllLoadouts,
-	BaseStats14,
-	CharacterStat,
-	StatGearFinal,
-	UserGear
-} from '$lib/types/index';
+import type { AllLoadouts, BaseStats14, CharacterStat, UserGear } from '$lib/types/index';
 import { GearPart } from './gears';
 
 // Keys
@@ -13,26 +7,6 @@ export type LocalStorageKey = 'gears_v1' | 'loadouts_v1' | 'styles';
 const DB_NAME = 'tof-gear';
 const DB_VERSION = 2;
 const IMAGE_STORE = 'images';
-
-// Templates
-export const TEMPLATE_USER_ATTRIBUTES: { key: StatGearFinal; icon: string }[] = [
-	{ key: 'hp', icon: './stat/hp.webp' },
-	{ key: 'crit', icon: './stat/crit.webp' },
-	{ key: 'crit_percent', icon: './stat/crit.webp' },
-	{ key: 'phys_atk', icon: './stat/physatk.webp' },
-	{ key: 'flame_atk', icon: './stat/flameatk.webp' },
-	{ key: 'frost_atk', icon: './stat/frostatk.webp' },
-	{ key: 'volt_atk', icon: './stat/voltatk.webp' },
-	{ key: 'alt_atk', icon: './stat/placeholder.webp' },
-	{ key: 'end', icon: './stat/placeholder.webp' },
-	{ key: 'end_regen', icon: './stat/placeholder.webp' },
-	{ key: 'crit_dmg_percent', icon: './stat/placeholder.webp' },
-	{ key: 'phys_res', icon: './stat/physres.webp' },
-	{ key: 'flame_res', icon: './stat/flameres.webp' },
-	{ key: 'frost_res', icon: './stat/frostres.webp' },
-	{ key: 'volt_res', icon: './stat/voltres.webp' },
-	{ key: 'alt_res', icon: './stat/placeholder.webp' }
-];
 
 // Defaults
 // TODO: replace this
