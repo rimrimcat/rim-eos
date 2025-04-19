@@ -415,7 +415,6 @@
 			});
 			return () => {
 				unsubscribe();
-				guide_content[guide_index].disable_next = false;
 			};
 		}
 	});
@@ -500,7 +499,7 @@
 				<button
 					class="guide-nav-button"
 					onclick={nextStep}
-					disabled={guide_content[guide_index].disable_next ||
+					disabled={guide_content[guide_index].proceed_on !== undefined ||
 						guide_index === guide_content.length - 1}
 					aria-label="Next step"
 				>
