@@ -2,6 +2,7 @@
 	import StatAdjust from '$lib/components/dialog/StatAdjust.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import FlexGrid from '$lib/components/FlexGrid.svelte';
+	import { loadStatIcons } from '$lib/scripts/loader';
 	import { stat_view } from '$lib/scripts/stores';
 	import type { BaseStats16, StatGearFinal } from '$lib/types/index';
 	import { ChartNoAxesColumnIcon, Grid2X2XIcon, ImagePlusIcon, SwordsIcon } from '@lucide/svelte';
@@ -299,81 +300,85 @@
 <div class="stat-panel">
 	<h1>Character Stats</h1>
 
-	<div class="horizontal" style="margin-bottom: 1.5rem;">
-		{#if unadjusted_stats && unadjusted_stats.length > 0}
-			<p>
-				Unadjusted stats are shown in the table below. Uploaded stats won't be effective until
-				adjustment is done.
-			</p>
-			<button
-				class="image border"
-				id="stat-adjustment"
-				onclick={() => (stat_adjust_dialog_open = true)}
-			>
-				<ChartNoAxesColumnIcon />
-				<label class="in-button" for="stat-adjustment">Stat Adjustment</label>
-			</button>
-		{:else}
-			<button
-				class="image border"
-				id="upload-stats"
-				onclick={() => (screenshot_dialog_open = true)}
-			>
-				<ImagePlusIcon />
-				<label class="in-button" for="upload-stats">Upload Stats</label>
-			</button>
-		{/if}
-		<button
-			class="image border"
-			id="offensive-only"
-			onclick={() => (show_offensive_only = !show_offensive_only)}
-		>
-			{#if show_offensive_only}
-				<SwordsIcon />
-				<label class="in-button" for="offensive-only">Showing Offensive Stats</label>
+	{#await loadStatIcons()}
+		<p>Loading stuff, please wait...</p>
+	{:then}
+		<div class="horizontal" style="margin-bottom: 1.5rem;">
+			{#if unadjusted_stats && unadjusted_stats.length > 0}
+				<p>
+					Unadjusted stats are shown in the table below. Uploaded stats won't be effective until
+					adjustment is done.
+				</p>
+				<button
+					class="image border"
+					id="stat-adjustment"
+					onclick={() => (stat_adjust_dialog_open = true)}
+				>
+					<ChartNoAxesColumnIcon />
+					<label class="in-button" for="stat-adjustment">Stat Adjustment</label>
+				</button>
 			{:else}
-				<Grid2X2XIcon />
-				<label class="in-button" for="offensive-only">Showing All Stats</label>
+				<button
+					class="image border"
+					id="upload-stats"
+					onclick={() => (screenshot_dialog_open = true)}
+				>
+					<ImagePlusIcon />
+					<label class="in-button" for="upload-stats">Upload Stats</label>
+				</button>
 			{/if}
-		</button>
-	</div>
+			<button
+				class="image border"
+				id="offensive-only"
+				onclick={() => (show_offensive_only = !show_offensive_only)}
+			>
+				{#if show_offensive_only}
+					<SwordsIcon />
+					<label class="in-button" for="offensive-only">Showing Offensive Stats</label>
+				{:else}
+					<Grid2X2XIcon />
+					<label class="in-button" for="offensive-only">Showing All Stats</label>
+				{/if}
+			</button>
+		</div>
 
-	<FlexGrid
-		horizontal_gap="0.9rem"
-		vertical_gap="1rem"
-		min_cols={1}
-		max_cols={show_offensive_only ? 1 : 2}
-		prefer_divisible={false}
-	>
-		{#each $stat_view as attribute, index}
-			{#if show_offensive_only ? [1, 2, 3, 4, 5, 6, 7, 10].includes(index) : true}
-				<div class="stat-cell">
-					<div class="stat-content">
-						<div class="stat-icon">
-							<StatIcon stat={attribute.key as StatGearFinal} size="100%" />
-						</div>
-						<div class="stat-info">
-							<div class="stat-name">{attribute.name}</div>
-							<div class="stat-value-container">
-								<span
-									class="stat-value-text"
-									style="font-size: 1.25rem"
-									role="textbox"
-									tabindex={10 + index}
-								>
-									{#if unadjusted_stats}
-										<input type="text" bind:value={unadjusted_stats[index]} style="width: 8ch;" />
-									{:else}
-										{attribute.value}
-									{/if}
-								</span>
+		<FlexGrid
+			horizontal_gap="0.9rem"
+			vertical_gap="1rem"
+			min_cols={1}
+			max_cols={show_offensive_only ? 1 : 2}
+			prefer_divisible={false}
+		>
+			{#each $stat_view as attribute, index}
+				{#if show_offensive_only ? [1, 2, 3, 4, 5, 6, 7, 10].includes(index) : true}
+					<div class="stat-cell">
+						<div class="stat-content">
+							<div class="stat-icon">
+								<StatIcon stat={attribute.key as StatGearFinal} size="100%" />
+							</div>
+							<div class="stat-info">
+								<div class="stat-name">{attribute.name}</div>
+								<div class="stat-value-container">
+									<span
+										class="stat-value-text"
+										style="font-size: 1.25rem"
+										role="textbox"
+										tabindex={10 + index}
+									>
+										{#if unadjusted_stats}
+											<input type="text" bind:value={unadjusted_stats[index]} style="width: 8ch;" />
+										{:else}
+											{attribute.value}
+										{/if}
+									</span>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			{/if}
-		{/each}
-	</FlexGrid>
+				{/if}
+			{/each}
+		</FlexGrid>
+	{/await}
 </div>
 
 <UploadScreenshot
