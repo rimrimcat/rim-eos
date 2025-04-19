@@ -32,7 +32,6 @@
 	import { AppWindowIcon } from '@lucide/svelte';
 	import { onMount, type Component } from 'svelte';
 	import FloatingWindow from './FloatingWindow.svelte';
-	import { on_loadout_page } from './InteractiveGuide.svelte';
 	import ReadySignal from './ReadySignal.svelte';
 	import Toolbar from './Toolbar.svelte';
 
@@ -120,11 +119,6 @@
 			$reso_effects
 		);
 		applyExtraGearViewStats();
-	});
-
-	// update for interactive guide
-	$effect(() => {
-		$on_loadout_page = active_component.id === 'loadout-page';
 	});
 
 	$inspect('guide open (APP)', $guide_open);
