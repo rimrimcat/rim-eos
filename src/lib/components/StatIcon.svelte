@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { LoadoutType, StatGearUser } from '$lib/types/index';
+	import type { Elements, StatGearFinal, StatGearUser } from '$lib/types/index';
 
-	type StatOrElement = StatGearUser | LoadoutType;
+	type StatOrElement = StatGearUser | StatGearFinal | Elements;
 
 	let { stat = 'atk' as StatOrElement, size = '100%', style = '' } = $props();
 
@@ -36,6 +36,8 @@
 				img = 'phys';
 			} else if (stat.includes('alt')) {
 				img = 'alt';
+			} else if (stat.includes('crit')) {
+				img = 'crit';
 			} else {
 				img = 'gatk';
 			}
