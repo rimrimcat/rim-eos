@@ -179,11 +179,15 @@
 		if (!measuringElement) {
 			measuringElement = document.createElement('div');
 			measuringElement.className = 'measuring-container';
-			measuringElement.style.position = 'absolute';
+			measuringElement.style.position = 'fixed'; // Change from 'absolute' to 'fixed'
 			measuringElement.style.visibility = 'hidden';
 			measuringElement.style.pointerEvents = 'none';
+			measuringElement.style.overflowY = 'hidden';
 			measuringElement.style.width = `${dimensions.current.width}px`;
 			measuringElement.style.padding = getComputedStyle(contentElement).padding;
+			measuringElement.style.zIndex = '-9999'; // Add negative z-index
+			measuringElement.style.left = '0'; // Position it off-screen
+			measuringElement.style.top = '0';
 			document.body.appendChild(measuringElement);
 		}
 
@@ -216,6 +220,10 @@
 		// Clean up
 		if (measuringElement.parentNode) {
 			measuringElement.innerHTML = '';
+
+			if (!autoResize) {
+				cleanupMeasuringElement();
+			}
 		}
 
 		adjustPosition();
@@ -242,6 +250,22 @@
 		}
 	}
 
+	function handleMouseMove(event: MouseEvent) {
+		if (isDragging) {
+			handleDrag(event);
+		} else if (isResizing) {
+			handleResize(event);
+		}
+	}
+
+	function handleMouseUp() {
+		endDragOrResize();
+	}
+
+	function handleWindowResize() {
+		tick().then(adjustPosition);
+	}
+
 	onMount(() => {
 		window.addEventListener('mousemove', handleMouseMove);
 		window.addEventListener('mouseup', handleMouseUp);
@@ -261,27 +285,12 @@
 		};
 	});
 
-	function handleMouseMove(event: MouseEvent) {
-		if (isDragging) {
-			handleDrag(event);
-		} else if (isResizing) {
-			handleResize(event);
-		}
-	}
-
-	function handleMouseUp() {
-		endDragOrResize();
-	}
-
-	function handleWindowResize() {
-		tick().then(adjustPosition);
-	}
-
 	$effect(() => {
 		dimensions.current;
 		adjustPosition();
 	});
 
+	// autoresizing for guide_content
 	$effect(() => {
 		if (autoResize && guide_content && open) {
 			tick().then(() => {
@@ -290,16 +299,12 @@
 		}
 	});
 
-	// Clean up on component destruction
-	onMount(() => {
-		return cleanupMeasuringElement;
-	});
-
+	// effect for guide_content proceed_on
 	$effect(() => {
 		if (guide_content && guide_content[guide_index].proceed_on) {
 			// @ts-expect-error
 			const unsubscribe = guide_content[guide_index].proceed_on.subscribe((value) => {
-				if (value) {
+				if (value || !open) {
 					nextStep();
 				}
 			});
@@ -310,6 +315,8 @@
 			};
 		}
 	});
+
+	$inspect('OPEN', open);
 </script>
 
 {#if open}
@@ -389,7 +396,7 @@
 		border-radius: 0.7rem;
 		box-shadow: 0 0.2rem 1rem var(--shadow-color);
 		overflow: hidden;
-		z-index: 1000;
+		z-index: 2000;
 		transition: box-shadow 0.2s ease;
 		min-width: 200px;
 		min-height: 150px;
