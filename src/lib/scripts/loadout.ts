@@ -736,7 +736,4 @@ export async function applyExtraGearViewStats() {
 	);
 
 	gear_views.set(await new_gear_views_);
-	console.log('extra gear view stats applied.');
-
-	// calculate stat contribution
 }
