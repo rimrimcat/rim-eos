@@ -90,6 +90,7 @@
 				{#each choices as [loadoutKey, loadout]}
 					<div
 						class="loadout-item"
+						id={`switch-to-${loadoutKey}`}
 						class:selected={loadoutKey === selected_loadout}
 						onclick={() => handleLoadoutClick(loadoutKey)}
 						onkeydown={(e) => e.key === 'Enter' && handleLoadoutClick(loadoutKey)}
