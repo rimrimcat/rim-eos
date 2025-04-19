@@ -20,7 +20,7 @@
 		onclick={() => {
 			$guide_title = 'Optimizing gears';
 			$guide_open = true;
-			$guide_content = GUIDE_GEAR_ELEMENT;
+			$guide_content = [...GUIDE_GEAR_ELEMENT];
 		}}
 	>
 		<h2>Optimizing gears for a specific element</h2>
@@ -34,8 +34,6 @@
 			<li>Replace the worst gear</li>
 		</ol>
 	</button>
-
-	<p>TODO: Make this wall of text less boring</p>
 </div>
 
 <style>
