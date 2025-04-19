@@ -3,6 +3,7 @@
 	import SwitchLoadout, { DEFAULT_LOADOUT } from '$lib/components/dialog/SwitchLoadout.svelte';
 	import UploadScreenshot from '$lib/components/dialog/UploadScreenshot.svelte';
 	import StatIcon from '$lib/components/StatIcon.svelte';
+	import { createGearView } from '$lib/scripts/gears';
 	import {
 		addImageToDB,
 		cloneObject,
@@ -27,12 +28,15 @@
 		current_loadout,
 		equipped_gear_views,
 		font_size,
+		gear_views,
 		inner_width,
 		loadout_is_editing,
 		loadout_new_or_duplicate_dialog_open,
 		loadout_page_loaded,
 		matrix_views,
 		reso_effects,
+		stat_autoupdate,
+		user_gears,
 		user_loadouts,
 		weapon_views
 	} from '$lib/scripts/stores';
@@ -261,11 +265,18 @@
 			console.error('Loadout not found:', loadout);
 			return;
 		}
+		$stat_autoupdate = false;
 
 		$current_loadout = loadout;
 
 		updateAllFromStores();
 		updateWeaponMatrix();
+
+		// update gear views
+		Promise.all($user_gears.map((gear) => createGearView(gear, false))).then((gearViews) => {
+			$gear_views = gearViews;
+			$stat_autoupdate = true;
+		});
 	}
 
 	/**
@@ -360,10 +371,11 @@
 		$loadout_page_loaded = false;
 	});
 
-	$inspect('Full loadout', $user_loadouts[$current_loadout]);
-	$inspect('loadout', $current_loadout);
-	$inspect('weapon views from LOADOUT', $weapon_views);
-	$inspect('loadout weapmat arr from LOADOUT', loadout_weapmat_combined);
+	// $inspect('Full loadout', $user_loadouts[$current_loadout]);
+	// $inspect('loadout', $current_loadout);
+	// $inspect('weapon views from LOADOUT', $weapon_views);
+	// $inspect('loadout weapmat arr from LOADOUT', loadout_weapmat_combined);
+	$inspect('gear views from LOADOUT', $gear_views);
 </script>
 
 {#snippet matrix4p(matrix: MatrixView)}

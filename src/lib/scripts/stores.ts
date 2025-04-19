@@ -19,6 +19,9 @@ export const font_size = writable<number>(16);
 export const inner_width = writable<number>(1000);
 export const toolbar_transform = writable<number>(0);
 
+// for autoupdate of stats
+export const stat_autoupdate = writable<boolean>(false);
+
 // interactive guide
 export const guide_title = writable<string>('');
 export const guide_open = writable<boolean>(false);

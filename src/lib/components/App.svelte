@@ -4,8 +4,8 @@
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
 	import {
 		applyExtraGearViewStats,
-		createStatView,
-		getAllStats,
+		createStatViewFromStore,
+		getAllStatsFromStore,
 		getEquippedGearViews,
 		updateWeaponMatrix
 	} from '$lib/scripts/loadout';
@@ -20,14 +20,12 @@
 		guide_title,
 		inner_width,
 		is_mobile,
-		matrix_views,
-		reso_effects,
 		scroll_y,
+		stat_autoupdate,
 		stat_view,
 		toolbar_transform,
 		user_gears,
-		user_loadouts,
-		weapon_views
+		user_loadouts
 	} from '$lib/scripts/stores';
 	import { AppWindowIcon } from '@lucide/svelte';
 	import { onMount, type Component } from 'svelte';
@@ -60,7 +58,6 @@
 
 	// color scheme
 	let styles = $state({});
-	let update_ready = $state(false);
 
 	onMount(async () => {
 		// get font size and check if mobile
@@ -92,32 +89,16 @@
 
 		// create initial weapon and matrix views
 		await updateWeaponMatrix();
-		update_ready = true;
-	});
-
-	// update for equipped_gear_views
-	$effect(() => {
-		if (!update_ready) return;
-		$equipped_gear_views = getEquippedGearViews($user_loadouts[$current_loadout].equipped_gears);
+		$stat_autoupdate = true;
 	});
 
 	// update for stats
 	$effect(() => {
-		if (!update_ready) return;
-		$all_stats = getAllStats(
-			$user_loadouts[$current_loadout],
-			$equipped_gear_views,
-			$weapon_views,
-			$matrix_views,
-			$reso_effects
-		);
-		$stat_view = createStatView(
-			$user_loadouts[$current_loadout],
-			$equipped_gear_views,
-			$weapon_views,
-			$matrix_views,
-			$reso_effects
-		);
+		if (!$stat_autoupdate) return;
+		console.error('STAT AUTOUPDATE CALLED');
+		$equipped_gear_views = getEquippedGearViews($user_loadouts[$current_loadout].equipped_gears);
+		$all_stats = getAllStatsFromStore();
+		$stat_view = createStatViewFromStore();
 		applyExtraGearViewStats();
 	});
 

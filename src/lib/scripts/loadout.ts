@@ -590,6 +590,16 @@ export function getAllStats(
 		.add(gwmr_totals);
 }
 
+export function getAllStatsFromStore() {
+	return getAllStats(
+		get(user_loadouts)[get(current_loadout)],
+		get(equipped_gear_views),
+		get(weapon_views),
+		get(matrix_views),
+		get(reso_effects)
+	);
+}
+
 export function createStatView(
 	selected_loadout: Loadout,
 	equipped_gear_views: GearView[],
@@ -626,6 +636,16 @@ export function createStatView(
 			value: __use_percent ? formatValue('float3d', __val) : formatValue('int', __val)
 		};
 	});
+}
+
+export function createStatViewFromStore() {
+	return createStatView(
+		get(user_loadouts)[get(current_loadout)],
+		get(equipped_gear_views),
+		get(weapon_views),
+		get(matrix_views),
+		get(reso_effects)
+	);
 }
 
 export function getEquippedGearViews(equipped_gears: EquippedGear): GearView[] {
@@ -668,7 +688,12 @@ export function turnGearToEffect(gear: GearView): GearEffect {
 	};
 }
 
+/**
+ * Applies extra stats to gear views
+ * Takes in gear_views, all_stats, and equipped_gear_views from store, then modifies gear_views again
+ */
 export async function applyExtraGearViewStats() {
+	console.log('APPLY EXTRA GEAR VIEW STATS');
 	const gear_views_ = get(gear_views);
 
 	// create map of gear to equipped

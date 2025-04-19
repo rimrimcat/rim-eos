@@ -428,7 +428,10 @@
 			variables.isEquipped = gear.isEquipped ? 1 : 0;
 
 			// @ts-expect-error
+			console.log('query', query);
+			console.log('variables', variables);
 			const new_query = query.replace(ALL_STATS_REGEX, (match) => variables[match].toString());
+			console.log('new_query', new_query);
 			const result = evil(parse(new_query), {});
 
 			if (result) {
@@ -541,8 +544,9 @@
 		$gear_search_dialog_open = search_dialog_open;
 	});
 
-	$inspect('has_measured', has_measured);
-	$inspect('gear view', $gear_views);
+	$inspect('loadout from GEAR PAGE', $user_loadouts[$current_loadout]);
+	$inspect('gear view from GEAR PAGE', $gear_views);
+	$inspect('equipped gears from GEAR', equipped_gears);
 </script>
 
 {#snippet gear_actions(gear: GearView)}
