@@ -179,23 +179,23 @@ const STAT_GEAR_FINAL_KEYS: StatGearFinalUseful[] = [
 	'alt_res'
 ];
 
-export const TEMPLATE_USER_ATTRIBUTES: { key: StatGearFinal; icon: string }[] = [
-	{ key: 'hp', icon: './stat/hp.webp' },
-	{ key: 'crit', icon: './stat/crit.webp' },
-	{ key: 'crit_percent', icon: './stat/crit.webp' },
-	{ key: 'phys_atk', icon: './stat/physatk.webp' },
-	{ key: 'flame_atk', icon: './stat/flameatk.webp' },
-	{ key: 'frost_atk', icon: './stat/frostatk.webp' },
-	{ key: 'volt_atk', icon: './stat/voltatk.webp' },
-	{ key: 'alt_atk', icon: './stat/placeholder.webp' },
-	{ key: 'end', icon: './stat/placeholder.webp' },
-	{ key: 'end_regen', icon: './stat/placeholder.webp' },
-	{ key: 'crit_dmg_percent', icon: './stat/placeholder.webp' },
-	{ key: 'phys_res', icon: './stat/physres.webp' },
-	{ key: 'flame_res', icon: './stat/flameres.webp' },
-	{ key: 'frost_res', icon: './stat/frostres.webp' },
-	{ key: 'volt_res', icon: './stat/voltres.webp' },
-	{ key: 'alt_res', icon: './stat/placeholder.webp' }
+export const TEMPLATE_USER_ATTRIBUTES: { key: StatGearFinal }[] = [
+	{ key: 'hp' },
+	{ key: 'crit' },
+	{ key: 'crit_percent' },
+	{ key: 'phys_atk' },
+	{ key: 'flame_atk' },
+	{ key: 'frost_atk' },
+	{ key: 'volt_atk' },
+	{ key: 'alt_atk' },
+	{ key: 'end' },
+	{ key: 'end_regen' },
+	{ key: 'crit_dmg_percent' },
+	{ key: 'phys_res' },
+	{ key: 'flame_res' },
+	{ key: 'frost_res' },
+	{ key: 'volt_res' },
+	{ key: 'alt_res' }
 ];
 
 export function getCritRate(crit: number, flat_rate_percent: number = 0, lvl: number = 100) {
