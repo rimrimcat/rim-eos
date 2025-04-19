@@ -423,30 +423,33 @@
 			<div class="horizontal" style="gap: 0.5rem;">
 				<button
 					class="image border"
+					id="switch-loadout"
 					onclick={() => {
 						switch_loadout_dialog_open = true;
 					}}
 				>
 					<ArrowRightLeftIcon />
-					<label class="in-button" for="">Switch</label>
+					<label class="in-button" for="switch-loadout">Switch</label>
 				</button>
 				<button
 					class="image border"
+					id="new-duplicate-loadout"
 					onclick={() => {
 						new_or_duplicate_dialog_open = true;
 					}}
 				>
 					<CopyPlusIcon />
-					<label class="in-button" for="">New</label>
+					<label class="in-button" for="new-duplicate-loadout">New</label>
 				</button>
 				<button
 					class="image border"
+					id="delete-loadout"
 					onclick={() => {
 						deleteCurrentLoadout();
 					}}
 				>
 					<Trash2Icon />
-					<label class="in-button" for="">Delete</label>
+					<label class="in-button" for="delete-loadout">Delete</label>
 				</button>
 			</div>
 
