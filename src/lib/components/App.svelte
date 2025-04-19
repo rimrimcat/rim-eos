@@ -135,6 +135,8 @@
 	$effect(() => {
 		$on_loadout_page = active_component.id === 'loadout-page';
 	});
+
+	$inspect('guide open (APP)', $guide_open);
 </script>
 
 <svelte:window bind:innerWidth={$inner_width} />
@@ -146,7 +148,7 @@
 		class="vertical content-container"
 		class:mobile={is_mobile}
 		style="translate: 0 {$toolbar_transform}px; padding-bottom: {$toolbar_transform +
-			$font_size * 3}px"
+			$font_size * 3}px;"
 		onscroll={(e: UIEvent) => {
 			$scroll_y = (e.target as HTMLElement).scrollTop;
 		}}
@@ -157,16 +159,17 @@
 	</div>
 </div>
 
-<ReadySignal bind:signal />
-
 <FloatingWindow
 	title={$guide_title}
 	open={$guide_open}
 	guide_content={$guide_content}
 	autoResize={true}
+	onClose={() => ($guide_open = false)}
 >
-	<p>test</p>
+	<p>This is a floating window without content.</p>
 </FloatingWindow>
+
+<ReadySignal bind:signal />
 
 <style>
 	:global(body) {
