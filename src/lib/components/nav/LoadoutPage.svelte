@@ -28,6 +28,7 @@
 		equipped_gear_views,
 		font_size,
 		inner_width,
+		loadout_new_or_duplicate_dialog_open,
 		loadout_page_loaded,
 		matrix_views,
 		reso_effects,
@@ -325,6 +326,10 @@
 			}
 		}
 	];
+
+	$effect(() => {
+		$loadout_new_or_duplicate_dialog_open = new_or_duplicate_dialog_open;
+	});
 
 	onMount(async () => {
 		if (Object.keys($user_loadouts).length === 0) {
