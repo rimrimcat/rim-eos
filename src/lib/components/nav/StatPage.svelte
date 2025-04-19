@@ -416,14 +416,6 @@
 		justify-content: center;
 	}
 
-	.stat-icon img {
-		display: block;
-		width: 100%;
-		height: 100%;
-		object-fit: none;
-		filter: invert(75%);
-	}
-
 	.stat-info {
 		flex-grow: 1;
 		display: flex;
