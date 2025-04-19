@@ -1,10 +1,12 @@
-import type {
-	AllLoadouts,
-	BaseStats14,
-	CharacterStat,
-	StatGearFinal,
-	UserGear
-} from '$lib/types/index';
+import { AllMatrixIds, AllWeaponIds } from '$lib/generated/all-ids';
+import type { AllLoadouts, BaseStats14, CharacterStat, UserGear } from '$lib/types/index';
+import { GearPart } from './gears';
+
+// States to avoid loading the same stuff twice
+export let gear_images_loaded = false;
+export let stat_icons_loaded = false;
+export let weapon_images_loaded = false;
+export let matrix_images_loaded = false;
 
 // Keys
 export type LocalStorageKey = 'gears_v1' | 'loadouts_v1' | 'styles';
@@ -13,43 +15,23 @@ const DB_NAME = 'tof-gear';
 const DB_VERSION = 2;
 const IMAGE_STORE = 'images';
 
-// Templates
-export const TEMPLATE_USER_ATTRIBUTES: { key: StatGearFinal; icon: string }[] = [
-	{ key: 'hp', icon: './stat/hp.webp' },
-	{ key: 'crit', icon: './stat/crit.webp' },
-	{ key: 'crit_percent', icon: './stat/crit.webp' },
-	{ key: 'phys_atk', icon: './stat/physatk.webp' },
-	{ key: 'flame_atk', icon: './stat/flameatk.webp' },
-	{ key: 'frost_atk', icon: './stat/frostatk.webp' },
-	{ key: 'volt_atk', icon: './stat/voltatk.webp' },
-	{ key: 'alt_atk', icon: './stat/placeholder.webp' },
-	{ key: 'end', icon: './stat/placeholder.webp' },
-	{ key: 'end_regen', icon: './stat/placeholder.webp' },
-	{ key: 'crit_dmg_percent', icon: './stat/placeholder.webp' },
-	{ key: 'phys_res', icon: './stat/physres.webp' },
-	{ key: 'flame_res', icon: './stat/flameres.webp' },
-	{ key: 'frost_res', icon: './stat/frostres.webp' },
-	{ key: 'volt_res', icon: './stat/voltres.webp' },
-	{ key: 'alt_res', icon: './stat/placeholder.webp' }
-];
-
 // Defaults
 // TODO: replace this
 export const DEFAULT_STATS_RIM: BaseStats14 = [
-	'1955732',
-	'20384',
-	'0.000',
-	'72588',
-	'69071',
-	'78061',
-	'73991',
-	'78061',
-	'50.000',
-	'18633',
-	'15308',
-	'17701',
-	'13092',
-	'9375'
+	'1579827',
+	'8081',
+	'0',
+	'18903',
+	'18725',
+	'17762',
+	'19071',
+	'0',
+	'50',
+	'18712',
+	'14455',
+	'13262',
+	'9677',
+	'9746'
 ];
 export const DEFAULT_STYLES: Record<string, string> = {
 	'main-bg-color': '#2F2F37',
@@ -523,4 +505,80 @@ export async function saveObject(
 
 export function cloneObject(obj: object) {
 	return JSON.parse(JSON.stringify(obj));
+}
+
+/**
+ * Loads gear images by fetching them
+ */
+export async function loadGearImages() {
+	if (gear_images_loaded) return;
+	const gear_parts = Object.values(GearPart).filter((part) => part !== GearPart.UNKNOWN);
+	const dirs = ['./gear/', './gear/titan/'];
+
+	const imgs_to_load = gear_parts.flatMap((part) => dirs.map((dir) => `${dir}${part}.png`));
+
+	gear_images_loaded = true;
+	return await Promise.all(
+		imgs_to_load.map(async (img) => {
+			return await fetch(img);
+		})
+	);
+}
+
+/**
+ * Loads stat icons by fetching them
+ */
+export async function loadStatIcons() {
+	if (stat_icons_loaded) return;
+	const icons = [
+		'alt',
+		'crit',
+		'flame',
+		'gatk',
+		'phys',
+		'res_flame',
+		'res_phys',
+		'res',
+		'atk',
+		'dmg',
+		'frost',
+		'hp',
+		'res_alt',
+		'res_frost',
+		'res_volt',
+		'volt'
+	];
+
+	stat_icons_loaded = true;
+	return await Promise.all(
+		icons.map(async (icon) => {
+			return await fetch(`./stat_icon/${icon}.webp`);
+		})
+	);
+}
+
+/**
+ * Loads all weapon images
+ */
+export async function loadWeaponImages() {
+	if (weapon_images_loaded) return;
+	weapon_images_loaded = true;
+	return await Promise.all(
+		AllWeaponIds.map(async (weapon) => {
+			await fetch(`./weapon/${weapon}.webp`);
+		})
+	);
+}
+
+/**
+ * Loads all matrix images
+ */
+export async function loadMatrixImages() {
+	if (matrix_images_loaded) return;
+	matrix_images_loaded = true;
+	return await Promise.all(
+		AllMatrixIds.map(async (matrix) => {
+			await fetch(`./matrix/${matrix.replace('-4p', '')}.webp`);
+		})
+	);
 }

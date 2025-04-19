@@ -4,8 +4,8 @@
 	import { loadObject, openImageDB } from '$lib/scripts/loader';
 	import {
 		applyExtraGearViewStats,
-		createStatView,
-		getAllStats,
+		createStatViewFromStore,
+		getAllStatsFromStore,
 		getEquippedGearViews,
 		updateWeaponMatrix
 	} from '$lib/scripts/loadout';
@@ -15,20 +15,21 @@
 		equipped_gear_views,
 		font_size,
 		gear_views,
+		guide_content,
+		guide_open,
+		guide_title,
 		inner_width,
 		is_mobile,
-		matrix_views,
-		reso_effects,
 		scroll_y,
+		stat_autoupdate,
 		stat_view,
 		toolbar_transform,
 		user_gears,
-		user_loadouts,
-		weapon_views
+		user_loadouts
 	} from '$lib/scripts/stores';
 	import { AppWindowIcon } from '@lucide/svelte';
 	import { onMount, type Component } from 'svelte';
-	import Dialog from './Dialog.svelte';
+	import FloatingWindow from './FloatingWindow.svelte';
 	import ReadySignal from './ReadySignal.svelte';
 	import Toolbar from './Toolbar.svelte';
 
@@ -54,11 +55,9 @@
 	} as NavItem);
 
 	// Dialogs
-	let dialog_open = $state(true);
 
 	// color scheme
 	let styles = $state({});
-	let update_ready = $state(false);
 
 	onMount(async () => {
 		// get font size and check if mobile
@@ -90,55 +89,20 @@
 
 		// create initial weapon and matrix views
 		await updateWeaponMatrix();
-		update_ready = true;
-	});
-
-	// update for equipped_gear_views
-	$effect(() => {
-		if (!update_ready) return;
-		$equipped_gear_views = getEquippedGearViews($user_loadouts[$current_loadout].equipped_gears);
+		$stat_autoupdate = true;
 	});
 
 	// update for stats
 	$effect(() => {
-		if (!update_ready) return;
-		$all_stats = getAllStats(
-			$user_loadouts[$current_loadout],
-			$equipped_gear_views,
-			$weapon_views,
-			$matrix_views,
-			$reso_effects
-		);
-		$stat_view = createStatView(
-			$user_loadouts[$current_loadout],
-			$equipped_gear_views,
-			$weapon_views,
-			$matrix_views,
-			$reso_effects
-		);
+		if (!$stat_autoupdate) return;
+		$equipped_gear_views = getEquippedGearViews($user_loadouts[$current_loadout].equipped_gears);
+		$all_stats = getAllStatsFromStore();
+		$stat_view = createStatViewFromStore();
 		applyExtraGearViewStats();
 	});
-
-	// TODO: make stat page use $all_stats
-
-	// $inspect('Equipped Gear Views', $equipped_gear_views);
-	// $inspect('All stat totals', $all_stats.to_displayed_stats());
-	$inspect('Gear Views', $gear_views);
 </script>
 
 <svelte:window bind:innerWidth={$inner_width} />
-
-<Dialog
-	bind:open={dialog_open}
-	title="Note"
-	blocking={true}
-	blur={true}
-	closable={true}
-	buttons={['OK', 'Cancel']}
->
-	<h3>This WebApp is under development</h3>
-	<p>Will be missing some features.</p>
-</Dialog>
 
 <div class="app-container">
 	<Toolbar bind:active_component bind:is_collapsed />
@@ -147,7 +111,7 @@
 		class="vertical content-container"
 		class:mobile={is_mobile}
 		style="translate: 0 {$toolbar_transform}px; padding-bottom: {$toolbar_transform +
-			$font_size * 3}px"
+			$font_size * 3}px;"
 		onscroll={(e: UIEvent) => {
 			$scroll_y = (e.target as HTMLElement).scrollTop;
 		}}
@@ -157,6 +121,16 @@
 		{/await}
 	</div>
 </div>
+
+<FloatingWindow
+	title={$guide_title}
+	open={$guide_open}
+	guide_content={$guide_content}
+	autoResize={true}
+	onClose={() => ($guide_open = false)}
+>
+	<p>This is a floating window without content.</p>
+</FloatingWindow>
 
 <ReadySignal bind:signal />
 
@@ -416,23 +390,6 @@
 		margin-top: 3rem;
 	}
 
-	/* specific for attribute icons */
-	:global(.attribute-icon) {
-		width: 2.5rem;
-		height: 2.5rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	:global(.attribute-icon img) {
-		display: block;
-		width: 100%;
-		height: 100%;
-		object-fit: none;
-		filter: invert(75%);
-	}
-
 	/* for composing icons */
 
 	:global(.compose.below) {
@@ -455,18 +412,30 @@
 		background-color: rgb(99 99 99);
 	}
 
-	:global(.compose-below) {
+	/* for use with interactive guide */
+	:global(.glowing) {
+		animation: glowPulse 2s ease-in-out infinite;
+		box-shadow:
+			0 0 10px rgba(255, 127, 17, 0.4),
+			0 0 20px rgba(255, 127, 17, 0.5),
+			0 0 30px rgba(255, 127, 17, 0.6);
 		position: relative;
+		z-index: 1;
 	}
 
-	:global(.compose-above) {
-		position: absolute;
-		top: 0;
-		left: 0;
-	}
-
-	:global(.compose-border) {
-		border-radius: 1rem;
-		background-color: rgb(99 99 99);
+	@keyframes glowPulse {
+		0%,
+		100% {
+			box-shadow:
+				0 0 5px rgba(255, 127, 17, 0.3),
+				0 0 10px rgba(255, 127, 17, 0.4),
+				0 0 15px rgba(255, 127, 17, 0.5);
+		}
+		50% {
+			box-shadow:
+				0 0 15px rgba(255, 127, 17, 0.5),
+				0 0 25px rgba(255, 127, 17, 0.6),
+				0 0 35px rgba(255, 127, 17, 0.7);
+		}
 	}
 </style>

@@ -11,10 +11,12 @@
 		GearPart,
 		VALID_GEAR_PARTS
 	} from '$lib/scripts/gears.ts';
-	import { saveObject } from '$lib/scripts/loader.ts';
+	import { loadGearImages, loadStatIcons, saveObject } from '$lib/scripts/loader.ts';
 	import { ActionType } from '$lib/scripts/nav-metadata';
 	import {
 		current_loadout,
+		gear_page_loaded,
+		gear_search_dialog_open,
 		gear_views,
 		is_mobile,
 		user_gears,
@@ -44,7 +46,7 @@
 		SquareIcon,
 		Trash2Icon
 	} from '@lucide/svelte';
-	import { onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import { createWorker } from 'tesseract.js';
 
 	let prev_search_query: string = $state('');
@@ -426,7 +428,10 @@
 			variables.isEquipped = gear.isEquipped ? 1 : 0;
 
 			// @ts-expect-error
+			console.log('query', query);
+			console.log('variables', variables);
 			const new_query = query.replace(ALL_STATS_REGEX, (match) => variables[match].toString());
+			console.log('new_query', new_query);
 			const result = evil(parse(new_query), {});
 
 			if (result) {
@@ -469,6 +474,10 @@
 		gear_info_index = index;
 		gear_info_dialog_open = true;
 	}
+
+	onDestroy(() => {
+		$gear_page_loaded = false;
+	});
 
 	// register
 	let bound_objects = $state({
@@ -531,14 +540,9 @@
 		}
 	];
 
-	onMount(() => {
-		setTimeout(() => {
-			has_measured = false;
-		}, 2000);
+	$effect(() => {
+		$gear_search_dialog_open = search_dialog_open;
 	});
-
-	$inspect('has_measured', has_measured);
-	$inspect('gear view', $gear_views);
 </script>
 
 {#snippet gear_actions(gear: GearView)}
@@ -571,13 +575,13 @@
 			{#if gear}
 				<button class="gear-button icon" onclick={() => showGearInfo(gear.id)} style="opacity: 1">
 					<img
-						src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{gear.part}.png"
+						src="./{bound_objects.titanMode ? 'gear/titan' : 'gear'}/{gear.part}.png"
 						alt="Gear"
 					/>
 				</button>
 			{:else}
 				<img
-					src="./{bound_objects.titanMode ? 'titan_gear' : 'gear'}/{partIfNoGear}.png"
+					src="./{bound_objects.titanMode ? 'gear/titan' : 'gear'}/{partIfNoGear}.png"
 					alt="Gear"
 					style="filter:grayscale(100%)"
 				/>
@@ -587,172 +591,183 @@
 {/snippet}
 
 <div class="full-width">
-	<div class="block">
-		<h1>Gear List</h1>
+	{#await (async () => {
+		await Promise.all([loadGearImages(), loadStatIcons()]);
+		has_measured = false;
+		$gear_page_loaded = true;
+	})()}
+		<div class="block">
+			<h1>Gear List</h1>
+			<p>Still loading, be patient...</p>
+		</div>
+	{:then}
+		<div class="block">
+			<h1>Gear List</h1>
 
-		{#if Object.keys($user_loadouts).length > 0 && $current_loadout}
-			<div class="horizontal" style="gap: 1rem; margin: 1rem;">
-				<div class="hori-item">
-					<StatIcon stat={$user_loadouts[$current_loadout].element as Stat} size="2rem" />
-				</div>
-				<div class="hori-item">
-					<span>{$user_loadouts[$current_loadout].name}</span>
-				</div>
-			</div>
-		{/if}
-
-		{#if is_searching}
-			<p>Searching for: {prev_search_query}</p>
-
-			<button class="border red-bg" id="stop-search" onclick={() => (is_searching = false)}>
-				<SearchXIcon />
-				<label class="in-button" for="stop-search"> Stop Searching </label>
-			</button>
-		{:else if is_showing_equipped_gears}
-			<p>Showing equipped gears.</p>
-
-			<button
-				class="border red-bg"
-				id="stop-show"
-				onclick={() => {
-					is_showing_equipped_gears = false;
-					has_measured = false;
-				}}
-			>
-				<SearchXIcon />
-				<label class="in-button" for="stop-show"> Stop Showing </label>
-			</button>
-		{:else}
-			<div class="horizontal">
-				<button class="border" id="add-gear" onclick={() => (screenshot_dialog_open = true)}>
-					<ImagePlusIcon />
-					<label class="in-button" for="add-gear">Add Gear</label>
-				</button>
-				<button class="border" id="start-search" onclick={() => (search_dialog_open = true)}>
-					<SearchIcon />
-					<label class="in-button" for="start-search">Search & Sort Gear</label>
-				</button>
-				<button
-					class="border"
-					id="show-equipped"
-					onclick={() => {
-						updateEquippedGears();
-						is_showing_equipped_gears = true;
-						has_measured = false;
-					}}
-				>
-					<ShirtIcon />
-					<label class="in-button" for="show-equipped">Show Equipped</label>
-				</button>
-			</div>
-		{/if}
-	</div>
-
-	<div class="noslider-x gear-grid">
-		<FlexGrid
-			by_column={false}
-			max_cols={is_showing_equipped_gears ? 2 : 4}
-			vertical_gap="0rem"
-			horizontal_gap="5rem"
-			bind:has_measured
-			expand_width={false}
-		>
-			{#if $gear_views.length !== 0 && !is_searching && !is_showing_equipped_gears}
-				{#each $gear_views as gear}
-					<div class="gear-cell gear-id-{gear.id}">
-						<span style="width: {span_length * 0.75}rem">{gear.id}</span>
-						{@render gear_icon(gear)}
-
-						{#if bound_objects.fourStatMode}
-							<div class="stats-container">
-								<div class="stats-grid">
-									{#each GRID_ORDERING as item}
-										<div class="stat-item {item.position}">
-											<div class="stat-content" class:icon={bound_objects.iconStats}>
-												{#if bound_objects.iconStats}
-													<div class="stat-icon">
-														<StatIcon stat={gear.stats[item.index].stat} size="75%" />
-													</div>
-												{:else}
-													{gear.stats[item.index].stat_label ?? ''}
-												{/if}
-
-												{#if bound_objects.titanMode}
-													+{gear.stats[item.index].titan_value_label ?? ''}
-												{:else}
-													+{gear.stats[item.index].value_label ?? ''}
-												{/if}
-											</div>
-										</div>
-									{/each}
-								</div>
-							</div>
-						{:else}
-							<div class="single-stat">
-								<div class="stat-content" class:icon={bound_objects.iconStats}>
-									{#if bound_objects.iconStats}
-										<div class="stat-icon">
-											<StatIcon stat={gear.stats[0].stat} size="75%" />
-										</div>
-									{:else}
-										{gear.stats[0].stat_label ?? ''}
-									{/if}
-									{#if bound_objects.titanMode}
-										+{gear.stats[0].titan_value_label ?? ''}
-									{:else}
-										+{gear.stats[0].value_label ?? ''}
-									{/if}
-								</div>
-							</div>
-						{/if}
-
-						{#if !$is_mobile}
-							{@render gear_actions(gear)}
-						{/if}
+			{#if Object.keys($user_loadouts).length > 0 && $current_loadout}
+				<div class="horizontal" style="gap: 1rem; margin: 1rem;">
+					<div class="hori-item">
+						<StatIcon stat={$user_loadouts[$current_loadout].element as Stat} size="2rem" />
 					</div>
-				{/each}
-			{:else if search_views.length !== 0 && is_searching}
-				{#each search_views as gear}
-					<div class="gear-cell gear-id-{gear.id}">
-						<span style="width: {span_length * 0.75}rem">{gear.id}</span>
-						{@render gear_icon($gear_views[gear.id])}
-
-						<div class="single-stat">
-							<div class="stat-content" class:icon={bound_objects.iconStats}>
-								+{gear.stats[0].value_label ?? ''}
-							</div>
-						</div>
-
-						{#if !$is_mobile}
-							{@render gear_actions($gear_views[gear.id])}
-						{/if}
-					</div>
-				{/each}
-			{:else if is_showing_equipped_gears}
-				{#each equipped_gears as gearId, partIndex}
-					<div class="gear-cell gear-id-{gearId}">
-						<span style="max-width: {span_length * 0.75}rem; width: {span_length * 0.75}rem"
-							>{gearId === -1 ? '' : gearId}</span
-						>
-						{@render gear_icon($gear_views[gearId], VALID_GEAR_PARTS[partIndex])}
-
-						{@render gear_actions($gear_views[gearId])}
-					</div>
-				{/each}
-			{:else}
-				<div class="gear-cell">
-					<div class="gear-icon">
-						<div class="icon-container-nogear">
-							<img src="./gear/A.png" alt="Armor" />
-						</div>
-					</div>
-					<div class="single-stat">
-						<div class="stat">No gears to show here!</div>
+					<div class="hori-item">
+						<span>{$user_loadouts[$current_loadout].name}</span>
 					</div>
 				</div>
 			{/if}
-		</FlexGrid>
-	</div>
+
+			{#if is_searching}
+				<p>Searching for: {prev_search_query}</p>
+
+				<button class="border red-bg" id="stop-search" onclick={() => (is_searching = false)}>
+					<SearchXIcon />
+					<label class="in-button" for="stop-search"> Stop Searching </label>
+				</button>
+			{:else if is_showing_equipped_gears}
+				<p>Showing equipped gears.</p>
+
+				<button
+					class="border red-bg"
+					id="stop-show"
+					onclick={() => {
+						is_showing_equipped_gears = false;
+						has_measured = false;
+					}}
+				>
+					<SearchXIcon />
+					<label class="in-button" for="stop-show"> Stop Showing </label>
+				</button>
+			{:else}
+				<div class="horizontal">
+					<button class="border" id="add-gear" onclick={() => (screenshot_dialog_open = true)}>
+						<ImagePlusIcon />
+						<label class="in-button" for="add-gear">Add Gear</label>
+					</button>
+					<button class="border" id="start-search" onclick={() => (search_dialog_open = true)}>
+						<SearchIcon />
+						<label class="in-button" for="start-search">Search & Sort Gear</label>
+					</button>
+					<button
+						class="border"
+						id="show-equipped"
+						onclick={() => {
+							updateEquippedGears();
+							is_showing_equipped_gears = true;
+							has_measured = false;
+						}}
+					>
+						<ShirtIcon />
+						<label class="in-button" for="show-equipped">Show Equipped</label>
+					</button>
+				</div>
+			{/if}
+		</div>
+
+		<div class="noslider-x gear-grid">
+			<FlexGrid
+				by_column={false}
+				max_cols={is_showing_equipped_gears ? 2 : 4}
+				vertical_gap="0rem"
+				horizontal_gap="5rem"
+				bind:has_measured
+				expand_width={false}
+			>
+				{#if $gear_views.length !== 0 && !is_searching && !is_showing_equipped_gears}
+					{#each $gear_views as gear}
+						<div class="gear-cell gear-id-{gear.id}">
+							<span style="width: {span_length * 0.75}rem">{gear.id}</span>
+							{@render gear_icon(gear)}
+
+							{#if bound_objects.fourStatMode}
+								<div class="stats-container">
+									<div class="stats-grid">
+										{#each GRID_ORDERING as item}
+											<div class="stat-item {item.position}">
+												<div class="stat-content" class:icon={bound_objects.iconStats}>
+													{#if bound_objects.iconStats}
+														<div class="stat-icon">
+															<StatIcon stat={gear.stats[item.index].stat} size="75%" />
+														</div>
+													{:else}
+														{gear.stats[item.index].stat_label ?? ''}
+													{/if}
+
+													{#if bound_objects.titanMode}
+														+{gear.stats[item.index].titan_value_label ?? ''}
+													{:else}
+														+{gear.stats[item.index].value_label ?? ''}
+													{/if}
+												</div>
+											</div>
+										{/each}
+									</div>
+								</div>
+							{:else}
+								<div class="single-stat">
+									<div class="stat-content" class:icon={bound_objects.iconStats}>
+										{#if bound_objects.iconStats}
+											<div class="stat-icon">
+												<StatIcon stat={gear.stats[0].stat} size="75%" />
+											</div>
+										{:else}
+											{gear.stats[0].stat_label ?? ''}
+										{/if}
+										{#if bound_objects.titanMode}
+											+{gear.stats[0].titan_value_label ?? ''}
+										{:else}
+											+{gear.stats[0].value_label ?? ''}
+										{/if}
+									</div>
+								</div>
+							{/if}
+
+							{#if !$is_mobile}
+								{@render gear_actions(gear)}
+							{/if}
+						</div>
+					{/each}
+				{:else if search_views.length !== 0 && is_searching}
+					{#each search_views as gear}
+						<div class="gear-cell gear-id-{gear.id}">
+							<span style="width: {span_length * 0.75}rem">{gear.id}</span>
+							{@render gear_icon($gear_views[gear.id])}
+
+							<div class="single-stat">
+								<div class="stat-content" class:icon={bound_objects.iconStats}>
+									+{gear.stats[0].value_label ?? ''}
+								</div>
+							</div>
+
+							{#if !$is_mobile}
+								{@render gear_actions($gear_views[gear.id])}
+							{/if}
+						</div>
+					{/each}
+				{:else if is_showing_equipped_gears}
+					{#each equipped_gears as gearId, partIndex}
+						<div class="gear-cell gear-id-{gearId}">
+							<span style="max-width: {span_length * 0.75}rem; width: {span_length * 0.75}rem"
+								>{gearId === -1 ? '' : gearId}</span
+							>
+							{@render gear_icon($gear_views[gearId], VALID_GEAR_PARTS[partIndex])}
+
+							{@render gear_actions($gear_views[gearId])}
+						</div>
+					{/each}
+				{:else}
+					<div class="gear-cell">
+						<div class="gear-icon">
+							<div class="icon-container-nogear">
+								<img src="./gear/A.png" alt="Armor" />
+							</div>
+						</div>
+						<div class="single-stat">
+							<div class="stat">No gears to show here!</div>
+						</div>
+					</div>
+				{/if}
+			</FlexGrid>
+		</div>
+	{/await}
 </div>
 
 <UploadScreenshot

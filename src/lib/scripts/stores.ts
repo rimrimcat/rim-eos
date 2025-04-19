@@ -3,6 +3,7 @@ import type {
 	AllLoadouts,
 	CharacterStat,
 	GearView,
+	GuideItem,
 	MatrixView,
 	ResoEffect,
 	ResoTriggerCounts,
@@ -17,6 +18,25 @@ export const is_mobile = writable<boolean>(false);
 export const font_size = writable<number>(16);
 export const inner_width = writable<number>(1000);
 export const toolbar_transform = writable<number>(0);
+
+// for autoupdate of stats
+export const stat_autoupdate = writable<boolean>(false);
+
+// interactive guide
+export const guide_title = writable<string>('');
+export const guide_open = writable<boolean>(false);
+export const guide_content = writable<GuideItem[] | null>(null);
+
+// some stuff interactive guide can access
+export const loadout_new_or_duplicate_dialog_open = writable<boolean>(false);
+export const loadout_is_editing = writable<boolean>(false);
+export const stat_adjustment_dialog_open = writable<boolean>(false);
+export const gear_search_dialog_open = writable<boolean>(false);
+
+// check if page is fully loaded
+export const gear_page_loaded = writable<boolean>(false);
+export const loadout_page_loaded = writable<boolean>(false);
+export const stat_page_loaded = writable<boolean>(false);
 
 // user data
 export const user_gears = writable<UserGear[]>([]);

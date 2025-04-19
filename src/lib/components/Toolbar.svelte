@@ -77,7 +77,7 @@
 
 <div class="mobile-toolbar" bind:offsetHeight={offset_height}>
 	<div class="mobile-header">
-		<button class="collapse-toggle" onclick={toggleCollapse}>
+		<button class="collapse-toggle" onclick={toggleCollapse} id="toolbar-collapse-toggle">
 			{#if is_collapsed}
 				<ChevronDown />
 			{:else}
@@ -96,6 +96,7 @@
 					<button
 						class="nav-item mobile-item"
 						class:active={active_component.id === nav_item.id}
+						id={`nav-item-${nav_item.id}`}
 						onclick={() => selectComponent(nav_item)}
 						in:fly={{ y: 20, delay: i * 50, duration: 250, easing: cubicOut }}
 						out:fade={{ duration: 150 }}

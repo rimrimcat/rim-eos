@@ -590,6 +590,16 @@ export function getAllStats(
 		.add(gwmr_totals);
 }
 
+export function getAllStatsFromStore() {
+	return getAllStats(
+		get(user_loadouts)[get(current_loadout)],
+		get(equipped_gear_views),
+		get(weapon_views),
+		get(matrix_views),
+		get(reso_effects)
+	);
+}
+
 export function createStatView(
 	selected_loadout: Loadout,
 	equipped_gear_views: GearView[],
@@ -626,6 +636,16 @@ export function createStatView(
 			value: __use_percent ? formatValue('float3d', __val) : formatValue('int', __val)
 		};
 	});
+}
+
+export function createStatViewFromStore() {
+	return createStatView(
+		get(user_loadouts)[get(current_loadout)],
+		get(equipped_gear_views),
+		get(weapon_views),
+		get(matrix_views),
+		get(reso_effects)
+	);
 }
 
 export function getEquippedGearViews(equipped_gears: EquippedGear): GearView[] {
@@ -668,6 +688,10 @@ export function turnGearToEffect(gear: GearView): GearEffect {
 	};
 }
 
+/**
+ * Applies extra stats to gear views
+ * Takes in gear_views, all_stats, and equipped_gear_views from store, then modifies gear_views again
+ */
 export async function applyExtraGearViewStats() {
 	const gear_views_ = get(gear_views);
 
@@ -675,19 +699,21 @@ export async function applyExtraGearViewStats() {
 	const all_stats_ = get(all_stats);
 	const eq_gear_views = get(equipped_gear_views);
 
+	const all_stats_lump = all_stats_.lump();
+
 	const all_stats_minus_eq_gear: Record<ValidGearPart, LumpedStatCollection> = {
-		H: new LumpedStatCollection(),
-		S: new LumpedStatCollection(),
-		A: new LumpedStatCollection(),
-		C: new LumpedStatCollection(),
-		B: new LumpedStatCollection(),
-		L: new LumpedStatCollection(),
-		G: new LumpedStatCollection(),
-		T: new LumpedStatCollection(),
-		V: new LumpedStatCollection(),
-		N: new LumpedStatCollection(),
-		X: new LumpedStatCollection(),
-		R: new LumpedStatCollection()
+		H: all_stats_lump,
+		S: all_stats_lump,
+		A: all_stats_lump,
+		C: all_stats_lump,
+		B: all_stats_lump,
+		L: all_stats_lump,
+		G: all_stats_lump,
+		T: all_stats_lump,
+		V: all_stats_lump,
+		N: all_stats_lump,
+		X: all_stats_lump,
+		R: all_stats_lump
 	};
 	await Promise.all(
 		eq_gear_views.map(async (gear) => {
@@ -736,7 +762,4 @@ export async function applyExtraGearViewStats() {
 	);
 
 	gear_views.set(await new_gear_views_);
-	console.log('extra gear view stats applied.');
-
-	// calculate stat contribution
 }

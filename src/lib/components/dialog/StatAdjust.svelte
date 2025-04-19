@@ -1,19 +1,21 @@
 <script lang="ts">
-	import { saveObject, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/loader';
+	import { saveObject } from '$lib/scripts/loader';
 	import { getGearTotal, getWeaponTotal } from '$lib/scripts/loadout';
-	import { STAT_LABELS, StatCollection } from '$lib/scripts/stats';
+	import { STAT_LABELS, StatCollection, TEMPLATE_USER_ATTRIBUTES } from '$lib/scripts/stats';
 	import { current_loadout, user_loadouts } from '$lib/scripts/stores';
 	import type {
 		AtkStats5,
 		AtkStats5Number,
 		BaseStats14,
 		BaseStats16,
-		CharacterStat
+		CharacterStat,
+		StatGearFinal
 	} from '$lib/types/index';
 	import { ShirtIcon, SlashIcon, SwordIcon, SyringeIcon } from '@lucide/svelte';
 	import type { Component } from 'svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
+	import StatIcon from '../StatIcon.svelte';
 
 	let {
 		open = $bindable(false),
@@ -187,9 +189,7 @@
 				>
 					{#each raw_attribute_view.slice(3, 8) as attribute, index}
 						<div class="item-flex">
-							<div class="attribute-icon">
-								<img src={attribute.icon} alt={attribute.name + ' icon'} />
-							</div>
+							<StatIcon stat={attribute.key as StatGearFinal} size="100%" />
 							<div class="vertical-left">
 								<div class="stat-name">Base {attribute.name}</div>
 								<div class="stat-value-text">
@@ -281,13 +281,6 @@
 	.stat-value-text {
 		font-size: 1.25rem;
 		padding-left: 0.4rem;
-	}
-
-	.attribute-icon img {
-		/* make smaller */
-		width: 100%;
-		height: 100%;
-		object-fit: contain;
 	}
 
 	button.toggle {
