@@ -3,7 +3,6 @@ import type {
 	GearView,
 	GearViewStatLong,
 	GearViewStatShort,
-	Loadout,
 	StatGearExtra,
 	StatGearTitan,
 	StatGearUser,
@@ -12,7 +11,7 @@ import type {
 import { get } from 'svelte/store';
 import { STAT_CONSTANTS } from './json-loader';
 import { STAT_LABELS } from './stats';
-import { current_loadout, user_loadouts } from './stores';
+import { current_loadout, gear_views, user_gears, user_loadouts } from './stores';
 import { formatValue } from './validation';
 
 /**
@@ -237,149 +236,6 @@ function applyRainbow(
 	});
 }
 
-export async function createGearViewFromLoadout(
-	gear: UserGear,
-	equip: boolean = false,
-	loadout: Loadout
-) {
-	const stats: GearViewStatLong[] = [];
-	const derived: GearViewStatShort[] = [];
-	let id: number = -1;
-	let part: GearPart = GearPart.UNKNOWN;
-	let hash = '';
-	let augment: [GearAugment, number] | undefined = undefined;
-
-	Object.entries(gear).forEach(([key, value]) => {
-		switch (key) {
-			case 'id':
-				id = value as number;
-				break;
-			case 'part':
-				part = value as GearPart;
-				hash += value;
-				break;
-			case 'dateAdded':
-				break;
-			case 'augment':
-				augment = value as [GearAugment, number];
-				break;
-			default: {
-				const isTitan = key.startsWith('titan_');
-				const value_format = key.includes('_percent') ? 'float3d' : 'int';
-
-				let _stat: StatGearUser;
-				let _stat_value: number;
-				let stat_label: string;
-				let stat_value_label: string;
-
-				let titan_key: StatGearTitan;
-				let titan_label: string;
-				let titan_value: number;
-				let titan_value_label: string;
-
-				if (isTitan) {
-					// derive normal stat from corresponding titan stat
-					titan_key = key as StatGearTitan;
-					titan_label = STAT_LABELS[titan_key] ?? key;
-					titan_value = Number(value);
-					titan_value_label = formatValue(value_format, value as string);
-
-					_stat = key.replace('titan_', '') as StatGearUser;
-					_stat_value = reverseTitanValue(_stat, titan_value);
-					stat_label = STAT_LABELS[_stat] ?? key;
-					stat_value_label = formatValue(value_format, _stat_value.toString());
-				} else {
-					_stat = key as StatGearUser;
-					_stat_value = Number(value);
-					stat_label = STAT_LABELS[_stat] ?? key;
-					stat_value_label = formatValue(value_format, _stat_value.toString());
-
-					titan_key = 'titan_' + _stat;
-					titan_label = 'Titan ' + stat_label;
-					titan_value = getTitanValue(_stat, _stat_value) + _stat_value;
-					titan_value_label = formatValue(value_format, titan_value.toString());
-				}
-
-				stats.push({
-					stat: _stat,
-					stat_label,
-					value: _stat_value,
-					value_label: stat_value_label,
-					roll: getRollValue(_stat, _stat_value),
-					titan_stat_label: titan_label,
-					titan_value_label: titan_value_label
-				});
-
-				// normal stat
-				derived.push({
-					stat: _stat,
-					stat_label,
-					value: _stat_value,
-					value_label: stat_value_label
-				});
-
-				// titan stat
-				derived.push({
-					stat: titan_key as StatGearTitan,
-					stat_label: titan_label,
-					value: titan_value,
-					value_label: titan_value_label
-				});
-
-				hash += _stat + stat_value_label;
-
-				break;
-			}
-		}
-	});
-	stats.sort((a, b) => (b.roll ?? 0) - (a.roll ?? 0));
-
-	const bestRoll = stats[0];
-
-	// FOR NOW, LENIENT MAX STAT DETECTION
-	if (bestRoll.stat.includes('_atk') && !bestRoll.stat.includes('percent')) {
-		const eleAtkStats = stats.filter(
-			(stat) => stat.stat.includes('_atk') && !stat.stat.includes('percent')
-		);
-
-		if (eleAtkStats.length >= 1) {
-			// rainbow gear!
-
-			const rainbowTitanValue =
-				getTitanValue(bestRoll.stat, bestRoll.value) * 0.95 + bestRoll.value;
-			const rainbowTitanValueLabel = formatValue('int', rainbowTitanValue.toString());
-
-			applyRainbow(RAINBOW_TITAN_ATK, derived, rainbowTitanValue, rainbowTitanValueLabel);
-		}
-	} else if (bestRoll.stat.includes('_atk') && bestRoll.stat.includes('percent')) {
-		const eleAtkPercentStats = stats.filter(
-			(stat) => stat.stat.includes('_atk') && stat.stat.includes('percent')
-		);
-
-		if (eleAtkPercentStats.length >= 1) {
-			const rainbowTitanValue =
-				getTitanValue(bestRoll.stat, bestRoll.value) * 0.95 + bestRoll.value;
-			const rainbowTitanValueLabel = formatValue('float3d', rainbowTitanValue.toString());
-
-			applyRainbow(RAINBOW_TITAN_ATK_PERCENT, derived, rainbowTitanValue, rainbowTitanValueLabel);
-		}
-	}
-
-	const isEquipped =
-		equip ||
-		(part !== GearPart.UNKNOWN && loadout.equipped_gears[gear.part as ValidGearPart] === gear.id);
-
-	return {
-		id,
-		part,
-		stats,
-		hash,
-		derived,
-		isEquipped,
-		augment
-	};
-}
-
 export async function createGearView(gear: UserGear, equip: boolean = false): Promise<GearView> {
 	const stats: GearViewStatLong[] = [];
 	const derived: GearViewStatShort[] = [];
@@ -519,4 +375,8 @@ export async function createGearView(gear: UserGear, equip: boolean = false): Pr
 		isEquipped,
 		augment
 	};
+}
+
+export async function createAllGearViewsFromLoadout() {
+	gear_views.set(await Promise.all(get(user_gears).map((gear) => createGearView(gear, false))));
 }
