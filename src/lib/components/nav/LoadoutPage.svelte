@@ -20,7 +20,7 @@
 		turnGearToEffect,
 		updateSingleMatrixView,
 		updateSingleWeaponView,
-		updateWeaponMatrix
+		updateWeaponMatrixRelicFromStore
 	} from '$lib/scripts/loadout';
 	import { ActionType } from '$lib/scripts/nav-metadata';
 	import {
@@ -270,7 +270,7 @@
 		$current_loadout = loadout;
 
 		updateAllFromStores();
-		updateWeaponMatrix();
+		updateWeaponMatrixRelicFromStore();
 
 		// update gear views
 		Promise.all($user_gears.map((gear) => createGearView(gear, false))).then((gearViews) => {
@@ -306,13 +306,13 @@
 	function onSwitchMatrix(id: MatrixIds) {
 		user_matrices[switch_index] = { id };
 		saveWeaponMatrixLoadout();
-		updateWeaponMatrix();
+		updateWeaponMatrixRelicFromStore();
 	}
 
 	function onSwitchWeapon(id: WeaponsIds) {
 		user_weapons[switch_index] = { id };
 		saveWeaponMatrixLoadout();
-		updateWeaponMatrix();
+		updateWeaponMatrixRelicFromStore();
 	}
 
 	const ACTIONS = [
@@ -647,7 +647,7 @@
 															user_weapons[index].setting[settingIndex] = currKey;
 															saveWeaponMatrixLoadout();
 															// nola can change elements and reso
-															updateWeaponMatrix();
+															updateWeaponMatrixRelicFromStore();
 														}}
 													>
 														<div class="vertical center">

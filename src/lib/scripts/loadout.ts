@@ -20,8 +20,11 @@ import type {
 	ResoTriggerCounts,
 	StatAtkImprovement,
 	StatKey,
+	UserMatrix,
+	UserRelic,
 	UserWeapon,
 	ValidGearPart,
+	Weapon,
 	WeaponEffect,
 	WeaponEffectsIds,
 	WeaponSettingStuff,
@@ -52,7 +55,6 @@ import {
 	relic_views,
 	reso_counts,
 	reso_effects,
-	reso_stat,
 	user_loadouts,
 	weapon_views
 } from './stores';
@@ -259,256 +261,6 @@ export function dedupeMatEffs(effects: MatrixFinalEffect[]) {
 	}, [] as MatrixFinalEffect[]);
 }
 
-export async function updateBaseWeapons() {
-	const equipped_weapons =
-		get(user_loadouts)[get(current_loadout)].equipped_weapons ??
-		([{ id: 'none' }, { id: 'none' }, { id: 'none' }] as UserWeapon[]);
-
-	base_weapons.set(await Promise.all(equipped_weapons.map((weapon) => getWeapon(weapon.id))));
-}
-
-export async function updateResoCounts() {
-	const equipped_weapons =
-		get(user_loadouts)[get(current_loadout)].equipped_weapons ??
-		([{ id: 'none' }, { id: 'none' }, { id: 'none' }] as UserWeapon[]);
-
-	reso_counts.set(
-		get(base_weapons).reduce((counts, weapon, index) => {
-			weapon.resonances.forEach((resonance) => {
-				counts[resonance] = (counts[resonance] ?? 0) + 1;
-			});
-
-			if (weapon.setting) {
-				const selected_settings = equipped_weapons[index].setting ?? weapon.setting.default;
-
-				selected_settings.forEach((setting) => {
-					// @ts-expect-error: its oke
-					const setting_data = weapon.setting.choices[setting];
-					if (setting_data.resonances) {
-						setting_data.resonances.forEach((resonance) => {
-							counts[resonance] = (counts[resonance] ?? 0) + 1;
-						});
-					}
-				});
-			}
-
-			return counts;
-		}, {} as ResoTriggerCounts)
-	);
-}
-
-export async function updateResoEffects() {
-	const equipped_weapons =
-		get(user_loadouts)[get(current_loadout)].equipped_weapons ??
-		([{ id: 'none' }, { id: 'none' }, { id: 'none' }] as UserWeapon[]);
-
-	const _reso_effects_list: ResoEffect[] = [];
-
-	await Promise.all(
-		get(base_weapons).map(async (weapon, index) => {
-			if (weapon.reso_effects) {
-				await pushValidResoEffect(weapon.reso_effects, _reso_effects_list);
-			}
-
-			if (weapon.setting) {
-				const selected_settings = equipped_weapons[index].setting ?? weapon.setting.default;
-
-				await Promise.all(
-					selected_settings.map(async (setting) => {
-						// @ts-expect-error : its oke
-						const setting_data = weapon.setting.choices[setting];
-						if (setting_data.reso_effects) {
-							await pushValidResoEffect(setting_data.reso_effects, _reso_effects_list);
-						}
-					})
-				);
-			}
-		})
-	);
-	// add default reso
-	_reso_effects_list.push(await getResoEffects('atk'));
-	_reso_effects_list.push(await getResoEffects('atk-teamplay'));
-	_reso_effects_list.push(await getResoEffects('bene'));
-	_reso_effects_list.push(await getResoEffects('bene-teamplay'));
-	_reso_effects_list.push(await getResoEffects('armor-dissolve'));
-	_reso_effects_list.push(await getResoEffects('armor-dissolve-teamplay'));
-	_reso_effects_list.push(await getResoEffects('force-impact'));
-	_reso_effects_list.push(await getResoEffects('force-impact-teamplay'));
-
-	let loadout_resonance_stat = new StatCollection();
-	const _reso_effects: ResoEffect[] = [];
-	const _reso_counts = get(reso_counts);
-	_reso_effects_list.forEach((eff) => {
-		if (eff.require_reso) {
-			const required_reso_count = eff.require_reso_count ?? 2;
-			if ((_reso_counts[eff.require_reso] ?? 0) < required_reso_count) {
-				return;
-			}
-
-			if (eff.require_teamplay) {
-				return;
-			}
-
-			loadout_resonance_stat = loadout_resonance_stat.add(new StatCollection(eff.stats));
-			_reso_effects.push(eff);
-		}
-	});
-
-	reso_effects.set(_reso_effects);
-	reso_stat.set(loadout_resonance_stat);
-}
-
-export async function updateWeaponViews() {
-	const equipped_weapons = get(user_loadouts)[get(current_loadout)].equipped_weapons ?? [
-		{ id: 'none' },
-		{ id: 'none' },
-		{ id: 'none' }
-	];
-	const loadout_reso_counts = get(reso_counts);
-
-	weapon_views.set(
-		await Promise.all(
-			get(base_weapons).map(async (weapon, index) => {
-				const advancement = equipped_weapons[index].advancement ?? 0;
-
-				// get base stat of weapon
-				const _base_stat: { [key in StatKey]?: number } = {};
-				Object.entries(WEAPON_BASE_STATS[weapon.base_stat]).forEach(([stat, value]) => {
-					_base_stat[stat as StatKey] = value[0] + ((value[1] - value[0]) * advancement) / 6;
-				});
-				const base_stat = new StatCollection(_base_stat);
-
-				// active effects
-				const effects: WeaponEffect[] = [];
-				const stat_ = [new StatCollection()];
-
-				await pushAllValidWeaponEffects(
-					weapon.effects ?? [],
-					advancement,
-					loadout_reso_counts,
-					effects,
-					stat_
-				);
-				const setting_ids = equipped_weapons[index].setting ?? weapon.setting?.default ?? [];
-				const setting: WeaponSettingStuff[] = setting_ids.map((setting_) => {
-					// @ts-expect-error : it oke
-					return weapon.setting.choices[setting_];
-				});
-
-				if (weapon.setting) {
-					await Promise.all(
-						setting_ids.map(async (setting_) => {
-							// @ts-expect-error: it oke
-							const setting_data = weapon.setting.choices[setting_];
-							if (setting_data.effects) {
-								return await pushAllValidWeaponEffects(
-									setting_data.effects,
-									advancement,
-									loadout_reso_counts,
-									effects,
-									stat_
-								);
-							}
-						})
-					);
-				}
-				const stat = stat_[0];
-
-				return {
-					id: weapon.id,
-					name: weapon.name,
-					resonances: weapon.resonances,
-					onfieldness: weapon.onfieldness,
-					advancement,
-					setting,
-
-					base_stat,
-					effects,
-					stat
-				} as WeaponView;
-			})
-		)
-	);
-}
-
-export async function updateMatrixViews() {
-	const selected_loadout = get(user_loadouts)[get(current_loadout)];
-	const equipped_weapons = selected_loadout.equipped_weapons ?? [
-		{ id: 'none' },
-		{ id: 'none' },
-		{ id: 'none' }
-	];
-	const equipped_matrices = selected_loadout.equipped_matrices ?? [
-		{ id: 'none' },
-		{ id: 'none' },
-		{ id: 'none' }
-	];
-
-	matrix_views.set(
-		await Promise.all(
-			equipped_matrices.map(async (matrix) => {
-				const advancement = matrix.advancement ?? 0;
-
-				const effects: MatrixFinalEffect[] = [];
-				const stat_ = [new StatCollection()];
-				const matrix_ = await getMatrix(matrix.id);
-
-				await pushAllValidMatrixEffects(
-					matrix_.effects,
-					advancement,
-					get(reso_counts),
-					effects,
-					stat_,
-					equipped_weapons
-				);
-				const stat = stat_[0];
-
-				return {
-					id: matrix_.id,
-					name: matrix_.name,
-					advancement,
-					effects,
-					stat
-				} as MatrixView;
-			})
-		)
-	);
-}
-
-export async function updateRelicViews() {
-	const selected_loadout = get(user_loadouts)[get(current_loadout)];
-	const equipped_relics = selected_loadout.equipped_relics ?? [{ id: 'none' }, { id: 'none' }];
-
-	relic_views.set(
-		await Promise.all(
-			equipped_relics.map(async (relic) => {
-				const advancement = relic.advancement ?? 0;
-
-				const effects: RelicEffect[] = [];
-				const stat_ = [new StatCollection()];
-				const relic_ = await getRelic(relic.id);
-
-				await pushAllValidRelicEffects(
-					relic_.effects,
-					advancement,
-					get(reso_counts),
-					effects,
-					stat_
-				);
-				const stat = stat_[0];
-
-				return {
-					id: relic_.id,
-					name: relic_.name,
-					advancement,
-					effects,
-					stat
-				} as RelicView;
-			})
-		)
-	);
-}
-
 export async function updateSingleWeaponView(index: number) {
 	const weapon = get(base_weapons)[index];
 	const user_weapons = get(user_loadouts)[get(current_loadout)].equipped_weapons ?? [
@@ -622,25 +374,251 @@ export async function updateSingleMatrixView(index: number) {
 	matrix_views.set(loadout_matrix_views);
 }
 
-// creates gearView and updates loadout_resonance_stat
-export async function updateWeaponMatrix() {
-	// update base weapons
-	await updateBaseWeapons();
+export async function obtainBaseWeapons(equipped_weapons: UserWeapon[]) {
+	return await Promise.all(equipped_weapons.map((weapon) => getWeapon(weapon.id)));
+}
 
-	// create counts of resonance triggers
-	await updateResoCounts();
+export async function obtainResoCounts(equipped_weapons: UserWeapon[], base_weapons: Weapon[]) {
+	return base_weapons.reduce((counts, weapon, index) => {
+		weapon.resonances.forEach((resonance) => {
+			counts[resonance] = (counts[resonance] ?? 0) + 1;
+		});
 
-	// apply resonance effects
-	await updateResoEffects();
+		if (weapon.setting) {
+			const selected_settings = equipped_weapons[index].setting ?? weapon.setting.default;
 
-	// iterate through weapons
-	await updateWeaponViews();
+			selected_settings.forEach((setting) => {
+				// @ts-expect-error: its oke
+				const setting_data = weapon.setting.choices[setting];
+				if (setting_data.resonances) {
+					setting_data.resonances.forEach((resonance) => {
+						counts[resonance] = (counts[resonance] ?? 0) + 1;
+					});
+				}
+			});
+		}
 
-	// matrices
-	await updateMatrixViews();
+		return counts;
+	}, {} as ResoTriggerCounts);
+}
 
-	// relics
-	await updateRelicViews();
+export async function obtainResoEffects(
+	equipped_weapons: UserWeapon[],
+	reso_counts: ResoTriggerCounts
+) {
+	const _reso_effects_list: ResoEffect[] = [];
+
+	await Promise.all(
+		get(base_weapons).map(async (weapon, index) => {
+			if (weapon.reso_effects) {
+				await pushValidResoEffect(weapon.reso_effects, _reso_effects_list);
+			}
+
+			if (weapon.setting) {
+				const selected_settings = equipped_weapons[index].setting ?? weapon.setting.default;
+
+				await Promise.all(
+					selected_settings.map(async (setting) => {
+						// @ts-expect-error : its oke
+						const setting_data = weapon.setting.choices[setting];
+						if (setting_data.reso_effects) {
+							await pushValidResoEffect(setting_data.reso_effects, _reso_effects_list);
+						}
+					})
+				);
+			}
+		})
+	);
+	// add default reso
+	_reso_effects_list.push(await getResoEffects('atk'));
+	_reso_effects_list.push(await getResoEffects('atk-teamplay'));
+	_reso_effects_list.push(await getResoEffects('bene'));
+	_reso_effects_list.push(await getResoEffects('bene-teamplay'));
+	_reso_effects_list.push(await getResoEffects('armor-dissolve'));
+	_reso_effects_list.push(await getResoEffects('armor-dissolve-teamplay'));
+	_reso_effects_list.push(await getResoEffects('force-impact'));
+	_reso_effects_list.push(await getResoEffects('force-impact-teamplay'));
+
+	let loadout_resonance_stat = new StatCollection();
+	const _reso_effects: ResoEffect[] = [];
+	_reso_effects_list.forEach((eff) => {
+		if (eff.require_reso) {
+			const required_reso_count = eff.require_reso_count ?? 2;
+			if ((reso_counts[eff.require_reso] ?? 0) < required_reso_count) {
+				return;
+			}
+
+			if (eff.require_teamplay) {
+				return;
+			}
+
+			loadout_resonance_stat = loadout_resonance_stat.add(new StatCollection(eff.stats));
+			_reso_effects.push(eff);
+		}
+	});
+
+	return _reso_effects;
+}
+
+export async function obtainWeaponViews(
+	equipped_weapons: UserWeapon[],
+	base_weapons: Weapon[],
+	reso_counts: ResoTriggerCounts
+) {
+	return await Promise.all(
+		base_weapons.map(async (weapon, index) => {
+			const advancement = equipped_weapons[index].advancement ?? 0;
+
+			// get base stat of weapon
+			const _base_stat: { [key in StatKey]?: number } = {};
+			Object.entries(WEAPON_BASE_STATS[weapon.base_stat]).forEach(([stat, value]) => {
+				_base_stat[stat as StatKey] = value[0] + ((value[1] - value[0]) * advancement) / 6;
+			});
+			const base_stat = new StatCollection(_base_stat);
+
+			// active effects
+			const effects: WeaponEffect[] = [];
+			const stat_ = [new StatCollection()];
+
+			await pushAllValidWeaponEffects(
+				weapon.effects ?? [],
+				advancement,
+				reso_counts,
+				effects,
+				stat_
+			);
+			const setting_ids = equipped_weapons[index].setting ?? weapon.setting?.default ?? [];
+			const setting: WeaponSettingStuff[] = setting_ids.map((setting_) => {
+				// @ts-expect-error : it oke
+				return weapon.setting.choices[setting_];
+			});
+
+			if (weapon.setting) {
+				await Promise.all(
+					setting_ids.map(async (setting_) => {
+						// @ts-expect-error: it oke
+						const setting_data = weapon.setting.choices[setting_];
+						if (setting_data.effects) {
+							return await pushAllValidWeaponEffects(
+								setting_data.effects,
+								advancement,
+								reso_counts,
+								effects,
+								stat_
+							);
+						}
+					})
+				);
+			}
+			const stat = stat_[0];
+
+			return {
+				id: weapon.id,
+				name: weapon.name,
+				resonances: weapon.resonances,
+				onfieldness: weapon.onfieldness,
+				advancement,
+				setting,
+
+				base_stat,
+				effects,
+				stat
+			} as WeaponView;
+		})
+	);
+}
+
+export async function obtainMatrixViews(
+	equipped_weapons: UserWeapon[],
+	equipped_matrices: UserMatrix[],
+	reso_counts: ResoTriggerCounts
+) {
+	return await Promise.all(
+		equipped_matrices.map(async (matrix) => {
+			const advancement = matrix.advancement ?? 0;
+
+			const effects: MatrixFinalEffect[] = [];
+			const stat_ = [new StatCollection()];
+			const matrix_ = await getMatrix(matrix.id);
+
+			await pushAllValidMatrixEffects(
+				matrix_.effects,
+				advancement,
+				reso_counts,
+				effects,
+				stat_,
+				equipped_weapons
+			);
+			const stat = stat_[0];
+
+			return {
+				id: matrix_.id,
+				name: matrix_.name,
+				advancement,
+				effects,
+				stat
+			} as MatrixView;
+		})
+	);
+}
+
+export async function obtainRelixViews(
+	equipped_relics: UserRelic[],
+	reso_counts: ResoTriggerCounts
+) {
+	return await Promise.all(
+		equipped_relics.map(async (relic) => {
+			const advancement = relic.advancement ?? 0;
+
+			const effects: RelicEffect[] = [];
+			const stat_ = [new StatCollection()];
+			const relic_ = await getRelic(relic.id);
+
+			await pushAllValidRelicEffects(relic_.effects, advancement, reso_counts, effects, stat_);
+			const stat = stat_[0];
+
+			return {
+				id: relic_.id,
+				name: relic_.name,
+				advancement,
+				effects,
+				stat
+			} as RelicView;
+		})
+	);
+}
+
+export async function updateWeaponMatrixRelicFromStore() {
+	const equipped_weapons_: UserWeapon[] = get(user_loadouts)[get(current_loadout)]
+		.equipped_weapons ?? [{ id: 'none' }, { id: 'none' }, { id: 'none' }];
+
+	const equipped_matrices_: UserMatrix[] = get(user_loadouts)[get(current_loadout)]
+		.equipped_matrices ?? [{ id: 'none' }, { id: 'none' }, { id: 'none' }];
+
+	const equipped_relics_: UserRelic[] = get(user_loadouts)[get(current_loadout)]
+		.equipped_relics ?? [{ id: 'none' }, { id: 'none' }];
+
+	const base_weapons_ = await obtainBaseWeapons(equipped_weapons_);
+	base_weapons.set(base_weapons_);
+
+	const reso_counts_ = await obtainResoCounts(equipped_weapons_, base_weapons_);
+	reso_counts.set(reso_counts_);
+
+	const reso_effects_ = await obtainResoEffects(equipped_weapons_, reso_counts_);
+	reso_effects.set(reso_effects_);
+
+	const weapon_views_ = await obtainWeaponViews(equipped_weapons_, base_weapons_, reso_counts_);
+	weapon_views.set(weapon_views_);
+
+	const matrix_views_ = await obtainMatrixViews(
+		equipped_weapons_,
+		equipped_matrices_,
+		reso_counts_
+	);
+	matrix_views.set(matrix_views_);
+
+	const relic_views_ = await obtainRelixViews(equipped_relics_, reso_counts_);
+	relic_views.set(relic_views_);
 }
 
 export function getGearTotal() {
