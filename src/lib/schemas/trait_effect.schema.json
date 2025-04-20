@@ -3,7 +3,7 @@
   "type": "object",
   "properties": {
     "id": {
-      "type": "string"
+      "$ref": "#/definitions/TraitEffectsIds"
     },
     "target": {
       "enum": [
@@ -88,6 +88,13 @@
     "stats"
   ],
   "definitions": {
+    "TraitEffectsIds": {
+      "enum": [
+        "grayfox-trait",
+        "grayfox-trait-weap"
+      ],
+      "type": "string"
+    },
     "StatData": {
       "type": "object",
       "properties": {

@@ -136,7 +136,7 @@ export const AllRelicEffectIds: RelicEffectsIds[] = [
 	'thalassic-a3',
 	'thalassic-a4'
 ];
-export const AllTraitEffectIds: TraitEffectsIds[] = ['grayfox-weap', 'grayfox'];
+export const AllTraitEffectIds: TraitEffectsIds[] = ['grayfox-trait-weap', 'grayfox-trait'];
 
 export const AllMatrixIds: MatrixIds[] = [
 	'none',
@@ -193,4 +193,4 @@ export const AllGearEffectIds = [
 	'gear-R',
 	'gear-G'
 ];
-export const AllTraitIds: TraitsIds[] = ['grayfox'];
+export const AllTraitIds: TraitsIds[] = ['none', 'grayfox'];

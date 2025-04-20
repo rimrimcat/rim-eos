@@ -4,6 +4,7 @@ import type {
 	RelicEffectsIds,
 	RelicIds,
 	ResoEffectsIds,
+	TraitsIds,
 	WeaponEffectsIds,
 	WeaponsIds
 } from '../generated/ids';
@@ -126,15 +127,15 @@ export type RelicView = {
 };
 
 export type Trait = {
-	id: string;
+	id: TraitIds;
 	name: string;
 	effects: string[];
 };
 
-export type UserTrait = string;
+export type UserTrait = TraitIds;
 
 export type TraitView = {
-	id: string;
+	id: TraitsIds;
 	name: string;
 	effects: TraitEffect[];
 	stat: StatCollection;

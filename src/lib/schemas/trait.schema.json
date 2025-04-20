@@ -1,9 +1,7 @@
 {
   "type": "object",
   "properties": {
-    "id": {
-      "type": "string"
-    },
+    "id": {},
     "name": {
       "type": "string"
     },

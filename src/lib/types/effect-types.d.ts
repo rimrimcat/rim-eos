@@ -2,6 +2,7 @@ import type {
 	MatrixEffectsIds,
 	RelicEffectsIds,
 	ResoEffectsIds,
+	TraitEffectsIds,
 	WeaponEffectsIds,
 	WeaponsIds
 } from '../generated/ids';
@@ -93,6 +94,6 @@ export type RelicEffect = BaseEffect & {
 };
 
 export type TraitEffect = BaseEffect & {
-	id: string;
+	id: TraitEffectsIds;
 	stats: StatData;
 };
