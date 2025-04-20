@@ -2,12 +2,24 @@
 	import { AllMatrixIds, AllRelicIds, AllTraitIds, AllWeaponIds } from '$lib/generated/all-ids';
 	import { getMatrix, getRelic, getTrait, getWeapon } from '$lib/scripts/json-loader';
 	import { matrix_views, relic_views, trait_view, weapon_views } from '$lib/scripts/stores';
-	import type { MatrixIds, TraitsIds, UserWeapon, WeaponsIds } from '$lib/types/index';
+	import type {
+		MatrixIds,
+		Relic,
+		RelicsIds,
+		Trait,
+		TraitsIds,
+		UserWeapon,
+		Weapon,
+		WeaponsIds
+	} from '$lib/types/index';
 	import { XIcon } from '@lucide/svelte';
+	import type { Matrix } from '@techstark/opencv-js';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
 	type SwitchType = 'matrix' | 'weapon' | 'relic' | 'trait';
+	type IdType = MatrixIds[] | WeaponsIds[] | TraitsIds[] | RelicsIds[];
+	type StuffType = Matrix[] | Weapon[] | Relic[] | Trait[];
 
 	let {
 		open = $bindable(false),
@@ -19,24 +31,98 @@
 		onSwitchTrait = (id: TraitsIds) => {}
 	} = $props();
 
-	let searchable = $derived.by(() => {
-		switch (switching) {
-			case 'matrix':
+	function getValidIds(switching_: SwitchType): IdType {
+		switch (switching_) {
+			case 'trait': {
+				console.log('IDS TAKEN FROM TRAIT');
+				return AllTraitIds.filter((id) => id !== 'none' && !($trait_view?.id === id));
+			}
+			case 'matrix': {
+				console.log('IDS TAKEN FROM MATRIX');
 				return AllMatrixIds.filter(
-					(id) => id === 'none' || !$matrix_views.some((matrix) => matrix.id === id)
+					(id) => id !== 'none' && !$matrix_views.some((matrix) => matrix.id === id)
 				);
-			case 'weapon':
+			}
+			case 'weapon': {
+				console.log('IDS TAKEN FROM WEAPON');
 				return AllWeaponIds.filter(
-					(id) => id === 'none' || !$weapon_views.some((weapon) => weapon.id === id)
+					(id) => id !== 'none' && !$weapon_views.some((weapon) => weapon.id === id)
 				);
-			case 'relic':
+			}
+			case 'relic': {
+				console.log('IDS TAKEN FROM RELIC');
 				return AllRelicIds.filter(
-					(id) => id === 'none' || !$relic_views.some((relic) => relic.id === id)
+					(id) => id !== 'none' && !$relic_views.some((relic) => relic.id === id)
 				);
-			case 'trait':
-				return AllTraitIds.filter((id) => id === 'none' || !($trait_view?.id === id));
+			}
 		}
+	}
+
+	// function makeSearcher(all_ids: IdType) {
+	// 	const index = new Index({ tokenize: 'forward', encoder: 'LatinSimple' });
+
+	// 	all_ids.forEach((item, id) => {
+	// 		index.add(id, item);
+	// 	});
+
+	// 	return index;
+	// }
+
+	function getGetter(switching_: SwitchType) {
+		switch (switching_) {
+			case 'trait': {
+				return getTrait;
+			}
+			case 'matrix': {
+				return getMatrix;
+			}
+			case 'weapon': {
+				return getWeapon;
+			}
+			case 'relic': {
+				return getRelic;
+			}
+		}
+	}
+
+	function getReturner(switching_: SwitchType) {
+		switch (switching_) {
+			case 'trait': {
+				return onSwitchTrait;
+			}
+			case 'matrix': {
+				return onSwitchMatrix;
+			}
+			case 'weapon': {
+				return onSwitchWeapon;
+			}
+			case 'relic': {
+				return onSwitchRelic;
+			}
+		}
+	}
+
+	let valid_stuff = $derived(getValidIds(switching));
+	let gettedGetter = $derived(getGetter(switching));
+	let gettedReturner = $derived(getReturner(switching));
+	let actual_stuff = $state([] as StuffType);
+
+	async function stuffToDisplayNormally() {
+		return [
+			await gettedGetter('none'),
+			...(await Promise.all(valid_stuff.map((id) => gettedGetter(id as any))))
+		];
+	}
+
+	$effect(() => {
+		// @ts-expect-error
+		Promise.all(valid_stuff.map((id) => gettedGetter(id))).then((stuff) => {
+			actual_stuff = stuff;
+		});
 	});
+
+	$inspect('valid stuff', valid_stuff);
+	// let _index = $derived(makeSearcher(valid_stuff));
 </script>
 
 {#snippet matrix4p(matrix_id: MatrixIds)}
@@ -53,110 +139,37 @@
 
 <Dialog title={'Switch ' + switching} bind:open>
 	<FlexGrid max_cols={3} horizontal_gap="1rem" vertical_gap="1rem">
-		{#if switching === 'matrix'}
-			{#each AllMatrixIds.filter((id) => id === 'none' || !$matrix_views.some((matrix) => matrix.id === id)) as matrix_id}
-				{#await getMatrix(matrix_id) then matrix}
-					<div class="matrix-item vertical center" style="width: 8rem; height: 8rem;">
-						<div class="compose below border" style="width: 6rem; height: 6rem;">
-							<button
-								class="image"
-								onclick={() => {
-									onSwitchMatrix(matrix_id);
-									open = false;
-								}}
-							>
-								{#if matrix.id === 'none'}
-									<XIcon size="6rem" color="var(--text-color)" />
-								{:else}
-									{@render matrix4p(matrix.id)}
-								{/if}
-							</button>
-						</div>
-						<div class="horizontal center" style="margin-top: 0.5rem;">
-							<span>{matrix.name}</span>
-						</div>
+		{#await stuffToDisplayNormally()}
+			<p>Loading...</p>
+		{:then array_of_stuff}
+			{#each array_of_stuff as stuff}
+				<div class="stuff-item vertical center" style="width: 8rem; height: 8rem;">
+					<div class="compose below border" style="width: 6rem; height: 6rem;">
+						<button
+							class="image"
+							onclick={() => {
+								gettedReturner(stuff.id);
+								open = false;
+							}}
+						>
+							{#if stuff.id === 'none'}
+								<XIcon size="6rem" color="var(--text-color)" />
+							{:else if switching === 'matrix' && stuff.id.includes('4p')}
+								{@render matrix4p(stuff.id)}
+							{:else}
+								<img
+									src="./{switching}/{stuff.id}.webp"
+									alt={switching}
+									style="height:6rem; width:6rem;"
+								/>
+							{/if}
+						</button>
 					</div>
-				{/await}
-			{/each}
-		{:else if switching === 'weapon'}
-			{#each AllWeaponIds.filter((id) => id === 'none' || !$weapon_views.some((weapon) => weapon.id === id)) as weapon_id}
-				{#await getWeapon(weapon_id) then weapon}
-					<div class="matrix-item vertical center" style="width: 8rem; height: 8rem;">
-						<div class="compose below border" style="width: 6rem; height: 6rem;">
-							<button
-								class="image"
-								onclick={() => {
-									onSwitchWeapon(weapon_id);
-									open = false;
-								}}
-							>
-								{#if weapon.id === 'none'}
-									<XIcon size="6rem" color="var(--text-color)" />
-								{:else}
-									<img
-										src="./weapon/{weapon.id}.webp"
-										alt="Weapon"
-										style="height:6rem; width:6rem;"
-									/>
-								{/if}
-							</button>
-						</div>
-						<div class="horizontal center" style="margin-top: 0.5rem;">
-							<span>{weapon.name}</span>
-						</div>
+					<div class="horizontal center" style="margin-top: 0.5rem;">
+						<span>{stuff.name}</span>
 					</div>
-				{/await}
+				</div>
 			{/each}
-		{:else if switching === 'relic'}
-			{#each AllRelicIds.filter((id) => id === 'none' || !$relic_views.some((relic) => relic.id === id)) as relic_id}
-				{#await getRelic(relic_id) then relic}
-					<div class="matrix-item vertical center" style="width: 8rem; height: 8rem;">
-						<div class="compose below border" style="width: 6rem; height: 6rem;">
-							<button
-								class="image"
-								onclick={() => {
-									onSwitchRelic(relic_id);
-									open = false;
-								}}
-							>
-								{#if relic.id === 'none'}
-									<XIcon size="6rem" color="var(--text-color)" />
-								{:else}
-									<img src="./relic/{relic.id}.webp" alt="Relic" style="height:6rem; width:6rem;" />
-								{/if}
-							</button>
-						</div>
-						<div class="horizontal center" style="margin-top: 0.5rem;">
-							<span>{relic.name}</span>
-						</div>
-					</div>
-				{/await}
-			{/each}
-		{:else if switching === 'trait'}
-			{#each AllTraitIds.filter((id) => id === 'none' || !($trait_view?.id === id)) as trait_id}
-				{#await getTrait(trait_id) then trait}
-					<div class="matrix-item vertical center" style="width: 8rem; height: 8rem;">
-						<div class="compose below border" style="width: 6rem; height: 6rem;">
-							<button
-								class="image"
-								onclick={() => {
-									onSwitchTrait(trait_id);
-									open = false;
-								}}
-							>
-								{#if trait.id === 'none'}
-									<XIcon size="6rem" color="var(--text-color)" />
-								{:else}
-									<img src="./trait/{trait.id}.webp" alt="Trait" style="height:6rem; width:6rem;" />
-								{/if}
-							</button>
-						</div>
-						<div class="horizontal center" style="margin-top: 0.5rem;">
-							<span>{trait.name}</span>
-						</div>
-					</div>
-				{/await}
-			{/each}
-		{/if}
+		{/await}
 	</FlexGrid>
 </Dialog>
