@@ -259,7 +259,7 @@ export function dedupeMatEffs(effects: MatrixFinalEffect[]) {
 	}, [] as MatrixFinalEffect[]);
 }
 
-export async function updateBaseWeapons_() {
+export async function updateBaseWeapons() {
 	base_weapons.set(
 		await Promise.all(
 			get(user_loadouts)[get(current_loadout)].equipped_weapons.map((weapon) =>
@@ -595,7 +595,7 @@ export async function updateSingleMatrixView(index: number) {
 // creates gearView and updates loadout_resonance_stat
 export async function updateWeaponMatrix() {
 	// update base weapons
-	await updateBaseWeapons_();
+	await updateBaseWeapons();
 
 	// create counts of resonance triggers
 	await updateResoCounts();
@@ -606,8 +606,11 @@ export async function updateWeaponMatrix() {
 	// iterate through weapons
 	await updateWeaponViews();
 
-	// ... and matrices
+	// matrices
 	await updateMatrixViews();
+
+	// relics
+	await updateRelicViews();
 }
 
 export function getGearTotal() {
