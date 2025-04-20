@@ -103,7 +103,7 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	frost_res_ignore_percent: 'Frost Res Ignore',
 	volt_res_ignore_percent: 'Volt Res Ignore',
 	alt_res_ignore_percent: 'Alt Res Ignore',
-	final_dmg_increase_percent: 'Final Dmg Increase',
+	final_dmg_taken_percent: 'Final Dmg Taken',
 	ele_dmg_taken_percent: 'Ele Dmg Taken',
 	phys_dmg_taken_percent: 'Phys Dmg Taken',
 	flame_dmg_taken_percent: 'Flame Dmg Taken',
@@ -116,7 +116,12 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	base_flame_atk_improvement_percent: 'Base Flame Atk',
 	base_frost_atk_improvement_percent: 'Base Frost Atk',
 	base_volt_atk_improvement_percent: 'Base Volt Atk',
-	base_alt_atk_improvement_percent: 'Base Alt Atk'
+	base_alt_atk_improvement_percent: 'Base Alt Atk',
+	relic_phys_dmg_percent: 'Relic Phys Dmg',
+	relic_flame_dmg_percent: 'Relic Flame Dmg',
+	relic_frost_dmg_percent: 'Relic Frost Dmg',
+	relic_volt_dmg_percent: 'Relic Volt Dmg',
+	relic_alt_dmg_percent: 'Relic Alt Dmg'
 };
 
 export const USER_STATS_LIST: StatGearUser[] = [
