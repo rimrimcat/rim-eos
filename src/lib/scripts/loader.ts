@@ -607,7 +607,7 @@ export async function loadWeaponImages() {
 	if (weapon_images_loaded) return;
 	weapon_images_loaded = true;
 	return await Promise.all(
-		AllWeaponIds.map(async (weapon) => {
+		AllWeaponIds.filter((weapon) => weapon !== 'none').map(async (weapon) => {
 			await fetch(`./weapon/${weapon}.webp`);
 		})
 	);
@@ -620,7 +620,7 @@ export async function loadMatrixImages() {
 	if (matrix_images_loaded) return;
 	matrix_images_loaded = true;
 	return await Promise.all(
-		AllMatrixIds.map(async (matrix) => {
+		AllMatrixIds.filter((matrix) => matrix !== 'none').map(async (matrix) => {
 			await fetch(`./matrix/${matrix.replace('-4p', '')}.webp`);
 		})
 	);
@@ -633,7 +633,7 @@ export async function loadRelicImages() {
 	if (relic_images_loaded) return;
 	relic_images_loaded = true;
 	return await Promise.all(
-		AllRelicIds.map(async (relic) => {
+		AllRelicIds.filter((relic) => relic !== 'none').map(async (relic) => {
 			await fetch(`./relic/${relic}.webp`);
 		})
 	);
