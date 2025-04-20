@@ -645,20 +645,17 @@ export async function obtainRelicViews(
 }
 
 export async function obtainTraitView(equipped_trait: UserTrait, reso_counts: ResoTriggerCounts) {
-	const advancement = 0;
-
 	const effects: TraitEffect[] = [];
 	const stat_ = [new StatCollection()];
 
 	const trait_ = await getTrait(equipped_trait);
 
-	await pushAllValidTraitEffects(trait_.effects, advancement, reso_counts, effects, stat_);
+	await pushAllValidTraitEffects(trait_.effects, 0, reso_counts, effects, stat_);
 	const stat = stat_[0];
 
 	return {
 		id: trait_.id,
 		name: trait_.name,
-		advancement,
 		effects,
 		stat
 	} as TraitView;
