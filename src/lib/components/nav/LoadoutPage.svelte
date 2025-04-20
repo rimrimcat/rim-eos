@@ -814,10 +814,6 @@
 		line-height: 1.5;
 	}
 
-	.edit-button:hover {
-		background-color: var(--hover-bg);
-	}
-
 	.editable-fields {
 		display: flex;
 		flex-direction: column;
