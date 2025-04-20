@@ -137,8 +137,7 @@ function checkValidEffect(
 	// check if required weapon is present
 	if (
 		eff.require_weapon &&
-		user_weapons_ &&
-		!user_weapons_.some((weapon) => weapon.id === eff.require_weapon)
+		!(user_weapons_ ?? []).some((weapon) => weapon.id === eff.require_weapon)
 	) {
 		return false;
 	}
