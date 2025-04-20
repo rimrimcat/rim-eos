@@ -17,12 +17,24 @@
 			"url": "./src/lib/schemas/relic_effect.schema.json"
 		},
 		{
+			"fileMatch": ["**/trait_effect/*.json"],
+			"url": "./src/lib/schemas/trait_effect.schema.json"
+		},
+		{
 			"fileMatch": ["**/weapon/*.json"],
 			"url": "./src/lib/schemas/weapon.schema.json"
 		},
 		{
 			"fileMatch": ["**/matrix/*.json"],
 			"url": "./src/lib/schemas/matrix.schema.json"
+		},
+		{
+			"fileMatch": ["**/relic/*.json"],
+			"url": "./src/lib/schemas/relic.schema.json"
+		},
+		{
+			"fileMatch": ["**/trait/*.json"],
+			"url": "./src/lib/schemas/trait.schema.json"
 		}
 	]
 }

@@ -538,13 +538,7 @@
 						Next
 					</button>
 				{:else}
-					<button
-						class="guide-nav-button"
-						onclick={closeWindow}
-						disabled={guide_content[guide_index].proceed_on !== undefined ||
-							guide_index === guide_content.length - 1}
-						aria-label="Finish"
-					>
+					<button class="guide-nav-button" onclick={closeWindow} aria-label="Finish">
 						Finish
 					</button>
 				{/if}

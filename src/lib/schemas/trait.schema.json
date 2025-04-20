@@ -1,0 +1,41 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {},
+    "name": {
+      "type": "string"
+    },
+    "effects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/TraitEffectsIds"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "effects",
+    "id",
+    "name"
+  ],
+  "definitions": {
+    "TraitEffectsIds": {
+      "enum": [
+        "anka-trait",
+        "anka-trait-boss",
+        "asurada-trait",
+        "brevey-trait-bene",
+        "brevey-trait-nonbene",
+        "claudiax-trait",
+        "generic-trait-18",
+        "grayfox-trait-bene",
+        "merylx-trait",
+        "nanyin-trait",
+        "nola-trait",
+        "roslyn-trait"
+      ],
+      "type": "string"
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

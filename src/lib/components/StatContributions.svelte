@@ -4,11 +4,13 @@
 		AllMatrixEffectIds,
 		AllRelicEffectIds,
 		AllResoEffectIds,
+		AllTraitEffectIds,
 		AllWeaponEffectIds
 	} from '$lib/generated/all-ids';
 	import { STAT_LABELS, StatCollection } from '$lib/scripts/stats';
 	import type {
 		BaseEffect,
+		FinalizedTraitEffect,
 		GearEffect,
 		MatrixEffectsIds,
 		MatrixFinalEffect,
@@ -18,6 +20,7 @@
 		ResoEffectsIds,
 		StatData,
 		StatKey,
+		TraitEffectsIds,
 		ValidGearEffectIds,
 		WeaponEffect,
 		WeaponEffectsIds,
@@ -29,9 +32,17 @@
 
 	let {
 		all_effects = $bindable(
-			[] as (ResoEffect | WeaponEffect | MatrixFinalEffect | GearEffect | RelicEffect)[]
+			[] as (
+				| ResoEffect
+				| WeaponEffect
+				| MatrixFinalEffect
+				| GearEffect
+				| RelicEffect
+				| FinalizedTraitEffect
+			)[]
 		),
 		chart_width = $bindable(500),
+		reset_graph = $bindable(false),
 		style = ''
 	} = $props();
 
@@ -41,16 +52,18 @@
 		if (eff.is_reso) return 'Resonance';
 		if (eff.is_gear) return 'Gear';
 		if (eff.is_relic) return 'Relic';
+		if (eff.is_trait) return 'Trait';
 		return 'Unknown';
 	}
 
 	// options
 	let grouping_fcn_index: number = $state(0);
-	const GROUPING_FUNCTION_NAMES = ['Source', 'Character', 'Char-Source'];
+	const GROUPING_FUNCTION_NAMES = ['Source', 'Character', 'Char-Source', 'Individual'];
 	const GROUPING_FUNCTIONS: ((eff: TaggedEffect) => string)[] = [
 		groupBySource,
 		(eff: TaggedEffect) => eff.character ?? 'none',
-		(eff: TaggedEffect) => (eff.character ? `${eff.character}-${groupBySource(eff)}` : 'others')
+		(eff: TaggedEffect) => (eff.character ? `${eff.character}-${groupBySource(eff)}` : 'others'),
+		(eff: TaggedEffect) => eff.id
 	];
 
 	let pin_axis = $state(false);
@@ -77,6 +90,7 @@
 		is_reso?: boolean;
 		is_gear?: boolean;
 		is_relic?: boolean;
+		is_trait?: boolean;
 	};
 
 	type TaggedEffect = BaseEffect &
@@ -86,12 +100,19 @@
 				| WeaponEffectsIds
 				| MatrixEffectsIds
 				| ValidGearEffectIds
-				| RelicEffectsIds;
+				| RelicEffectsIds
+				| TraitEffectsIds;
 			stats: StatData;
 		};
 
 	function tagEffect(
-		eff: ResoEffect | WeaponEffect | MatrixFinalEffect | GearEffect | RelicEffect
+		eff:
+			| ResoEffect
+			| WeaponEffect
+			| MatrixFinalEffect
+			| GearEffect
+			| RelicEffect
+			| FinalizedTraitEffect
 	) {
 		const tags: ETags = {};
 
@@ -107,6 +128,9 @@
 			tags.is_gear = true;
 		} else if (AllRelicEffectIds.includes(eff.id as RelicEffectsIds)) {
 			tags.is_relic = true;
+		} else if (AllTraitEffectIds.includes(eff.id as TraitEffectsIds)) {
+			tags.is_trait = true;
+			tags.character = eff.id.split('-')[0] as WeaponsIds;
 		} else {
 			console.log('FAILED TO TAG!');
 		}
@@ -162,7 +186,8 @@
 				| WeaponEffectsIds
 				| MatrixEffectsIds
 				| ValidGearEffectIds
-				| RelicEffectsIds;
+				| RelicEffectsIds
+				| TraitEffectsIds;
 			eff_in_prev?: TaggedEffect;
 			eff_in_curr?: TaggedEffect;
 		};
@@ -264,6 +289,16 @@
 		},
 		width: `${chart_width}px`,
 		height: `${sortedKeyLabels.length * 40 + 100}px`
+	});
+
+	$effect(() => {
+		if (reset_graph) {
+			show_bar = false;
+			setTimeout(() => {
+				show_bar = true;
+			}, 1);
+			reset_graph = false;
+		}
 	});
 </script>
 

@@ -222,19 +222,19 @@
       "enum": [
         "armor-dissolve",
         "armor-dissolve-teamplay",
-        "atk",
-        "atk-teamplay",
-        "bene",
-        "bene-teamplay",
-        "fiona",
-        "flame",
+        "atk-reso",
+        "atk-reso-teamplay",
+        "bene-reso",
+        "bene-reso-teamplay",
+        "fiona-reso",
+        "flame-reso",
         "force-impact",
         "force-impact-teamplay",
-        "fort",
-        "frost",
-        "nanyin",
-        "phys",
-        "volt"
+        "fort-reso",
+        "frost-reso",
+        "nanyin-reso",
+        "phys-reso",
+        "volt-reso"
       ],
       "type": "string"
     }

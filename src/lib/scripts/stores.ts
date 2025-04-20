@@ -8,6 +8,7 @@ import type {
 	RelicView,
 	ResoEffect,
 	ResoTriggerCounts,
+	TraitView,
 	UserGear,
 	Weapon,
 	WeaponView
@@ -54,10 +55,10 @@ export const equipped_gear_views = writable<GearView[]>([]);
 export const base_weapons = writable<Weapon[]>([]);
 export const reso_counts = writable<ResoTriggerCounts>({});
 export const reso_effects = writable<ResoEffect[]>([]);
-export const reso_stat = writable<StatCollection>(new StatCollection());
 export const weapon_views = writable<WeaponView[]>([]);
 export const matrix_views = writable<MatrixView[]>([]);
 export const relic_views = writable<RelicView[]>([]);
+export const trait_view = writable<TraitView | null>(null);
 
 // overall
 export const all_stats = writable<StatCollection>(new StatCollection());

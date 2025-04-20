@@ -35,7 +35,8 @@
 		],
 		equipped_weapons: [{ id: 'none' }, { id: 'none' }, { id: 'none' }],
 		equipped_matrices: [{ id: 'none' }, { id: 'none' }, { id: 'none' }],
-		equipped_relics: [{ id: 'none' }, { id: 'none' }]
+		equipped_relics: [{ id: 'none' }, { id: 'none' }],
+		equipped_trait: 'none'
 	};
 </script>
 

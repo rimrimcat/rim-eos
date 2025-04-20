@@ -4,5 +4,5 @@
 	"base_stat": "crit-low",
 	"resonances": ["alt", "atk"],
 	"effects": ["nanyin-inhabit", "nanyin-a5", "nanyin-a6"],
-	"reso_effects": ["nanyin"]
+	"reso_effects": ["nanyin-reso"]
 }

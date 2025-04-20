@@ -6,6 +6,8 @@ import type {
 	RelicEffectsIds,
 	RelicsIds,
 	ResoEffectsIds,
+	TraitEffectsIds,
+	TraitsIds,
 	WeaponEffectsIds,
 	WeaponsIds
 } from './ids';
@@ -91,19 +93,19 @@ export const AllMatrixEffectIds: MatrixEffectsIds[] = [
 export const AllResoEffectIds: ResoEffectsIds[] = [
 	'armor-dissolve-teamplay',
 	'armor-dissolve',
-	'atk-teamplay',
-	'atk',
-	'bene-teamplay',
-	'bene',
-	'fiona',
-	'flame',
+	'atk-reso-teamplay',
+	'atk-reso',
+	'bene-reso-teamplay',
+	'bene-reso',
+	'fiona-reso',
+	'flame-reso',
 	'force-impact-teamplay',
 	'force-impact',
-	'fort',
-	'frost',
-	'nanyin',
-	'phys',
-	'volt'
+	'fort-reso',
+	'frost-reso',
+	'nanyin-reso',
+	'phys-reso',
+	'volt-reso'
 ];
 export const AllRelicEffectIds: RelicEffectsIds[] = [
 	'bubblegun-a2',
@@ -134,6 +136,21 @@ export const AllRelicEffectIds: RelicEffectsIds[] = [
 	'thalassic-a3',
 	'thalassic-a4'
 ];
+export const AllTraitEffectIds: TraitEffectsIds[] = [
+	'anka-trait-boss',
+	'anka-trait',
+	'asurada-trait',
+	'brevey-trait-bene',
+	'brevey-trait-nonbene',
+	'claudiax-trait',
+	'generic-trait-18',
+	'grayfox-trait-bene',
+	'merylx-trait',
+	'nanyin-trait',
+	'nola-trait',
+	'roslyn-trait'
+];
+
 export const AllMatrixIds: MatrixIds[] = [
 	'none',
 	'anka-4p',
@@ -188,4 +205,17 @@ export const AllGearEffectIds = [
 	'gear-N',
 	'gear-R',
 	'gear-G'
+];
+export const AllTraitIds: TraitsIds[] = [
+	'none',
+	'anka',
+	'asuka',
+	'asurada',
+	'brevey',
+	'claudiax',
+	'grayfox',
+	'merylx',
+	'nanyin',
+	'nola',
+	'roslyn'
 ];

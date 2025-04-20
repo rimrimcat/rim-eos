@@ -27,7 +27,9 @@ also still thinking of a better name later on
 - [x] Main Page: add interactive tutorial (2025-04-19)
 - [x] Loadout: add relics (2025-04-20)
 - [ ] Gear: add titan stats
+- [ ] Loadout: add search functionality for weapon and matrices
 - [ ] Loadout: add traits
+- [ ] Gear: add ID on top of gear instead of separate column in grid
 - [ ] Matrix: add base matrix stat
 - [ ] Loadout: add some weapons and matrices
 - [ ] Stat: toggle to show attack percent or (base attack + attack percent)

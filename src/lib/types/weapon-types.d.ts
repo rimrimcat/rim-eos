@@ -4,11 +4,14 @@ import type {
 	RelicEffectsIds,
 	RelicIds,
 	ResoEffectsIds,
+	TraitEffectsIds,
+	TraitsIds,
 	WeaponEffectsIds,
 	WeaponsIds
 } from '../generated/ids';
 import type { StatCollection } from '../scripts/stats';
 import type {
+	FinalizedTraitEffect,
 	MatrixFinalEffect,
 	OrderedResoTriggers,
 	RelicEffect,
@@ -122,4 +125,19 @@ export type RelicView = {
 	stat: StatCollection;
 
 	advancement: number;
+};
+
+export type Trait = {
+	id: TraitIds;
+	name: string;
+	effects: TraitEffectsIds[];
+};
+
+export type UserTrait = TraitIds;
+
+export type TraitView = {
+	id: TraitsIds;
+	name: string;
+	effects: FinalizedTraitEffect[];
+	stat: StatCollection;
 };

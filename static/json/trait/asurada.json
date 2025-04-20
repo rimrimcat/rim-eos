@@ -1,0 +1,5 @@
+{
+	"id": "asurada",
+	"name": "Asurada",
+	"effects": ["asurada-trait", "generic-trait-18"]
+}

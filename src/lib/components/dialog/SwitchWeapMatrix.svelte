@@ -1,18 +1,19 @@
 <script lang="ts">
-	import { AllMatrixIds, AllRelicIds, AllWeaponIds } from '$lib/generated/all-ids';
-	import { getMatrix, getRelic, getWeapon } from '$lib/scripts/json-loader';
-	import type { MatrixIds, UserWeapon, WeaponsIds } from '$lib/types/index';
+	import { AllMatrixIds, AllRelicIds, AllTraitIds, AllWeaponIds } from '$lib/generated/all-ids';
+	import { getMatrix, getRelic, getTrait, getWeapon } from '$lib/scripts/json-loader';
+	import type { MatrixIds, TraitsIds, UserWeapon, WeaponsIds } from '$lib/types/index';
 	import { XIcon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
 	let {
 		open = $bindable(false),
-		switching = $bindable('matrix' as 'matrix' | 'weapon' | 'relic'),
+		switching = $bindable('matrix' as 'matrix' | 'weapon' | 'relic' | 'trait'),
 		user_weapons = $bindable([] as UserWeapon[]),
 		onSwitchMatrix = (id: MatrixIds) => {},
 		onSwitchWeapon = (id: WeaponsIds) => {},
-		onSwitchRelic = (id: MatrixIds) => {}
+		onSwitchRelic = (id: MatrixIds) => {},
+		onSwitchTrait = (id: TraitsIds) => {}
 	} = $props();
 </script>
 
@@ -105,6 +106,31 @@
 						</div>
 						<div class="horizontal center" style="margin-top: 0.5rem;">
 							<span>{relic.name}</span>
+						</div>
+					</div>
+				{/await}
+			{/each}
+		{:else if switching === 'trait'}
+			{#each AllTraitIds as trait_id}
+				{#await getTrait(trait_id) then trait}
+					<div class="matrix-item vertical center" style="width: 8rem; height: 8rem;">
+						<div class="compose below border" style="width: 6rem; height: 6rem;">
+							<button
+								class="image"
+								onclick={() => {
+									onSwitchTrait(trait_id);
+									open = false;
+								}}
+							>
+								{#if trait.id === 'none'}
+									<XIcon size="6rem" color="var(--text-color)" />
+								{:else}
+									<img src="./trait/{trait.id}.webp" alt="Trait" style="height:6rem; width:6rem;" />
+								{/if}
+							</button>
+						</div>
+						<div class="horizontal center" style="margin-top: 0.5rem;">
+							<span>{trait.name}</span>
 						</div>
 					</div>
 				{/await}

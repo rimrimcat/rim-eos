@@ -1,8 +1,0 @@
-{
-	"id": "atk-teamplay",
-	"stats": {
-		"final_dmg_percent": 40
-	},
-	"require_reso": "atk",
-	"require_teamplay": true
-}

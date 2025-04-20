@@ -1,0 +1,7 @@
+{
+	"id": "asurada-trait",
+	"stats": {
+		"flame_dmg_percent": 14
+	},
+	"require_weapon": "asurada"
+}

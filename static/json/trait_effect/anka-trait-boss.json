@@ -1,0 +1,8 @@
+{
+	"id": "anka-trait-boss",
+	"stats": {
+		"phys_dmg_percent": 12
+	},
+	"require_weapon": "anka",
+	"require_boss": true
+}

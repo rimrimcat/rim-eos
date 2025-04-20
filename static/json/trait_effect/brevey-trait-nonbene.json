@@ -1,0 +1,8 @@
+{
+	"id": "brevey-trait-nonbene",
+	"stats": {
+		"final_dmg_percent": 6
+	},
+	"require_weapon": "brevey",
+	"require_reso_not": "bene"
+}

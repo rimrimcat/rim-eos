@@ -1,8 +1,0 @@
-{
-	"id": "bene-teamplay",
-	"stats": {
-		"healing_percent": 100
-	},
-	"require_reso": "bene",
-	"require_teamplay": true
-}

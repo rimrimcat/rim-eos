@@ -1,0 +1,7 @@
+{
+	"id": "claudiax-trait",
+	"stats": {
+		"phys_dmg_percent": 30
+	},
+	"require_weapon": "claudiax"
+}

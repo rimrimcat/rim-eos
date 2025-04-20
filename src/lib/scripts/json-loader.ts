@@ -11,6 +11,10 @@ import type {
 	ResoEffect,
 	ResoEffectsIds,
 	StatConstants,
+	Trait,
+	TraitEffect,
+	TraitEffectsIds,
+	TraitsIds,
 	Weapon,
 	WeaponEffect,
 	WeaponEffectsIds,
@@ -51,9 +55,11 @@ const RESO_EFFECTS: { [key in ResoEffectsIds]?: ResoEffect } = {};
 const WEAPON_EFFECTS: { [key in WeaponEffectsIds]?: WeaponEffect } = {};
 const MATRIX_EFFECTS: { [key in MatrixEffectsIds]?: MatrixEffect } = {};
 const RELIC_EFFECTS: { [key in RelicEffectsIds]?: RelicEffect } = {};
+const TRAIT_EFFECTS: { [key in TraitEffectsIds]?: TraitEffect } = {};
 const WEAPONS: { [key in WeaponsIds]?: Weapon } = {};
 const MATRIX: { [key in MatrixIds]?: Matrix } = {};
 const RELIC: { [key in RelicsIds]?: Relic } = {};
+const TRAIT: { [key in TraitsIds]?: Trait } = {};
 
 export async function getResoEffects(reso: ResoEffectsIds): Promise<ResoEffect> {
 	if (RESO_EFFECTS[reso]) {
@@ -135,6 +141,26 @@ export async function getRelicEffect(effect: RelicEffectsIds): Promise<RelicEffe
 	}
 }
 
+export async function getTraitEffect(effect: TraitEffectsIds): Promise<TraitEffect> {
+	if (TRAIT_EFFECTS[effect]) {
+		return TRAIT_EFFECTS[effect];
+	}
+
+	try {
+		const response = await fetch(`./json/trait_effect/${effect}.json`);
+		if (!response.ok) {
+			throw new Error(`Failed to load effect ${effect}: ${response.statusText}`);
+		}
+
+		const data = await response.json();
+		TRAIT_EFFECTS[effect] = data as TraitEffect;
+		return TRAIT_EFFECTS[effect];
+	} catch (error) {
+		console.error(`Error loading effect ${effect}:`, error);
+		throw error;
+	}
+}
+
 export async function getWeapon(weapon: WeaponsIds): Promise<Weapon> {
 	if (WEAPONS[weapon]) {
 		return WEAPONS[weapon];
@@ -192,5 +218,25 @@ export async function getRelic(relic: RelicsIds): Promise<Relic> {
 	} catch (error) {
 		console.error(`Error loading relic ${relic}:`, error);
 		return getRelic('none');
+	}
+}
+
+export async function getTrait(trait: TraitsIds): Promise<Trait> {
+	if (TRAIT[trait]) {
+		return TRAIT[trait];
+	}
+
+	try {
+		const response = await fetch(`./json/trait/${trait}.json`);
+		if (!response.ok) {
+			throw new Error(`Failed to load trait ${trait}: ${response.statusText}`);
+		}
+
+		const data = await response.json();
+		TRAIT[trait] = data as Trait;
+		return TRAIT[trait];
+	} catch (error) {
+		console.error(`Error loading trait ${trait}:`, error);
+		return getTrait('none');
 	}
 }

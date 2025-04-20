@@ -4,5 +4,5 @@
 	"base_stat": "crit-med",
 	"resonances": ["phys", "atk", "flame", "armor-dissolve"],
 	"effects": ["anka-a3", "anka-skill", "anka-a6-skill"],
-	"reso_effects": ["phys", "flame"]
+	"reso_effects": ["phys-reso", "flame-reso"]
 }

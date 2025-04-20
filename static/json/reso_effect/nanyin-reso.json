@@ -1,0 +1,8 @@
+{
+	"id": "nanyin-reso",
+	"stats": {
+		"alt_atk_percent": 30
+	},
+	"require_reso": "alt",
+	"require_reso_count": 3
+}
