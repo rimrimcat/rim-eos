@@ -48,6 +48,7 @@
 		StatGearUser,
 		UserMatrix,
 		UserWeapon,
+		WeaponSettingStuff,
 		WeaponsIds,
 		WeaponView
 	} from '$lib/types/index';
@@ -315,6 +316,47 @@
 		updateWeaponMatrixRelicFromStore();
 	}
 
+	function onWeaponSettingChange(
+		weapon: WeaponView,
+		index: number,
+		setting: WeaponSettingStuff,
+		settingIndex: number
+	) {
+		// get keys in settings
+		if (!$base_weapons[index].setting) {
+			return;
+		}
+		if (!weapon.setting) {
+			return;
+		}
+
+		const selected_keys = weapon.setting.map((setting) => setting.id);
+		const keys = Object.keys($base_weapons[index].setting.choices);
+
+		let currKey = setting.id;
+		let currInd = keys.indexOf(currKey);
+		const initialCurrInd = currInd;
+
+		while (selected_keys.indexOf(currKey) !== -1) {
+			currInd = (currInd + 1) % keys.length;
+			currKey = keys[currInd];
+
+			if (currInd === initialCurrInd) {
+				// avoid catastrophe
+				console.error('idk why but something went wrong');
+				return;
+			}
+		}
+
+		if (!user_weapons[index].setting) {
+			user_weapons[index].setting = $base_weapons[index].setting.default;
+		}
+		user_weapons[index].setting[settingIndex] = currKey;
+		saveWeaponMatrixLoadout();
+		// nola can change elements and reso
+		updateWeaponMatrixRelicFromStore();
+	}
+
 	const ACTIONS = [
 		{
 			id: 'reset',
@@ -416,6 +458,107 @@
 	</div>
 {/snippet}
 
+{#snippet showWeaponMatrix()}
+	<div class="vertical weapon-matrix-cell">
+		{#each loadout_weapmat_combined as [weapon, matrix], index}
+			<div class="horizontal cell-row" style="margin: 0.5rem;">
+				<div class="vertical center weapon-icon-name" style="width: 8rem;">
+					<span class="weapon-name"> {weapon.name} </span>
+					<div class="weapon-icon-container">
+						<div
+							class="compose below border"
+							style="width: 8rem; height: 8rem; margin-top: 0.4rem;"
+						>
+							<div class="compose above" style="top:{weapon.id === 'none' ? '0rem' : '-0.5rem'}">
+								<button
+									class="image"
+									onclick={() => {
+										switching = 'weapon';
+										switch_index = index;
+										switch_gear_matrix_dialog_open = true;
+									}}
+								>
+									<img
+										src="./weapon/{weapon.id}.webp"
+										alt={weapon.name}
+										style="height:8rem; width:8rem; {weapon.id === 'none' ? 'opacity: 0;' : ''}"
+									/>
+								</button>
+							</div>
+							{#if weapon.setting && weapon.setting.length > 0}
+								<div class="compose above" style="top: 0.5rem; left: 0.5rem;">
+									{#each weapon.setting as setting, settingIndex}
+										<button
+											class="image"
+											onclick={() => {
+												onWeaponSettingChange(weapon, index, setting, settingIndex);
+											}}
+										>
+											<div class="vertical center">
+												<img
+													src={setting.icon}
+													alt={setting.icon}
+													style="height: 1.5rem; width: 1.5rem; background-color: var(--button-bg); border-radius: 50%;"
+												/>
+											</div>
+										</button>
+									{/each}
+								</div>
+							{:else if weapon.id !== 'none'}
+								<div class="compose above" style="top: 0.5rem; left: 0.5rem">
+									<StatIcon
+										stat={weapon.resonances[0] as LoadoutType}
+										size="1.5rem"
+										style="background-color: var(--button-bg); border-radius: 50%;"
+									/>
+								</div>
+							{/if}
+
+							{#if weapon.id !== 'none'}
+								{#each [1, 2, 3, 4, 5, 6] as advSetValue, advIndex}
+									<button
+										class="image"
+										onclick={() => {
+											if (weapon.advancement === advSetValue) {
+												user_weapons[index].advancement = 0;
+											} else {
+												user_weapons[index].advancement = advSetValue;
+											}
+											saveWeaponMatrixLoadout();
+											updateSingleWeaponView(index);
+										}}
+									>
+										<div class="compose above" style="top: 6.5rem; left:{1 + advIndex}rem">
+											<StarIcon
+												size={$font_size}
+												fill={weapon.advancement >= advSetValue ? 'white' : 'none'}
+											/>
+										</div>
+									</button>
+								{/each}
+							{/if}
+						</div>
+					</div>
+
+					{#if $inner_width < 370}
+						<div style="margin-top: 1rem; margin-bottom: 1.5rem;">
+							{@render showMatrices(matrix, index)}
+						</div>
+					{/if}
+				</div>
+				{#if $inner_width >= 370}
+					{@render showMatrices(matrix, index)}
+				{/if}
+			</div>
+		{/each}
+	</div>
+	{#if chart_width > 350}
+		<div class="vertical" style="margin-left: 2rem;">
+			<StatContributions bind:all_effects bind:chart_width />
+		</div>
+	{/if}
+{/snippet}
+
 <div class="loadout-page">
 	{#await (async () => {
 		await Promise.all([loadStatIcons(), loadWeaponImages(), loadMatrixImages()]);
@@ -504,15 +647,9 @@
 								></textarea>
 							</div>
 						{:else}
-							<div class="loadout-title-area">
-								<div class="element-display">
-									<div class="element-icon">
-										<StatIcon stat={loadout_icon as StatGearUser} size="2rem" />
-									</div>
-								</div>
-								<div class="loadout-name-display">
-									<span class="loadout-name">{loadout_name}</span>
-								</div>
+							<div class="horizontal center-hori" style="gap: 0.5rem;">
+								<StatIcon stat={loadout_icon as StatGearUser} size="2rem" />
+								<span>{loadout_name}</span>
 							</div>
 							<div class="loadout-description-display">
 								<p>{loadout_desc}</p>
@@ -548,138 +685,7 @@
 			</div>
 
 			<div class="horizontal">
-				<div class="vertical weapon-matrix-cell">
-					{#each loadout_weapmat_combined as [weapon, matrix], index}
-						<div class="horizontal cell-row" style="margin: 0.5rem;">
-							<div class="vertical center weapon-icon-name" style="width: 8rem;">
-								<span class="weapon-name"> {weapon.name} </span>
-								<div class="weapon-icon-container">
-									<div
-										class="compose below border"
-										style="width: 8rem; height: 8rem; margin-top: 0.4rem;"
-									>
-										<div
-											class="compose above"
-											style="top:{weapon.id === 'none' ? '0rem' : '-0.5rem'}"
-										>
-											<button
-												class="image"
-												onclick={() => {
-													switching = 'weapon';
-													switch_index = index;
-													switch_gear_matrix_dialog_open = true;
-												}}
-											>
-												<img
-													src="./weapon/{weapon.id}.webp"
-													alt={weapon.name}
-													style="height:8rem; width:8rem; {weapon.id === 'none'
-														? 'opacity: 0;'
-														: ''}"
-												/>
-											</button>
-										</div>
-										{#if weapon.setting && weapon.setting.length > 0}
-											<div class="compose above" style="top: 0.5rem; left: 0.5rem;">
-												{#each weapon.setting as setting, settingIndex}
-													<button
-														class="image"
-														onclick={() => {
-															// get keys in settings
-															if (!$base_weapons[index].setting) {
-																return;
-															}
-
-															const selected_keys = weapon.setting.map((setting) => setting.id);
-															const keys = Object.keys($base_weapons[index].setting.choices);
-
-															let currKey = setting.id;
-															let currInd = keys.indexOf(currKey);
-															const initialCurrInd = currInd;
-
-															while (selected_keys.indexOf(currKey) !== -1) {
-																currInd = (currInd + 1) % keys.length;
-																currKey = keys[currInd];
-
-																if (currInd === initialCurrInd) {
-																	// avoid catastrophe
-																	console.error('idk why but something went wrong');
-																	return;
-																}
-															}
-
-															if (!user_weapons[index].setting) {
-																user_weapons[index].setting = $base_weapons[index].setting.default;
-															}
-															user_weapons[index].setting[settingIndex] = currKey;
-															saveWeaponMatrixLoadout();
-															// nola can change elements and reso
-															updateWeaponMatrixRelicFromStore();
-														}}
-													>
-														<div class="vertical center">
-															<img
-																src={setting.icon}
-																alt={setting.icon}
-																style="height: 1.5rem; width: 1.5rem; background-color: var(--button-bg); border-radius: 50%;"
-															/>
-														</div>
-													</button>
-												{/each}
-											</div>
-										{:else if weapon.id !== 'none'}
-											<div class="compose above" style="top: 0.5rem; left: 0.5rem">
-												<StatIcon
-													stat={weapon.resonances[0] as LoadoutType}
-													size="1.5rem"
-													style="background-color: var(--button-bg); border-radius: 50%;"
-												/>
-											</div>
-										{/if}
-
-										{#if weapon.id !== 'none'}
-											{#each [1, 2, 3, 4, 5, 6] as advSetValue, advIndex}
-												<button
-													class="image"
-													onclick={() => {
-														if (weapon.advancement === advSetValue) {
-															user_weapons[index].advancement = 0;
-														} else {
-															user_weapons[index].advancement = advSetValue;
-														}
-														saveWeaponMatrixLoadout();
-														updateSingleWeaponView(index);
-													}}
-												>
-													<div class="compose above" style="top: 6.5rem; left:{1 + advIndex}rem">
-														<StarIcon
-															size={$font_size}
-															fill={weapon.advancement >= advSetValue ? 'white' : 'none'}
-														/>
-													</div>
-												</button>
-											{/each}
-										{/if}
-									</div>
-								</div>
-
-								{#if $inner_width < 370}
-									<div style="margin-top: 1rem; margin-bottom: 1.5rem;">
-										{@render showMatrices(matrix, index)}
-									</div>
-								{/if}
-							</div>
-							{#if $inner_width >= 370}
-								{@render showMatrices(matrix, index)}
-							{/if}
-						</div>
-					{/each}
-				</div>
-				{#if chart_width > 350}
-					<div class="vertical" style="margin-left: 2rem;">
-						<StatContributions bind:all_effects bind:chart_width />
-					</div>
-				{/if}
+				{@render showWeaponMatrix()}
 			</div>
 		</div>
 	{/await}
@@ -752,35 +758,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
-	}
-
-	.loadout-title-area {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-
-	.element-display {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 0.5rem;
-		background-color: var(--bg-secondary);
-		border-radius: 0.25rem;
-		height: 1rem;
-		width: 1rem;
-	}
-
-	.loadout-name-display {
-		padding: 0.5rem;
-		height: 2rem;
-		display: flex;
-		align-items: center;
-	}
-
-	.loadout-name {
-		font-size: large;
-		font-weight: 500;
 	}
 
 	.loadout-description-display {
