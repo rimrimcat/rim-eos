@@ -4,6 +4,10 @@ import type {
 	MatrixEffect,
 	MatrixEffectsIds,
 	MatrixIds,
+	Relic,
+	RelicEffect,
+	RelicEffectsIds,
+	RelicsIds,
 	ResoEffect,
 	ResoEffectsIds,
 	StatConstants,
@@ -46,8 +50,10 @@ export async function loadStatConstants(): Promise<void> {
 const RESO_EFFECTS: { [key in ResoEffectsIds]?: ResoEffect } = {};
 const WEAPON_EFFECTS: { [key in WeaponEffectsIds]?: WeaponEffect } = {};
 const MATRIX_EFFECTS: { [key in MatrixEffectsIds]?: MatrixEffect } = {};
+const RELIC_EFFECTS: { [key in RelicEffectsIds]?: RelicEffect } = {};
 const WEAPONS: { [key in WeaponsIds]?: Weapon } = {};
 const MATRIX: { [key in MatrixIds]?: Matrix } = {};
+const RELIC: { [key in RelicsIds]?: Relic } = {};
 
 export async function getResoEffects(reso: ResoEffectsIds): Promise<ResoEffect> {
 	if (RESO_EFFECTS[reso]) {
@@ -109,6 +115,26 @@ export async function getMatrixEffect(effect: MatrixEffectsIds): Promise<MatrixE
 	}
 }
 
+export async function getRelicEffect(effect: RelicEffectsIds): Promise<RelicEffect> {
+	if (RELIC_EFFECTS[effect]) {
+		return RELIC_EFFECTS[effect];
+	}
+
+	try {
+		const response = await fetch(`./json/relic_effect/${effect}.json`);
+		if (!response.ok) {
+			throw new Error(`Failed to load effect ${effect}: ${response.statusText}`);
+		}
+
+		const data = await response.json();
+		RELIC_EFFECTS[effect] = data as RelicEffect;
+		return RELIC_EFFECTS[effect];
+	} catch (error) {
+		console.error(`Error loading effect ${effect}:`, error);
+		throw error;
+	}
+}
+
 export async function getWeapon(weapon: WeaponsIds): Promise<Weapon> {
 	if (WEAPONS[weapon]) {
 		return WEAPONS[weapon];
@@ -125,7 +151,7 @@ export async function getWeapon(weapon: WeaponsIds): Promise<Weapon> {
 		return WEAPONS[weapon];
 	} catch (error) {
 		console.error(`Error loading weapon ${weapon}:`, error);
-		throw error;
+		return getWeapon('none');
 	}
 }
 
@@ -145,6 +171,26 @@ export async function getMatrix(matrix: MatrixIds): Promise<Matrix> {
 		return MATRIX[matrix];
 	} catch (error) {
 		console.error(`Error loading matrix ${matrix}:`, error);
-		throw error;
+		return getMatrix('none');
+	}
+}
+
+export async function getRelic(relic: RelicsIds): Promise<Relic> {
+	if (RELIC[relic]) {
+		return RELIC[relic];
+	}
+
+	try {
+		const response = await fetch(`./json/relic/${relic}.json`);
+		if (!response.ok) {
+			throw new Error(`Failed to load relic ${relic}: ${response.statusText}`);
+		}
+
+		const data = await response.json();
+		RELIC[relic] = data as Relic;
+		return RELIC[relic];
+	} catch (error) {
+		console.error(`Error loading relic ${relic}:`, error);
+		return getRelic('none');
 	}
 }

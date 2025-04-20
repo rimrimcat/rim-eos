@@ -13,6 +13,10 @@
 			"url": "./src/lib/schemas/matrix_effect.schema.json"
 		},
 		{
+			"fileMatch": ["**/relic_effect/*.json"],
+			"url": "./src/lib/schemas/relic_effect.schema.json"
+		},
+		{
 			"fileMatch": ["**/weapon/*.json"],
 			"url": "./src/lib/schemas/weapon.schema.json"
 		},

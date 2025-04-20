@@ -59,6 +59,7 @@ export type StatBuffs =
 	| 'ele_dmg_percent'
 	| 'crit_dmg_percent'
 	| 'healing_percent'
+	| `relic_${Elements}_dmg_percent`
 	| 'shatter';
 
 /**
@@ -70,7 +71,7 @@ export type StatDebuffs =
 	| `${Elements}_res_ignore_percent`
 
 	// dmg increase debuff
-	| 'final_dmg_increase_percent' // separate from ele
+	| 'final_dmg_taken_percent' // separate from ele
 
 	// ele dmg increase debuffs
 	| 'ele_dmg_taken_percent'
@@ -194,6 +195,7 @@ export type LumpedKey =
 	| `${Elements}_atk`
 	| `${Elements}_atk_percent`
 	| `${Elements}_dmg_percent`
+	| `relic_${Elements}_dmg_percent`
 	| 'crit'
 	| 'crit_percent'
 	| 'crit_dmg_percent'

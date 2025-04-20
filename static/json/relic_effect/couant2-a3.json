@@ -1,0 +1,10 @@
+{
+	"id": "couant2-a3",
+	"stats": {
+		"final_dmg_percent": 5
+	},
+	"cooldown": 30,
+	"duration": 12,
+	"require_adv": 3,
+	"require_undamaged": true
+}

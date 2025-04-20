@@ -1,0 +1,9 @@
+{
+	"id": "overdrive-a0",
+	"stats": {
+		"final_dmg_percent": 4
+	},
+	"cooldown": 240,
+	"duration": 200,
+	"require_adv_not_gt": 3
+}

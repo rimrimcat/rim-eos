@@ -53,7 +53,7 @@
 		);
 
 		if (currentItems.length !== previous_item_count) {
-			console.log(`Items changed: ${previous_item_count} → ${currentItems.length}`);
+			// console.log(`Items changed: ${previous_item_count} → ${currentItems.length}`);
 			previous_item_count = currentItems.length;
 
 			// Reset measurements to force recalculation

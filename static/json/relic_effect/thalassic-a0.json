@@ -1,0 +1,9 @@
+{
+	"id": "thalassic-a0",
+	"stats": {
+		"final_dmg_taken_percent": 4
+	},
+	"cooldown": 60,
+	"duration": 45,
+	"require_adv_not_gt": 2
+}

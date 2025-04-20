@@ -24,7 +24,10 @@ also still thinking of a better name later on
 - [x] Loadout: add my loadout as example (2025-04-10)
 - [x] Loadout: add way to change weapons/matrices (2025-04-16)
 - [x] Stat: Show only offensive stats (2025-04-18)
-- [ ] Main Page: add interactive tutorial
+- [x] Main Page: add interactive tutorial (2025-04-19)
+- [x] Loadout: add relics (2025-04-20)
+- [ ] Gear: add titan stats
+- [ ] Loadout: add traits
 - [ ] Matrix: add base matrix stat
 - [ ] Loadout: add some weapons and matrices
 - [ ] Stat: toggle to show attack percent or (base attack + attack percent)
@@ -43,6 +46,7 @@ also still thinking of a better name later on
 - [ ] Design: fix animations
 - [ ] Design: fix my css
 - [ ] Design: animate weapon changing advancement/element
+- [ ] Design: make some icons have same size
 - [ ] Misc: add image that you can click and it switches so you have something to look and play with ig
 - [ ] Misc: disable some buttons when mid animation
 - [ ] Misc: add prompts when performing destructive actions

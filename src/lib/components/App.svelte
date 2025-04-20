@@ -7,7 +7,7 @@
 		createStatViewFromStore,
 		getAllStatsFromStore,
 		getEquippedGearViews,
-		updateWeaponMatrix
+		updateWeaponMatrixRelicFromStore
 	} from '$lib/scripts/loadout';
 	import {
 		all_stats,
@@ -88,7 +88,7 @@
 		console.log('Gear Views processed');
 
 		// create initial weapon and matrix views
-		await updateWeaponMatrix();
+		await updateWeaponMatrixRelicFromStore();
 		$stat_autoupdate = true;
 	});
 

@@ -1,0 +1,341 @@
+{
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "#/definitions/RelicEffectsIds"
+    },
+    "target": {
+      "enum": [
+        "ally",
+        "enemy",
+        "self",
+        "team"
+      ],
+      "type": "string"
+    },
+    "duration": {
+      "type": "number"
+    },
+    "cooldown": {
+      "type": "number"
+    },
+    "require_reso": {
+      "enum": [
+        "alt",
+        "armor-dissolve",
+        "atk",
+        "bene",
+        "flame",
+        "force-impact",
+        "fort",
+        "frost",
+        "none",
+        "phys",
+        "volt"
+      ],
+      "type": "string"
+    },
+    "require_reso_not": {
+      "enum": [
+        "alt",
+        "armor-dissolve",
+        "atk",
+        "bene",
+        "flame",
+        "force-impact",
+        "fort",
+        "frost",
+        "none",
+        "phys",
+        "volt"
+      ],
+      "type": "string"
+    },
+    "require_reso_count": {
+      "type": "number"
+    },
+    "require_teamplay": {
+      "type": "boolean"
+    },
+    "require_weapon": {
+      "enum": [
+        "anka",
+        "antoria",
+        "asuka",
+        "asurada",
+        "brevey",
+        "claudiax",
+        "grayfox",
+        "merylx",
+        "nanyin",
+        "nola",
+        "none",
+        "roslyn",
+        "voidpiercer"
+      ],
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    },
+    "stats": {
+      "$ref": "#/definitions/StatData"
+    },
+    "require_adv": {
+      "type": "number"
+    },
+    "require_adv_not_gt": {
+      "type": "number"
+    },
+    "require_onfield": {
+      "type": "boolean"
+    },
+    "require_undamaged": {
+      "type": "boolean"
+    },
+    "works_unequipped": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "id",
+    "stats"
+  ],
+  "definitions": {
+    "RelicEffectsIds": {
+      "enum": [
+        "bubblegun-a2",
+        "bubblegun-a4",
+        "bubblegun-a5",
+        "couant-a2",
+        "couant2-a0",
+        "couant2-a2",
+        "couant2-a3",
+        "couant2-a4",
+        "couant2-a5",
+        "mask-a2",
+        "mask-a4",
+        "mask-a5",
+        "overdrive-a0",
+        "overdrive-a0-dose",
+        "overdrive-a1-dose",
+        "overdrive-a3",
+        "overdrive-a3-dose",
+        "overdrive-a4",
+        "rifle-a2",
+        "rifle-a4",
+        "rifle-a5",
+        "rift-a3",
+        "shield-a5",
+        "thalassic-a0",
+        "thalassic-a2",
+        "thalassic-a3",
+        "thalassic-a4"
+      ],
+      "type": "string"
+    },
+    "StatData": {
+      "type": "object",
+      "properties": {
+        "atk": {
+          "type": "number"
+        },
+        "hp": {
+          "type": "number"
+        },
+        "hp_percent": {
+          "type": "number"
+        },
+        "flame_atk": {
+          "type": "number"
+        },
+        "frost_atk": {
+          "type": "number"
+        },
+        "phys_atk": {
+          "type": "number"
+        },
+        "volt_atk": {
+          "type": "number"
+        },
+        "alt_atk": {
+          "type": "number"
+        },
+        "flame_atk_percent": {
+          "type": "number"
+        },
+        "frost_atk_percent": {
+          "type": "number"
+        },
+        "phys_atk_percent": {
+          "type": "number"
+        },
+        "volt_atk_percent": {
+          "type": "number"
+        },
+        "alt_atk_percent": {
+          "type": "number"
+        },
+        "flame_dmg_percent": {
+          "type": "number"
+        },
+        "frost_dmg_percent": {
+          "type": "number"
+        },
+        "phys_dmg_percent": {
+          "type": "number"
+        },
+        "volt_dmg_percent": {
+          "type": "number"
+        },
+        "alt_dmg_percent": {
+          "type": "number"
+        },
+        "crit": {
+          "type": "number"
+        },
+        "crit_percent": {
+          "type": "number"
+        },
+        "res": {
+          "type": "number"
+        },
+        "flame_res": {
+          "type": "number"
+        },
+        "frost_res": {
+          "type": "number"
+        },
+        "phys_res": {
+          "type": "number"
+        },
+        "volt_res": {
+          "type": "number"
+        },
+        "alt_res": {
+          "type": "number"
+        },
+        "res_percent": {
+          "type": "number"
+        },
+        "flame_res_percent": {
+          "type": "number"
+        },
+        "frost_res_percent": {
+          "type": "number"
+        },
+        "phys_res_percent": {
+          "type": "number"
+        },
+        "volt_res_percent": {
+          "type": "number"
+        },
+        "alt_res_percent": {
+          "type": "number"
+        },
+        "crit_dmg_percent": {
+          "type": "number"
+        },
+        "atk_percent": {
+          "type": "number"
+        },
+        "final_dmg_percent": {
+          "type": "number"
+        },
+        "ele_dmg_percent": {
+          "type": "number"
+        },
+        "healing_percent": {
+          "type": "number"
+        },
+        "relic_flame_dmg_percent": {
+          "type": "number"
+        },
+        "relic_frost_dmg_percent": {
+          "type": "number"
+        },
+        "relic_phys_dmg_percent": {
+          "type": "number"
+        },
+        "relic_volt_dmg_percent": {
+          "type": "number"
+        },
+        "relic_alt_dmg_percent": {
+          "type": "number"
+        },
+        "shatter": {
+          "type": "number"
+        },
+        "res_ignore_percent": {
+          "type": "number"
+        },
+        "flame_res_ignore_percent": {
+          "type": "number"
+        },
+        "frost_res_ignore_percent": {
+          "type": "number"
+        },
+        "phys_res_ignore_percent": {
+          "type": "number"
+        },
+        "volt_res_ignore_percent": {
+          "type": "number"
+        },
+        "alt_res_ignore_percent": {
+          "type": "number"
+        },
+        "final_dmg_taken_percent": {
+          "type": "number"
+        },
+        "ele_dmg_taken_percent": {
+          "type": "number"
+        },
+        "flame_dmg_taken_percent": {
+          "type": "number"
+        },
+        "frost_dmg_taken_percent": {
+          "type": "number"
+        },
+        "phys_dmg_taken_percent": {
+          "type": "number"
+        },
+        "volt_dmg_taken_percent": {
+          "type": "number"
+        },
+        "alt_dmg_taken_percent": {
+          "type": "number"
+        },
+        "res_reduction_percent": {
+          "type": "number"
+        },
+        "crit_res_reduction_percent": {
+          "type": "number"
+        },
+        "shield_dmg_reduction_ignore_percent": {
+          "type": "number"
+        },
+        "base_atk_improvement_percent": {
+          "type": "number"
+        },
+        "base_flame_atk_improvement_percent": {
+          "type": "number"
+        },
+        "base_frost_atk_improvement_percent": {
+          "type": "number"
+        },
+        "base_phys_atk_improvement_percent": {
+          "type": "number"
+        },
+        "base_volt_atk_improvement_percent": {
+          "type": "number"
+        },
+        "base_alt_atk_improvement_percent": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

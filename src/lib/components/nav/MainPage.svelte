@@ -12,6 +12,10 @@
 		on what changes to make.
 	</p>
 
+	<p style="color: pink; font-size: 1.5rem;">
+		Note: Experimental. Many bugs. Things break and disappear.
+	</p>
+
 	<h1>Getting started</h1>
 	<p>Depending on what you want to optimize: (you may click on the blocks)</p>
 

@@ -1,0 +1,5 @@
+{
+	"id": "thalassic",
+	"name": "Thalassic",
+	"effects": ["thalassic-a0", "thalassic-a2", "thalassic-a3", "thalassic-a4"]
+}

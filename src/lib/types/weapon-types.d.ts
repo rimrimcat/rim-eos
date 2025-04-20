@@ -1,6 +1,8 @@
 import type {
 	MatrixEffectsIds,
 	MatrixIds,
+	RelicEffectsIds,
+	RelicIds,
 	ResoEffectsIds,
 	WeaponEffectsIds,
 	WeaponsIds
@@ -9,6 +11,7 @@ import type { StatCollection } from '../scripts/stats';
 import type {
 	MatrixFinalEffect,
 	OrderedResoTriggers,
+	RelicEffect,
 	ResoTriggers,
 	WeaponEffect
 } from './effect-types';
@@ -96,6 +99,26 @@ export type MatrixView = {
 	name: string;
 
 	effects: MatrixFinalEffect[];
+	stat: StatCollection;
+
+	advancement: number;
+};
+
+export type Relic = {
+	id: RelicIds;
+	name: string;
+	effects: RelicEffectsIds[];
+};
+
+export type UserRelic = {
+	id: RelicIds;
+	advancement?: number;
+};
+
+export type RelicView = {
+	id: RelicIds;
+	name: string;
+	effects: RelicEffect[];
 	stat: StatCollection;
 
 	advancement: number;

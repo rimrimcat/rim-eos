@@ -2,6 +2,7 @@
 	import {
 		AllGearEffectIds,
 		AllMatrixEffectIds,
+		AllRelicEffectIds,
 		AllResoEffectIds,
 		AllWeaponEffectIds
 	} from '$lib/generated/all-ids';
@@ -11,6 +12,8 @@
 		GearEffect,
 		MatrixEffectsIds,
 		MatrixFinalEffect,
+		RelicEffect,
+		RelicEffectsIds,
 		ResoEffect,
 		ResoEffectsIds,
 		StatData,
@@ -25,8 +28,11 @@
 	import { DiffIcon, GroupIcon, ShirtIcon, SlashIcon } from '@lucide/svelte';
 
 	let {
-		all_effects = $bindable([] as (ResoEffect | WeaponEffect | MatrixFinalEffect | GearEffect)[]),
-		chart_width = $bindable(500)
+		all_effects = $bindable(
+			[] as (ResoEffect | WeaponEffect | MatrixFinalEffect | GearEffect | RelicEffect)[]
+		),
+		chart_width = $bindable(500),
+		style = ''
 	} = $props();
 
 	function groupBySource(eff: TaggedEffect) {
@@ -34,6 +40,7 @@
 		if (eff.is_matrix) return 'Matrix';
 		if (eff.is_reso) return 'Resonance';
 		if (eff.is_gear) return 'Gear';
+		if (eff.is_relic) return 'Relic';
 		return 'Unknown';
 	}
 
@@ -69,15 +76,23 @@
 		is_weapon?: boolean;
 		is_reso?: boolean;
 		is_gear?: boolean;
+		is_relic?: boolean;
 	};
 
 	type TaggedEffect = BaseEffect &
 		ETags & {
-			id: ResoEffectsIds | WeaponEffectsIds | MatrixEffectsIds | ValidGearEffectIds;
+			id:
+				| ResoEffectsIds
+				| WeaponEffectsIds
+				| MatrixEffectsIds
+				| ValidGearEffectIds
+				| RelicEffectsIds;
 			stats: StatData;
 		};
 
-	function tagEffect(eff: ResoEffect | WeaponEffect | MatrixFinalEffect | GearEffect) {
+	function tagEffect(
+		eff: ResoEffect | WeaponEffect | MatrixFinalEffect | GearEffect | RelicEffect
+	) {
 		const tags: ETags = {};
 
 		if (AllWeaponEffectIds.includes(eff.id as WeaponEffectsIds)) {
@@ -90,6 +105,8 @@
 			tags.is_reso = true;
 		} else if (AllGearEffectIds.includes(eff.id as ValidGearEffectIds)) {
 			tags.is_gear = true;
+		} else if (AllRelicEffectIds.includes(eff.id as RelicEffectsIds)) {
+			tags.is_relic = true;
 		} else {
 			console.log('FAILED TO TAG!');
 		}
@@ -140,7 +157,12 @@
 
 	function getDiff(prev_eff: TaggedEffect[], curr_eff: TaggedEffect[]): TaggedEffect[] {
 		type DiffIdMap = {
-			id: ResoEffectsIds | WeaponEffectsIds | MatrixEffectsIds | ValidGearEffectIds;
+			id:
+				| ResoEffectsIds
+				| WeaponEffectsIds
+				| MatrixEffectsIds
+				| ValidGearEffectIds
+				| RelicEffectsIds;
 			eff_in_prev?: TaggedEffect;
 			eff_in_curr?: TaggedEffect;
 		};
@@ -245,75 +267,77 @@
 	});
 </script>
 
-<div class="horizontal chart-actions">
-	<button
-		class="border"
-		id="stat-grouping"
-		onclick={() => {
-			grouping_fcn_index = (grouping_fcn_index + 1) % GROUPING_FUNCTIONS.length;
-		}}
-	>
-		<GroupIcon />
-		<label class="in-button" for="stat-grouping"
-			>Grouping: {GROUPING_FUNCTION_NAMES[grouping_fcn_index]}</label
+<div class="vertical" {style}>
+	<div class="horizontal chart-actions">
+		<button
+			class="border"
+			id="stat-grouping"
+			onclick={() => {
+				grouping_fcn_index = (grouping_fcn_index + 1) % GROUPING_FUNCTIONS.length;
+			}}
 		>
-	</button>
-	<button
-		class="border"
-		id="include-gear"
-		onclick={() => {
-			include_gears = !include_gears;
-			if (!include_gears) {
-				show_bar = false;
-				setTimeout(() => {
-					show_bar = true;
-				}, 1);
-			}
-		}}
-	>
-		{#if include_gears}
-			<ShirtIcon />
-			<label class="in-button" for="include-gear">Including Gears</label>
-		{:else}
-			<div class="compose below lucide">
+			<GroupIcon />
+			<label class="in-button" for="stat-grouping"
+				>Grouping: {GROUPING_FUNCTION_NAMES[grouping_fcn_index]}</label
+			>
+		</button>
+		<button
+			class="border"
+			id="include-gear"
+			onclick={() => {
+				include_gears = !include_gears;
+				if (!include_gears) {
+					show_bar = false;
+					setTimeout(() => {
+						show_bar = true;
+					}, 1);
+				}
+			}}
+		>
+			{#if include_gears}
 				<ShirtIcon />
-				<div class="compose above">
-					<SlashIcon />
+				<label class="in-button" for="include-gear">Including Gears</label>
+			{:else}
+				<div class="compose below lucide">
+					<ShirtIcon />
+					<div class="compose above">
+						<SlashIcon />
+					</div>
+				</div>
+				<label class="in-button" for="include-gear">Excluding Gears</label>
+			{/if}
+		</button>
+		<button
+			class="border"
+			id="compare-stats"
+			onclick={() => {
+				// disable pinning
+				pin_axis = false;
+
+				compare_stats = !compare_stats;
+				if (!compare_stats) {
+					return;
+				}
+
+				prev_tagged_effects = [...tagged_effects];
+			}}
+		>
+			<div class="compose below lucide">
+				<DiffIcon />
+
+				<div class="compose above lucide">
+					{#if compare_stats}
+						<SlashIcon />
+					{/if}
 				</div>
 			</div>
-			<label class="in-button" for="include-gear">Excluding Gears</label>
-		{/if}
-	</button>
-	<button
-		class="border"
-		id="compare-stats"
-		onclick={() => {
-			// disable pinning
-			pin_axis = false;
+			<label class="in-button" for="compare-stats"
+				>{compare_stats ? 'Stop Compare' : 'Compare Stats'}</label
+			>
+		</button>
+	</div>
 
-			compare_stats = !compare_stats;
-			if (!compare_stats) {
-				return;
-			}
-
-			prev_tagged_effects = [...tagged_effects];
-		}}
-	>
-		<div class="compose below lucide">
-			<DiffIcon />
-
-			<div class="compose above lucide">
-				{#if compare_stats}
-					<SlashIcon />
-				{/if}
-			</div>
-		</div>
-		<label class="in-button" for="compare-stats"
-			>{compare_stats ? 'Stop Compare' : 'Compare Stats'}</label
-		>
-	</button>
+	{#if show_bar}
+		<BarChartStacked {data} {options} />
+	{/if}
 </div>
-
-{#if show_bar}
-	<BarChartStacked {data} {options} />
-{/if}

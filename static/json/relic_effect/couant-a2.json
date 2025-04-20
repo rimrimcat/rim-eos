@@ -1,0 +1,8 @@
+{
+	"id": "couant-a2",
+	"stats": {
+		"final_dmg_percent": 20
+	},
+	"cooldown": 30,
+	"duration": 10
+}

@@ -1,0 +1,5 @@
+{
+	"id": "mask",
+	"name": "Mask",
+	"effects": ["mask-a2", "mask-a4", "mask-a5"]
+}

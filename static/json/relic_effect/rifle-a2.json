@@ -1,0 +1,7 @@
+{
+	"id": "rifle-a2",
+	"stats": {
+		"final_dmg_percent": 6
+	},
+	"require_adv": 2
+}

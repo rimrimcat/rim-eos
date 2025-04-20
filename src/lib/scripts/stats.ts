@@ -103,7 +103,7 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	frost_res_ignore_percent: 'Frost Res Ignore',
 	volt_res_ignore_percent: 'Volt Res Ignore',
 	alt_res_ignore_percent: 'Alt Res Ignore',
-	final_dmg_increase_percent: 'Final Dmg Increase',
+	final_dmg_taken_percent: 'Final Dmg Taken',
 	ele_dmg_taken_percent: 'Ele Dmg Taken',
 	phys_dmg_taken_percent: 'Phys Dmg Taken',
 	flame_dmg_taken_percent: 'Flame Dmg Taken',
@@ -116,7 +116,12 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	base_flame_atk_improvement_percent: 'Base Flame Atk',
 	base_frost_atk_improvement_percent: 'Base Frost Atk',
 	base_volt_atk_improvement_percent: 'Base Volt Atk',
-	base_alt_atk_improvement_percent: 'Base Alt Atk'
+	base_alt_atk_improvement_percent: 'Base Alt Atk',
+	relic_phys_dmg_percent: 'Relic Phys Dmg',
+	relic_flame_dmg_percent: 'Relic Flame Dmg',
+	relic_frost_dmg_percent: 'Relic Frost Dmg',
+	relic_volt_dmg_percent: 'Relic Volt Dmg',
+	relic_alt_dmg_percent: 'Relic Alt Dmg'
 };
 
 export const USER_STATS_LIST: StatGearUser[] = [
@@ -587,6 +592,13 @@ export class StatCollection {
 		new_data.volt_dmg_percent = this.get('volt_dmg_percent') + this.get('ele_dmg_percent');
 		new_data.alt_dmg_percent = this.get('alt_dmg_percent') + this.get('ele_dmg_percent');
 
+		// relic ele_dmg
+		new_data.relic_phys_dmg_percent = this.get('relic_phys_dmg_percent');
+		new_data.relic_flame_dmg_percent = this.get('relic_flame_dmg_percent');
+		new_data.relic_frost_dmg_percent = this.get('relic_frost_dmg_percent');
+		new_data.relic_volt_dmg_percent = this.get('relic_volt_dmg_percent');
+		new_data.relic_alt_dmg_percent = this.get('relic_alt_dmg_percent');
+
 		// crit
 		new_data.crit = this.get('crit');
 		new_data.crit_percent = this.get('crit_percent');
@@ -629,8 +641,8 @@ export class LumpedStatCollection {
 
 	/**
 	 * Calculates the multipliers of stat collection to determine improvement over current stats
-	 * @param other_col - object's multipliers to calculate. Must not be part of the original collection
-	 * @param element
+	 * @param {LumpedStatCollection} other_col - object's multipliers to calculate. Must not be part of the original collection
+	 * @param {Elements} element - element of current loadout
 	 */
 	total_multiplier_of(other_col: LumpedStatCollection, element: Elements, level: number = 100) {
 		let multiplier = 1;
@@ -643,6 +655,11 @@ export class LumpedStatCollection {
 		// ele percent
 		multiplier *=
 			1 + other_col.get(`${element}_dmg_percent`) / (1 + this.get(`${element}_dmg_percent`));
+		// relic ele percent
+		multiplier *=
+			1 +
+			other_col.get(`relic_${element}_dmg_percent`) /
+				(1 + this.get(`relic_${element}_dmg_percent`));
 		// crit
 		const r0 = getCritRate(this.get('crit'), this.get('crit_percent'), level);
 		const r1 = getCritRate(
