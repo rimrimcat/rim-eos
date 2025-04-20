@@ -44,6 +44,13 @@ const matrix_ids = [
 		.filter((file) => file.endsWith('.json') && file !== 'none.json')
 		.map((file) => path.basename(file, '.json'))
 ];
+const relic_ids = [
+	'none',
+	...fs
+		.readdirSync(relic_effects_path)
+		.filter((file) => file.endsWith('.json') && file !== 'none.json')
+		.map((file) => path.basename(file, '.json'))
+];
 
 const gear_effect_ids: ValidGearEffectIds[] = [
 	'gear-A',
@@ -68,12 +75,13 @@ export type ResoEffectsIds = ${reso_effects_ids.map((id) => `"${id}"`).join(' | 
 export type RelicEffectsIds = ${relic_effects_ids.map((id) => `"${id}"`).join(' | ')};
 export type WeaponsIds = ${weapons_ids.map((id) => `"${id}"`).join(' | ')};
 export type MatrixIds = ${matrix_ids.map((id) => `"${id}"`).join(' | ')};
+export type RelicIds = ${relic_ids.map((id) => `"${id}"`).join(' | ')};
 
 `;
 
 const arrayDefs = `// Auto-generated file
 
-import type { WeaponEffectsIds, MatrixEffectsIds, ResoEffectsIds, WeaponsIds, MatrixIds } from './ids';
+import type { WeaponEffectsIds, MatrixEffectsIds, ResoEffectsIds, RelicEffectsIds,  WeaponsIds, MatrixIds, RelicsIds } from './ids';
 
 export const AllWeaponEffectIds: WeaponEffectsIds[] = ${JSON.stringify(weapon_effects_ids)};
 export const AllMatrixEffectIds: MatrixEffectsIds[] = ${JSON.stringify(matrix_effects_ids)};
@@ -81,6 +89,7 @@ export const AllResoEffectIds: ResoEffectsIds[] = ${JSON.stringify(reso_effects_
 export const AllRelicEffectIds: RelicEffectsIds[] = ${JSON.stringify(relic_effects_ids)};
 export const AllMatrixIds: MatrixIds[] = ${JSON.stringify(matrix_ids)};
 export const AllWeaponIds: WeaponsIds[] = ${JSON.stringify(weapons_ids)};
+export const AllRelicIds: RelicIds[] = ${JSON.stringify(relic_ids)};
 export const AllGearEffectIds = ${JSON.stringify(gear_effect_ids)};
 
 `;

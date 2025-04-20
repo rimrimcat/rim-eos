@@ -1,0 +1,5 @@
+{
+	"id": "bubblegun",
+	"name": "Bubble Gun",
+	"effects": ["bubblegun-a2", "bubblegun-a4", "bubblegun-a5"]
+}

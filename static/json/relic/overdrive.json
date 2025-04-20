@@ -1,0 +1,12 @@
+{
+	"id": "overdrive",
+	"name": "Overdrive",
+	"effects": [
+		"overdrive-a0",
+		"overdrive-a0-dose",
+		"overdrive-a1-dose",
+		"overdrive-a3",
+		"overdrive-a3-dose",
+		"overdrive-a4"
+	]
+}

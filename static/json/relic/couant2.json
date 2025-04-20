@@ -1,0 +1,5 @@
+{
+	"id": "couant2",
+	"name": "Couant 2",
+	"effects": ["couant2-a0", "couant2-a2", "couant2-a3", "couant2-a4", "couant2-a5"]
+}
