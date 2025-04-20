@@ -93,7 +93,8 @@ export const DEFAULT_LOADOUTS_RIM: AllLoadouts = {
 		base_stats: DEFAULT_STATS_RIM,
 		equipped_weapons: [{ id: 'grayfox' }, { id: 'nola', setting: ['frost'] }, { id: 'nanyin' }],
 		equipped_matrices: [{ id: 'grayfox-4p' }, { id: 'nola-4p' }, { id: 'nanyin-4p' }],
-		equipped_relics: [{ id: 'none' }, { id: 'none' }]
+		equipped_relics: [{ id: 'none' }, { id: 'none' }],
+		equipped_trait: 'none'
 	}
 };
 export const DEFAULT_GEARS_RIM: UserGear[] = [
@@ -456,6 +457,9 @@ export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadO
 				}
 				if (!loadout_data.equipped_relics) {
 					all_loadouts[loadout_key].equipped_relics = [{ id: 'none' }, { id: 'none' }];
+				}
+				if (!loadout_data.equipped_trait) {
+					all_loadouts[loadout_key].equipped_trait = 'none';
 				}
 				if (!loadout_data.base_stats) {
 					all_loadouts[loadout_key].base_stats = DEFAULT_STATS_RIM;
