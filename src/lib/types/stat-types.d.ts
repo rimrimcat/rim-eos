@@ -59,6 +59,7 @@ export type StatBuffs =
 	| 'ele_dmg_percent'
 	| 'crit_dmg_percent'
 	| 'healing_percent'
+	| `relic_${Elements}_dmg_percent`
 	| 'shatter';
 
 /**

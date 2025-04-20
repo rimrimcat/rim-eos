@@ -252,6 +252,21 @@
         "healing_percent": {
           "type": "number"
         },
+        "relic_flame_dmg_percent": {
+          "type": "number"
+        },
+        "relic_frost_dmg_percent": {
+          "type": "number"
+        },
+        "relic_phys_dmg_percent": {
+          "type": "number"
+        },
+        "relic_volt_dmg_percent": {
+          "type": "number"
+        },
+        "relic_alt_dmg_percent": {
+          "type": "number"
+        },
         "shatter": {
           "type": "number"
         },
