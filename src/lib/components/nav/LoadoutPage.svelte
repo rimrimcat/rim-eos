@@ -622,7 +622,17 @@
 				{/if}
 			</div>
 		{/each}
-		{@render showRelics()}
+
+		{#if $inner_width < 620}
+			{@render showRelics()}
+		{/if}
+	</div>
+	<div class="vertical relic-trait-col" style="margin-left: 1rem;">
+		{#if $inner_width >= 620}
+			<div style="margin-top: 7rem;">
+				{@render showRelics()}
+			</div>
+		{/if}
 	</div>
 {/snippet}
 
@@ -754,17 +764,13 @@
 			<div class="horizontal">
 				{@render showWeaponMatrix()}
 			</div>
-
-			<div class="horizontal">
-				<p>test</p>
-			</div>
-
-			{#if chart_width > 350}
-				<div class="vertical" style="margin-left: 2rem;">
-					<StatContributions bind:all_effects bind:chart_width />
-				</div>
-			{/if}
 		</div>
+
+		{#if chart_width > 350}
+			<div class="vertical" style="margin-top:1 rem; margin-left: 2rem;">
+				<StatContributions bind:all_effects bind:chart_width />
+			</div>
+		{/if}
 	{/await}
 </div>
 
