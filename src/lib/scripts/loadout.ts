@@ -4,6 +4,7 @@ import type {
 	BaseEffect,
 	BaseStats16,
 	EquippedGear,
+	FinalizedTraitEffect,
 	GearEffect,
 	GearView,
 	GearViewStatShort,
@@ -273,8 +274,28 @@ export async function pushAllValidTraitEffects(
 				return;
 			}
 
-			effects_.push(eff);
-			stat_[0] = stat_[0].add(new StatCollection(eff.stats));
+			const keys = Object.keys(eff.stats);
+			const finalEffect = {
+				...eff,
+				stats: {},
+				advancement
+			} as FinalizedTraitEffect;
+
+			keys.forEach((key) => {
+				// @ts-expect-error: key is guaranteed to exist
+				const expr_or_number: string | number = eff.stats[key];
+
+				if (typeof expr_or_number === 'string') {
+					// @ts-expect-error: key is guaranteed to exist
+					finalEffect.stats[key] = evil(parse(expr_or_number), reso_counts_);
+				} else {
+					// @ts-expect-error: key is guaranteed to exist
+					finalEffect.stats[key] = expr_or_number;
+				}
+			});
+
+			effects_.push(finalEffect);
+			stat_[0] = stat_[0].add(new StatCollection(finalEffect.stats));
 		})
 	);
 }

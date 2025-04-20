@@ -76,11 +76,39 @@
       ],
       "type": "string"
     },
+    "require_boss": {
+      "type": "boolean"
+    },
     "notes": {
       "type": "string"
     },
     "stats": {
-      "$ref": "#/definitions/StatData"
+      "anyOf": [
+        {
+          "$ref": "#/definitions/StatData"
+        },
+        {
+          "$ref": "#/definitions/ExprStatData"
+        }
+      ]
+    },
+    "require_onfield_weapon": {
+      "enum": [
+        "anka",
+        "antoria",
+        "asuka",
+        "asurada",
+        "brevey",
+        "claudiax",
+        "grayfox",
+        "merylx",
+        "nanyin",
+        "nola",
+        "none",
+        "roslyn",
+        "voidpiercer"
+      ],
+      "type": "string"
     }
   },
   "required": [
@@ -90,8 +118,18 @@
   "definitions": {
     "TraitEffectsIds": {
       "enum": [
-        "grayfox-trait",
-        "grayfox-trait-weap"
+        "anka-trait",
+        "anka-trait-boss",
+        "asurada-trait",
+        "brevey-trait-bene",
+        "brevey-trait-nonbene",
+        "claudiax-trait",
+        "generic-trait-18",
+        "grayfox-trait-bene",
+        "merylx-trait",
+        "nanyin-trait",
+        "nola-trait",
+        "roslyn-trait"
       ],
       "type": "string"
     },
@@ -292,6 +330,207 @@
         },
         "base_alt_atk_improvement_percent": {
           "type": "number"
+        }
+      },
+      "additionalProperties": false
+    },
+    "ExprStatData": {
+      "type": "object",
+      "properties": {
+        "hp": {
+          "type": "string"
+        },
+        "hp_percent": {
+          "type": "string"
+        },
+        "atk": {
+          "type": "string"
+        },
+        "phys_atk": {
+          "type": "string"
+        },
+        "flame_atk": {
+          "type": "string"
+        },
+        "frost_atk": {
+          "type": "string"
+        },
+        "volt_atk": {
+          "type": "string"
+        },
+        "alt_atk": {
+          "type": "string"
+        },
+        "phys_atk_percent": {
+          "type": "string"
+        },
+        "flame_atk_percent": {
+          "type": "string"
+        },
+        "frost_atk_percent": {
+          "type": "string"
+        },
+        "volt_atk_percent": {
+          "type": "string"
+        },
+        "alt_atk_percent": {
+          "type": "string"
+        },
+        "phys_dmg_percent": {
+          "type": "string"
+        },
+        "flame_dmg_percent": {
+          "type": "string"
+        },
+        "frost_dmg_percent": {
+          "type": "string"
+        },
+        "volt_dmg_percent": {
+          "type": "string"
+        },
+        "alt_dmg_percent": {
+          "type": "string"
+        },
+        "crit": {
+          "type": "string"
+        },
+        "crit_percent": {
+          "type": "string"
+        },
+        "res": {
+          "type": "string"
+        },
+        "phys_res": {
+          "type": "string"
+        },
+        "flame_res": {
+          "type": "string"
+        },
+        "frost_res": {
+          "type": "string"
+        },
+        "volt_res": {
+          "type": "string"
+        },
+        "alt_res": {
+          "type": "string"
+        },
+        "res_percent": {
+          "type": "string"
+        },
+        "phys_res_percent": {
+          "type": "string"
+        },
+        "flame_res_percent": {
+          "type": "string"
+        },
+        "frost_res_percent": {
+          "type": "string"
+        },
+        "volt_res_percent": {
+          "type": "string"
+        },
+        "alt_res_percent": {
+          "type": "string"
+        },
+        "crit_dmg_percent": {
+          "type": "string"
+        },
+        "atk_percent": {
+          "type": "string"
+        },
+        "final_dmg_percent": {
+          "type": "string"
+        },
+        "ele_dmg_percent": {
+          "type": "string"
+        },
+        "healing_percent": {
+          "type": "string"
+        },
+        "relic_phys_dmg_percent": {
+          "type": "string"
+        },
+        "relic_flame_dmg_percent": {
+          "type": "string"
+        },
+        "relic_frost_dmg_percent": {
+          "type": "string"
+        },
+        "relic_volt_dmg_percent": {
+          "type": "string"
+        },
+        "relic_alt_dmg_percent": {
+          "type": "string"
+        },
+        "shatter": {
+          "type": "string"
+        },
+        "res_ignore_percent": {
+          "type": "string"
+        },
+        "phys_res_ignore_percent": {
+          "type": "string"
+        },
+        "flame_res_ignore_percent": {
+          "type": "string"
+        },
+        "frost_res_ignore_percent": {
+          "type": "string"
+        },
+        "volt_res_ignore_percent": {
+          "type": "string"
+        },
+        "alt_res_ignore_percent": {
+          "type": "string"
+        },
+        "final_dmg_taken_percent": {
+          "type": "string"
+        },
+        "ele_dmg_taken_percent": {
+          "type": "string"
+        },
+        "phys_dmg_taken_percent": {
+          "type": "string"
+        },
+        "flame_dmg_taken_percent": {
+          "type": "string"
+        },
+        "frost_dmg_taken_percent": {
+          "type": "string"
+        },
+        "volt_dmg_taken_percent": {
+          "type": "string"
+        },
+        "alt_dmg_taken_percent": {
+          "type": "string"
+        },
+        "res_reduction_percent": {
+          "type": "string"
+        },
+        "crit_res_reduction_percent": {
+          "type": "string"
+        },
+        "shield_dmg_reduction_ignore_percent": {
+          "type": "string"
+        },
+        "base_atk_improvement_percent": {
+          "type": "string"
+        },
+        "base_phys_atk_improvement_percent": {
+          "type": "string"
+        },
+        "base_flame_atk_improvement_percent": {
+          "type": "string"
+        },
+        "base_frost_atk_improvement_percent": {
+          "type": "string"
+        },
+        "base_volt_atk_improvement_percent": {
+          "type": "string"
+        },
+        "base_alt_atk_improvement_percent": {
+          "type": "string"
         }
       },
       "additionalProperties": false

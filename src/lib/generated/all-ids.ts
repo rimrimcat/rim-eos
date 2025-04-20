@@ -136,7 +136,20 @@ export const AllRelicEffectIds: RelicEffectsIds[] = [
 	'thalassic-a3',
 	'thalassic-a4'
 ];
-export const AllTraitEffectIds: TraitEffectsIds[] = ['grayfox-trait-weap', 'grayfox-trait'];
+export const AllTraitEffectIds: TraitEffectsIds[] = [
+	'anka-trait-boss',
+	'anka-trait',
+	'asurada-trait',
+	'brevey-trait-bene',
+	'brevey-trait-nonbene',
+	'claudiax-trait',
+	'generic-trait-18',
+	'grayfox-trait-bene',
+	'merylx-trait',
+	'nanyin-trait',
+	'nola-trait',
+	'roslyn-trait'
+];
 
 export const AllMatrixIds: MatrixIds[] = [
 	'none',
@@ -193,4 +206,16 @@ export const AllGearEffectIds = [
 	'gear-R',
 	'gear-G'
 ];
-export const AllTraitIds: TraitsIds[] = ['none', 'grayfox'];
+export const AllTraitIds: TraitsIds[] = [
+	'none',
+	'anka',
+	'asuka',
+	'asurada',
+	'brevey',
+	'claudiax',
+	'grayfox',
+	'merylx',
+	'nanyin',
+	'nola',
+	'roslyn'
+];

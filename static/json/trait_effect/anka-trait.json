@@ -1,0 +1,7 @@
+{
+	"id": "anka-trait",
+	"stats": {
+		"final_dmg_percent": 15
+	},
+	"require_weapon": "anka"
+}

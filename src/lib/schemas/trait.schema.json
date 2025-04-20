@@ -21,8 +21,18 @@
   "definitions": {
     "TraitEffectsIds": {
       "enum": [
-        "grayfox-trait",
-        "grayfox-trait-weap"
+        "anka-trait",
+        "anka-trait-boss",
+        "asurada-trait",
+        "brevey-trait-bene",
+        "brevey-trait-nonbene",
+        "claudiax-trait",
+        "generic-trait-18",
+        "grayfox-trait-bene",
+        "merylx-trait",
+        "nanyin-trait",
+        "nola-trait",
+        "roslyn-trait"
       ],
       "type": "string"
     }

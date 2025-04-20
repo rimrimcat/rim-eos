@@ -120,7 +120,19 @@ export type RelicEffectsIds =
 	| 'thalassic-a2'
 	| 'thalassic-a3'
 	| 'thalassic-a4';
-export type TraitEffectsIds = 'grayfox-trait-weap' | 'grayfox-trait';
+export type TraitEffectsIds =
+	| 'anka-trait-boss'
+	| 'anka-trait'
+	| 'asurada-trait'
+	| 'brevey-trait-bene'
+	| 'brevey-trait-nonbene'
+	| 'claudiax-trait'
+	| 'generic-trait-18'
+	| 'grayfox-trait-bene'
+	| 'merylx-trait'
+	| 'nanyin-trait'
+	| 'nola-trait'
+	| 'roslyn-trait';
 
 export type WeaponsIds =
 	| 'none'
@@ -160,4 +172,15 @@ export type RelicsIds =
 	| 'rift'
 	| 'shield'
 	| 'thalassic';
-export type TraitsIds = 'none' | 'grayfox';
+export type TraitsIds =
+	| 'none'
+	| 'anka'
+	| 'asuka'
+	| 'asurada'
+	| 'brevey'
+	| 'claudiax'
+	| 'grayfox'
+	| 'merylx'
+	| 'nanyin'
+	| 'nola'
+	| 'roslyn';

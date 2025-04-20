@@ -1,0 +1,7 @@
+{
+	"id": "merylx-trait",
+	"stats": {
+		"volt_dmg_percent": 15
+	},
+	"require_weapon": "merylx"
+}

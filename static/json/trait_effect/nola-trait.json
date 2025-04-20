@@ -1,0 +1,6 @@
+{
+	"id": "nola-trait",
+	"stats": {
+		"atk_percent": "alt * 5"
+	}
+}

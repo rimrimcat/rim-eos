@@ -76,6 +76,9 @@
       ],
       "type": "string"
     },
+    "require_boss": {
+      "type": "boolean"
+    },
     "notes": {
       "type": "string"
     },

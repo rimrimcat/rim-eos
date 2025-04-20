@@ -1,0 +1,7 @@
+{
+	"id": "roslyn-trait",
+	"stats": {
+		"crit_dmg_percent": 24
+	},
+	"require_weapon": "roslyn"
+}

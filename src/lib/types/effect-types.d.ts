@@ -18,15 +18,21 @@ export type OrderedResoTriggers = [ResoElement, ResoRole, ...ResoTriggers[]];
 export type Target = 'self' | 'ally' | 'team' | 'enemy';
 export type ResoTriggerCounts = { [key in ResoTriggers]?: number };
 
+export type ResoTriggerDependentExpression = ResoTriggers | string;
+
+export type ExprStatData = {
+	[key in StatKey]?: ResoTriggerDependentExpression;
+};
+
 export type MatrixStatData = {
 	[key in StatKey]?: [number, number, number, number];
 };
 export type MatrixExprData = {
 	[key in StatKey]?: [
-		ResoTriggers | string,
-		ResoTriggers | string,
-		ResoTriggers | string,
-		ResoTriggers | string
+		ResoTriggerDependentExpression,
+		ResoTriggerDependentExpression,
+		ResoTriggerDependentExpression,
+		ResoTriggerDependentExpression
 	];
 };
 
@@ -42,7 +48,9 @@ export type BaseEffect = {
 
 	require_teamplay?: boolean; // defaults to false
 
-	require_weapon?: WeaponsIds;
+	require_weapon?: WeaponsIds; // require weapon to be present to activated
+
+	require_boss?: boolean; // effects that only activate against bosses
 
 	notes?: string;
 };
@@ -52,7 +60,6 @@ export type WeaponEffect = BaseEffect & {
 	stats: StatData;
 	require_adv?: number; // required advancement (esp. for weapons)
 	require_adv_not?: number; // for advancement that modifies original effects
-	require_boss?: boolean; // effects that only activate against bosses
 	require_offhand?: boolean; // effects that only activate when offhand
 };
 
@@ -94,6 +101,13 @@ export type RelicEffect = BaseEffect & {
 };
 
 export type TraitEffect = BaseEffect & {
+	id: TraitEffectsIds;
+	stats: StatData | ExprStatData;
+
+	require_onfield_weapon?: WeaponsIds; // for effects that only activate when specific weapon is onfield
+};
+
+export type FinalizedTraitEffect = BaseEffect & {
 	id: TraitEffectsIds;
 	stats: StatData;
 };

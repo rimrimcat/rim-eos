@@ -1,0 +1,8 @@
+{
+	"id": "nanyin-trait",
+	"stats": {
+		"ele_dmg_percent": "(3 - alt) * 8"
+	},
+	"require_weapon": "nanyin",
+	"require_onfield_weapon": "nanyin"
+}

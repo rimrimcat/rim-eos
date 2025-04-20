@@ -76,6 +76,9 @@
       ],
       "type": "string"
     },
+    "require_boss": {
+      "type": "boolean"
+    },
     "notes": {
       "type": "string"
     },
@@ -87,9 +90,6 @@
     },
     "require_adv_not": {
       "type": "number"
-    },
-    "require_boss": {
-      "type": "boolean"
     },
     "require_offhand": {
       "type": "boolean"

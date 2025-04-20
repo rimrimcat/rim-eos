@@ -11,11 +11,11 @@ import type {
 } from '../generated/ids';
 import type { StatCollection } from '../scripts/stats';
 import type {
+	FinalizedTraitEffect,
 	MatrixFinalEffect,
 	OrderedResoTriggers,
 	RelicEffect,
 	ResoTriggers,
-	TraitEffect,
 	WeaponEffect
 } from './effect-types';
 import type { StatBuffs, StatGearUser } from './stat-types';
@@ -138,6 +138,6 @@ export type UserTrait = TraitIds;
 export type TraitView = {
 	id: TraitsIds;
 	name: string;
-	effects: TraitEffect[];
+	effects: FinalizedTraitEffect[];
 	stat: StatCollection;
 };

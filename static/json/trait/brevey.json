@@ -1,0 +1,5 @@
+{
+	"id": "brevey",
+	"name": "Brevey",
+	"effects": ["brevey-trait-nonbene", "brevey-trait-bene", "generic-trait-18"]
+}

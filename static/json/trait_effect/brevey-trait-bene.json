@@ -1,0 +1,9 @@
+{
+	"id": "brevey-trait-bene",
+	"stats": {
+		"final_dmg_percent": 6
+	},
+	"target": "team",
+	"require_weapon": "brevey",
+	"require_reso": "bene"
+}
