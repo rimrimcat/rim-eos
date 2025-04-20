@@ -667,7 +667,7 @@
 				by_column={false}
 				max_cols={is_showing_equipped_gears ? 2 : 4}
 				vertical_gap="0rem"
-				horizontal_gap="5rem"
+				horizontal_gap="0.5rem"
 				bind:has_measured
 				expand_width={false}
 			>
