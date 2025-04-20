@@ -31,7 +31,8 @@
 		all_effects = $bindable(
 			[] as (ResoEffect | WeaponEffect | MatrixFinalEffect | GearEffect | RelicEffect)[]
 		),
-		chart_width = $bindable(500)
+		chart_width = $bindable(500),
+		style = ''
 	} = $props();
 
 	function groupBySource(eff: TaggedEffect) {
@@ -266,75 +267,77 @@
 	});
 </script>
 
-<div class="horizontal chart-actions">
-	<button
-		class="border"
-		id="stat-grouping"
-		onclick={() => {
-			grouping_fcn_index = (grouping_fcn_index + 1) % GROUPING_FUNCTIONS.length;
-		}}
-	>
-		<GroupIcon />
-		<label class="in-button" for="stat-grouping"
-			>Grouping: {GROUPING_FUNCTION_NAMES[grouping_fcn_index]}</label
+<div class="vertical" {style}>
+	<div class="horizontal chart-actions">
+		<button
+			class="border"
+			id="stat-grouping"
+			onclick={() => {
+				grouping_fcn_index = (grouping_fcn_index + 1) % GROUPING_FUNCTIONS.length;
+			}}
 		>
-	</button>
-	<button
-		class="border"
-		id="include-gear"
-		onclick={() => {
-			include_gears = !include_gears;
-			if (!include_gears) {
-				show_bar = false;
-				setTimeout(() => {
-					show_bar = true;
-				}, 1);
-			}
-		}}
-	>
-		{#if include_gears}
-			<ShirtIcon />
-			<label class="in-button" for="include-gear">Including Gears</label>
-		{:else}
-			<div class="compose below lucide">
+			<GroupIcon />
+			<label class="in-button" for="stat-grouping"
+				>Grouping: {GROUPING_FUNCTION_NAMES[grouping_fcn_index]}</label
+			>
+		</button>
+		<button
+			class="border"
+			id="include-gear"
+			onclick={() => {
+				include_gears = !include_gears;
+				if (!include_gears) {
+					show_bar = false;
+					setTimeout(() => {
+						show_bar = true;
+					}, 1);
+				}
+			}}
+		>
+			{#if include_gears}
 				<ShirtIcon />
-				<div class="compose above">
-					<SlashIcon />
+				<label class="in-button" for="include-gear">Including Gears</label>
+			{:else}
+				<div class="compose below lucide">
+					<ShirtIcon />
+					<div class="compose above">
+						<SlashIcon />
+					</div>
+				</div>
+				<label class="in-button" for="include-gear">Excluding Gears</label>
+			{/if}
+		</button>
+		<button
+			class="border"
+			id="compare-stats"
+			onclick={() => {
+				// disable pinning
+				pin_axis = false;
+
+				compare_stats = !compare_stats;
+				if (!compare_stats) {
+					return;
+				}
+
+				prev_tagged_effects = [...tagged_effects];
+			}}
+		>
+			<div class="compose below lucide">
+				<DiffIcon />
+
+				<div class="compose above lucide">
+					{#if compare_stats}
+						<SlashIcon />
+					{/if}
 				</div>
 			</div>
-			<label class="in-button" for="include-gear">Excluding Gears</label>
-		{/if}
-	</button>
-	<button
-		class="border"
-		id="compare-stats"
-		onclick={() => {
-			// disable pinning
-			pin_axis = false;
+			<label class="in-button" for="compare-stats"
+				>{compare_stats ? 'Stop Compare' : 'Compare Stats'}</label
+			>
+		</button>
+	</div>
 
-			compare_stats = !compare_stats;
-			if (!compare_stats) {
-				return;
-			}
-
-			prev_tagged_effects = [...tagged_effects];
-		}}
-	>
-		<div class="compose below lucide">
-			<DiffIcon />
-
-			<div class="compose above lucide">
-				{#if compare_stats}
-					<SlashIcon />
-				{/if}
-			</div>
-		</div>
-		<label class="in-button" for="compare-stats"
-			>{compare_stats ? 'Stop Compare' : 'Compare Stats'}</label
-		>
-	</button>
+	{#if show_bar}
+		<BarChartStacked {data} {options} />
+	{/if}
 </div>
-
-{#if show_bar}
-	<BarChartStacked {data} {options} />
-{/if}

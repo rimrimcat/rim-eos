@@ -767,9 +767,7 @@
 		</div>
 
 		{#if chart_width > 350}
-			<div class="vertical" style="margin-top:1 rem; margin-left: 2rem;">
-				<StatContributions bind:all_effects bind:chart_width />
-			</div>
+			<StatContributions bind:all_effects bind:chart_width style="margin-top: 1.5rem;" />
 		{/if}
 	{/await}
 </div>
