@@ -97,7 +97,7 @@
 	let switch_index = $state(0);
 
 	// Stat Contrib
-	let chart_width = $derived($inner_width - $font_size * 16 - 300);
+	let chart_width = $derived(Math.min($inner_width - $font_size * 16 - 300, 700));
 	$inspect('chart wid', chart_width);
 
 	// Element options
@@ -688,13 +688,13 @@
 									</div>
 								</div>
 
-								{#if $inner_width < 500}
+								{#if $inner_width < 450}
 									<div style="margin-top: 1rem; margin-bottom: 1.5rem;">
 										{@render showMatrices(matrix, index)}
 									</div>
 								{/if}
 							</div>
-							{#if $inner_width >= 500}
+							{#if $inner_width >= 450}
 								{@render showMatrices(matrix, index)}
 							{/if}
 						</div>
