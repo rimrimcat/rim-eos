@@ -418,11 +418,49 @@ export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadO
 		}
 
 		case 'loadouts_v1': {
-			loadedObject = loadedObject as AllLoadouts;
+			const all_loadouts = loadedObject as AllLoadouts;
 
-			if (Object.keys(loadedObject ?? {}).length === 0) {
+			if (!all_loadouts || Object.keys(all_loadouts ?? {}).length === 0) {
 				return DEFAULT_LOADOUTS_RIM;
 			}
+			Object.entries(all_loadouts ?? {}).forEach(([loadout_key, loadout_data]) => {
+				if (!loadout_data.equipped_gears) {
+					all_loadouts[loadout_key].equipped_gears = {
+						H: null,
+						S: null,
+						A: null,
+						C: null,
+						B: null,
+						L: null,
+						G: null,
+						T: null,
+						V: null,
+						N: null,
+						X: null,
+						R: null
+					};
+				}
+				if (!loadout_data.equipped_weapons) {
+					all_loadouts[loadout_key].equipped_weapons = [
+						{ id: 'none' },
+						{ id: 'none' },
+						{ id: 'none' }
+					];
+				}
+				if (!loadout_data.equipped_matrices) {
+					all_loadouts[loadout_key].equipped_matrices = [
+						{ id: 'none' },
+						{ id: 'none' },
+						{ id: 'none' }
+					];
+				}
+				if (!loadout_data.equipped_relics) {
+					all_loadouts[loadout_key].equipped_relics = [{ id: 'none' }, { id: 'none' }];
+				}
+				if (!loadout_data.base_stats) {
+					all_loadouts[loadout_key].base_stats = DEFAULT_STATS_RIM;
+				}
+			});
 
 			try {
 				const request = indexedDB.open(DB_NAME, DB_VERSION);
@@ -433,10 +471,9 @@ export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadO
 
 				request.onsuccess = () => {
 					const db = request.result;
-					const loadoutsObj = loadedObject as AllLoadouts;
 
 					// Process each loadout one at a time with separate transactions
-					Object.keys(loadoutsObj).forEach((loadout) => {
+					Object.keys(all_loadouts).forEach((loadout) => {
 						try {
 							const transaction = db.transaction(IMAGE_STORE, 'readonly');
 							const imageStore = transaction.objectStore(IMAGE_STORE);
@@ -444,10 +481,10 @@ export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadO
 
 							getRequest.onsuccess = () => {
 								const imageObject = getRequest.result;
-								if (imageObject && loadoutsObj) {
+								if (imageObject && all_loadouts) {
 									const blob = new Blob([imageObject.image], { type: 'image/jpeg' });
 									const imageUrl = URL.createObjectURL(blob);
-									loadoutsObj[loadout].image_url = imageUrl;
+									all_loadouts[loadout].image_url = imageUrl;
 								} else {
 									console.log(`Image not found in IndexedDB for loadout: ${loadout}`);
 								}
@@ -469,7 +506,7 @@ export function loadObject(key: LocalStorageKey, force_default?: boolean): LoadO
 				console.error('Error in loadouts_v1 processing:', err);
 			}
 
-			return loadedObject;
+			return all_loadouts;
 		}
 
 		case 'styles': {

@@ -19,10 +19,10 @@ export type Loadout = {
 	name: string;
 	description: string;
 	element: Elements;
-	equipped_gears?: EquippedGear;
-	equipped_weapons?: UserWeapon[];
-	equipped_matrices?: UserMatrix[];
-	equipped_relics?: UserRelic[];
+	equipped_gears: EquippedGear;
+	equipped_weapons: UserWeapon[];
+	equipped_matrices: UserMatrix[];
+	equipped_relics: UserRelic[];
 	base_stats: BaseStats14; // NOT raw stat uploaded by user
 	stat_adj?: StatAdjustments;
 	image_url?: string;
