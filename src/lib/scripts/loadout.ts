@@ -453,10 +453,10 @@ export async function obtainResoEffects(
 		})
 	);
 	// add default reso
-	_reso_effects_list.push(await getResoEffects('atk'));
-	_reso_effects_list.push(await getResoEffects('atk-teamplay'));
-	_reso_effects_list.push(await getResoEffects('bene'));
-	_reso_effects_list.push(await getResoEffects('bene-teamplay'));
+	_reso_effects_list.push(await getResoEffects('atk-reso'));
+	_reso_effects_list.push(await getResoEffects('atk-reso-teamplay'));
+	_reso_effects_list.push(await getResoEffects('bene-reso'));
+	_reso_effects_list.push(await getResoEffects('bene-reso-teamplay'));
 	_reso_effects_list.push(await getResoEffects('armor-dissolve'));
 	_reso_effects_list.push(await getResoEffects('armor-dissolve-teamplay'));
 	_reso_effects_list.push(await getResoEffects('force-impact'));

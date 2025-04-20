@@ -1,5 +1,5 @@
 {
-	"id": "phys",
+	"id": "phys-reso",
 	"stats": {
 		"phys_atk_percent": 15,
 		"phys_res_percent": 25

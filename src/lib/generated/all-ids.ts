@@ -93,19 +93,19 @@ export const AllMatrixEffectIds: MatrixEffectsIds[] = [
 export const AllResoEffectIds: ResoEffectsIds[] = [
 	'armor-dissolve-teamplay',
 	'armor-dissolve',
-	'atk-teamplay',
-	'atk',
-	'bene-teamplay',
-	'bene',
-	'fiona',
-	'flame',
+	'atk-reso-teamplay',
+	'atk-reso',
+	'bene-reso-teamplay',
+	'bene-reso',
+	'fiona-reso',
+	'flame-reso',
 	'force-impact-teamplay',
 	'force-impact',
-	'fort',
-	'frost',
-	'nanyin',
-	'phys',
-	'volt'
+	'fort-reso',
+	'frost-reso',
+	'nanyin-reso',
+	'phys-reso',
+	'volt-reso'
 ];
 export const AllRelicEffectIds: RelicEffectsIds[] = [
 	'bubblegun-a2',
