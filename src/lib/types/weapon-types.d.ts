@@ -13,6 +13,7 @@ import type {
 	OrderedResoTriggers,
 	RelicEffect,
 	ResoTriggers,
+	TraitEffect,
 	WeaponEffect
 } from './effect-types';
 import type { StatBuffs, StatGearUser } from './stat-types';
@@ -122,4 +123,19 @@ export type RelicView = {
 	stat: StatCollection;
 
 	advancement: number;
+};
+
+export type Trait = {
+	id: string;
+	name: string;
+	effects: string[];
+};
+
+export type UserTrait = string;
+
+export type TraitView = {
+	id: string;
+	name: string;
+	effects: TraitEffect[];
+	stat: StatCollection;
 };

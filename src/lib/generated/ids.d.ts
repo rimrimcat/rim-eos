@@ -120,6 +120,8 @@ export type RelicEffectsIds =
 	| 'thalassic-a2'
 	| 'thalassic-a3'
 	| 'thalassic-a4';
+export type TraitEffectsIds = 'grayfox-weap' | 'grayfox';
+
 export type WeaponsIds =
 	| 'none'
 	| 'anka'
@@ -158,3 +160,4 @@ export type RelicsIds =
 	| 'rift'
 	| 'shield'
 	| 'thalassic';
+export type TraitsIds = 'grayfox';

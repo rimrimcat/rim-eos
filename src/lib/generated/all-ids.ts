@@ -6,6 +6,8 @@ import type {
 	RelicEffectsIds,
 	RelicsIds,
 	ResoEffectsIds,
+	TraitEffectsIds,
+	TraitsIds,
 	WeaponEffectsIds,
 	WeaponsIds
 } from './ids';
@@ -134,6 +136,8 @@ export const AllRelicEffectIds: RelicEffectsIds[] = [
 	'thalassic-a3',
 	'thalassic-a4'
 ];
+export const AllTraitEffectIds: TraitEffectsIds[] = ['grayfox-weap', 'grayfox'];
+
 export const AllMatrixIds: MatrixIds[] = [
 	'none',
 	'anka-4p',
@@ -189,3 +193,4 @@ export const AllGearEffectIds = [
 	'gear-R',
 	'gear-G'
 ];
+export const AllTraitIds: TraitsIds[] = ['grayfox'];

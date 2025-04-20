@@ -1,0 +1,24 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "effects": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "effects",
+    "id",
+    "name"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

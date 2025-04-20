@@ -91,3 +91,8 @@ export type RelicEffect = BaseEffect & {
 
 	works_unequipped?: boolean; // for effects that work even when unequipped
 };
+
+export type TraitEffect = BaseEffect & {
+	id: string;
+	stats: StatData;
+};
