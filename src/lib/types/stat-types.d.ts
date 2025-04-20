@@ -195,6 +195,7 @@ export type LumpedKey =
 	| `${Elements}_atk`
 	| `${Elements}_atk_percent`
 	| `${Elements}_dmg_percent`
+	| `relic_${Elements}_dmg_percent`
 	| 'crit'
 	| 'crit_percent'
 	| 'crit_dmg_percent'

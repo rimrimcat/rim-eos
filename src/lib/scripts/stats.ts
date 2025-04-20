@@ -592,6 +592,13 @@ export class StatCollection {
 		new_data.volt_dmg_percent = this.get('volt_dmg_percent') + this.get('ele_dmg_percent');
 		new_data.alt_dmg_percent = this.get('alt_dmg_percent') + this.get('ele_dmg_percent');
 
+		// relic ele_dmg
+		new_data.relic_phys_dmg_percent = this.get('relic_phys_dmg_percent');
+		new_data.relic_flame_dmg_percent = this.get('relic_flame_dmg_percent');
+		new_data.relic_frost_dmg_percent = this.get('relic_frost_dmg_percent');
+		new_data.relic_volt_dmg_percent = this.get('relic_volt_dmg_percent');
+		new_data.relic_alt_dmg_percent = this.get('relic_alt_dmg_percent');
+
 		// crit
 		new_data.crit = this.get('crit');
 		new_data.crit_percent = this.get('crit_percent');
@@ -648,6 +655,11 @@ export class LumpedStatCollection {
 		// ele percent
 		multiplier *=
 			1 + other_col.get(`${element}_dmg_percent`) / (1 + this.get(`${element}_dmg_percent`));
+		// relic ele percent
+		multiplier *=
+			1 +
+			other_col.get(`relic_${element}_dmg_percent`) /
+				(1 + this.get(`relic_${element}_dmg_percent`));
 		// crit
 		const r0 = getCritRate(this.get('crit'), this.get('crit_percent'), level);
 		const r1 = getCritRate(
