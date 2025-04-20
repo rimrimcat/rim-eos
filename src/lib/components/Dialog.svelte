@@ -53,7 +53,13 @@
 		tabindex="-1"
 		style="translate: 0 {$scroll_y - $toolbar_transform}px;"
 	>
-		<div class="dialog-container" role="dialog" aria-modal="true" style="width: {width};">
+		<div
+			class="dialog-container"
+			role="dialog"
+			aria-modal="true"
+			style="width: {width}; translate: 0 {$toolbar_transform /
+				2}px; max-height: calc(85vh - {$toolbar_transform}px);"
+		>
 			<div class="dialog-header">
 				<h2>{title}</h2>
 				{#if closable}
@@ -123,6 +129,8 @@
 
 		pointer-events: auto;
 		overscroll-behavior-y: contain;
+
+		overflow-x: hidden;
 	}
 
 	@keyframes fadeIn {

@@ -26,9 +26,9 @@ also still thinking of a better name later on
 - [x] Stat: Show only offensive stats (2025-04-18)
 - [x] Main Page: add interactive tutorial (2025-04-19)
 - [x] Loadout: add relics (2025-04-20)
+- [x] Loadout: add traits (2025-04-20)
+- [x] Loadout: add search functionality for weapon and matrices (2025-04-20)
 - [ ] Gear: add titan stats
-- [ ] Loadout: add search functionality for weapon and matrices
-- [ ] Loadout: add traits
 - [ ] Gear: add ID on top of gear instead of separate column in grid
 - [ ] Matrix: add base matrix stat
 - [ ] Loadout: add some weapons and matrices
