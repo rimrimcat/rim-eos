@@ -260,16 +260,18 @@ export function dedupeMatEffs(effects: MatrixFinalEffect[]) {
 }
 
 export async function updateBaseWeapons() {
-	base_weapons.set(
-		await Promise.all(
-			get(user_loadouts)[get(current_loadout)].equipped_weapons.map((weapon) =>
-				getWeapon(weapon.id)
-			)
-		)
-	);
+	const equipped_weapons =
+		get(user_loadouts)[get(current_loadout)].equipped_weapons ??
+		([{ id: 'none' }, { id: 'none' }, { id: 'none' }] as UserWeapon[]);
+
+	base_weapons.set(await Promise.all(equipped_weapons.map((weapon) => getWeapon(weapon.id))));
 }
 
 export async function updateResoCounts() {
+	const equipped_weapons =
+		get(user_loadouts)[get(current_loadout)].equipped_weapons ??
+		([{ id: 'none' }, { id: 'none' }, { id: 'none' }] as UserWeapon[]);
+
 	reso_counts.set(
 		get(base_weapons).reduce((counts, weapon, index) => {
 			weapon.resonances.forEach((resonance) => {
@@ -277,9 +279,7 @@ export async function updateResoCounts() {
 			});
 
 			if (weapon.setting) {
-				const selected_settings =
-					get(user_loadouts)[get(current_loadout)].equipped_weapons[index].setting ??
-					weapon.setting.default;
+				const selected_settings = equipped_weapons[index].setting ?? weapon.setting.default;
 
 				selected_settings.forEach((setting) => {
 					// @ts-expect-error: its oke
@@ -298,7 +298,10 @@ export async function updateResoCounts() {
 }
 
 export async function updateResoEffects() {
-	console.log('Updating reso effects...');
+	const equipped_weapons =
+		get(user_loadouts)[get(current_loadout)].equipped_weapons ??
+		([{ id: 'none' }, { id: 'none' }, { id: 'none' }] as UserWeapon[]);
+
 	const _reso_effects_list: ResoEffect[] = [];
 
 	await Promise.all(
@@ -308,9 +311,7 @@ export async function updateResoEffects() {
 			}
 
 			if (weapon.setting) {
-				const selected_settings =
-					get(user_loadouts)[get(current_loadout)].equipped_weapons[index].setting ??
-					weapon.setting.default;
+				const selected_settings = equipped_weapons[index].setting ?? weapon.setting.default;
 
 				await Promise.all(
 					selected_settings.map(async (setting) => {
@@ -358,13 +359,17 @@ export async function updateResoEffects() {
 }
 
 export async function updateWeaponViews() {
-	const user_weapons = get(user_loadouts)[get(current_loadout)].equipped_weapons;
+	const equipped_weapons = get(user_loadouts)[get(current_loadout)].equipped_weapons ?? [
+		{ id: 'none' },
+		{ id: 'none' },
+		{ id: 'none' }
+	];
 	const loadout_reso_counts = get(reso_counts);
 
 	weapon_views.set(
 		await Promise.all(
 			get(base_weapons).map(async (weapon, index) => {
-				const advancement = user_weapons[index].advancement ?? 0;
+				const advancement = equipped_weapons[index].advancement ?? 0;
 
 				// get base stat of weapon
 				const _base_stat: { [key in StatKey]?: number } = {};
@@ -384,7 +389,7 @@ export async function updateWeaponViews() {
 					effects,
 					stat_
 				);
-				const setting_ids = user_weapons[index].setting ?? weapon.setting?.default ?? [];
+				const setting_ids = equipped_weapons[index].setting ?? weapon.setting?.default ?? [];
 				const setting: WeaponSettingStuff[] = setting_ids.map((setting_) => {
 					// @ts-expect-error : it oke
 					return weapon.setting.choices[setting_];
@@ -428,10 +433,20 @@ export async function updateWeaponViews() {
 
 export async function updateMatrixViews() {
 	const selected_loadout = get(user_loadouts)[get(current_loadout)];
+	const equipped_weapons = selected_loadout.equipped_weapons ?? [
+		{ id: 'none' },
+		{ id: 'none' },
+		{ id: 'none' }
+	];
+	const equipped_matrices = selected_loadout.equipped_matrices ?? [
+		{ id: 'none' },
+		{ id: 'none' },
+		{ id: 'none' }
+	];
 
 	matrix_views.set(
 		await Promise.all(
-			selected_loadout.equipped_matrices.map(async (matrix) => {
+			equipped_matrices.map(async (matrix) => {
 				const advancement = matrix.advancement ?? 0;
 
 				const effects: MatrixFinalEffect[] = [];
@@ -444,7 +459,7 @@ export async function updateMatrixViews() {
 					get(reso_counts),
 					effects,
 					stat_,
-					selected_loadout.equipped_weapons
+					equipped_weapons
 				);
 				const stat = stat_[0];
 
@@ -462,10 +477,11 @@ export async function updateMatrixViews() {
 
 export async function updateRelicViews() {
 	const selected_loadout = get(user_loadouts)[get(current_loadout)];
+	const equipped_relics = selected_loadout.equipped_relics ?? [{ id: 'none' }, { id: 'none' }];
 
 	relic_views.set(
 		await Promise.all(
-			selected_loadout.equipped_relics.map(async (relic) => {
+			equipped_relics.map(async (relic) => {
 				const advancement = relic.advancement ?? 0;
 
 				const effects: RelicEffect[] = [];
@@ -495,7 +511,11 @@ export async function updateRelicViews() {
 
 export async function updateSingleWeaponView(index: number) {
 	const weapon = get(base_weapons)[index];
-	const user_weapons = get(user_loadouts)[get(current_loadout)].equipped_weapons;
+	const user_weapons = get(user_loadouts)[get(current_loadout)].equipped_weapons ?? [
+		{ id: 'none' },
+		{ id: 'none' },
+		{ id: 'none' }
+	];
 	const loadout_reso_counts = get(reso_counts);
 	const advancement = user_weapons[index].advancement ?? 0;
 
@@ -563,7 +583,17 @@ export async function updateSingleWeaponView(index: number) {
 
 export async function updateSingleMatrixView(index: number) {
 	const selected_loadout = get(user_loadouts)[get(current_loadout)];
-	const user_matrices = selected_loadout.equipped_matrices;
+	const equipped_weapons = selected_loadout.equipped_weapons ?? [
+		{ id: 'none' },
+		{ id: 'none' },
+		{ id: 'none' }
+	];
+	const user_matrices = selected_loadout.equipped_matrices ?? [
+		{ id: 'none' },
+		{ id: 'none' },
+		{ id: 'none' }
+	];
+
 	const matrix = user_matrices[index];
 	const advancement = matrix.advancement ?? 0;
 
@@ -577,7 +607,7 @@ export async function updateSingleMatrixView(index: number) {
 		get(reso_counts),
 		effects,
 		stat_,
-		selected_loadout.equipped_weapons
+		equipped_weapons
 	);
 	const stat = stat_[0];
 
@@ -738,7 +768,24 @@ export function createStatViewFromStore() {
 	);
 }
 
-export function getEquippedGearViews(equipped_gears: EquippedGear): GearView[] {
+export function getEquippedGearViews(equipped_gears?: EquippedGear): GearView[] {
+	if (!equipped_gears) {
+		equipped_gears = {
+			H: null,
+			S: null,
+			A: null,
+			C: null,
+			B: null,
+			L: null,
+			G: null,
+			T: null,
+			V: null,
+			N: null,
+			X: null,
+			R: null
+		};
+	}
+
 	const gear_views_ = get(gear_views);
 
 	const equipped_gear_views: GearView[] = [];

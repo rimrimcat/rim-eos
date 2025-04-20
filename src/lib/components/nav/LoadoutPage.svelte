@@ -286,8 +286,16 @@
 		loadout_name = $user_loadouts[$current_loadout].name;
 		loadout_desc = $user_loadouts[$current_loadout].description;
 		loadout_icon = $user_loadouts[$current_loadout].element;
-		user_weapons = $user_loadouts[$current_loadout].equipped_weapons;
-		user_matrices = $user_loadouts[$current_loadout].equipped_matrices;
+		user_weapons = $user_loadouts[$current_loadout].equipped_weapons ?? [
+			{ id: 'none' },
+			{ id: 'none' },
+			{ id: 'none' }
+		];
+		user_matrices = $user_loadouts[$current_loadout].equipped_matrices ?? [
+			{ id: 'none' },
+			{ id: 'none' },
+			{ id: 'none' }
+		];
 		getImageUrlFromDB($current_loadout).then((imageUrl) => {
 			if (imageUrl) {
 				loadout_image = imageUrl;
