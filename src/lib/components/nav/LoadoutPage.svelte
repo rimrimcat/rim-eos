@@ -104,7 +104,6 @@
 
 	// Stat Contrib
 	let chart_width = $derived(Math.min($inner_width - 300, 700));
-	$inspect('chart wid', chart_width);
 
 	// Element options
 	const ELEMENTS: { value: LoadoutType; label: string }[] = [
