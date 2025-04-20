@@ -562,7 +562,7 @@ export async function obtainMatrixViews(
 	);
 }
 
-export async function obtainRelixViews(
+export async function obtainRelicViews(
 	equipped_relics: UserRelic[],
 	reso_counts: ResoTriggerCounts
 ) {
@@ -617,7 +617,7 @@ export async function updateWeaponMatrixRelicFromStore() {
 	);
 	matrix_views.set(matrix_views_);
 
-	const relic_views_ = await obtainRelixViews(equipped_relics_, reso_counts_);
+	const relic_views_ = await obtainRelicViews(equipped_relics_, reso_counts_);
 	relic_views.set(relic_views_);
 }
 
