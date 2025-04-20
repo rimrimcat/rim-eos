@@ -1,20 +1,42 @@
 <script lang="ts">
 	import { AllMatrixIds, AllRelicIds, AllTraitIds, AllWeaponIds } from '$lib/generated/all-ids';
 	import { getMatrix, getRelic, getTrait, getWeapon } from '$lib/scripts/json-loader';
+	import { matrix_views, relic_views, trait_view, weapon_views } from '$lib/scripts/stores';
 	import type { MatrixIds, TraitsIds, UserWeapon, WeaponsIds } from '$lib/types/index';
 	import { XIcon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
 
+	type SwitchType = 'matrix' | 'weapon' | 'relic' | 'trait';
+
 	let {
 		open = $bindable(false),
-		switching = $bindable('matrix' as 'matrix' | 'weapon' | 'relic' | 'trait'),
+		switching = $bindable('matrix' as SwitchType),
 		user_weapons = $bindable([] as UserWeapon[]),
 		onSwitchMatrix = (id: MatrixIds) => {},
 		onSwitchWeapon = (id: WeaponsIds) => {},
 		onSwitchRelic = (id: MatrixIds) => {},
 		onSwitchTrait = (id: TraitsIds) => {}
 	} = $props();
+
+	let searchable = $derived.by(() => {
+		switch (switching) {
+			case 'matrix':
+				return AllMatrixIds.filter(
+					(id) => id === 'none' || !$matrix_views.some((matrix) => matrix.id === id)
+				);
+			case 'weapon':
+				return AllWeaponIds.filter(
+					(id) => id === 'none' || !$weapon_views.some((weapon) => weapon.id === id)
+				);
+			case 'relic':
+				return AllRelicIds.filter(
+					(id) => id === 'none' || !$relic_views.some((relic) => relic.id === id)
+				);
+			case 'trait':
+				return AllTraitIds.filter((id) => id === 'none' || !($trait_view?.id === id));
+		}
+	});
 </script>
 
 {#snippet matrix4p(matrix_id: MatrixIds)}
@@ -32,7 +54,7 @@
 <Dialog title={'Switch ' + switching} bind:open>
 	<FlexGrid max_cols={3} horizontal_gap="1rem" vertical_gap="1rem">
 		{#if switching === 'matrix'}
-			{#each AllMatrixIds as matrix_id}
+			{#each AllMatrixIds.filter((id) => id === 'none' || !$matrix_views.some((matrix) => matrix.id === id)) as matrix_id}
 				{#await getMatrix(matrix_id) then matrix}
 					<div class="matrix-item vertical center" style="width: 8rem; height: 8rem;">
 						<div class="compose below border" style="width: 6rem; height: 6rem;">
@@ -57,7 +79,7 @@
 				{/await}
 			{/each}
 		{:else if switching === 'weapon'}
-			{#each AllWeaponIds.filter((id) => id === 'none' || !user_weapons.some((weapon) => weapon.id === id)) as weapon_id}
+			{#each AllWeaponIds.filter((id) => id === 'none' || !$weapon_views.some((weapon) => weapon.id === id)) as weapon_id}
 				{#await getWeapon(weapon_id) then weapon}
 					<div class="matrix-item vertical center" style="width: 8rem; height: 8rem;">
 						<div class="compose below border" style="width: 6rem; height: 6rem;">
@@ -86,7 +108,7 @@
 				{/await}
 			{/each}
 		{:else if switching === 'relic'}
-			{#each AllRelicIds as relic_id}
+			{#each AllRelicIds.filter((id) => id === 'none' || !$relic_views.some((relic) => relic.id === id)) as relic_id}
 				{#await getRelic(relic_id) then relic}
 					<div class="matrix-item vertical center" style="width: 8rem; height: 8rem;">
 						<div class="compose below border" style="width: 6rem; height: 6rem;">
@@ -111,7 +133,7 @@
 				{/await}
 			{/each}
 		{:else if switching === 'trait'}
-			{#each AllTraitIds as trait_id}
+			{#each AllTraitIds.filter((id) => id === 'none' || !($trait_view?.id === id)) as trait_id}
 				{#await getTrait(trait_id) then trait}
 					<div class="matrix-item vertical center" style="width: 8rem; height: 8rem;">
 						<div class="compose below border" style="width: 6rem; height: 6rem;">
