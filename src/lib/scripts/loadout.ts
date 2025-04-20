@@ -20,8 +20,12 @@ import type {
 	ResoTriggerCounts,
 	StatAtkImprovement,
 	StatKey,
+	TraitEffect,
+	TraitEffectsIds,
+	TraitView,
 	UserMatrix,
 	UserRelic,
+	UserTrait,
 	UserWeapon,
 	ValidGearPart,
 	Weapon,
@@ -36,6 +40,8 @@ import {
 	getRelic,
 	getRelicEffect,
 	getResoEffects,
+	getTrait,
+	getTraitEffect,
 	getWeapon,
 	getWeaponEffect
 } from './json-loader';
@@ -55,6 +61,7 @@ import {
 	relic_views,
 	reso_counts,
 	reso_effects,
+	trait_view,
 	user_loadouts,
 	weapon_views
 } from './stores';
@@ -80,7 +87,12 @@ function checkValidEffect(
 	advancement: number
 ): boolean;
 function checkValidEffect(
-	eff: RelicEffect | MatrixEffect | WeaponEffect | BaseEffect,
+	eff: TraitEffect,
+	reso_counts_: ResoTriggerCounts,
+	advancement: number
+): boolean;
+function checkValidEffect(
+	eff: RelicEffect | MatrixEffect | WeaponEffect | TraitEffect | BaseEffect,
 	reso_counts_: ResoTriggerCounts,
 	advancement?: number,
 	user_weapons_?: UserWeapon[]
@@ -235,6 +247,27 @@ export async function pushAllValidRelicEffects(
 	await Promise.all(
 		effs.map(async (eff_) => {
 			const eff = await getRelicEffect(eff_);
+
+			if (!checkValidEffect(eff, reso_counts_, advancement)) {
+				return;
+			}
+
+			effects_.push(eff);
+			stat_[0] = stat_[0].add(new StatCollection(eff.stats));
+		})
+	);
+}
+
+export async function pushAllValidTraitEffects(
+	effs: TraitEffectsIds[],
+	advancement: number,
+	reso_counts_: ResoTriggerCounts,
+	effects_: TraitEffect[],
+	stat_: StatCollection[]
+) {
+	await Promise.all(
+		effs.map(async (eff_) => {
+			const eff = await getTraitEffect(eff_);
 
 			if (!checkValidEffect(eff, reso_counts_, advancement)) {
 				return;
@@ -611,7 +644,27 @@ export async function obtainRelicViews(
 	);
 }
 
-export async function updateWeaponMatrixRelicFromStore() {
+export async function obtainTraitView(equipped_trait: UserTrait, reso_counts: ResoTriggerCounts) {
+	const advancement = 0;
+
+	const effects: TraitEffect[] = [];
+	const stat_ = [new StatCollection()];
+
+	const trait_ = await getTrait(equipped_trait);
+
+	await pushAllValidTraitEffects(trait_.effects, advancement, reso_counts, effects, stat_);
+	const stat = stat_[0];
+
+	return {
+		id: trait_.id,
+		name: trait_.name,
+		advancement,
+		effects,
+		stat
+	} as TraitView;
+}
+
+export async function updateWeaponMatrixRelicTraitFromStore() {
 	const equipped_weapons_: UserWeapon[] = get(user_loadouts)[get(current_loadout)]
 		.equipped_weapons ?? [{ id: 'none' }, { id: 'none' }, { id: 'none' }];
 
@@ -620,6 +673,9 @@ export async function updateWeaponMatrixRelicFromStore() {
 
 	const equipped_relics_: UserRelic[] = get(user_loadouts)[get(current_loadout)]
 		.equipped_relics ?? [{ id: 'none' }, { id: 'none' }];
+
+	const equipped_trait_: UserTrait =
+		get(user_loadouts)[get(current_loadout)].equipped_trait ?? 'none';
 
 	const base_weapons_ = await obtainBaseWeapons(equipped_weapons_);
 	base_weapons.set(base_weapons_);
@@ -642,6 +698,9 @@ export async function updateWeaponMatrixRelicFromStore() {
 
 	const relic_views_ = await obtainRelicViews(equipped_relics_, reso_counts_);
 	relic_views.set(relic_views_);
+
+	const trait_view_ = await obtainTraitView(equipped_trait_, reso_counts_);
+	trait_view.set(trait_view_);
 }
 
 export function getGearTotal() {

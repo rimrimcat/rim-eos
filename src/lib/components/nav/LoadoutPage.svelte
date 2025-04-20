@@ -22,7 +22,7 @@
 		updateSingleMatrixView,
 		updateSingleRelicView,
 		updateSingleWeaponView,
-		updateWeaponMatrixRelicFromStore
+		updateWeaponMatrixRelicTraitFromStore
 	} from '$lib/scripts/loadout';
 	import { ActionType } from '$lib/scripts/nav-metadata';
 	import {
@@ -39,6 +39,7 @@
 		relic_views,
 		reso_effects,
 		stat_autoupdate,
+		trait_view,
 		user_gears,
 		user_loadouts,
 		weapon_views
@@ -49,6 +50,7 @@
 		MatrixIds,
 		MatrixView,
 		StatGearUser,
+		TraitsIds,
 		UserMatrix,
 		UserRelic,
 		UserWeapon,
@@ -79,6 +81,7 @@
 	let user_weapons = $state([{}, {}, {}] as UserWeapon[]);
 	let user_matrices = $state([{}, {}, {}] as UserMatrix[]);
 	let user_relics = $state([{}, {}] as UserRelic[]);
+	let user_trait = $state('none' as TraitsIds);
 
 	let loadout_weapmat_combined: [WeaponView, MatrixView][] = $derived(
 		$weapon_views.map((weapon, i) => [weapon, $matrix_views[i]])
@@ -100,7 +103,7 @@
 	let new_or_duplicate_dialog_open = $state(false);
 
 	let switch_gear_matrix_dialog_open = $state(false);
-	let switching: 'matrix' | 'weapon' | 'relic' = $state('matrix');
+	let switching: 'matrix' | 'weapon' | 'relic' | 'trait' = $state('matrix');
 	let switch_index = $state(0);
 
 	// Stat Contrib
@@ -116,10 +119,11 @@
 		{ value: 'alt', label: 'Altered' }
 	];
 
-	function saveWeaponMatrixRelicLoadout() {
+	function saveLoadout() {
 		$user_loadouts[$current_loadout].equipped_weapons = user_weapons;
 		$user_loadouts[$current_loadout].equipped_matrices = user_matrices;
 		$user_loadouts[$current_loadout].equipped_relics = user_relics;
+		$user_loadouts[$current_loadout].equipped_trait = user_trait;
 		saveObject('loadouts_v1', $user_loadouts);
 	}
 
@@ -277,7 +281,7 @@
 		$current_loadout = loadout;
 
 		updateAllFromStores();
-		updateWeaponMatrixRelicFromStore();
+		updateWeaponMatrixRelicTraitFromStore();
 
 		// update gear views
 		Promise.all($user_gears.map((gear) => createGearView(gear, false))).then((gearViews) => {
@@ -307,6 +311,7 @@
 			{ id: 'none' },
 			{ id: 'none' }
 		];
+		user_trait = $user_loadouts[$current_loadout].equipped_trait ?? 'none';
 		getImageUrlFromDB($current_loadout).then((imageUrl) => {
 			if (imageUrl) {
 				loadout_image = imageUrl;
@@ -316,20 +321,27 @@
 
 	function onSwitchMatrix(id: MatrixIds) {
 		user_matrices[switch_index] = { id };
-		saveWeaponMatrixRelicLoadout();
-		updateWeaponMatrixRelicFromStore();
+		saveLoadout();
+		updateWeaponMatrixRelicTraitFromStore();
 	}
 
 	function onSwitchWeapon(id: WeaponsIds) {
 		user_weapons[switch_index] = { id };
-		saveWeaponMatrixRelicLoadout();
-		updateWeaponMatrixRelicFromStore();
+		saveLoadout();
+		updateWeaponMatrixRelicTraitFromStore();
 	}
 
 	function onSwitchRelic(id: MatrixIds) {
 		user_relics[switch_index] = { id };
-		saveWeaponMatrixRelicLoadout();
-		updateWeaponMatrixRelicFromStore();
+		saveLoadout();
+		updateWeaponMatrixRelicTraitFromStore();
+	}
+
+	function onSwitchTrait(id: TraitsIds) {
+		console.log('setting trait', id);
+		user_trait = id;
+		saveLoadout();
+		updateWeaponMatrixRelicTraitFromStore();
 	}
 
 	function onWeaponSettingChange(
@@ -368,9 +380,9 @@
 			user_weapons[index].setting = $base_weapons[index].setting.default;
 		}
 		user_weapons[index].setting[settingIndex] = currKey;
-		saveWeaponMatrixRelicLoadout();
+		saveLoadout();
 		// nola can change elements and reso
-		updateWeaponMatrixRelicFromStore();
+		updateWeaponMatrixRelicTraitFromStore();
 	}
 
 	const ACTIONS = [
@@ -456,7 +468,7 @@
 								} else {
 									user_matrices[index].advancement = advSetValue;
 								}
-								saveWeaponMatrixRelicLoadout();
+								saveLoadout();
 								updateSingleMatrixView(index);
 							}}
 						>
@@ -493,7 +505,7 @@
 								<img
 									src="./matrix/none.webp"
 									alt="Matrix"
-									style="height:6rem; width:6rem; filter: grayscale(100%)"
+									style="height:6rem; width:6rem; opacity: 0;"
 								/>
 							{:else}
 								<img src="./relic/{relic.id}.webp" alt="Relic" style="height:6rem; width:6rem;" />
@@ -509,7 +521,7 @@
 										} else {
 											user_relics[index].advancement = advSetValue;
 										}
-										saveWeaponMatrixRelicLoadout();
+										saveLoadout();
 										updateSingleRelicView(index);
 									}}
 								>
@@ -526,6 +538,41 @@
 				</div>
 			</div>
 		{/each}
+	</div>
+{/snippet}
+
+{#snippet showTrait()}
+	<div class="horizontal center-vert" style="margin-top: 1rem;">
+		{#if $trait_view}
+			<div class="vertical center matrix-col" style="width: 6rem;">
+				<span>{$trait_view.name}</span>
+				<div class="horizontal matrix-container">
+					<div class="compose below border" style="width: 6rem; height: 6rem; margin-top: 0.4rem;">
+						<button
+							class="image"
+							onclick={() => {
+								switching = 'trait';
+								switch_gear_matrix_dialog_open = true;
+							}}
+						>
+							{#if $trait_view.id === 'none'}
+								<img
+									src="./matrix/none.webp"
+									alt="Matrix"
+									style="height:6rem; width:6rem; opacity: 0;"
+								/>
+							{:else}
+								<img
+									src="./trait/{$trait_view.id}.webp"
+									alt="Trait"
+									style="height:6rem; width:6rem;"
+								/>
+							{/if}
+						</button>
+					</div>
+				</div>
+			</div>
+		{/if}
 	</div>
 {/snippet}
 
@@ -595,7 +642,7 @@
 											} else {
 												user_weapons[index].advancement = advSetValue;
 											}
-											saveWeaponMatrixRelicLoadout();
+											saveLoadout();
 											updateSingleWeaponView(index);
 										}}
 									>
@@ -631,6 +678,9 @@
 		{#if $inner_width >= 620}
 			<div style="margin-top: 7rem;">
 				{@render showRelics()}
+			</div>
+			<div style="margin-top: 1rem;">
+				{@render showTrait()}
 			</div>
 		{/if}
 	</div>
@@ -802,6 +852,7 @@
 	{onSwitchMatrix}
 	{onSwitchWeapon}
 	{onSwitchRelic}
+	{onSwitchTrait}
 />
 
 <ActionToolbar actions={ACTIONS} />
