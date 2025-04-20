@@ -1,4 +1,4 @@
-import { AllMatrixIds, AllWeaponIds } from '$lib/generated/all-ids';
+import { AllMatrixIds, AllRelicIds, AllWeaponIds } from '$lib/generated/all-ids';
 import type { AllLoadouts, BaseStats14, CharacterStat, UserGear } from '$lib/types/index';
 import { GearPart } from './gears';
 
@@ -7,6 +7,7 @@ export let gear_images_loaded = false;
 export let stat_icons_loaded = false;
 export let weapon_images_loaded = false;
 export let matrix_images_loaded = false;
+export let relic_images_loaded = false;
 
 // Keys
 export type LocalStorageKey = 'gears_v1' | 'loadouts_v1' | 'styles';
@@ -91,7 +92,8 @@ export const DEFAULT_LOADOUTS_RIM: AllLoadouts = {
 		},
 		base_stats: DEFAULT_STATS_RIM,
 		equipped_weapons: [{ id: 'grayfox' }, { id: 'nola', setting: ['frost'] }, { id: 'nanyin' }],
-		equipped_matrices: [{ id: 'grayfox-4p' }, { id: 'nola-4p' }, { id: 'nanyin-4p' }]
+		equipped_matrices: [{ id: 'grayfox-4p' }, { id: 'nola-4p' }, { id: 'nanyin-4p' }],
+		equipped_relics: [{ id: 'none' }, { id: 'none' }, { id: 'none' }]
 	}
 };
 export const DEFAULT_GEARS_RIM: UserGear[] = [
@@ -579,6 +581,19 @@ export async function loadMatrixImages() {
 	return await Promise.all(
 		AllMatrixIds.map(async (matrix) => {
 			await fetch(`./matrix/${matrix.replace('-4p', '')}.webp`);
+		})
+	);
+}
+
+/**
+ * Loads all relic images
+ */
+export async function loadRelicImages() {
+	if (relic_images_loaded) return;
+	relic_images_loaded = true;
+	return await Promise.all(
+		AllRelicIds.map(async (relic) => {
+			await fetch(`./relic/${relic}.webp`);
 		})
 	);
 }

@@ -83,7 +83,7 @@ export type RelicEffect = BaseEffect & {
 	stats: StatData;
 
 	require_adv?: number; // required advancement (esp. for weapons)
-	require_adv_not_gt?: number; // for advancement that modifies original effects
+	require_adv_not_gt?: number; // for advancement that modifies original effects, only effective if adv < require_adv_not_gt
 
 	require_onfield?: boolean; // for effects that only activate when onfield
 

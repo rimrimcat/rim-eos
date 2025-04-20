@@ -4,11 +4,15 @@ import type {
 	MatrixEffect,
 	MatrixEffectsIds,
 	MatrixIds,
+	Relic,
 	RelicEffect,
+	RelicEffectsIds,
+	RelicIds,
 	ResoEffect,
 	ResoEffectsIds,
 	StatConstants,
 	Weapon,
+	WeaponEffect,
 	WeaponEffectsIds,
 	WeaponsIds
 } from '../types/index';
@@ -44,10 +48,12 @@ export async function loadStatConstants(): Promise<void> {
 
 // loaded when needed
 const RESO_EFFECTS: { [key in ResoEffectsIds]?: ResoEffect } = {};
-const WEAPON_EFFECTS: { [key in WeaponEffectsIds]?: RelicEffect } = {};
+const WEAPON_EFFECTS: { [key in WeaponEffectsIds]?: WeaponEffect } = {};
 const MATRIX_EFFECTS: { [key in MatrixEffectsIds]?: MatrixEffect } = {};
+const RELIC_EFFECTS: { [key in RelicEffectsIds]?: RelicEffect } = {};
 const WEAPONS: { [key in WeaponsIds]?: Weapon } = {};
 const MATRIX: { [key in MatrixIds]?: Matrix } = {};
+const RELIC: { [key in RelicIds]?: Relic } = {};
 
 export async function getResoEffects(reso: ResoEffectsIds): Promise<ResoEffect> {
 	if (RESO_EFFECTS[reso]) {
@@ -69,7 +75,7 @@ export async function getResoEffects(reso: ResoEffectsIds): Promise<ResoEffect> 
 	}
 }
 
-export async function getWeaponEffect(effect: WeaponEffectsIds): Promise<RelicEffect> {
+export async function getWeaponEffect(effect: WeaponEffectsIds): Promise<WeaponEffect> {
 	if (WEAPON_EFFECTS[effect]) {
 		return WEAPON_EFFECTS[effect];
 	}
@@ -81,7 +87,7 @@ export async function getWeaponEffect(effect: WeaponEffectsIds): Promise<RelicEf
 		}
 
 		const data = await response.json();
-		WEAPON_EFFECTS[effect] = data as RelicEffect;
+		WEAPON_EFFECTS[effect] = data as WeaponEffect;
 		return WEAPON_EFFECTS[effect];
 	} catch (error) {
 		console.error(`Error loading effect ${effect}:`, error);
@@ -103,6 +109,26 @@ export async function getMatrixEffect(effect: MatrixEffectsIds): Promise<MatrixE
 		const data = await response.json();
 		MATRIX_EFFECTS[effect] = data as MatrixEffect;
 		return MATRIX_EFFECTS[effect];
+	} catch (error) {
+		console.error(`Error loading effect ${effect}:`, error);
+		throw error;
+	}
+}
+
+export async function getRelicEffect(effect: RelicEffectsIds): Promise<RelicEffect> {
+	if (RELIC_EFFECTS[effect]) {
+		return RELIC_EFFECTS[effect];
+	}
+
+	try {
+		const response = await fetch(`./json/relic_effect/${effect}.json`);
+		if (!response.ok) {
+			throw new Error(`Failed to load effect ${effect}: ${response.statusText}`);
+		}
+
+		const data = await response.json();
+		RELIC_EFFECTS[effect] = data as RelicEffect;
+		return RELIC_EFFECTS[effect];
 	} catch (error) {
 		console.error(`Error loading effect ${effect}:`, error);
 		throw error;
@@ -145,6 +171,26 @@ export async function getMatrix(matrix: MatrixIds): Promise<Matrix> {
 		return MATRIX[matrix];
 	} catch (error) {
 		console.error(`Error loading matrix ${matrix}:`, error);
+		throw error;
+	}
+}
+
+export async function getRelic(relic: RelicIds): Promise<Relic> {
+	if (RELIC[relic]) {
+		return RELIC[relic];
+	}
+
+	try {
+		const response = await fetch(`./json/relic/${relic}.json`);
+		if (!response.ok) {
+			throw new Error(`Failed to load relic ${relic}: ${response.statusText}`);
+		}
+
+		const data = await response.json();
+		RELIC[relic] = data as Relic;
+		return RELIC[relic];
+	} catch (error) {
+		console.error(`Error loading relic ${relic}:`, error);
 		throw error;
 	}
 }

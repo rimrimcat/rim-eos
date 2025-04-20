@@ -13,6 +13,8 @@ import type {
 	MatrixFinalEffect,
 	MatrixView,
 	RelicEffect,
+	RelicEffectsIds,
+	RelicView,
 	ResoEffect,
 	ResoEffectsIds,
 	ResoTriggerCounts,
@@ -20,6 +22,7 @@ import type {
 	StatKey,
 	UserWeapon,
 	ValidGearPart,
+	WeaponEffect,
 	WeaponEffectsIds,
 	WeaponSettingStuff,
 	WeaponView
@@ -27,6 +30,8 @@ import type {
 import {
 	getMatrix,
 	getMatrixEffect,
+	getRelic,
+	getRelicEffect,
 	getResoEffects,
 	getWeapon,
 	getWeaponEffect
@@ -44,6 +49,7 @@ import {
 	equipped_gear_views,
 	gear_views,
 	matrix_views,
+	relic_views,
 	reso_counts,
 	reso_effects,
 	reso_stat,
@@ -55,7 +61,7 @@ import { WEAPON_BASE_STATS } from './weapons';
 // import { user_loadouts, current_loadout, base_weapons, reso_counts, reso_effects, reso_stat, weapon_views, matrix_views } from './stores';
 
 function checkValidEffect(
-	eff: RelicEffect,
+	eff: WeaponEffect,
 	reso_counts_: ResoTriggerCounts,
 	advancement: number,
 	user_weapons_?: UserWeapon[]
@@ -67,7 +73,12 @@ function checkValidEffect(
 	user_weapons_: UserWeapon[]
 ): boolean;
 function checkValidEffect(
-	eff: RelicEffect | MatrixEffect | BaseEffect,
+	eff: RelicEffect,
+	reso_counts_: ResoTriggerCounts,
+	advancement: number
+): boolean;
+function checkValidEffect(
+	eff: RelicEffect | MatrixEffect | WeaponEffect | BaseEffect,
 	reso_counts_: ResoTriggerCounts,
 	advancement?: number,
 	user_weapons_?: UserWeapon[]
@@ -89,7 +100,26 @@ function checkValidEffect(
 	) {
 		return false;
 	}
+	// check if required adv not is fulfilled
+	if (
+		advancement !== undefined &&
+		'require_adv_not' in eff &&
+		eff.require_adv_not &&
+		advancement === eff.require_adv_not
+	) {
+		return false;
+	}
+	// check if required adv not gt is fulfilled
+	if (
+		advancement !== undefined &&
+		'require_adv_not_gt' in eff &&
+		eff.require_adv_not_gt &&
+		advancement >= eff.require_adv_not_gt
+	) {
+		return false;
+	}
 
+	// check if required weapon is present
 	if (
 		eff.require_weapon &&
 		user_weapons_ &&
@@ -100,6 +130,9 @@ function checkValidEffect(
 
 	// TEMPORARILY DISABLE ONFIELD EFFECTS
 	if (eff.duration !== undefined && eff.duration === 0) {
+		return false;
+	}
+	if ('require_onfield' in eff && eff.require_onfield) {
 		return false;
 	}
 
@@ -131,7 +164,7 @@ export async function pushAllValidWeaponEffects(
 	effs: WeaponEffectsIds[],
 	advancement: number,
 	reso_counts_: ResoTriggerCounts,
-	effects_: RelicEffect[],
+	effects_: WeaponEffect[],
 	stat_: StatCollection[]
 ) {
 	await Promise.all(
@@ -186,6 +219,27 @@ export async function pushAllValidMatrixEffects(
 
 			effects_.push(finalEffect);
 			stat_[0] = stat_[0].add(new StatCollection(finalEffect.stats));
+		})
+	);
+}
+
+export async function pushAllValidRelicEffects(
+	effs: RelicEffectsIds[],
+	advancement: number,
+	reso_counts_: ResoTriggerCounts,
+	effects_: RelicEffect[],
+	stat_: StatCollection[]
+) {
+	await Promise.all(
+		effs.map(async (eff_) => {
+			const eff = await getRelicEffect(eff_);
+
+			if (!checkValidEffect(eff, reso_counts_, advancement)) {
+				return;
+			}
+
+			effects_.push(eff);
+			stat_[0] = stat_[0].add(new StatCollection(eff.stats));
 		})
 	);
 }
@@ -320,7 +374,7 @@ export async function updateWeaponViews() {
 				const base_stat = new StatCollection(_base_stat);
 
 				// active effects
-				const effects: RelicEffect[] = [];
+				const effects: WeaponEffect[] = [];
 				const stat_ = [new StatCollection()];
 
 				await pushAllValidWeaponEffects(
@@ -406,6 +460,39 @@ export async function updateMatrixViews() {
 	);
 }
 
+export async function updateRelicViews() {
+	const selected_loadout = get(user_loadouts)[get(current_loadout)];
+
+	relic_views.set(
+		await Promise.all(
+			selected_loadout.equipped_relics.map(async (relic) => {
+				const advancement = relic.advancement ?? 0;
+
+				const effects: RelicEffect[] = [];
+				const stat_ = [new StatCollection()];
+				const relic_ = await getRelic(relic.id);
+
+				await pushAllValidRelicEffects(
+					relic_.effects,
+					advancement,
+					get(reso_counts),
+					effects,
+					stat_
+				);
+				const stat = stat_[0];
+
+				return {
+					id: relic_.id,
+					name: relic_.name,
+					advancement,
+					effects,
+					stat
+				} as RelicView;
+			})
+		)
+	);
+}
+
 export async function updateSingleWeaponView(index: number) {
 	const weapon = get(base_weapons)[index];
 	const user_weapons = get(user_loadouts)[get(current_loadout)].equipped_weapons;
@@ -422,7 +509,7 @@ export async function updateSingleWeaponView(index: number) {
 	const base_stat = new StatCollection(_base_stat);
 
 	// active effects
-	const effects: RelicEffect[] = [];
+	const effects: WeaponEffect[] = [];
 	const stat_ = [new StatCollection()];
 
 	await pushAllValidWeaponEffects(
@@ -663,6 +750,11 @@ export function getEquippedGearViews(equipped_gears: EquippedGear): GearView[] {
 
 const TRANSFORMABLE_KEYS = ['atk', 'phys_atk', 'flame_atk', 'frost_atk', 'volt_atk', 'alt_atk'];
 
+/**
+ * Turns a gear into a gear effect for use with StatContributions.svelte
+ * @param {GearView} gear
+ * @returns {GearEffect}
+ */
 export function turnGearToEffect(gear: GearView): GearEffect {
 	if (gear.part === 'U') throw new Error('Cannot turn UNKNOWN gear into effect!');
 

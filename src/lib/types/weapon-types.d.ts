@@ -12,7 +12,8 @@ import type {
 	MatrixFinalEffect,
 	OrderedResoTriggers,
 	RelicEffect,
-	ResoTriggers
+	ResoTriggers,
+	WeaponEffect
 } from './effect-types';
 import type { StatBuffs, StatGearUser } from './stat-types';
 
@@ -76,7 +77,7 @@ export type WeaponView = {
 	setting: WeaponSettingStuff[];
 
 	base_stat: StatCollection;
-	effects: RelicEffect[];
+	effects: WeaponEffect[];
 	stat: StatCollection;
 
 	advancement: number;
