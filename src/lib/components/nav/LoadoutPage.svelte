@@ -11,6 +11,7 @@
 		getImageFromDB,
 		getImageUrlFromDB,
 		loadMatrixImages,
+		loadRelicImages,
 		loadStatIcons,
 		loadWeaponImages,
 		saveObject
@@ -637,7 +638,7 @@
 
 <div class="loadout-page">
 	{#await (async () => {
-		await Promise.all([loadStatIcons(), loadWeaponImages(), loadMatrixImages()]);
+		await Promise.all([loadStatIcons(), loadWeaponImages(), loadMatrixImages(), loadRelicImages()]);
 		$loadout_page_loaded = true;
 	})()}
 		<div class="vertical" style="gap: 0.5rem;">
