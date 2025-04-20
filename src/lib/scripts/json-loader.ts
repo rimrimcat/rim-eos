@@ -151,7 +151,7 @@ export async function getWeapon(weapon: WeaponsIds): Promise<Weapon> {
 		return WEAPONS[weapon];
 	} catch (error) {
 		console.error(`Error loading weapon ${weapon}:`, error);
-		throw error;
+		return getWeapon('none');
 	}
 }
 
@@ -171,7 +171,7 @@ export async function getMatrix(matrix: MatrixIds): Promise<Matrix> {
 		return MATRIX[matrix];
 	} catch (error) {
 		console.error(`Error loading matrix ${matrix}:`, error);
-		throw error;
+		return getMatrix('none');
 	}
 }
 
@@ -191,6 +191,6 @@ export async function getRelic(relic: RelicsIds): Promise<Relic> {
 		return RELIC[relic];
 	} catch (error) {
 		console.error(`Error loading relic ${relic}:`, error);
-		throw error;
+		return getRelic('none');
 	}
 }
