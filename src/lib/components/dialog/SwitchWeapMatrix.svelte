@@ -59,16 +59,6 @@
 		}
 	}
 
-	// function makeSearcher(all_ids: IdType) {
-	// 	const index = new Index({ tokenize: 'forward', encoder: 'LatinSimple' });
-
-	// 	all_ids.forEach((item, id) => {
-	// 		index.add(id, item);
-	// 	});
-
-	// 	return index;
-	// }
-
 	function getGetter(switching_: SwitchType) {
 		switch (switching_) {
 			case 'trait': {
@@ -122,9 +112,6 @@
 			actual_stuff = stuff;
 		});
 	});
-
-	$inspect('valid stuff', valid_stuff);
-	// let _index = $derived(makeSearcher(valid_stuff));
 </script>
 
 {#snippet matrix4p(matrix_id: MatrixIds)}
@@ -174,7 +161,7 @@
 			type="text"
 			bind:value={search_query}
 			placeholder="Search..."
-			style="width: 90%; padding: 0.5rem; border-radius: 0.25rem; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--input-text, #fff);"
+			style="width: 90%; padding: 0.5rem;"
 		/>
 	</div>
 	<FlexGrid min_cols={3} max_cols={3} horizontal_gap="1rem" vertical_gap="1rem">
