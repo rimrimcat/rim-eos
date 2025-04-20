@@ -46,6 +46,7 @@ also still thinking of a better name later on
 - [ ] Design: fix animations
 - [ ] Design: fix my css
 - [ ] Design: animate weapon changing advancement/element
+- [ ] Design: make some icons have same size
 - [ ] Misc: add image that you can click and it switches so you have something to look and play with ig
 - [ ] Misc: disable some buttons when mid animation
 - [ ] Misc: add prompts when performing destructive actions
