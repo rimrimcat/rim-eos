@@ -451,11 +451,7 @@
 					{#if matrix.id.includes('4p')}
 						{@render matrix4p(matrix)}
 					{:else if matrix.id === 'none'}
-						<img
-							src="./matrix/none.webp"
-							alt="Matrix"
-							style="height:6rem; width:6rem; filter: grayscale(100%)"
-						/>
+						<img src="data:,x" alt="Matrix" style="height:6rem; width:6rem; opacity: 0;" />
 					{/if}
 				</button>
 				{#if matrix.id !== 'none'}
@@ -502,11 +498,7 @@
 							}}
 						>
 							{#if relic.id === 'none'}
-								<img
-									src="./matrix/none.webp"
-									alt="Matrix"
-									style="height:6rem; width:6rem; opacity: 0;"
-								/>
+								<img src="data:,x" alt="Matrix" style="height:6rem; width:6rem; opacity: 0;" />
 							{:else}
 								<img src="./relic/{relic.id}.webp" alt="Relic" style="height:6rem; width:6rem;" />
 							{/if}
@@ -556,11 +548,7 @@
 							}}
 						>
 							{#if $trait_view.id === 'none'}
-								<img
-									src="./matrix/none.webp"
-									alt="Matrix"
-									style="height:6rem; width:6rem; opacity: 0;"
-								/>
+								<img src="data:,x" alt="Matrix" style="height:6rem; width:6rem; opacity: 0;" />
 							{:else}
 								<img
 									src="./trait/{$trait_view.id}.webp"
