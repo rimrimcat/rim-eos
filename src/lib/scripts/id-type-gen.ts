@@ -58,10 +58,13 @@ const relic_ids = [
 		.filter((file) => file.endsWith('.json') && file !== 'none.json')
 		.map((file) => path.basename(file, '.json'))
 ];
-const trait_ids = fs
-	.readdirSync(traits_path)
-	.filter((file) => file.endsWith('.json'))
-	.map((file) => path.basename(file, '.json'));
+const trait_ids = [
+	'none',
+	...fs
+		.readdirSync(traits_path)
+		.filter((file) => file.endsWith('.json') && file !== 'none.json')
+		.map((file) => path.basename(file, '.json'))
+];
 
 const gear_effect_ids: ValidGearEffectIds[] = [
 	'gear-A',
