@@ -19,7 +19,8 @@
 
 	type SwitchType = 'matrix' | 'weapon' | 'relic' | 'trait';
 	type IdType = MatrixIds[] | WeaponsIds[] | TraitsIds[] | RelicsIds[];
-	type StuffType = Matrix[] | Weapon[] | Relic[] | Trait[];
+	type StuffArray = Matrix[] | Weapon[] | Relic[] | Trait[];
+	type Stuff = Matrix | Weapon | Relic | Trait;
 
 	let {
 		open = $bindable(false),
@@ -105,7 +106,8 @@
 	let valid_stuff = $derived(getValidIds(switching));
 	let gettedGetter = $derived(getGetter(switching));
 	let gettedReturner = $derived(getReturner(switching));
-	let actual_stuff = $state([] as StuffType);
+	let actual_stuff = $state([] as StuffArray);
+	let search_query = $state('');
 
 	async function stuffToDisplayNormally() {
 		return [
@@ -137,39 +139,59 @@
 	{/each}
 {/snippet}
 
+{#snippet showStuff(stuff: Stuff)}
+	<div class="stuff-item vertical center" style="width: 8rem; height: 8rem;">
+		<div class="compose below border" style="width: 6rem; height: 6rem;">
+			<button
+				class="image"
+				onclick={() => {
+					gettedReturner(stuff.id);
+					open = false;
+				}}
+			>
+				{#if stuff.id === 'none'}
+					<XIcon size="6rem" color="var(--text-color)" />
+				{:else if switching === 'matrix' && stuff.id.includes('4p')}
+					{@render matrix4p(stuff.id)}
+				{:else}
+					<img
+						src="./{switching}/{stuff.id}.webp"
+						alt={switching}
+						style="height:6rem; width:6rem;"
+					/>
+				{/if}
+			</button>
+		</div>
+		<div class="horizontal center" style="margin-top: 0.5rem;">
+			<span>{stuff.name}</span>
+		</div>
+	</div>
+{/snippet}
+
 <Dialog title={'Switch ' + switching} bind:open>
-	<FlexGrid max_cols={3} horizontal_gap="1rem" vertical_gap="1rem">
+	<div class="vertical center-hori">
+		<input
+			type="text"
+			bind:value={search_query}
+			placeholder="Search..."
+			style="width: 90%; padding: 0.5rem; border-radius: 0.25rem; border: 1px solid var(--border-color); background-color: var(--input-bg); color: var(--input-text, #fff);"
+		/>
+	</div>
+	<FlexGrid min_cols={3} max_cols={3} horizontal_gap="1rem" vertical_gap="1rem">
 		{#await stuffToDisplayNormally()}
 			<p>Loading...</p>
 		{:then array_of_stuff}
-			{#each array_of_stuff as stuff}
-				<div class="stuff-item vertical center" style="width: 8rem; height: 8rem;">
-					<div class="compose below border" style="width: 6rem; height: 6rem;">
-						<button
-							class="image"
-							onclick={() => {
-								gettedReturner(stuff.id);
-								open = false;
-							}}
-						>
-							{#if stuff.id === 'none'}
-								<XIcon size="6rem" color="var(--text-color)" />
-							{:else if switching === 'matrix' && stuff.id.includes('4p')}
-								{@render matrix4p(stuff.id)}
-							{:else}
-								<img
-									src="./{switching}/{stuff.id}.webp"
-									alt={switching}
-									style="height:6rem; width:6rem;"
-								/>
-							{/if}
-						</button>
-					</div>
-					<div class="horizontal center" style="margin-top: 0.5rem;">
-						<span>{stuff.name}</span>
-					</div>
-				</div>
-			{/each}
+			{#if search_query !== ''}
+				{#each array_of_stuff.flatMap((stuff) => (stuff.name
+						.toLowerCase()
+						.includes(search_query) ? [stuff] : [])) as stuff}
+					{@render showStuff(stuff)}
+				{/each}
+			{:else}
+				{#each array_of_stuff as stuff}
+					{@render showStuff(stuff)}
+				{/each}
+			{/if}
 		{/await}
 	</FlexGrid>
 </Dialog>
