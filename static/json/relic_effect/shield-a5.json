@@ -1,0 +1,10 @@
+{
+	"id": "shield-a5",
+	"stats": {
+		"final_dmg_percent": 25
+	},
+	"target": "team",
+	"duration": 27,
+	"cooldown": 60,
+	"require_adv": 5
+}

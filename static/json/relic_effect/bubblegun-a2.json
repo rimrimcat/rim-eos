@@ -1,0 +1,7 @@
+{
+	"id": "bubblegun-a2",
+	"stats": {
+		"final_dmg_percent": 9
+	},
+	"require_adv": 2
+}

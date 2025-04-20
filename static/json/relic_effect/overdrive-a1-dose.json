@@ -1,0 +1,10 @@
+{
+	"id": "overdrive-a1-dose",
+	"stats": {
+		"final_dmg_percent": 15
+	},
+	"cooldown": 240,
+	"duration": 100,
+	"require_onfield": true,
+	"require_adv_not_gt": 3
+}

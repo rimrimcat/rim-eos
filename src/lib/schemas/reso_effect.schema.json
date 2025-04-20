@@ -231,7 +231,7 @@
         "alt_res_ignore_percent": {
           "type": "number"
         },
-        "final_dmg_increase_percent": {
+        "final_dmg_taken_percent": {
           "type": "number"
         },
         "ele_dmg_taken_percent": {

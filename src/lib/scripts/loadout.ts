@@ -12,6 +12,7 @@ import type {
 	MatrixEffectsIds,
 	MatrixFinalEffect,
 	MatrixView,
+	RelicEffect,
 	ResoEffect,
 	ResoEffectsIds,
 	ResoTriggerCounts,
@@ -19,7 +20,6 @@ import type {
 	StatKey,
 	UserWeapon,
 	ValidGearPart,
-	WeaponEffect,
 	WeaponEffectsIds,
 	WeaponSettingStuff,
 	WeaponView
@@ -55,7 +55,7 @@ import { WEAPON_BASE_STATS } from './weapons';
 // import { user_loadouts, current_loadout, base_weapons, reso_counts, reso_effects, reso_stat, weapon_views, matrix_views } from './stores';
 
 function checkValidEffect(
-	eff: WeaponEffect,
+	eff: RelicEffect,
 	reso_counts_: ResoTriggerCounts,
 	advancement: number,
 	user_weapons_?: UserWeapon[]
@@ -67,7 +67,7 @@ function checkValidEffect(
 	user_weapons_: UserWeapon[]
 ): boolean;
 function checkValidEffect(
-	eff: WeaponEffect | MatrixEffect | BaseEffect,
+	eff: RelicEffect | MatrixEffect | BaseEffect,
 	reso_counts_: ResoTriggerCounts,
 	advancement?: number,
 	user_weapons_?: UserWeapon[]
@@ -131,7 +131,7 @@ export async function pushAllValidWeaponEffects(
 	effs: WeaponEffectsIds[],
 	advancement: number,
 	reso_counts_: ResoTriggerCounts,
-	effects_: WeaponEffect[],
+	effects_: RelicEffect[],
 	stat_: StatCollection[]
 ) {
 	await Promise.all(
@@ -320,7 +320,7 @@ export async function updateWeaponViews() {
 				const base_stat = new StatCollection(_base_stat);
 
 				// active effects
-				const effects: WeaponEffect[] = [];
+				const effects: RelicEffect[] = [];
 				const stat_ = [new StatCollection()];
 
 				await pushAllValidWeaponEffects(
@@ -422,7 +422,7 @@ export async function updateSingleWeaponView(index: number) {
 	const base_stat = new StatCollection(_base_stat);
 
 	// active effects
-	const effects: WeaponEffect[] = [];
+	const effects: RelicEffect[] = [];
 	const stat_ = [new StatCollection()];
 
 	await pushAllValidWeaponEffects(

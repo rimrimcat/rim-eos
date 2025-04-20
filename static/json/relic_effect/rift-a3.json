@@ -1,0 +1,9 @@
+{
+	"id": "rift-a3",
+	"stats": {
+		"final_dmg_taken_percent": 20
+	},
+	"require_adv": 3,
+	"cooldown": 100,
+	"duration": 15
+}

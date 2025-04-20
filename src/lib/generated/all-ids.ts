@@ -103,6 +103,35 @@ export const AllResoEffectIds: ResoEffectsIds[] = [
 	'phys',
 	'volt'
 ];
+export const AllRelicEffectIds: RelicEffectsIds[] = [
+	'bubblegun-a2',
+	'bubblegun-a4',
+	'bubblegun-a5',
+	'couant-a2',
+	'couant2-a0',
+	'couant2-a2',
+	'couant2-a3',
+	'couant2-a4',
+	'couant2-a5',
+	'mask-a2',
+	'mask-a4',
+	'mask-a5',
+	'overdrive-a0-dose',
+	'overdrive-a0',
+	'overdrive-a1-dose',
+	'overdrive-a3-dose',
+	'overdrive-a3',
+	'overdrive-a4',
+	'rifle-a2',
+	'rifle-a5',
+	'rift-a3',
+	'rilfe-a4',
+	'shield-a5',
+	'thalassic-a0',
+	'thalassic-a2',
+	'thalassic-a3',
+	'thalassic-a4'
+];
 export const AllMatrixIds: MatrixIds[] = [
 	'none',
 	'anka-4p',

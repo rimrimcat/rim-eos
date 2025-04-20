@@ -1,0 +1,8 @@
+{
+	"id": "overdrive-a4",
+	"stats": {
+		"phys_dmg_percent": 2
+	},
+	"require_adv": 4,
+	"works_unequipped": true
+}

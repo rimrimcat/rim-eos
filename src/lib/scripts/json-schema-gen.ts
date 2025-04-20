@@ -28,6 +28,7 @@ const program = TJS.getProgramFromFiles(
 const schema_reso_effects = TJS.generateSchema(program, 'ResoEffect', settings);
 const schema_weapon_effects = TJS.generateSchema(program, 'WeaponEffect', settings);
 const schema_matrix_effects = TJS.generateSchema(program, 'MatrixEffect', settings);
+const schema_relic_effects = TJS.generateSchema(program, 'RelicEffect', settings);
 const schema_weapons = TJS.generateSchema(program, 'Weapon', settings);
 const schema_matrix = TJS.generateSchema(program, 'Matrix', settings);
 
@@ -42,6 +43,10 @@ fs.writeFileSync(
 fs.writeFileSync(
 	path.join(schemaDir, 'matrix_effect.schema.json'),
 	JSON.stringify(schema_matrix_effects, null, 2)
+);
+fs.writeFileSync(
+	path.join(schemaDir, 'relic_effect.schema.json'),
+	JSON.stringify(schema_relic_effects, null, 2)
 );
 fs.writeFileSync(
 	path.join(schemaDir, 'weapon.schema.json'),

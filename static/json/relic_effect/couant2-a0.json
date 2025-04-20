@@ -1,0 +1,9 @@
+{
+	"id": "couant2-a0",
+	"stats": {
+		"final_dmg_percent": 10
+	},
+	"cooldown": 30,
+	"duration": 10,
+	"require_adv_not_gt": 2
+}

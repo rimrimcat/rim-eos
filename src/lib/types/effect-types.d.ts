@@ -1,5 +1,6 @@
 import type {
 	MatrixEffectsIds,
+	RelicEffectsIds,
 	ResoEffectsIds,
 	WeaponEffectsIds,
 	WeaponsIds
@@ -75,4 +76,18 @@ export type ValidGearEffectIds = `gear-${ValidGearPart}`;
 export type GearEffect = BaseEffect & {
 	id: ValidGearEffectIds;
 	stats: StatData;
+};
+
+export type RelicEffect = BaseEffect & {
+	id: RelicEffectsIds;
+	stats: StatData;
+
+	require_adv?: number; // required advancement (esp. for weapons)
+	require_adv_not_gt?: number; // for advancement that modifies original effects
+
+	require_onfield?: boolean; // for effects that only activate when onfield
+
+	require_undamaged?: boolean; // for couant relic
+
+	works_unequipped?: boolean; // for effects that work even when unequipped
 };
