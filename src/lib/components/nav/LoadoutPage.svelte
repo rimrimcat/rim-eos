@@ -98,7 +98,7 @@
 	let switch_index = $state(0);
 
 	// Stat Contrib
-	let chart_width = $derived(Math.min($inner_width - $font_size * 16 - 300, 700));
+	let chart_width = $derived(Math.min($inner_width - 300, 700));
 	$inspect('chart wid', chart_width);
 
 	// Element options
@@ -458,6 +458,10 @@
 	</div>
 {/snippet}
 
+{#snippet showRelics()}
+	<div class="horizontal"></div>
+{/snippet}
+
 {#snippet showWeaponMatrix()}
 	<div class="vertical weapon-matrix-cell">
 		{#each loadout_weapmat_combined as [weapon, matrix], index}
@@ -551,12 +555,8 @@
 				{/if}
 			</div>
 		{/each}
+		{@render showRelics()}
 	</div>
-	{#if chart_width > 350}
-		<div class="vertical" style="margin-left: 2rem;">
-			<StatContributions bind:all_effects bind:chart_width />
-		</div>
-	{/if}
 {/snippet}
 
 <div class="loadout-page">
@@ -673,8 +673,8 @@
 			</div>
 		</div>
 
-		<div class="loadout-settings">
-			<h2>Weapon Presets</h2>
+		<div class="weapon-setup">
+			<h2>Weapon Setup</h2>
 			<div class="vertical-left" style="margin-bottom: 2rem;">
 				<!-- button for mobile players since not enough space -->
 
@@ -687,6 +687,16 @@
 			<div class="horizontal">
 				{@render showWeaponMatrix()}
 			</div>
+
+			<div class="horizontal">
+				<p>test</p>
+			</div>
+
+			{#if chart_width > 350}
+				<div class="vertical" style="margin-left: 2rem;">
+					<StatContributions bind:all_effects bind:chart_width />
+				</div>
+			{/if}
 		</div>
 	{/await}
 </div>
@@ -837,7 +847,7 @@
 		object-fit: cover;
 	}
 
-	.loadout-settings {
+	.weapon-setup {
 		display: flex;
 		flex-direction: column;
 		border-top: 1px solid var(--border-color);
@@ -868,7 +878,7 @@
 			margin-bottom: 1rem;
 		}
 
-		.loadout-settings {
+		.weapon-setup {
 			order: 3;
 			width: 100%;
 		}
