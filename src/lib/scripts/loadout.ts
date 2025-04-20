@@ -90,7 +90,8 @@ function checkValidEffect(
 function checkValidEffect(
 	eff: TraitEffect,
 	reso_counts_: ResoTriggerCounts,
-	advancement: number
+	advancement: number,
+	user_weapons_: UserWeapon[]
 ): boolean;
 function checkValidEffect(
 	eff: RelicEffect | MatrixEffect | WeaponEffect | TraitEffect | BaseEffect,
@@ -263,13 +264,14 @@ export async function pushAllValidTraitEffects(
 	advancement: number,
 	reso_counts_: ResoTriggerCounts,
 	effects_: TraitEffect[],
-	stat_: StatCollection[]
+	stat_: StatCollection[],
+	user_weapons_: UserWeapon[]
 ) {
 	await Promise.all(
 		effs.map(async (eff_) => {
 			const eff = await getTraitEffect(eff_);
 
-			if (!checkValidEffect(eff, reso_counts_, advancement)) {
+			if (!checkValidEffect(eff, reso_counts_, advancement, user_weapons_)) {
 				return;
 			}
 
@@ -664,13 +666,17 @@ export async function obtainRelicViews(
 	);
 }
 
-export async function obtainTraitView(equipped_trait: UserTrait, reso_counts: ResoTriggerCounts) {
+export async function obtainTraitView(
+	equipped_weapons: UserWeapon[],
+	equipped_trait: UserTrait,
+	reso_counts: ResoTriggerCounts
+) {
 	const effects: TraitEffect[] = [];
 	const stat_ = [new StatCollection()];
 
 	const trait_ = await getTrait(equipped_trait);
 
-	await pushAllValidTraitEffects(trait_.effects, 0, reso_counts, effects, stat_);
+	await pushAllValidTraitEffects(trait_.effects, 0, reso_counts, effects, stat_, equipped_weapons);
 	const stat = stat_[0];
 
 	return {
@@ -716,7 +722,7 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 	const relic_views_ = await obtainRelicViews(equipped_relics_, reso_counts_);
 	relic_views.set(relic_views_);
 
-	const trait_view_ = await obtainTraitView(equipped_trait_, reso_counts_);
+	const trait_view_ = await obtainTraitView(equipped_weapons_, equipped_trait_, reso_counts_);
 	trait_view.set(trait_view_);
 }
 
