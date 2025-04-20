@@ -35,6 +35,7 @@
 		loadout_new_or_duplicate_dialog_open,
 		loadout_page_loaded,
 		matrix_views,
+		relic_views,
 		reso_effects,
 		stat_autoupdate,
 		user_gears,
@@ -473,10 +474,10 @@
 {/snippet}
 
 {#snippet showRelics()}
-	<div class="horizontal">
-		{#each user_relics as relic, index}
+	<div class="horizontal center-vert" style="margin-top: 1rem;">
+		{#each $relic_views as relic, index}
 			<div class="vertical center matrix-col" style="width: 6rem;">
-				<span class="matrix-name">relic name</span>
+				<span>{relic.name}</span>
 				<div class="horizontal matrix-container">
 					<div class="compose below border" style="width: 6rem; height: 6rem; margin-top: 0.4rem;">
 						<button
