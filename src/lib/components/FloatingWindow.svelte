@@ -516,7 +516,7 @@
 
 		{#if guide_content && guide_content.length > 1}
 			<div class="guide-navigation">
-				{#if guide_index !== 0 && guide_content[guide_index].proceed_on === undefined}
+				<!-- {#if guide_index !== 0 && guide_content[guide_index].proceed_on === undefined}
 					<button
 						class="guide-nav-button"
 						onclick={prevStep}
@@ -525,17 +525,29 @@
 					>
 						Previous
 					</button>
-				{/if}
+				{/if} -->
 				<span class="guide-position">{guide_index + 1} / {guide_content.length}</span>
-				<button
-					class="guide-nav-button"
-					onclick={nextStep}
-					disabled={guide_content[guide_index].proceed_on !== undefined ||
-						guide_index === guide_content.length - 1}
-					aria-label="Next step"
-				>
-					Next
-				</button>
+				{#if guide_index !== guide_content.length - 1}
+					<button
+						class="guide-nav-button"
+						onclick={nextStep}
+						disabled={guide_content[guide_index].proceed_on !== undefined ||
+							guide_index === guide_content.length - 1}
+						aria-label="Next step"
+					>
+						Next
+					</button>
+				{:else}
+					<button
+						class="guide-nav-button"
+						onclick={closeWindow}
+						disabled={guide_content[guide_index].proceed_on !== undefined ||
+							guide_index === guide_content.length - 1}
+						aria-label="Finish"
+					>
+						Finish
+					</button>
+				{/if}
 			</div>
 		{/if}
 

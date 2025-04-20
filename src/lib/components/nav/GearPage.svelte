@@ -428,10 +428,7 @@
 			variables.isEquipped = gear.isEquipped ? 1 : 0;
 
 			// @ts-expect-error
-			console.log('query', query);
-			console.log('variables', variables);
 			const new_query = query.replace(ALL_STATS_REGEX, (match) => variables[match].toString());
-			console.log('new_query', new_query);
 			const result = evil(parse(new_query), {});
 
 			if (result) {
@@ -667,7 +664,7 @@
 				by_column={false}
 				max_cols={is_showing_equipped_gears ? 2 : 4}
 				vertical_gap="0rem"
-				horizontal_gap="5rem"
+				horizontal_gap="0.5rem"
 				bind:has_measured
 				expand_width={false}
 			>
