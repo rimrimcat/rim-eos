@@ -1,7 +1,7 @@
 {
 	"id": "bubblegun-a4",
 	"stats": {
-		"flame_dmg_percent": 2
+		"relic_flame_dmg_percent": 2
 	},
 	"require_adv": 4,
 	"works_unequipped": true

@@ -1,7 +1,7 @@
 {
 	"id": "thalassic-a4",
 	"stats": {
-		"volt_dmg_percent": 2
+		"relic_volt_dmg_percent": 2
 	},
 	"require_adv": 4,
 	"works_unequipped": true

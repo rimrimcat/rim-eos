@@ -1,7 +1,10 @@
 {
 	"id": "mask-a5",
 	"stats": {
-		"ele_dmg_percent": 6
+		"relic_phys_dmg_percent": 6,
+		"relic_frost_dmg_percent": 6,
+		"relic_flame_dmg_percent": 6,
+		"relic_volt_dmg_percent": 6
 	},
 	"require_adv": 5
 }
