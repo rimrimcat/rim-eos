@@ -48,6 +48,7 @@
 		"@lucide/svelte": "^0.485.0",
 		"@sveltejs/adapter-static": "^3.0.8",
 		"@techstark/opencv-js": "^4.10.0-release.1",
+		"flexsearch": "^0.8.158",
 		"tesseract.js": "^6.0.0"
 	}
 }
