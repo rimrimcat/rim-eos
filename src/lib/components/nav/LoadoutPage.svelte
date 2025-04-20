@@ -316,33 +316,6 @@
 	}
 
 	const ACTIONS = [
-		// {
-		// 	id: 'switch',
-		// 	label: 'Switch Loadout',
-		// 	lucide: ArrowRightLeftIcon,
-		// 	type: ActionType.BUTTON,
-		// 	callback: () => {
-		// 		switch_loadout_dialog_open = true;
-		// 	}
-		// },
-		// {
-		// 	id: 'duplicate',
-		// 	label: 'Duplicate Loadout',
-		// 	lucide: CopyPlusIcon,
-		// 	type: ActionType.BUTTON,
-		// 	callback: () => {
-		// 		duplicateLoadout(true);
-		// 	}
-		// },
-		// {
-		// 	id: 'delete',
-		// 	label: 'Delete Loadout',
-		// 	lucide: Trash2Icon,
-		// 	type: ActionType.BUTTON,
-		// 	callback: () => {
-		// 		deleteCurrentLoadout();
-		// 	}
-		// },
 		{
 			id: 'reset',
 			label: 'Reset to defaults',
@@ -378,12 +351,6 @@
 	onDestroy(() => {
 		$loadout_page_loaded = false;
 	});
-
-	// $inspect('Full loadout', $user_loadouts[$current_loadout]);
-	// $inspect('loadout', $current_loadout);
-	// $inspect('weapon views from LOADOUT', $weapon_views);
-	// $inspect('loadout weapmat arr from LOADOUT', loadout_weapmat_combined);
-	$inspect('gear views from LOADOUT', $gear_views);
 </script>
 
 {#snippet matrix4p(matrix: MatrixView)}
