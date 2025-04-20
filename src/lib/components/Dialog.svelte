@@ -111,10 +111,9 @@
 		color: var(--text-color);
 		border-radius: 0.7rem;
 		box-shadow: 0 0.2rem 1rem var(--shadow-color);
-		min-width: 400px;
+		min-width: 350px;
+		max-width: 95%;
 		min-height: 30vh;
-		/* max-width: 70vw;
-		max-height: 90vh; */
 
 		display: flex;
 		flex-direction: column;
