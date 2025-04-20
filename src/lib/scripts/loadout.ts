@@ -271,8 +271,6 @@ export async function updateSingleWeaponView(index: number) {
 	const loadout_reso_counts = get(reso_counts);
 	const advancement = user_weapons[index].advancement ?? 0;
 
-	console.log('THIS WEAP ADV:', advancement);
-
 	// get base stat of weapon
 	const _base_stat: { [key in StatKey]?: number } = {};
 	Object.entries(WEAPON_BASE_STATS[weapon.base_stat]).forEach(([stat, value]) => {
@@ -372,6 +370,31 @@ export async function updateSingleMatrixView(index: number) {
 		stat
 	} as MatrixView;
 	matrix_views.set(loadout_matrix_views);
+}
+
+export async function updateSingleRelicView(index: number) {
+	const selected_loadout = get(user_loadouts)[get(current_loadout)];
+	const equipped_relics = selected_loadout.equipped_relics ?? [{ id: 'none' }, { id: 'none' }];
+
+	const relic = equipped_relics[index];
+	const advancement = relic.advancement ?? 0;
+
+	const effects: RelicEffect[] = [];
+	const stat_ = [new StatCollection()];
+	const relic_ = await getRelic(relic.id);
+
+	await pushAllValidRelicEffects(relic_.effects, advancement, get(reso_counts), effects, stat_);
+	const stat = stat_[0];
+
+	const loadout_relic_views = get(relic_views);
+	loadout_relic_views[index] = {
+		id: relic_.id,
+		name: relic_.name,
+		advancement,
+		effects,
+		stat
+	} as RelicView;
+	relic_views.set(loadout_relic_views);
 }
 
 export async function obtainBaseWeapons(equipped_weapons: UserWeapon[]) {

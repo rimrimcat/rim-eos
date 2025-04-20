@@ -19,6 +19,7 @@
 		dedupeMatEffs,
 		turnGearToEffect,
 		updateSingleMatrixView,
+		updateSingleRelicView,
 		updateSingleWeaponView,
 		updateWeaponMatrixRelicFromStore
 	} from '$lib/scripts/loadout';
@@ -498,8 +499,19 @@
 						</button>
 						{#if relic.id !== 'none'}
 							{#each [1, 2, 3, 4, 5] as advSetValue, advIndex}
-								<button class="image">
-									<div class="compose above" style="top: 4.5rem; left:{1.5 + advIndex}rem">
+								<button
+									class="image"
+									onclick={() => {
+										if (user_relics[index].advancement === advSetValue) {
+											user_relics[index].advancement = 0;
+										} else {
+											user_relics[index].advancement = advSetValue;
+										}
+										saveWeaponMatrixRelicLoadout();
+										updateSingleRelicView(index);
+									}}
+								>
+									<div class="compose above" style="top: 4.5rem; left:{0.5 + advIndex}rem">
 										<StarIcon
 											size={$font_size}
 											fill={(user_relics[index].advancement ?? 0) >= advSetValue ? 'white' : 'none'}
