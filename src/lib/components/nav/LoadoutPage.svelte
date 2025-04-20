@@ -109,6 +109,7 @@
 
 	// Stat Contrib
 	let chart_width = $derived(Math.min($inner_width - 300, 700));
+	let reset_graph = $state(false);
 
 	// Element options
 	const ELEMENTS: { value: LoadoutType; label: string }[] = [
@@ -324,24 +325,28 @@
 		user_matrices[switch_index] = { id };
 		saveLoadout();
 		updateWeaponMatrixRelicTraitFromStore();
+		reset_graph = true;
 	}
 
 	function onSwitchWeapon(id: WeaponsIds) {
 		user_weapons[switch_index] = { id };
 		saveLoadout();
 		updateWeaponMatrixRelicTraitFromStore();
+		reset_graph = true;
 	}
 
 	function onSwitchRelic(id: MatrixIds) {
 		user_relics[switch_index] = { id };
 		saveLoadout();
 		updateWeaponMatrixRelicTraitFromStore();
+		reset_graph = true;
 	}
 
 	function onSwitchTrait(id: TraitsIds) {
 		user_trait = id;
 		saveLoadout();
 		updateWeaponMatrixRelicTraitFromStore();
+		reset_graph = true;
 	}
 
 	function onWeaponSettingChange(
@@ -813,7 +818,12 @@
 		</div>
 
 		{#if chart_width > 350}
-			<StatContributions bind:all_effects bind:chart_width style="margin-top: 1.5rem;" />
+			<StatContributions
+				bind:all_effects
+				bind:chart_width
+				style="margin-top: 1.5rem;"
+				bind:reset_graph
+			/>
 		{/if}
 	{/await}
 </div>
