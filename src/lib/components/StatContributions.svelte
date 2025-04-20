@@ -42,6 +42,7 @@
 			)[]
 		),
 		chart_width = $bindable(500),
+		reset_graph = $bindable(false),
 		style = ''
 	} = $props();
 
@@ -288,6 +289,16 @@
 		},
 		width: `${chart_width}px`,
 		height: `${sortedKeyLabels.length * 40 + 100}px`
+	});
+
+	$effect(() => {
+		if (reset_graph) {
+			show_bar = false;
+			setTimeout(() => {
+				show_bar = true;
+			}, 1);
+			reset_graph = false;
+		}
 	});
 </script>
 
