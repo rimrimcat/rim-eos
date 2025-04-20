@@ -51,6 +51,7 @@
 		if (eff.is_reso) return 'Resonance';
 		if (eff.is_gear) return 'Gear';
 		if (eff.is_relic) return 'Relic';
+		if (eff.is_trait) return 'Trait';
 		return 'Unknown';
 	}
 
