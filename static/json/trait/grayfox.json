@@ -1,5 +1,5 @@
 {
 	"id": "grayfox",
 	"name": "Grayfox",
-	"effects": ["grayfox-weap", "grayfox"]
+	"effects": ["grayfox-trait-weap", "grayfox-trait"]
 }

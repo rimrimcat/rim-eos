@@ -8,7 +8,7 @@
     "effects": {
       "type": "array",
       "items": {
-        "type": "string"
+        "$ref": "#/definitions/TraitEffectsIds"
       }
     }
   },
@@ -18,5 +18,14 @@
     "id",
     "name"
   ],
+  "definitions": {
+    "TraitEffectsIds": {
+      "enum": [
+        "grayfox-trait",
+        "grayfox-trait-weap"
+      ],
+      "type": "string"
+    }
+  },
   "$schema": "http://json-schema.org/draft-07/schema#"
 }
