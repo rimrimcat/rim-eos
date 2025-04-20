@@ -641,8 +641,8 @@ export class LumpedStatCollection {
 
 	/**
 	 * Calculates the multipliers of stat collection to determine improvement over current stats
-	 * @param other_col - object's multipliers to calculate. Must not be part of the original collection
-	 * @param element
+	 * @param {LumpedStatCollection} other_col - object's multipliers to calculate. Must not be part of the original collection
+	 * @param {Elements} element - element of current loadout
 	 */
 	total_multiplier_of(other_col: LumpedStatCollection, element: Elements, level: number = 100) {
 		let multiplier = 1;
