@@ -7,7 +7,7 @@ import type {
 	Relic,
 	RelicEffect,
 	RelicEffectsIds,
-	RelicIds,
+	RelicsIds,
 	ResoEffect,
 	ResoEffectsIds,
 	StatConstants,
@@ -53,7 +53,7 @@ const MATRIX_EFFECTS: { [key in MatrixEffectsIds]?: MatrixEffect } = {};
 const RELIC_EFFECTS: { [key in RelicEffectsIds]?: RelicEffect } = {};
 const WEAPONS: { [key in WeaponsIds]?: Weapon } = {};
 const MATRIX: { [key in MatrixIds]?: Matrix } = {};
-const RELIC: { [key in RelicIds]?: Relic } = {};
+const RELIC: { [key in RelicsIds]?: Relic } = {};
 
 export async function getResoEffects(reso: ResoEffectsIds): Promise<ResoEffect> {
 	if (RESO_EFFECTS[reso]) {
@@ -175,7 +175,7 @@ export async function getMatrix(matrix: MatrixIds): Promise<Matrix> {
 	}
 }
 
-export async function getRelic(relic: RelicIds): Promise<Relic> {
+export async function getRelic(relic: RelicsIds): Promise<Relic> {
 	if (RELIC[relic]) {
 		return RELIC[relic];
 	}

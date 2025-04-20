@@ -31,6 +31,7 @@ const schema_matrix_effects = TJS.generateSchema(program, 'MatrixEffect', settin
 const schema_relic_effects = TJS.generateSchema(program, 'RelicEffect', settings);
 const schema_weapons = TJS.generateSchema(program, 'Weapon', settings);
 const schema_matrix = TJS.generateSchema(program, 'Matrix', settings);
+const schema_relic = TJS.generateSchema(program, 'Relic', settings);
 
 fs.writeFileSync(
 	path.join(schemaDir, 'reso_effect.schema.json'),
@@ -56,5 +57,6 @@ fs.writeFileSync(
 	path.join(schemaDir, 'matrix.schema.json'),
 	JSON.stringify(schema_matrix, null, 2)
 );
+fs.writeFileSync(path.join(schemaDir, 'relic.schema.json'), JSON.stringify(schema_relic, null, 2));
 
 console.log('✅ JSON schemas generated successfully.');

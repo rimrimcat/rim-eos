@@ -12,6 +12,7 @@ const matrix_effects_path = path.join(projectRoot, 'static/json/matrix_effect');
 const relic_effects_path = path.join(projectRoot, 'static/json/relic_effect');
 const weapons_path = path.join(projectRoot, 'static/json/weapon');
 const matrix_path = path.join(projectRoot, 'static/json/matrix');
+const relics_path = path.join(projectRoot, 'static/json/relic');
 
 const reso_effects_ids = fs
 	.readdirSync(reso_effects_path)
@@ -47,7 +48,7 @@ const matrix_ids = [
 const relic_ids = [
 	'none',
 	...fs
-		.readdirSync(relic_effects_path)
+		.readdirSync(relics_path)
 		.filter((file) => file.endsWith('.json') && file !== 'none.json')
 		.map((file) => path.basename(file, '.json'))
 ];
@@ -75,7 +76,7 @@ export type ResoEffectsIds = ${reso_effects_ids.map((id) => `"${id}"`).join(' | 
 export type RelicEffectsIds = ${relic_effects_ids.map((id) => `"${id}"`).join(' | ')};
 export type WeaponsIds = ${weapons_ids.map((id) => `"${id}"`).join(' | ')};
 export type MatrixIds = ${matrix_ids.map((id) => `"${id}"`).join(' | ')};
-export type RelicIds = ${relic_ids.map((id) => `"${id}"`).join(' | ')};
+export type RelicsIds = ${relic_ids.map((id) => `"${id}"`).join(' | ')};
 
 `;
 
@@ -89,7 +90,7 @@ export const AllResoEffectIds: ResoEffectsIds[] = ${JSON.stringify(reso_effects_
 export const AllRelicEffectIds: RelicEffectsIds[] = ${JSON.stringify(relic_effects_ids)};
 export const AllMatrixIds: MatrixIds[] = ${JSON.stringify(matrix_ids)};
 export const AllWeaponIds: WeaponsIds[] = ${JSON.stringify(weapons_ids)};
-export const AllRelicIds: RelicIds[] = ${JSON.stringify(relic_ids)};
+export const AllRelicIds: RelicsIds[] = ${JSON.stringify(relic_ids)};
 export const AllGearEffectIds = ${JSON.stringify(gear_effect_ids)};
 
 `;
