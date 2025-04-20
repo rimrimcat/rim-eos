@@ -96,7 +96,7 @@
 	let new_or_duplicate_dialog_open = $state(false);
 
 	let switch_gear_matrix_dialog_open = $state(false);
-	let switching: 'matrix' | 'weapon' = $state('matrix');
+	let switching: 'matrix' | 'weapon' | 'relic' = $state('matrix');
 	let switch_index = $state(0);
 
 	// Stat Contrib
@@ -113,7 +113,7 @@
 		{ value: 'alt', label: 'Altered' }
 	];
 
-	function saveWeaponMatrixLoadout() {
+	function saveWeaponMatrixRelicLoadout() {
 		$user_loadouts[$current_loadout].equipped_weapons = user_weapons;
 		$user_loadouts[$current_loadout].equipped_matrices = user_matrices;
 		$user_loadouts[$current_loadout].equipped_relics = user_relics;
@@ -313,13 +313,19 @@
 
 	function onSwitchMatrix(id: MatrixIds) {
 		user_matrices[switch_index] = { id };
-		saveWeaponMatrixLoadout();
+		saveWeaponMatrixRelicLoadout();
 		updateWeaponMatrixRelicFromStore();
 	}
 
 	function onSwitchWeapon(id: WeaponsIds) {
 		user_weapons[switch_index] = { id };
-		saveWeaponMatrixLoadout();
+		saveWeaponMatrixRelicLoadout();
+		updateWeaponMatrixRelicFromStore();
+	}
+
+	function onSwitchRelic(id: MatrixIds) {
+		user_relics[switch_index] = { id };
+		saveWeaponMatrixRelicLoadout();
 		updateWeaponMatrixRelicFromStore();
 	}
 
@@ -359,7 +365,7 @@
 			user_weapons[index].setting = $base_weapons[index].setting.default;
 		}
 		user_weapons[index].setting[settingIndex] = currKey;
-		saveWeaponMatrixLoadout();
+		saveWeaponMatrixRelicLoadout();
 		// nola can change elements and reso
 		updateWeaponMatrixRelicFromStore();
 	}
@@ -447,7 +453,7 @@
 								} else {
 									user_matrices[index].advancement = advSetValue;
 								}
-								saveWeaponMatrixLoadout();
+								saveWeaponMatrixRelicLoadout();
 								updateSingleMatrixView(index);
 							}}
 						>
@@ -468,7 +474,43 @@
 {#snippet showRelics()}
 	<div class="horizontal">
 		{#each user_relics as relic, index}
-			<p>relic here</p>
+			<div class="vertical center matrix-col" style="width: 6rem;">
+				<span class="matrix-name">relic name</span>
+				<div class="horizontal matrix-container">
+					<div class="compose below border" style="width: 6rem; height: 6rem; margin-top: 0.4rem;">
+						<button
+							class="image"
+							onclick={() => {
+								switching = 'relic';
+								switch_index = index;
+								switch_gear_matrix_dialog_open = true;
+							}}
+						>
+							{#if relic.id === 'none'}
+								<img
+									src="./matrix/none.webp"
+									alt="Matrix"
+									style="height:6rem; width:6rem; filter: grayscale(100%)"
+								/>
+							{:else}
+								<img src="./relic/{relic.id}.webp" alt="Relic" style="height:6rem; width:6rem;" />
+							{/if}
+						</button>
+						{#if relic.id !== 'none'}
+							{#each [1, 2, 3, 4, 5] as advSetValue, advIndex}
+								<button class="image">
+									<div class="compose above" style="top: 4.5rem; left:{1.5 + advIndex}rem">
+										<StarIcon
+											size={$font_size}
+											fill={(user_relics[index].advancement ?? 0) >= advSetValue ? 'white' : 'none'}
+										/>
+									</div>
+								</button>
+							{/each}
+						{/if}
+					</div>
+				</div>
+			</div>
 		{/each}
 	</div>
 {/snippet}
@@ -539,7 +581,7 @@
 											} else {
 												user_weapons[index].advancement = advSetValue;
 											}
-											saveWeaponMatrixLoadout();
+											saveWeaponMatrixRelicLoadout();
 											updateSingleWeaponView(index);
 										}}
 									>
@@ -741,6 +783,7 @@
 	bind:user_weapons
 	{onSwitchMatrix}
 	{onSwitchWeapon}
+	{onSwitchRelic}
 />
 
 <ActionToolbar actions={ACTIONS} />

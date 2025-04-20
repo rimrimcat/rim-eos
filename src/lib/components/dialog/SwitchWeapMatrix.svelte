@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { AllMatrixIds, AllWeaponIds } from '$lib/generated/all-ids';
-	import { getMatrix, getWeapon } from '$lib/scripts/json-loader';
+	import { AllMatrixIds, AllRelicIds, AllWeaponIds } from '$lib/generated/all-ids';
+	import { getMatrix, getRelic, getWeapon } from '$lib/scripts/json-loader';
 	import type { MatrixIds, UserWeapon, WeaponsIds } from '$lib/types/index';
 	import { XIcon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
@@ -8,10 +8,11 @@
 
 	let {
 		open = $bindable(false),
-		switching = $bindable('matrix' as 'matrix' | 'weapon'),
+		switching = $bindable('matrix' as 'matrix' | 'weapon' | 'relic'),
 		user_weapons = $bindable([] as UserWeapon[]),
 		onSwitchMatrix = (id: MatrixIds) => {},
-		onSwitchWeapon = (id: WeaponsIds) => {}
+		onSwitchWeapon = (id: WeaponsIds) => {},
+		onSwitchRelic = (id: MatrixIds) => {}
 	} = $props();
 </script>
 
@@ -27,7 +28,7 @@
 	{/each}
 {/snippet}
 
-<Dialog title={'Switch ' + (switching === 'matrix' ? 'Matrix' : 'Weapon')} bind:open>
+<Dialog title={'Switch ' + switching} bind:open>
 	<FlexGrid max_cols={3} horizontal_gap="1rem" vertical_gap="1rem">
 		{#if switching === 'matrix'}
 			{#each AllMatrixIds as matrix_id}
@@ -79,6 +80,31 @@
 						</div>
 						<div class="horizontal center" style="margin-top: 0.5rem;">
 							<span>{weapon.name}</span>
+						</div>
+					</div>
+				{/await}
+			{/each}
+		{:else if switching === 'relic'}
+			{#each AllRelicIds as relic_id}
+				{#await getRelic(relic_id) then relic}
+					<div class="matrix-item vertical center" style="width: 8rem; height: 8rem;">
+						<div class="compose below border" style="width: 6rem; height: 6rem;">
+							<button
+								class="image"
+								onclick={() => {
+									onSwitchRelic(relic_id);
+									open = false;
+								}}
+							>
+								{#if relic.id === 'none'}
+									<XIcon size="6rem" color="var(--text-color)" />
+								{:else}
+									<img src="./relic/{relic.id}.webp" alt="Relic" style="height:6rem; width:6rem;" />
+								{/if}
+							</button>
+						</div>
+						<div class="horizontal center" style="margin-top: 0.5rem;">
+							<span>{relic.name}</span>
 						</div>
 					</div>
 				{/await}
