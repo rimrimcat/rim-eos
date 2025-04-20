@@ -25,7 +25,9 @@ also still thinking of a better name later on
 - [x] Loadout: add way to change weapons/matrices (2025-04-16)
 - [x] Stat: Show only offensive stats (2025-04-18)
 - [x] Main Page: add interactive tutorial (2025-04-19)
-- [ ] Loadout: add relics
+- [x] Loadout: add relics (2025-04-20)
+- [ ] Gear: add titan stats
+- [ ] Loadout: add traits
 - [ ] Matrix: add base matrix stat
 - [ ] Loadout: add some weapons and matrices
 - [ ] Stat: toggle to show attack percent or (base attack + attack percent)
