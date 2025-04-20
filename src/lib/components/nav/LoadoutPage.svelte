@@ -338,7 +338,6 @@
 	}
 
 	function onSwitchTrait(id: TraitsIds) {
-		console.log('setting trait', id);
 		user_trait = id;
 		saveLoadout();
 		updateWeaponMatrixRelicTraitFromStore();
@@ -451,7 +450,7 @@
 					{#if matrix.id.includes('4p')}
 						{@render matrix4p(matrix)}
 					{:else if matrix.id === 'none'}
-						<img src="data:,x" alt="Matrix" style="height:6rem; width:6rem; opacity: 0;" />
+						<img src="./none.webp" alt="Matrix" style="height:6rem; width:6rem; opacity: 0;" />
 					{/if}
 				</button>
 				{#if matrix.id !== 'none'}
@@ -498,7 +497,7 @@
 							}}
 						>
 							{#if relic.id === 'none'}
-								<img src="data:,x" alt="Matrix" style="height:6rem; width:6rem; opacity: 0;" />
+								<img src="./none.webp" alt="Matrix" style="height:6rem; width:6rem; opacity: 0;" />
 							{:else}
 								<img src="./relic/{relic.id}.webp" alt="Relic" style="height:6rem; width:6rem;" />
 							{/if}
@@ -548,7 +547,7 @@
 							}}
 						>
 							{#if $trait_view.id === 'none'}
-								<img src="data:,x" alt="Matrix" style="height:6rem; width:6rem; opacity: 0;" />
+								<img src="./none.webp" alt="Matrix" style="height:6rem; width:6rem; opacity: 0;" />
 							{:else}
 								<img
 									src="./trait/{$trait_view.id}.webp"
@@ -584,11 +583,19 @@
 										switch_gear_matrix_dialog_open = true;
 									}}
 								>
-									<img
-										src="./weapon/{weapon.id}.webp"
-										alt={weapon.name}
-										style="height:8rem; width:8rem; {weapon.id === 'none' ? 'opacity: 0;' : ''}"
-									/>
+									{#if weapon.id === 'none'}
+										<img
+											src="./none.webp"
+											alt={weapon.name}
+											style="height:8rem; width:8rem; opacity: 0;"
+										/>
+									{:else}
+										<img
+											src="./weapon/{weapon.id}.webp"
+											alt={weapon.name}
+											style="height:8rem; width:8rem;"
+										/>
+									{/if}
 								</button>
 							</div>
 							{#if weapon.setting && weapon.setting.length > 0}
