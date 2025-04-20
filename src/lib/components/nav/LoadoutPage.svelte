@@ -496,7 +496,7 @@
 				{:else}
 					<button class="image border" id="edit-loadout" onclick={toggleEditing}>
 						<PencilIcon />
-						<label class="in-button" for="edit-loadout">Edit Current Loadout</label>
+						<label class="in-button" for="edit-loadout">Edit Loadout</label>
 					</button>
 				{/if}
 			</div>
@@ -688,13 +688,13 @@
 									</div>
 								</div>
 
-								{#if $inner_width < 450}
+								{#if $inner_width < 370}
 									<div style="margin-top: 1rem; margin-bottom: 1.5rem;">
 										{@render showMatrices(matrix, index)}
 									</div>
 								{/if}
 							</div>
-							{#if $inner_width >= 450}
+							{#if $inner_width >= 370}
 								{@render showMatrices(matrix, index)}
 							{/if}
 						</div>
