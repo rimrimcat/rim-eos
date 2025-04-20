@@ -47,6 +47,7 @@
 		MatrixView,
 		StatGearUser,
 		UserMatrix,
+		UserRelic,
 		UserWeapon,
 		WeaponSettingStuff,
 		WeaponsIds,
@@ -74,6 +75,7 @@
 	// Used to update loadouts
 	let user_weapons = $state([{}, {}, {}] as UserWeapon[]);
 	let user_matrices = $state([{}, {}, {}] as UserMatrix[]);
+	let user_relics = $state([{}, {}] as UserRelic[]);
 
 	let loadout_weapmat_combined: [WeaponView, MatrixView][] = $derived(
 		$weapon_views.map((weapon, i) => [weapon, $matrix_views[i]])
@@ -114,6 +116,7 @@
 	function saveWeaponMatrixLoadout() {
 		$user_loadouts[$current_loadout].equipped_weapons = user_weapons;
 		$user_loadouts[$current_loadout].equipped_matrices = user_matrices;
+		$user_loadouts[$current_loadout].equipped_relics = user_relics;
 		saveObject('loadouts_v1', $user_loadouts);
 	}
 
@@ -297,6 +300,10 @@
 			{ id: 'none' },
 			{ id: 'none' }
 		];
+		user_relics = $user_loadouts[$current_loadout].equipped_relics ?? [
+			{ id: 'none' },
+			{ id: 'none' }
+		];
 		getImageUrlFromDB($current_loadout).then((imageUrl) => {
 			if (imageUrl) {
 				loadout_image = imageUrl;
@@ -459,7 +466,11 @@
 {/snippet}
 
 {#snippet showRelics()}
-	<div class="horizontal"></div>
+	<div class="horizontal">
+		{#each user_relics as relic, index}
+			<p>relic here</p>
+		{/each}
+	</div>
 {/snippet}
 
 {#snippet showWeaponMatrix()}
