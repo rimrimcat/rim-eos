@@ -184,7 +184,8 @@
 			{#if search_query !== ''}
 				{#each array_of_stuff.flatMap((stuff) => (stuff.name
 						.toLowerCase()
-						.includes(search_query) ? [stuff] : [])) as stuff}
+						.replace(' ', '')
+						.includes(search_query.toLowerCase().replace(' ', '')) ? [stuff] : [])) as stuff}
 					{@render showStuff(stuff)}
 				{/each}
 			{:else}
