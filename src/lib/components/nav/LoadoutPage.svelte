@@ -87,7 +87,8 @@
 		...$weapon_views.flatMap((weapon) => weapon.effects),
 		...dedupeMatEffs($matrix_views.flatMap((matrix) => matrix.effects)),
 		...$reso_effects,
-		...$equipped_gear_views.flatMap((gear) => turnGearToEffect(gear))
+		...$equipped_gear_views.flatMap((gear) => turnGearToEffect(gear)),
+		...$relic_views.flatMap((relic) => relic.effects)
 	]);
 
 	let is_editing = $state(false);

@@ -2,6 +2,7 @@
 	import {
 		AllGearEffectIds,
 		AllMatrixEffectIds,
+		AllRelicEffectIds,
 		AllResoEffectIds,
 		AllWeaponEffectIds
 	} from '$lib/generated/all-ids';
@@ -11,6 +12,8 @@
 		GearEffect,
 		MatrixEffectsIds,
 		MatrixFinalEffect,
+		RelicEffect,
+		RelicEffectsIds,
 		ResoEffect,
 		ResoEffectsIds,
 		StatData,
@@ -25,7 +28,9 @@
 	import { DiffIcon, GroupIcon, ShirtIcon, SlashIcon } from '@lucide/svelte';
 
 	let {
-		all_effects = $bindable([] as (ResoEffect | WeaponEffect | MatrixFinalEffect | GearEffect)[]),
+		all_effects = $bindable(
+			[] as (ResoEffect | WeaponEffect | MatrixFinalEffect | GearEffect | RelicEffect)[]
+		),
 		chart_width = $bindable(500)
 	} = $props();
 
@@ -34,6 +39,7 @@
 		if (eff.is_matrix) return 'Matrix';
 		if (eff.is_reso) return 'Resonance';
 		if (eff.is_gear) return 'Gear';
+		if (eff.is_relic) return 'Relic';
 		return 'Unknown';
 	}
 
@@ -69,15 +75,23 @@
 		is_weapon?: boolean;
 		is_reso?: boolean;
 		is_gear?: boolean;
+		is_relic?: boolean;
 	};
 
 	type TaggedEffect = BaseEffect &
 		ETags & {
-			id: ResoEffectsIds | WeaponEffectsIds | MatrixEffectsIds | ValidGearEffectIds;
+			id:
+				| ResoEffectsIds
+				| WeaponEffectsIds
+				| MatrixEffectsIds
+				| ValidGearEffectIds
+				| RelicEffectsIds;
 			stats: StatData;
 		};
 
-	function tagEffect(eff: ResoEffect | WeaponEffect | MatrixFinalEffect | GearEffect) {
+	function tagEffect(
+		eff: ResoEffect | WeaponEffect | MatrixFinalEffect | GearEffect | RelicEffect
+	) {
 		const tags: ETags = {};
 
 		if (AllWeaponEffectIds.includes(eff.id as WeaponEffectsIds)) {
@@ -90,6 +104,8 @@
 			tags.is_reso = true;
 		} else if (AllGearEffectIds.includes(eff.id as ValidGearEffectIds)) {
 			tags.is_gear = true;
+		} else if (AllRelicEffectIds.includes(eff.id as RelicEffectsIds)) {
+			tags.is_relic = true;
 		} else {
 			console.log('FAILED TO TAG!');
 		}
@@ -140,7 +156,12 @@
 
 	function getDiff(prev_eff: TaggedEffect[], curr_eff: TaggedEffect[]): TaggedEffect[] {
 		type DiffIdMap = {
-			id: ResoEffectsIds | WeaponEffectsIds | MatrixEffectsIds | ValidGearEffectIds;
+			id:
+				| ResoEffectsIds
+				| WeaponEffectsIds
+				| MatrixEffectsIds
+				| ValidGearEffectIds
+				| RelicEffectsIds;
 			eff_in_prev?: TaggedEffect;
 			eff_in_curr?: TaggedEffect;
 		};
