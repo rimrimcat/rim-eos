@@ -46,11 +46,12 @@
 
 	// options
 	let grouping_fcn_index: number = $state(0);
-	const GROUPING_FUNCTION_NAMES = ['Source', 'Character', 'Char-Source'];
+	const GROUPING_FUNCTION_NAMES = ['Source', 'Character', 'Char-Source', 'Individual'];
 	const GROUPING_FUNCTIONS: ((eff: TaggedEffect) => string)[] = [
 		groupBySource,
 		(eff: TaggedEffect) => eff.character ?? 'none',
-		(eff: TaggedEffect) => (eff.character ? `${eff.character}-${groupBySource(eff)}` : 'others')
+		(eff: TaggedEffect) => (eff.character ? `${eff.character}-${groupBySource(eff)}` : 'others'),
+		(eff: TaggedEffect) => eff.id
 	];
 
 	let pin_axis = $state(false);
