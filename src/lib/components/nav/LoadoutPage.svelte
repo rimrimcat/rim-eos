@@ -643,7 +643,7 @@
 	})()}
 		<div class="vertical" style="gap: 0.5rem;">
 			<h1>Loadout</h1>
-			<p>Loading stuff, be patient...</p>
+			<p>Loading stuff for the first time...</p>
 		</div>
 	{:then}
 		<div class="vertical" style="gap: 0.5rem;">

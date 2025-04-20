@@ -313,7 +313,7 @@
 		await loadStatIcons();
 		$stat_page_loaded = true;
 	})()}
-		<p>Loading stuff, please wait...</p>
+		<p>Loading stuff for the first time...</p>
 	{:then}
 		{#if unadjusted_stats && unadjusted_stats.length > 0}
 			<p>

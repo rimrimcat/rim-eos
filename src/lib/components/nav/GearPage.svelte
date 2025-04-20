@@ -595,7 +595,7 @@
 	})()}
 		<div class="block">
 			<h1>Gear List</h1>
-			<p>Still loading, be patient...</p>
+			<p>Loading stuff for the first time...</p>
 		</div>
 	{:then}
 		<div class="block">
