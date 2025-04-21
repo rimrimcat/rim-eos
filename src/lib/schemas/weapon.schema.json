@@ -43,28 +43,103 @@
     "settings": {
       "type": "array",
       "items": {
-        "type": "object",
-        "properties": {
-          "choices": {
-            "$ref": "#/definitions/{phys:WeaponSettingStuff;flame:WeaponSettingStuff;frost:WeaponSettingStuff;volt:WeaponSettingStuff;alt:WeaponSettingStuff;}"
+        "anyOf": [
+          {
+            "type": "object",
+            "properties": {
+              "choices": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "icon": {
+                      "type": "string"
+                    },
+                    "resonances": {
+                      "type": "array",
+                      "items": [
+                        {
+                          "$ref": "#/definitions/ResoElement"
+                        },
+                        {
+                          "$ref": "#/definitions/ResoRole"
+                        }
+                      ],
+                      "minItems": 2,
+                      "additionalItems": {
+                        "$ref": "#/definitions/ResoTriggers"
+                      }
+                    },
+                    "effects": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/WeaponEffectsIds"
+                      }
+                    },
+                    "reso_effects": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/definitions/ResoEffectsIds"
+                      }
+                    },
+                    "notes": {
+                      "type": "string"
+                    }
+                  },
+                  "additionalProperties": false,
+                  "required": [
+                    "icon",
+                    "id"
+                  ]
+                }
+              },
+              "default": {
+                "type": "string"
+              },
+              "assignment": {
+                "$ref": "#/definitions/SettingAssignment"
+              },
+              "type": {
+                "type": "string",
+                "const": "skill"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "assignment",
+              "choices",
+              "default",
+              "type"
+            ]
           },
-          "default": {
-            "$ref": "#/definitions/Elements"
-          },
-          "manual": {
-            "type": "boolean"
-          },
-          "type": {
-            "type": "string",
-            "const": "element"
+          {
+            "type": "object",
+            "properties": {
+              "choices": {
+                "$ref": "#/definitions/{phys:WeaponSettingStuff;flame:WeaponSettingStuff;frost:WeaponSettingStuff;volt:WeaponSettingStuff;alt:WeaponSettingStuff;}"
+              },
+              "default": {
+                "$ref": "#/definitions/Elements"
+              },
+              "assignment": {
+                "$ref": "#/definitions/SettingAssignment"
+              },
+              "type": {
+                "type": "string",
+                "const": "element"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "assignment",
+              "choices",
+              "default",
+              "type"
+            ]
           }
-        },
-        "additionalProperties": false,
-        "required": [
-          "choices",
-          "default",
-          "manual",
-          "type"
         ]
       }
     }
@@ -199,6 +274,13 @@
         "nanyin-reso",
         "phys-reso",
         "volt-reso"
+      ],
+      "type": "string"
+    },
+    "SettingAssignment": {
+      "enum": [
+        "manual",
+        "voidpiercer"
       ],
       "type": "string"
     },

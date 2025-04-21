@@ -42,7 +42,7 @@
 				}
 			},
 			"default": "frost",
-			"manual": true
+			"assignment": "manual"
 		}
 	]
 }

@@ -45,11 +45,14 @@ export type WeaponSettingStuff = {
 	notes?: string;
 };
 
+export type SettingAssignment = 'manual' | 'voidpiercer';
+
 export type SettingSkill = {
 	choices: {
 		[key: string]: WeaponSettingStuff;
 	};
-	default: string[];
+	default: string;
+	assignment: SettingAssignment;
 	type: 'skill';
 };
 
@@ -58,7 +61,7 @@ export type SettingElement = {
 		[key in Elements]: WeaponSettingStuff;
 	};
 	default: Elements;
-	manual: boolean;
+	assignment: SettingAssignment;
 	type: 'element';
 };
 
@@ -71,7 +74,7 @@ export type Weapon = {
 	effects: WeaponEffectsIds[];
 	reso_effects?: ResoEffectsIds[];
 
-	settings?: SettingElement[];
+	settings?: (SettingElement | SettingSkill)[];
 };
 
 export type UserWeapon = {
