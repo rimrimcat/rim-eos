@@ -123,6 +123,8 @@
         "claudiax-2p",
         "claudiax-4p",
         "claudiax-4p-weap",
+        "cocoritter-2p",
+        "cocoritter-4p",
         "fiona-2p",
         "fiona-4p-bene",
         "fiona-4p-bene-bonus",
@@ -966,6 +968,25 @@
           "maxItems": 4
         },
         "shatter": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "coco_base_atk_percent": {
           "type": "array",
           "items": [
             {
@@ -2207,6 +2228,25 @@
           "maxItems": 4
         },
         "shatter": {
+          "type": "array",
+          "items": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
+        "coco_base_atk_percent": {
           "type": "array",
           "items": [
             {

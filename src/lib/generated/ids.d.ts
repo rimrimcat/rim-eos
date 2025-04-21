@@ -55,6 +55,8 @@ export type MatrixEffectsIds =
 	| 'claudiax-2p'
 	| 'claudiax-4p-weap'
 	| 'claudiax-4p'
+	| 'cocoritter-2p'
+	| 'cocoritter-4p'
 	| 'fiona-2p'
 	| 'fiona-4p-bene-bonus'
 	| 'fiona-4p-bene'

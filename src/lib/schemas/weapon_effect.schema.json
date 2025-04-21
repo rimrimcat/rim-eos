@@ -273,6 +273,9 @@
         "shatter": {
           "type": "number"
         },
+        "coco_base_atk_percent": {
+          "type": "number"
+        },
         "res_ignore_percent": {
           "type": "number"
         },

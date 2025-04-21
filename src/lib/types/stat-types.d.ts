@@ -60,7 +60,8 @@ export type StatBuffs =
 	| 'crit_dmg_percent'
 	| 'healing_percent'
 	| `relic_${Elements}_dmg_percent`
-	| 'shatter';
+	| 'shatter'
+	| 'coco_base_atk_percent';
 
 /**
  * Debuffs
