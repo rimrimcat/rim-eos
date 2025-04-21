@@ -1,0 +1,5 @@
+{
+	"id": "rei-4p",
+	"name": "Rei 4P",
+	"effects": ["rei-2p", "rei-2p-weap", "rei-4p", "rei-4p-weap"]
+}

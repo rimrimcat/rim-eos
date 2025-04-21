@@ -179,11 +179,19 @@ export const AllMatrixIds: MatrixIds[] = [
 	'asurada-4p',
 	'brevey-4p',
 	'claudiax-4p',
+	'cocoritter-4p',
+	'fiona-4p',
 	'grayfox-4p',
+	'jiyu-4p',
 	'merylx-4p',
 	'nanyin-4p',
 	'nola-4p',
-	'roslyn-4p'
+	'rei-4p',
+	'roslyn-4p',
+	'voidpiercer-4p',
+	'yanmiao-4p',
+	'yanuo-4p',
+	'zero-4p'
 ];
 export const AllWeaponIds: WeaponsIds[] = [
 	'none',
