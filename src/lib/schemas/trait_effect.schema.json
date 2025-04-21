@@ -79,6 +79,9 @@
     "require_boss": {
       "type": "boolean"
     },
+    "require_combat": {
+      "type": "boolean"
+    },
     "notes": {
       "type": "string"
     },

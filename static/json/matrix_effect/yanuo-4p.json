@@ -1,0 +1,11 @@
+{
+	"id": "yanuo-4p",
+	"stats": {
+		"ele_dmg_percent": [
+			"22 * (frost >= 1)",
+			"24 * (frost >= 1)",
+			"26 * (frost >= 1)",
+			"28 * (frost >= 1)"
+		]
+	}
+}

@@ -79,6 +79,9 @@
     "require_boss": {
       "type": "boolean"
     },
+    "require_combat": {
+      "type": "boolean"
+    },
     "notes": {
       "type": "string"
     },
@@ -120,11 +123,18 @@
         "claudiax-2p",
         "claudiax-4p",
         "claudiax-4p-weap",
+        "fiona-2p",
+        "fiona-4p-bene",
+        "fiona-4p-bene-bonus",
+        "fiona-4p-nonbene",
         "grayfox-2p",
         "grayfox-2p-bene",
         "grayfox-4p",
         "grayfox-4p-bene",
         "grayfox-4p-nonbene",
+        "jiyu-2p",
+        "jiyu-4p",
+        "jiyu-4p-weap",
         "merylx-2p",
         "merylx-2p-static",
         "merylx-4p",
@@ -135,12 +145,22 @@
         "nola-2p",
         "nola-4p",
         "nola-4p-skill",
+        "rei-2p",
+        "rei-2p-weap",
+        "rei-4p",
+        "rei-4p-weap",
         "roslyn-2p",
         "roslyn-4p",
         "roslyn-4p-extra",
         "voidpiercer-2p",
         "voidpiercer-4p",
-        "voidpiercer-4p-weap"
+        "voidpiercer-4p-weap",
+        "yanmiao-2p",
+        "yanmiao-4p",
+        "yanmiao-4p-weap",
+        "yanuo-2p",
+        "yanuo-4p",
+        "yanuo-4p-weap"
       ],
       "type": "string"
     },

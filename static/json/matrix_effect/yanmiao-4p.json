@@ -1,0 +1,11 @@
+{
+	"id": "yanmiao-4p",
+	"stats": {
+		"ele_dmg_percent": [
+			"20 * (phys >= 1)",
+			"22 * (phys >= 1)",
+			"24 * (phys >= 1)",
+			"26 * (phys >= 1)"
+		]
+	}
+}

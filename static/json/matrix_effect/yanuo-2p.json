@@ -1,0 +1,9 @@
+{
+	"id": "yanuo-2p",
+	"stats": {
+		"frost_dmg_percent": [13, 15, 17, 19],
+		"volt_dmg_percent": [13, 15, 17, 19],
+		"frost_atk_percent": [5, 5, 5, 5],
+		"volt_atk_percent": [5, 5, 5, 5]
+	}
+}

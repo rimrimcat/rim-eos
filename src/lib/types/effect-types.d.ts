@@ -52,6 +52,8 @@ export type BaseEffect = {
 
 	require_boss?: boolean; // effects that only activate against bosses
 
+	require_combat?: boolean; // effects that only activate when in combat (using skill, after dealing damage...)
+
 	notes?: string;
 };
 

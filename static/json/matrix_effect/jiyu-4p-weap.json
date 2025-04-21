@@ -1,0 +1,7 @@
+{
+	"id": "jiyu-4p-weap",
+	"stats": {
+		"crit_dmg_percent": [10, 10, 10, 10]
+	},
+	"require_weapon": "jiyu"
+}

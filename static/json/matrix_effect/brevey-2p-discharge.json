@@ -2,5 +2,6 @@
 	"id": "brevey-2p-discharge",
 	"stats": {
 		"healing_percent": [30, 30, 30, 30]
-	}
+	},
+	"require_combat": true
 }

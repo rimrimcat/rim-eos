@@ -1,0 +1,10 @@
+{
+	"id": "fiona-4p-bene-bonus",
+	"stats": {
+		"final_dmg_percent": [5, 5, 5, 5]
+	},
+	"require_reso": "bene",
+	"require_weapon": "fiona",
+	"target": "team",
+	"notes": "Assumes that minimum base attack is 50,000"
+}
