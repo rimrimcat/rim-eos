@@ -25,45 +25,39 @@ const program = TJS.getProgramFromFiles(
 	compilerOptions
 );
 
-const schema_reso_effects = TJS.generateSchema(program, 'ResoEffect', settings);
-const schema_weapon_effects = TJS.generateSchema(program, 'WeaponEffect', settings);
-const schema_matrix_effects = TJS.generateSchema(program, 'MatrixEffect', settings);
-const schema_relic_effects = TJS.generateSchema(program, 'RelicEffect', settings);
-const schema_trait_effects = TJS.generateSchema(program, 'TraitEffect', settings);
-const schema_weapons = TJS.generateSchema(program, 'Weapon', settings);
-const schema_matrix = TJS.generateSchema(program, 'Matrix', settings);
-const schema_relic = TJS.generateSchema(program, 'Relic', settings);
-const schema_trait = TJS.generateSchema(program, 'Trait', settings);
+function toSnakeCase(name: string): string {
+	return name
+		.replace(/([a-z0-9])([A-Z])/g, '$1_$2')
+		.replace(/([A-Z])([A-Z][a-z])/g, '$1_$2')
+		.toLowerCase();
+}
+const typesToGenerate = [
+	'ResoEffect',
+	'WeaponEffect',
+	'MatrixEffect',
+	'RelicEffect',
+	'TraitEffect',
+	'Weapon',
+	'Matrix',
+	'Relic',
+	'Trait'
+];
 
-fs.writeFileSync(
-	path.join(schemaDir, 'reso_effect.schema.json'),
-	JSON.stringify(schema_reso_effects, null, 2)
-);
-fs.writeFileSync(
-	path.join(schemaDir, 'weapon_effect.schema.json'),
-	JSON.stringify(schema_weapon_effects, null, 2)
-);
-fs.writeFileSync(
-	path.join(schemaDir, 'matrix_effect.schema.json'),
-	JSON.stringify(schema_matrix_effects, null, 2)
-);
-fs.writeFileSync(
-	path.join(schemaDir, 'relic_effect.schema.json'),
-	JSON.stringify(schema_relic_effects, null, 2)
-);
-fs.writeFileSync(
-	path.join(schemaDir, 'trait_effect.schema.json'),
-	JSON.stringify(schema_trait_effects, null, 2)
-);
-fs.writeFileSync(
-	path.join(schemaDir, 'weapon.schema.json'),
-	JSON.stringify(schema_weapons, null, 2)
-);
-fs.writeFileSync(
-	path.join(schemaDir, 'matrix.schema.json'),
-	JSON.stringify(schema_matrix, null, 2)
-);
-fs.writeFileSync(path.join(schemaDir, 'relic.schema.json'), JSON.stringify(schema_relic, null, 2));
-fs.writeFileSync(path.join(schemaDir, 'trait.schema.json'), JSON.stringify(schema_trait, null, 2));
+for (const typeName of typesToGenerate) {
+	try {
+		const schema = TJS.generateSchema(program, typeName, settings);
+		if (!schema) {
+			console.warn(`⚠️ Schema for ${typeName} is undefined.`);
+			continue;
+		}
+		const snakeName = toSnakeCase(typeName);
+		const filePath = path.join(schemaDir, `${snakeName}.schema.json`);
+		fs.writeFileSync(filePath, JSON.stringify(schema, null, 2));
+		console.log(`✅ ${filePath} generated.`);
+	} catch (error) {
+		console.error(`❌ Failed to generate schema for type: ${typeName}`);
+		console.error(error);
+	}
+}
 
 console.log('✅ JSON schemas generated successfully.');

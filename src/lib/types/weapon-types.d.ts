@@ -15,10 +15,9 @@ import type {
 	MatrixFinalEffect,
 	OrderedResoTriggers,
 	RelicEffect,
-	ResoTriggers,
 	WeaponEffect
 } from './effect-types';
-import type { StatBuffs, StatGearUser } from './stat-types';
+import type { Elements, StatBuffs, StatGearUser } from './stat-types';
 
 /**
  * BaseStatType naming convetion:
@@ -40,18 +39,27 @@ export type BaseStatValue = {
 export type WeaponSettingStuff = {
 	id: string;
 	icon: string;
-	resonances?: ResoTriggers[];
+	resonances?: OrderedResoTriggers;
 	effects?: WeaponEffectsIds[];
 	reso_effects?: ResoEffectsIds[]; // would merge with weapon
 	notes?: string;
 };
 
-export type WeaponSetting = {
+export type SettingSkill = {
 	choices: {
 		[key: string]: WeaponSettingStuff;
 	};
 	default: string[];
-	type: 'element' | 'skill';
+	type: 'skill';
+};
+
+export type SettingElement = {
+	choices: {
+		[key in Elements]: WeaponSettingStuff;
+	};
+	default: Elements;
+	manual: boolean;
+	type: 'element';
 };
 
 export type Weapon = {
@@ -63,7 +71,7 @@ export type Weapon = {
 	effects: WeaponEffectsIds[];
 	reso_effects?: ResoEffectsIds[];
 
-	setting?: WeaponSetting;
+	settings?: SettingElement[];
 };
 
 export type UserWeapon = {
@@ -77,7 +85,7 @@ export type WeaponView = {
 	name: string;
 	resonances: OrderedResoTriggers;
 	onfieldness?: number;
-	setting: WeaponSettingStuff[];
+	settings: WeaponSettingStuff[];
 
 	base_stat: StatCollection;
 	effects: WeaponEffect[];

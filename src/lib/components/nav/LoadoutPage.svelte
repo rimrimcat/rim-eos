@@ -356,15 +356,15 @@
 		settingIndex: number
 	) {
 		// get keys in settings
-		if (!$base_weapons[index].setting) {
+		if (!$base_weapons[index].settings) {
 			return;
 		}
-		if (!weapon.setting) {
+		if (!weapon.settings) {
 			return;
 		}
 
-		const selected_keys = weapon.setting.map((setting) => setting.id);
-		const keys = Object.keys($base_weapons[index].setting.choices);
+		const selected_keys = weapon.settings.map((setting) => setting.id);
+		const keys = Object.keys($base_weapons[index].settings[settingIndex].choices);
 
 		let currKey = setting.id;
 		let currInd = keys.indexOf(currKey);
@@ -382,7 +382,7 @@
 		}
 
 		if (!user_weapons[index].setting) {
-			user_weapons[index].setting = $base_weapons[index].setting.default;
+			user_weapons[index].setting = $base_weapons[index].settings.map((setting) => setting.default);
 		}
 		user_weapons[index].setting[settingIndex] = currKey;
 		saveLoadout();
@@ -604,9 +604,9 @@
 									{/if}
 								</button>
 							</div>
-							{#if weapon.setting && weapon.setting.length > 0}
+							{#if weapon.settings && weapon.settings.length > 0}
 								<div class="compose above" style="top: 0.5rem; left: 0.5rem;">
-									{#each weapon.setting as setting, settingIndex}
+									{#each weapon.settings as setting, settingIndex}
 										<button
 											class="image"
 											onclick={() => {

@@ -345,17 +345,18 @@ export async function updateSingleWeaponView(index: number) {
 		stat_
 	);
 
-	const setting_ids = user_weapons[index].setting ?? weapon.setting?.default ?? [];
-	const setting: WeaponSettingStuff[] = setting_ids.map((setting_) => {
+	const setting_ids =
+		user_weapons[index].setting ?? weapon.settings?.flatMap((setting) => setting.default) ?? [];
+	const setting: WeaponSettingStuff[] = setting_ids.map((setting_, index) => {
 		// @ts-expect-error: it oke
-		return weapon.setting.choices[setting_];
+		return weapon.settings[index].choices[setting_];
 	});
 
-	if (weapon.setting) {
+	if (weapon.settings) {
 		await Promise.all(
-			setting_ids.map(async (setting) => {
+			setting_ids.map(async (setting, index) => {
 				// @ts-expect-error: it oke
-				const setting_data = weapon.setting.choices[setting];
+				const setting_data = weapon.settings[index].choices[setting];
 				if (setting_data.effects) {
 					return await pushAllValidWeaponEffects(
 						setting_data.effects,
@@ -377,7 +378,7 @@ export async function updateSingleWeaponView(index: number) {
 		resonances: weapon.resonances,
 		onfieldness: weapon.onfieldness,
 		advancement,
-		setting,
+		settings: setting,
 
 		base_stat,
 		effects,
@@ -462,12 +463,13 @@ export async function obtainResoCounts(equipped_weapons: UserWeapon[], base_weap
 			counts[resonance] = (counts[resonance] ?? 0) + 1;
 		});
 
-		if (weapon.setting) {
-			const selected_settings = equipped_weapons[index].setting ?? weapon.setting.default;
+		if (weapon.settings) {
+			const selected_settings =
+				equipped_weapons[index].setting ?? weapon.settings.map((setting) => setting.default) ?? [];
 
-			selected_settings.forEach((setting) => {
+			selected_settings.forEach((setting, index) => {
 				// @ts-expect-error: its oke
-				const setting_data = weapon.setting.choices[setting];
+				const setting_data: WeaponSettingStuff = weapon.settings[index].choices[setting];
 				if (setting_data.resonances) {
 					setting_data.resonances.forEach((resonance) => {
 						counts[resonance] = (counts[resonance] ?? 0) + 1;
@@ -492,13 +494,14 @@ export async function obtainResoEffects(
 				await pushValidResoEffect(weapon.reso_effects, _reso_effects_list);
 			}
 
-			if (weapon.setting) {
-				const selected_settings = equipped_weapons[index].setting ?? weapon.setting.default;
+			if (weapon.settings) {
+				const selected_settings =
+					equipped_weapons[index].setting ?? weapon.settings.map((setting) => setting.default);
 
 				await Promise.all(
-					selected_settings.map(async (setting) => {
+					selected_settings.map(async (setting, index) => {
 						// @ts-expect-error : its oke
-						const setting_data = weapon.setting.choices[setting];
+						const setting_data: WeaponSettingStuff = weapon.settings[index].choices[setting];
 						if (setting_data.reso_effects) {
 							await pushValidResoEffect(setting_data.reso_effects, _reso_effects_list);
 						}
@@ -565,17 +568,18 @@ export async function obtainWeaponViews(
 				effects,
 				stat_
 			);
-			const setting_ids = equipped_weapons[index].setting ?? weapon.setting?.default ?? [];
-			const setting: WeaponSettingStuff[] = setting_ids.map((setting_) => {
+			const setting_ids =
+				equipped_weapons[index].setting ?? weapon.settings?.map((setting) => setting.default) ?? [];
+			const setting: WeaponSettingStuff[] = setting_ids.map((setting_, index) => {
 				// @ts-expect-error : it oke
-				return weapon.setting.choices[setting_];
+				return weapon.settings[index].choices[setting_];
 			});
 
-			if (weapon.setting) {
+			if (weapon.settings) {
 				await Promise.all(
-					setting_ids.map(async (setting_) => {
-						// @ts-expect-error: it oke
-						const setting_data = weapon.setting.choices[setting_];
+					setting_ids.map(async (setting_, index) => {
+						// @ts-expect-error : its oke
+						const setting_data: WeaponSettingStuff = weapon.settings[index].choices[setting_];
 						if (setting_data.effects) {
 							return await pushAllValidWeaponEffects(
 								setting_data.effects,
@@ -596,7 +600,7 @@ export async function obtainWeaponViews(
 				resonances: weapon.resonances,
 				onfieldness: weapon.onfieldness,
 				advancement,
-				setting,
+				settings: setting,
 
 				base_stat,
 				effects,

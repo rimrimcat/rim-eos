@@ -121,7 +121,8 @@ export const STAT_LABELS: Record<AllStats, string> = {
 	relic_flame_dmg_percent: 'Relic Flame Dmg',
 	relic_frost_dmg_percent: 'Relic Frost Dmg',
 	relic_volt_dmg_percent: 'Relic Volt Dmg',
-	relic_alt_dmg_percent: 'Relic Alt Dmg'
+	relic_alt_dmg_percent: 'Relic Alt Dmg',
+	coco_base_atk_percent: 'Base Atk'
 };
 
 export const USER_STATS_LIST: StatGearUser[] = [
