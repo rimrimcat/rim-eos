@@ -30,21 +30,32 @@
 	import '@carbon/charts-svelte/styles.css';
 	import { DiffIcon, GroupIcon, ShirtIcon, SlashIcon } from '@lucide/svelte';
 
+	type AllEffectArray = (
+		| ResoEffect
+		| WeaponEffect
+		| MatrixFinalEffect
+		| GearEffect
+		| RelicEffect
+		| FinalizedTraitEffect
+	)[];
+
 	let {
-		all_effects = $bindable(
-			[] as (
-				| ResoEffect
-				| WeaponEffect
-				| MatrixFinalEffect
-				| GearEffect
-				| RelicEffect
-				| FinalizedTraitEffect
-			)[]
-		),
+		all_effects = $bindable([] as AllEffectArray),
 		chart_width = $bindable(500),
 		reset_graph = $bindable(false),
 		style = ''
 	} = $props();
+
+	let all_effects_ = $state([] as AllEffectArray);
+
+	$effect(() => {
+		all_effects;
+		console.log('updating all effects');
+		setTimeout(() => {
+			console.log('set!');
+			all_effects_ = all_effects;
+		}, 100);
+	});
 
 	function groupBySource(eff: TaggedEffect) {
 		if (eff.is_weapon) return 'Weapon';
@@ -236,7 +247,7 @@
 	}
 
 	let tagged_effects = $derived(
-		all_effects.map((eff) => {
+		all_effects_.map((eff) => {
 			const tagged_eff: TaggedEffect = {
 				...eff,
 				...tagEffect(eff)
@@ -272,6 +283,7 @@
 			.map(([key, _]) => STAT_LABELS[key as StatKey])
 	);
 
+	// TODO: find option to make the graph not slow down webapp too much...
 	let options: BarChartOptions = $derived({
 		theme: 'g90',
 		title: 'Stat Contributions',
