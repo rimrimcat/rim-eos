@@ -94,7 +94,8 @@ export type MatrixEffectsIds =
 	| 'yanmiao-4p'
 	| 'yanuo-2p'
 	| 'yanuo-4p-weap'
-	| 'yanuo-4p';
+	| 'yanuo-4p'
+	| 'zero-4p';
 export type ResoEffectsIds =
 	| 'armor-dissolve-teamplay'
 	| 'armor-dissolve'

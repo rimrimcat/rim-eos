@@ -162,7 +162,8 @@
         "yanmiao-4p-weap",
         "yanuo-2p",
         "yanuo-4p",
-        "yanuo-4p-weap"
+        "yanuo-4p-weap",
+        "zero-4p"
       ],
       "type": "string"
     },
