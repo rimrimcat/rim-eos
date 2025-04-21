@@ -68,7 +68,6 @@ import {
 } from './stores';
 import { formatValue } from './validation';
 import { WEAPON_BASE_STATS } from './weapons';
-// import { user_loadouts, current_loadout, base_weapons, reso_counts, reso_effects, reso_stat, weapon_views, matrix_views } from './stores';
 
 function checkValidEffect(
 	eff: WeaponEffect,
@@ -184,7 +183,8 @@ export async function pushAllValidWeaponEffects(
 ) {
 	await Promise.all(
 		effs.map(async (eff_) => {
-			const eff = await getWeaponEffect(eff_);
+			const effResult = getWeaponEffect(eff_);
+			const eff = effResult instanceof Promise ? await effResult : effResult;
 
 			if (!checkValidEffect(eff, reso_counts_, advancement)) {
 				return;
@@ -692,17 +692,26 @@ export async function obtainTraitView(
 }
 
 export async function updateWeaponMatrixRelicTraitFromStore() {
-	const equipped_weapons_: UserWeapon[] = get(user_loadouts)[get(current_loadout)]
-		.equipped_weapons ?? [{ id: 'none' }, { id: 'none' }, { id: 'none' }];
+	const selected_loadout: Loadout = get(user_loadouts)[get(current_loadout)];
 
-	const equipped_matrices_: UserMatrix[] = get(user_loadouts)[get(current_loadout)]
-		.equipped_matrices ?? [{ id: 'none' }, { id: 'none' }, { id: 'none' }];
+	const equipped_weapons_: UserWeapon[] = selected_loadout.equipped_weapons ?? [
+		{ id: 'none' },
+		{ id: 'none' },
+		{ id: 'none' }
+	];
 
-	const equipped_relics_: UserRelic[] = get(user_loadouts)[get(current_loadout)]
-		.equipped_relics ?? [{ id: 'none' }, { id: 'none' }];
+	const equipped_matrices_: UserMatrix[] = selected_loadout.equipped_matrices ?? [
+		{ id: 'none' },
+		{ id: 'none' },
+		{ id: 'none' }
+	];
 
-	const equipped_trait_: UserTrait =
-		get(user_loadouts)[get(current_loadout)].equipped_trait ?? 'none';
+	const equipped_relics_: UserRelic[] = selected_loadout.equipped_relics ?? [
+		{ id: 'none' },
+		{ id: 'none' }
+	];
+
+	const equipped_trait_: UserTrait = selected_loadout.equipped_trait ?? 'none';
 
 	const base_weapons_ = await obtainBaseWeapons(equipped_weapons_);
 	base_weapons.set(base_weapons_);
