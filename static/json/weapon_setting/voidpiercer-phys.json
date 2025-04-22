@@ -1,0 +1,5 @@
+{
+	"id": "voidpiercer-phys",
+	"icon": "./stat_icon/phys.webp",
+	"resonances": ["phys", "none", "none", "none"]
+}

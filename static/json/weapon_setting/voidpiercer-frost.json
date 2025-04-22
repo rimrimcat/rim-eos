@@ -1,0 +1,5 @@
+{
+	"id": "voidpiercer-frost",
+	"icon": "./stat_icon/frost.webp",
+	"resonances": ["frost", "none", "volt"]
+}

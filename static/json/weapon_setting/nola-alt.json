@@ -1,0 +1,5 @@
+{
+	"id": "nola-alt",
+	"icon": "./stat_icon/alt.webp",
+	"resonances": ["alt", "none"]
+}

@@ -153,6 +153,17 @@ export type TraitEffectsIds =
 	| 'nanyin-trait'
 	| 'nola-trait'
 	| 'roslyn-trait';
+export type WeaponSettingsIds =
+	| 'nola-alt'
+	| 'nola-flame'
+	| 'nola-frost'
+	| 'nola-phys'
+	| 'nola-volt'
+	| 'voidpiercer-alt'
+	| 'voidpiercer-flame'
+	| 'voidpiercer-frost'
+	| 'voidpiercer-phys'
+	| 'voidpiercer-volt';
 
 export type WeaponsIds =
 	| 'none'

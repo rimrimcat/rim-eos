@@ -4,5 +4,19 @@
 	"base_stat": "crit-med",
 	"resonances": ["none", "none"],
 	"effects": [],
-	"reso_effects": []
+	"reso_effects": [],
+	"settings": [
+		{
+			"type": "element",
+			"choices": [
+				"voidpiercer-phys",
+				"voidpiercer-flame",
+				"voidpiercer-frost",
+				"voidpiercer-volt",
+				"voidpiercer-alt"
+			],
+			"default": "voidpiercer-alt",
+			"assignment": "voidpiercer"
+		}
+	]
 }

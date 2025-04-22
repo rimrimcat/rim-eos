@@ -49,12 +49,12 @@
 		LoadoutType,
 		MatrixIds,
 		MatrixView,
+		SettingView,
 		StatGearUser,
 		TraitsIds,
 		UserMatrix,
 		UserRelic,
 		UserWeapon,
-		WeaponSettingStuff,
 		WeaponsIds,
 		WeaponView
 	} from '$lib/types/index';
@@ -352,27 +352,27 @@
 	function onWeaponSettingChange(
 		weapon: WeaponView,
 		index: number,
-		setting: WeaponSettingStuff,
+		setting_view: SettingView,
 		settingIndex: number
 	) {
 		// get keys in settings
 		if (!$base_weapons[index].settings) {
 			return;
 		}
-		if (!weapon.settings) {
+		if (!weapon.setting_view) {
 			return;
 		}
 
-		const selected_keys = weapon.settings.map((setting) => setting.id);
-		const keys = Object.keys($base_weapons[index].settings[settingIndex].choices);
+		const all_selected_keys = weapon.setting_view.map((setting_) => setting_.choice.id);
+		const valid_keys = weapon.setting_view[settingIndex].choices;
 
-		let currKey = setting.id;
-		let currInd = keys.indexOf(currKey);
+		let currKey = setting_view.choice.id;
+		let currInd = valid_keys.indexOf(currKey);
 		const initialCurrInd = currInd;
 
-		while (selected_keys.indexOf(currKey) !== -1) {
-			currInd = (currInd + 1) % keys.length;
-			currKey = keys[currInd];
+		while (all_selected_keys.indexOf(currKey) !== -1) {
+			currInd = (currInd + 1) % valid_keys.length;
+			currKey = valid_keys[currInd];
 
 			if (currInd === initialCurrInd) {
 				// avoid catastrophe
@@ -604,19 +604,19 @@
 									{/if}
 								</button>
 							</div>
-							{#if weapon.settings && weapon.settings.length > 0}
+							{#if weapon.setting_view && weapon.setting_view.length > 0}
 								<div class="compose above" style="top: 0.5rem; left: 0.5rem;">
-									{#each weapon.settings as setting, settingIndex}
+									{#each weapon.setting_view as setting_view, settingIndex}
 										<button
 											class="image"
 											onclick={() => {
-												onWeaponSettingChange(weapon, index, setting, settingIndex);
+												onWeaponSettingChange(weapon, index, setting_view, settingIndex);
 											}}
 										>
 											<div class="vertical center">
 												<img
-													src={setting.icon}
-													alt={setting.icon}
+													src={setting_view.choice.icon}
+													alt={setting_view.choice.icon}
 													style="height: 1.5rem; width: 1.5rem; background-color: var(--button-bg); border-radius: 50%;"
 												/>
 											</div>

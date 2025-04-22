@@ -40,7 +40,8 @@ const typesToGenerate = [
 	'Weapon',
 	'Matrix',
 	'Relic',
-	'Trait'
+	'Trait',
+	'WeaponSetting'
 ];
 
 for (const typeName of typesToGenerate) {

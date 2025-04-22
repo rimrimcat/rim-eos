@@ -7,6 +7,7 @@ import type {
 	TraitEffectsIds,
 	TraitsIds,
 	WeaponEffectsIds,
+	WeaponSettingsIds,
 	WeaponsIds
 } from '../generated/ids';
 import type { StatCollection } from '../scripts/stats';
@@ -17,7 +18,7 @@ import type {
 	RelicEffect,
 	WeaponEffect
 } from './effect-types';
-import type { Elements, StatBuffs, StatGearUser } from './stat-types';
+import type { StatBuffs, StatGearUser } from './stat-types';
 
 /**
  * BaseStatType naming convetion:
@@ -36,8 +37,8 @@ export type BaseStatValue = {
 	[key in StatGearUser | StatBuffs]?: [number, number];
 };
 
-export type WeaponSettingStuff = {
-	id: string;
+export type WeaponSetting = {
+	id: WeaponSettingsIds;
 	icon: string;
 	resonances?: OrderedResoTriggers;
 	effects?: WeaponEffectsIds[];
@@ -48,21 +49,21 @@ export type WeaponSettingStuff = {
 export type SettingAssignment = 'manual' | 'voidpiercer';
 
 export type SettingSkill = {
-	choices: {
-		[key: string]: WeaponSettingStuff;
-	};
-	default: string;
+	choices: WeaponSettingsIds[];
+	default: WeaponSettingsIds;
 	assignment: SettingAssignment;
 	type: 'skill';
 };
 
 export type SettingElement = {
-	choices: {
-		[key in Elements]: WeaponSettingStuff;
-	};
-	default: Elements;
+	choices: WeaponSettingsIds[];
+	default: WeaponSettingsIds;
 	assignment: SettingAssignment;
 	type: 'element';
+};
+
+export type SettingView = (SettingElement | SettingSkill) & {
+	choice: WeaponSetting;
 };
 
 export type Weapon = {
@@ -80,7 +81,7 @@ export type Weapon = {
 export type UserWeapon = {
 	id: WeaponsIds;
 	advancement?: number;
-	setting?: string[]; // must refer to ids
+	setting?: WeaponSettingsIds[]; // must refer to ids
 };
 
 export type WeaponView = {
@@ -88,7 +89,7 @@ export type WeaponView = {
 	name: string;
 	resonances: OrderedResoTriggers;
 	onfieldness?: number;
-	settings: WeaponSettingStuff[];
+	setting_view: SettingView[];
 
 	base_stat: StatCollection;
 	effects: WeaponEffect[];

@@ -9,39 +9,8 @@
 	"settings": [
 		{
 			"type": "element",
-			"choices": {
-				"phys": {
-					"id": "phys",
-					"icon": "./stat_icon/phys.webp",
-					"resonances": ["phys", "none", "flame", "armor-dissolve"],
-					"reso_effects": ["phys-reso", "flame-reso"]
-				},
-				"flame": {
-					"id": "flame",
-					"icon": "./stat_icon/flame.webp",
-					"resonances": ["flame", "none", "volt", "armor-dissolve"],
-					"reso_effects": ["flame-reso", "phys-reso"]
-				},
-				"frost": {
-					"id": "frost",
-					"icon": "./stat_icon/frost.webp",
-					"resonances": ["frost", "none", "volt", "force-impact"],
-					"effects": ["nola-frost-skill"],
-					"reso_effects": ["frost-reso", "volt-reso"]
-				},
-				"volt": {
-					"id": "volt",
-					"icon": "./stat_icon/volt.webp",
-					"resonances": ["volt", "none", "phys", "force-impact"],
-					"reso_effects": ["volt-reso", "frost-reso"]
-				},
-				"alt": {
-					"id": "alt",
-					"icon": "./stat_icon/alt.webp",
-					"resonances": ["alt", "none"]
-				}
-			},
-			"default": "frost",
+			"choices": ["nola-phys", "nola-flame", "nola-frost", "nola-volt", "nola-alt"],
+			"default": "nola-phys",
 			"assignment": "manual"
 		}
 	]

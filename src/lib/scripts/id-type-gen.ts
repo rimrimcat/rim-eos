@@ -15,6 +15,7 @@ const weapons_path = path.join(projectRoot, 'static/json/weapon');
 const matrix_path = path.join(projectRoot, 'static/json/matrix');
 const relics_path = path.join(projectRoot, 'static/json/relic');
 const traits_path = path.join(projectRoot, 'static/json/trait');
+const weapon_settings_path = path.join(projectRoot, 'static/json/weapon_setting');
 
 const reso_effects_ids = fs
 	.readdirSync(reso_effects_path)
@@ -34,6 +35,10 @@ const relic_effects_ids = fs
 	.map((file) => path.basename(file, '.json'));
 const trait_effects_ids = fs
 	.readdirSync(trait_effects_path)
+	.filter((file) => file.endsWith('.json'))
+	.map((file) => path.basename(file, '.json'));
+const weapon_settings_ids = fs
+	.readdirSync(weapon_settings_path)
 	.filter((file) => file.endsWith('.json'))
 	.map((file) => path.basename(file, '.json'));
 
@@ -88,6 +93,7 @@ export type MatrixEffectsIds = ${matrix_effects_ids.map((id) => `"${id}"`).join(
 export type ResoEffectsIds = ${reso_effects_ids.map((id) => `"${id}"`).join(' | ')};
 export type RelicEffectsIds = ${relic_effects_ids.map((id) => `"${id}"`).join(' | ')};
 export type TraitEffectsIds = ${trait_effects_ids.map((id) => `"${id}"`).join(' | ')};
+export type WeaponSettingsIds = ${weapon_settings_ids.map((id) => `"${id}"`).join(' | ')};
 
 export type WeaponsIds = ${weapons_ids.map((id) => `"${id}"`).join(' | ')};
 export type MatrixIds = ${matrix_ids.map((id) => `"${id}"`).join(' | ')};
@@ -98,13 +104,14 @@ export type TraitsIds = ${trait_ids.map((id) => `"${id}"`).join(' | ')};
 
 const arrayDefs = `// Auto-generated file
 
-import type { WeaponEffectsIds, MatrixEffectsIds, ResoEffectsIds, RelicEffectsIds, TraitEffectsIds,  WeaponsIds, MatrixIds, RelicsIds, TraitsIds } from './ids';
+import type { WeaponEffectsIds, MatrixEffectsIds, ResoEffectsIds, RelicEffectsIds, TraitEffectsIds,  WeaponsIds, MatrixIds, RelicsIds, TraitsIds, WeaponSettingsIds } from './ids';
 
 export const AllWeaponEffectIds: WeaponEffectsIds[] = ${JSON.stringify(weapon_effects_ids)};
 export const AllMatrixEffectIds: MatrixEffectsIds[] = ${JSON.stringify(matrix_effects_ids)};
 export const AllResoEffectIds: ResoEffectsIds[] = ${JSON.stringify(reso_effects_ids)};
 export const AllRelicEffectIds: RelicEffectsIds[] = ${JSON.stringify(relic_effects_ids)};
 export const AllTraitEffectIds: TraitEffectsIds[] = ${JSON.stringify(trait_effects_ids)};
+export const AllWeaponSettingsIds: WeaponSettingsIds[] = ${JSON.stringify(weapon_settings_ids)};
 
 export const AllMatrixIds: MatrixIds[] = ${JSON.stringify(matrix_ids)};
 export const AllWeaponIds: WeaponsIds[] = ${JSON.stringify(weapons_ids)};

@@ -19,6 +19,7 @@ import type {
 	ResoEffect,
 	ResoEffectsIds,
 	ResoTriggerCounts,
+	SettingView,
 	StatAtkImprovement,
 	StatKey,
 	TraitEffect,
@@ -32,7 +33,7 @@ import type {
 	Weapon,
 	WeaponEffect,
 	WeaponEffectsIds,
-	WeaponSettingStuff,
+	WeaponSetting,
 	WeaponView
 } from '../types/index';
 import {
@@ -44,7 +45,8 @@ import {
 	getTrait,
 	getTraitEffect,
 	getWeapon,
-	getWeaponEffect
+	getWeaponEffect,
+	getWeaponSetting
 } from './json-loader';
 import {
 	LumpedStatCollection,
@@ -346,20 +348,32 @@ export async function updateSingleWeaponView(index: number) {
 	);
 
 	const setting_ids =
-		user_weapons[index].setting ?? weapon.settings?.flatMap((setting) => setting.default) ?? [];
-	const setting: WeaponSettingStuff[] = setting_ids.map((setting_, index) => {
-		// @ts-expect-error: it oke
-		return weapon.settings[index].choices[setting_];
-	});
+		user_weapons[index].setting ?? weapon.settings?.map((setting) => setting.default) ?? [];
+	const setting: WeaponSetting[] = await Promise.all(
+		setting_ids.map(async (setting_) => {
+			return await getWeaponSetting(setting_);
+		})
+	);
+
+	const setting_view: SettingView[] =
+		weapon.settings !== undefined
+			? await Promise.all(
+					setting.map(async (setting_, index) => {
+						return {
+							// @ts-expect-error: already checked if undefined
+							...weapon.settings[index],
+							choice: setting_
+						};
+					})
+				)
+			: [];
 
 	if (weapon.settings) {
 		await Promise.all(
-			setting_ids.map(async (setting, index) => {
-				// @ts-expect-error: it oke
-				const setting_data = weapon.settings[index].choices[setting];
-				if (setting_data.effects) {
+			setting_view.map(async (setting_) => {
+				if (setting_.choice.effects) {
 					return await pushAllValidWeaponEffects(
-						setting_data.effects,
+						setting_.choice.effects,
 						advancement,
 						loadout_reso_counts,
 						effects,
@@ -378,7 +392,7 @@ export async function updateSingleWeaponView(index: number) {
 		resonances: weapon.resonances,
 		onfieldness: weapon.onfieldness,
 		advancement,
-		settings: setting,
+		setting_view,
 
 		base_stat,
 		effects,
@@ -467,9 +481,11 @@ export async function obtainResoCounts(equipped_weapons: UserWeapon[], base_weap
 			const selected_settings =
 				equipped_weapons[index].setting ?? weapon.settings.map((setting) => setting.default) ?? [];
 
-			selected_settings.forEach((setting, index) => {
-				// @ts-expect-error: its oke
-				const setting_data: WeaponSettingStuff = weapon.settings[index].choices[setting];
+			console.log('weapon settings', weapon.settings);
+			console.log('selected settings', selected_settings);
+
+			selected_settings.forEach(async (setting) => {
+				const setting_data = await getWeaponSetting(setting);
 				if (setting_data.resonances) {
 					setting_data.resonances.forEach((resonance) => {
 						counts[resonance] = (counts[resonance] ?? 0) + 1;
@@ -484,12 +500,13 @@ export async function obtainResoCounts(equipped_weapons: UserWeapon[], base_weap
 
 export async function obtainResoEffects(
 	equipped_weapons: UserWeapon[],
-	reso_counts: ResoTriggerCounts
+	reso_counts: ResoTriggerCounts,
+	base_weapons: Weapon[]
 ) {
 	const _reso_effects_list: ResoEffect[] = [];
 
 	await Promise.all(
-		get(base_weapons).map(async (weapon, index) => {
+		base_weapons.map(async (weapon, index) => {
 			if (weapon.reso_effects) {
 				await pushValidResoEffect(weapon.reso_effects, _reso_effects_list);
 			}
@@ -499,9 +516,8 @@ export async function obtainResoEffects(
 					equipped_weapons[index].setting ?? weapon.settings.map((setting) => setting.default);
 
 				await Promise.all(
-					selected_settings.map(async (setting, index) => {
-						// @ts-expect-error : its oke
-						const setting_data: WeaponSettingStuff = weapon.settings[index].choices[setting];
+					selected_settings.map(async (setting) => {
+						const setting_data = await getWeaponSetting(setting);
 						if (setting_data.reso_effects) {
 							await pushValidResoEffect(setting_data.reso_effects, _reso_effects_list);
 						}
@@ -570,19 +586,30 @@ export async function obtainWeaponViews(
 			);
 			const setting_ids =
 				equipped_weapons[index].setting ?? weapon.settings?.map((setting) => setting.default) ?? [];
-			const setting: WeaponSettingStuff[] = setting_ids.map((setting_, index) => {
-				// @ts-expect-error : it oke
-				return weapon.settings[index].choices[setting_];
-			});
+			const setting: WeaponSetting[] = await Promise.all(
+				setting_ids.map(async (setting_) => {
+					return await getWeaponSetting(setting_);
+				})
+			);
+
+			const setting_view: SettingView[] =
+				weapon.settings !== undefined
+					? await Promise.all(
+							setting.map(async (setting_, index) => {
+								return {
+									...weapon.settings[index],
+									choice: setting_
+								};
+							})
+						)
+					: [];
 
 			if (weapon.settings) {
 				await Promise.all(
-					setting_ids.map(async (setting_, index) => {
-						// @ts-expect-error : its oke
-						const setting_data: WeaponSettingStuff = weapon.settings[index].choices[setting_];
-						if (setting_data.effects) {
+					setting_view.map(async (setting_) => {
+						if (setting_.choice.effects) {
 							return await pushAllValidWeaponEffects(
-								setting_data.effects,
+								setting_.choice.effects,
 								advancement,
 								reso_counts,
 								effects,
@@ -600,7 +627,7 @@ export async function obtainWeaponViews(
 				resonances: weapon.resonances,
 				onfieldness: weapon.onfieldness,
 				advancement,
-				settings: setting,
+				setting_view,
 
 				base_stat,
 				effects,
@@ -719,7 +746,7 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 	const reso_counts_ = await obtainResoCounts(equipped_weapons_, base_weapons_);
 	reso_counts.set(reso_counts_);
 
-	const reso_effects_ = await obtainResoEffects(equipped_weapons_, reso_counts_);
+	const reso_effects_ = await obtainResoEffects(equipped_weapons_, reso_counts_, base_weapons_);
 	reso_effects.set(reso_effects_);
 
 	const weapon_views_ = await obtainWeaponViews(equipped_weapons_, base_weapons_, reso_counts_);

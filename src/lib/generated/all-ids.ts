@@ -9,6 +9,7 @@ import type {
 	TraitEffectsIds,
 	TraitsIds,
 	WeaponEffectsIds,
+	WeaponSettingsIds,
 	WeaponsIds
 } from './ids';
 
@@ -169,6 +170,18 @@ export const AllTraitEffectIds: TraitEffectsIds[] = [
 	'nanyin-trait',
 	'nola-trait',
 	'roslyn-trait'
+];
+export const AllWeaponSettingsIds: WeaponSettingsIds[] = [
+	'nola-alt',
+	'nola-flame',
+	'nola-frost',
+	'nola-phys',
+	'nola-volt',
+	'voidpiercer-alt',
+	'voidpiercer-flame',
+	'voidpiercer-frost',
+	'voidpiercer-phys',
+	'voidpiercer-volt'
 ];
 
 export const AllMatrixIds: MatrixIds[] = [

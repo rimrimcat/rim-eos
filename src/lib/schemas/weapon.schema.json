@@ -48,56 +48,13 @@
             "type": "object",
             "properties": {
               "choices": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "icon": {
-                      "type": "string"
-                    },
-                    "resonances": {
-                      "type": "array",
-                      "items": [
-                        {
-                          "$ref": "#/definitions/ResoElement"
-                        },
-                        {
-                          "$ref": "#/definitions/ResoRole"
-                        }
-                      ],
-                      "minItems": 2,
-                      "additionalItems": {
-                        "$ref": "#/definitions/ResoTriggers"
-                      }
-                    },
-                    "effects": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/definitions/WeaponEffectsIds"
-                      }
-                    },
-                    "reso_effects": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/definitions/ResoEffectsIds"
-                      }
-                    },
-                    "notes": {
-                      "type": "string"
-                    }
-                  },
-                  "additionalProperties": false,
-                  "required": [
-                    "icon",
-                    "id"
-                  ]
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/WeaponSettingsIds"
                 }
               },
               "default": {
-                "type": "string"
+                "$ref": "#/definitions/WeaponSettingsIds"
               },
               "assignment": {
                 "$ref": "#/definitions/SettingAssignment"
@@ -119,10 +76,13 @@
             "type": "object",
             "properties": {
               "choices": {
-                "$ref": "#/definitions/{phys:WeaponSettingStuff;flame:WeaponSettingStuff;frost:WeaponSettingStuff;volt:WeaponSettingStuff;alt:WeaponSettingStuff;}"
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/WeaponSettingsIds"
+                }
               },
               "default": {
-                "$ref": "#/definitions/Elements"
+                "$ref": "#/definitions/WeaponSettingsIds"
               },
               "assignment": {
                 "$ref": "#/definitions/SettingAssignment"
@@ -277,264 +237,25 @@
       ],
       "type": "string"
     },
+    "WeaponSettingsIds": {
+      "enum": [
+        "nola-alt",
+        "nola-flame",
+        "nola-frost",
+        "nola-phys",
+        "nola-volt",
+        "voidpiercer-alt",
+        "voidpiercer-flame",
+        "voidpiercer-frost",
+        "voidpiercer-phys",
+        "voidpiercer-volt"
+      ],
+      "type": "string"
+    },
     "SettingAssignment": {
       "enum": [
         "manual",
         "voidpiercer"
-      ],
-      "type": "string"
-    },
-    "{phys:WeaponSettingStuff;flame:WeaponSettingStuff;frost:WeaponSettingStuff;volt:WeaponSettingStuff;alt:WeaponSettingStuff;}": {
-      "type": "object",
-      "properties": {
-        "phys": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "icon": {
-              "type": "string"
-            },
-            "resonances": {
-              "type": "array",
-              "items": [
-                {
-                  "$ref": "#/definitions/ResoElement"
-                },
-                {
-                  "$ref": "#/definitions/ResoRole"
-                }
-              ],
-              "minItems": 2,
-              "additionalItems": {
-                "$ref": "#/definitions/ResoTriggers"
-              }
-            },
-            "effects": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/WeaponEffectsIds"
-              }
-            },
-            "reso_effects": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/ResoEffectsIds"
-              }
-            },
-            "notes": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "icon",
-            "id"
-          ]
-        },
-        "flame": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "icon": {
-              "type": "string"
-            },
-            "resonances": {
-              "type": "array",
-              "items": [
-                {
-                  "$ref": "#/definitions/ResoElement"
-                },
-                {
-                  "$ref": "#/definitions/ResoRole"
-                }
-              ],
-              "minItems": 2,
-              "additionalItems": {
-                "$ref": "#/definitions/ResoTriggers"
-              }
-            },
-            "effects": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/WeaponEffectsIds"
-              }
-            },
-            "reso_effects": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/ResoEffectsIds"
-              }
-            },
-            "notes": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "icon",
-            "id"
-          ]
-        },
-        "frost": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "icon": {
-              "type": "string"
-            },
-            "resonances": {
-              "type": "array",
-              "items": [
-                {
-                  "$ref": "#/definitions/ResoElement"
-                },
-                {
-                  "$ref": "#/definitions/ResoRole"
-                }
-              ],
-              "minItems": 2,
-              "additionalItems": {
-                "$ref": "#/definitions/ResoTriggers"
-              }
-            },
-            "effects": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/WeaponEffectsIds"
-              }
-            },
-            "reso_effects": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/ResoEffectsIds"
-              }
-            },
-            "notes": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "icon",
-            "id"
-          ]
-        },
-        "volt": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "icon": {
-              "type": "string"
-            },
-            "resonances": {
-              "type": "array",
-              "items": [
-                {
-                  "$ref": "#/definitions/ResoElement"
-                },
-                {
-                  "$ref": "#/definitions/ResoRole"
-                }
-              ],
-              "minItems": 2,
-              "additionalItems": {
-                "$ref": "#/definitions/ResoTriggers"
-              }
-            },
-            "effects": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/WeaponEffectsIds"
-              }
-            },
-            "reso_effects": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/ResoEffectsIds"
-              }
-            },
-            "notes": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "icon",
-            "id"
-          ]
-        },
-        "alt": {
-          "type": "object",
-          "properties": {
-            "id": {
-              "type": "string"
-            },
-            "icon": {
-              "type": "string"
-            },
-            "resonances": {
-              "type": "array",
-              "items": [
-                {
-                  "$ref": "#/definitions/ResoElement"
-                },
-                {
-                  "$ref": "#/definitions/ResoRole"
-                }
-              ],
-              "minItems": 2,
-              "additionalItems": {
-                "$ref": "#/definitions/ResoTriggers"
-              }
-            },
-            "effects": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/WeaponEffectsIds"
-              }
-            },
-            "reso_effects": {
-              "type": "array",
-              "items": {
-                "$ref": "#/definitions/ResoEffectsIds"
-              }
-            },
-            "notes": {
-              "type": "string"
-            }
-          },
-          "additionalProperties": false,
-          "required": [
-            "icon",
-            "id"
-          ]
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "alt",
-        "flame",
-        "frost",
-        "phys",
-        "volt"
-      ]
-    },
-    "Elements": {
-      "description": "Pretty self explanatory",
-      "enum": [
-        "alt",
-        "flame",
-        "frost",
-        "phys",
-        "volt"
       ],
       "type": "string"
     }
