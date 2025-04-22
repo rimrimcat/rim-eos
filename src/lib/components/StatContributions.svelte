@@ -2,23 +2,28 @@
 	import {
 		AllGearEffectIds,
 		AllMatrixEffectIds,
+		AllOtherEffectIds,
 		AllRelicEffectIds,
 		AllResoEffectIds,
 		AllTraitEffectIds,
+		AllWeaponBaseEffectIds,
 		AllWeaponEffectIds
 	} from '$lib/generated/all-ids';
 	import { STAT_LABELS, StatCollection } from '$lib/scripts/stats';
+	import { all_effects } from '$lib/scripts/stores';
 	import type {
 		AllEffectIds,
 		AllEffectTypes,
 		BaseEffect,
+		GearEffectsIds,
 		MatrixEffectsIds,
+		OtherEffectIds,
 		RelicEffectsIds,
 		ResoEffectsIds,
 		StatData,
 		StatKey,
 		TraitEffectsIds,
-		ValidGearEffectIds,
+		WeaponBaseEffectIds,
 		WeaponEffectsIds,
 		WeaponsIds
 	} from '$lib/types/index';
@@ -26,18 +31,13 @@
 	import '@carbon/charts-svelte/styles.css';
 	import { DiffIcon, GroupIcon, ShirtIcon, SlashIcon } from '@lucide/svelte';
 
-	let {
-		all_effects = $bindable([] as AllEffectTypes[]),
-		chart_width = $bindable(500),
-		reset_graph = $bindable(false),
-		style = ''
-	} = $props();
+	let { chart_width = $bindable(500), reset_graph = $bindable(false), style = '' } = $props();
 
 	let all_effects_ = $state([] as AllEffectTypes[]);
 	let allow_update = $state(true);
 
 	$effect(() => {
-		all_effects;
+		$all_effects;
 		setTimeout(() => {
 			doUpdate();
 		}, 1);
@@ -48,7 +48,7 @@
 		allow_update = false;
 
 		console.log('updating');
-		all_effects_ = all_effects;
+		all_effects_ = $all_effects;
 	}
 
 	function enableUpdate() {
@@ -123,13 +123,17 @@
 			tags.character = eff.id.split('-')[0] as WeaponsIds;
 		} else if (AllResoEffectIds.includes(eff.id as ResoEffectsIds)) {
 			tags.is_reso = true;
-		} else if (AllGearEffectIds.includes(eff.id as ValidGearEffectIds)) {
+		} else if (AllGearEffectIds.includes(eff.id as GearEffectsIds)) {
 			tags.is_gear = true;
 		} else if (AllRelicEffectIds.includes(eff.id as RelicEffectsIds)) {
 			tags.is_relic = true;
 		} else if (AllTraitEffectIds.includes(eff.id as TraitEffectsIds)) {
 			tags.is_trait = true;
 			tags.character = eff.id.split('-')[0] as WeaponsIds;
+		} else if (AllWeaponBaseEffectIds.includes(eff.id as WeaponBaseEffectIds)) {
+			tags.is_weapon = true;
+			tags.character = eff.id.split('-')[0] as WeaponsIds;
+		} else if (AllOtherEffectIds.includes(eff.id as OtherEffectIds)) {
 		} else {
 			console.log('FAILED TO TAG!');
 		}

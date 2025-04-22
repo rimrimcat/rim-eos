@@ -17,8 +17,6 @@
 		saveObject
 	} from '$lib/scripts/loader';
 	import {
-		dedupeMatEffs,
-		turnGearToEffect,
 		updateSingleMatrixView,
 		updateSingleRelicView,
 		updateSingleWeaponView,
@@ -28,7 +26,6 @@
 	import {
 		base_weapons,
 		current_loadout,
-		equipped_gear_views,
 		font_size,
 		gear_views,
 		inner_width,
@@ -37,7 +34,6 @@
 		loadout_page_loaded,
 		matrix_views,
 		relic_views,
-		reso_effects,
 		stat_autoupdate,
 		trait_view,
 		user_gears,
@@ -86,15 +82,6 @@
 	let loadout_weapmat_combined: [WeaponView, MatrixView][] = $derived(
 		$weapon_views.map((weapon, i) => [weapon, $matrix_views[i]])
 	);
-
-	let all_effects = $derived([
-		...$weapon_views.flatMap((weapon) => weapon.effects),
-		...dedupeMatEffs($matrix_views.flatMap((matrix) => matrix.effects)),
-		...$reso_effects,
-		...$equipped_gear_views.flatMap((gear) => turnGearToEffect(gear)),
-		...$relic_views.flatMap((relic) => relic.effects),
-		...($trait_view?.effects ?? [])
-	]);
 
 	let is_editing = $state(false);
 
@@ -821,12 +808,7 @@
 
 		{#if chart_width > 350}
 			<!-- {#if chart_width > 10050} -->
-			<StatContributions
-				bind:all_effects
-				bind:chart_width
-				style="margin-top: 1.5rem;"
-				bind:reset_graph
-			/>
+			<StatContributions bind:chart_width style="margin-top: 1.5rem;" bind:reset_graph />
 		{/if}
 	{/await}
 </div>
