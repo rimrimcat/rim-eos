@@ -819,6 +819,7 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 	// if voidpiercer is present, assign voidpiercer element
 	if (voidpiercer_index !== -1) {
 		if (!equipped_weapons_[voidpiercer_index].setting) {
+			console.log('Creating voidpiercer settings');
 			equipped_weapons_[voidpiercer_index].setting = ['voidpiercer-alt', 'voidpiercer-starfall'];
 		}
 
