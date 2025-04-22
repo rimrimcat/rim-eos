@@ -612,6 +612,7 @@
 											onclick={() => {
 												onWeaponSettingChange(weapon, index, setting_view, settingIndex);
 											}}
+											disabled={setting_view.assignment !== 'manual'}
 										>
 											<div class="vertical center">
 												<img
@@ -817,7 +818,8 @@
 			</div>
 		</div>
 
-		{#if chart_width > 350}
+		<!-- {#if chart_width > 350} -->
+		{#if chart_width > 10050}
 			<StatContributions
 				bind:all_effects
 				bind:chart_width
