@@ -33,6 +33,7 @@ import type {
 	UserWeapon,
 	ValidGearPart,
 	Weapon,
+	WeaponBaseEffect,
 	WeaponEffect,
 	WeaponEffectsIds,
 	WeaponSetting,
@@ -970,17 +971,20 @@ export function getAllEffects(
 		}
 	} as OtherEffect;
 
+	const base_stat_col = new StatCollection(selected_loadout.base_stats);
+
 	return [
 		...(stat_adj?.unaccounted ? [unacc_eff] : []), // unaccounted
 		...(stat_adj?.supercompute ? [supercompute_eff] : []), // supercompute
 		...(stat_adj?.use_blade_shot ? [blade_shot_eff] : []), // blade shot
 		...weapon_views.flatMap((weapon) => weapon.effects), // weapon effects
+		...weapon_views.map((weapon) => turnWeaponBaseStatToEffect(weapon, base_stat_col)), // weapon base stats
 		...dedupeMatEffs(matrix_views.flatMap((matrix) => matrix.effects)), // matrix effects
 		...reso_effects, // reso effects
-		...equipped_gear_views.flatMap((gear) => turnGearToEffect(gear)), // gear
+		...equipped_gear_views.flatMap((gear) => turnGearToEffect(gear, base_stat_col)), // gear
 		...relic_views.flatMap((relic) => relic.effects), // relics
 		...(trait_view?.effects ?? []) // trait
-	];
+	]; // NOTE: DOESNT INCLUDE WEAPON BASE STATS
 }
 
 export function getAllEffectsFromStore() {
@@ -1118,32 +1122,57 @@ export function getEquippedGearViews(equipped_gears?: EquippedGear): GearView[] 
 const TRANSFORMABLE_KEYS = ['atk', 'phys_atk', 'flame_atk', 'frost_atk', 'volt_atk', 'alt_atk'];
 
 /**
- * Turns a gear into a gear effect for use with StatContributions.svelte
- * @param {GearView} gear
- * @returns {GearEffect}
+ * Turns base stats into improvement percent
+ * @param {StatCollection} stat_col_
+ * @param {StatCollection} base_stats - actual base stats turned into stat collection
+ * @returns
  */
-export function turnGearToEffect(gear: GearView): GearEffect {
-	if (gear.part === 'U') throw new Error('Cannot turn UNKNOWN gear into effect!');
+export function turnBaseStatToPercent(stat_col_: StatCollection, base_stats: StatCollection) {
+	const stat_col = stat_col_.clone();
 
-	const gear_stat_col = new StatCollection(gear);
-
-	// iterate through the keys
-	Object.keys(gear_stat_col.data).forEach((key) => {
+	Object.keys(stat_col.data).forEach((key) => {
 		if (TRANSFORMABLE_KEYS.includes(key as (typeof TRANSFORMABLE_KEYS)[number])) {
-			gear_stat_col.put(
+			stat_col.put(
 				`base_${key}_improvement_percent` as StatAtkImprovement,
 				// @ts-expect-error : key is guaranteed to exist
-				gear_stat_col.pop(key) / 100
+				stat_col.pop(key) / base_stats.get(key)
 			);
 		} else {
 			// @ts-expect-error : key is guaranteed to exist
-			gear_stat_col.pop(key);
+			stat_col.pop(key);
 		}
 	});
 
+	return stat_col;
+}
+
+/**
+ * Turns a weapon base stat into weapon base effect
+ * @param weapon
+ * @param base_stat_col
+ */
+export function turnWeaponBaseStatToEffect(weapon: WeaponView, base_stat_col: StatCollection) {
+	const base_stat_col_tf = turnBaseStatToPercent(weapon.base_stat, base_stat_col);
+
+	return {
+		id: `${weapon.id}-base`,
+		stats: base_stat_col_tf.data
+	} as WeaponBaseEffect;
+}
+
+/**
+ * Turns a gear into a gear effect
+ * @param {GearView} gear
+ * @returns {GearEffect}
+ */
+export function turnGearToEffect(gear: GearView, base_stat_col: StatCollection): GearEffect {
+	if (gear.part === 'U') throw new Error('Cannot turn UNKNOWN gear into effect!');
+
+	const gear_stat_col_tf = turnBaseStatToPercent(new StatCollection(gear), base_stat_col);
+
 	return {
 		id: `gear-${gear.part}`,
-		stats: gear_stat_col.data
+		stats: gear_stat_col_tf.data
 	};
 }
 
