@@ -1119,7 +1119,7 @@ export function getEquippedGearViews(equipped_gears?: EquippedGear): GearView[] 
 	return equipped_gear_views;
 }
 
-const TRANSFORMABLE_KEYS = ['atk', 'phys_atk', 'flame_atk', 'frost_atk', 'volt_atk', 'alt_atk'];
+const TRANSFORMABLE_KEYS = ['phys_atk', 'flame_atk', 'frost_atk', 'volt_atk', 'alt_atk'];
 
 /**
  * Turns base stats into improvement percent
@@ -1130,13 +1130,37 @@ const TRANSFORMABLE_KEYS = ['atk', 'phys_atk', 'flame_atk', 'frost_atk', 'volt_a
 export function turnBaseStatToPercent(stat_col_: StatCollection, base_stats: StatCollection) {
 	const stat_col = stat_col_.clone();
 
+	// lump atk to all elements
+	const _atk_stat = stat_col.pop('atk');
+	if (_atk_stat) {
+		stat_col.put('phys_atk', _atk_stat + stat_col.get('phys_atk'));
+		stat_col.put('flame_atk', _atk_stat + stat_col.get('flame_atk'));
+		stat_col.put('frost_atk', _atk_stat + stat_col.get('frost_atk'));
+		stat_col.put('volt_atk', _atk_stat + stat_col.get('volt_atk'));
+		stat_col.put('alt_atk', _atk_stat + stat_col.get('alt_atk'));
+	}
+	const alt_max = Math.max(
+		base_stats.get('phys_atk'),
+		base_stats.get('flame_atk'),
+		base_stats.get('frost_atk'),
+		base_stats.get('volt_atk')
+	);
+
 	Object.keys(stat_col.data).forEach((key) => {
 		if (TRANSFORMABLE_KEYS.includes(key as (typeof TRANSFORMABLE_KEYS)[number])) {
-			stat_col.put(
-				`base_${key}_improvement_percent` as StatAtkImprovement,
-				// @ts-expect-error : key is guaranteed to exist
-				stat_col.pop(key) / base_stats.get(key)
-			);
+			if (key === 'alt_atk') {
+				stat_col.put(
+					`base_${key}_improvement_percent` as StatAtkImprovement,
+					// @ts-expect-error : key is guaranteed to exist
+					(stat_col.pop(key) / alt_max) * 100
+				);
+			} else {
+				stat_col.put(
+					`base_${key}_improvement_percent` as StatAtkImprovement,
+					// @ts-expect-error : key is guaranteed to exist
+					(stat_col.pop(key) / base_stats.get(key)) * 100
+				);
+			}
 		} else {
 			// @ts-expect-error : key is guaranteed to exist
 			stat_col.pop(key);
