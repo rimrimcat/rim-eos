@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 import type {
+	AllEffectTypes,
 	AllLoadouts,
 	CharacterStat,
 	GearView,
@@ -61,6 +62,7 @@ export const relic_views = writable<RelicView[]>([]);
 export const trait_view = writable<TraitView | null>(null);
 
 // overall
+export const all_effects = writable<AllEffectTypes[]>([]);
 export const all_stats = writable<StatCollection>(new StatCollection());
 
 // overall stat
