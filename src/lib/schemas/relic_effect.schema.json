@@ -80,7 +80,8 @@
         "nola",
         "none",
         "roslyn",
-        "voidpiercer"
+        "voidpiercer",
+        "yanuo"
       ],
       "type": "string"
     },

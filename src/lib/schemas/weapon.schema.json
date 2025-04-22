@@ -125,7 +125,8 @@
         "nola",
         "none",
         "roslyn",
-        "voidpiercer"
+        "voidpiercer",
+        "yanuo"
       ],
       "type": "string"
     },
@@ -207,6 +208,7 @@
         "voidpiercer-starfall-phys",
         "voidpiercer-starfall-volt",
         "yanuo-a1",
+        "yanuo-a6-skill",
         "yanuo-skill"
       ],
       "type": "string"

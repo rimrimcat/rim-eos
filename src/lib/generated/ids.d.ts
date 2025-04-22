@@ -41,6 +41,7 @@ export type WeaponEffectsIds =
 	| 'voidpiercer-starfall-phys'
 	| 'voidpiercer-starfall-volt'
 	| 'yanuo-a1'
+	| 'yanuo-a6-skill'
 	| 'yanuo-skill';
 export type MatrixEffectsIds =
 	| 'anka-2p'
@@ -188,7 +189,8 @@ export type WeaponsIds =
 	| 'nanyin'
 	| 'nola'
 	| 'roslyn'
-	| 'voidpiercer';
+	| 'voidpiercer'
+	| 'yanuo';
 export type MatrixIds =
 	| 'none'
 	| 'anka-4p'
@@ -261,4 +263,5 @@ export type WeaponBaseEffectIds =
 	| 'nanyin-base'
 	| 'nola-base'
 	| 'roslyn-base'
-	| 'voidpiercer-base';
+	| 'voidpiercer-base'
+	| 'yanuo-base';

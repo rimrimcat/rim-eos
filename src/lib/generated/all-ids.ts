@@ -57,6 +57,7 @@ export const AllWeaponEffectIds: WeaponEffectsIds[] = [
 	'voidpiercer-starfall-phys',
 	'voidpiercer-starfall-volt',
 	'yanuo-a1',
+	'yanuo-a6-skill',
 	'yanuo-skill'
 ];
 export const AllMatrixEffectIds: MatrixEffectsIds[] = [
@@ -232,7 +233,8 @@ export const AllWeaponIds: WeaponsIds[] = [
 	'nanyin',
 	'nola',
 	'roslyn',
-	'voidpiercer'
+	'voidpiercer',
+	'yanuo'
 ];
 export const AllRelicIds: RelicsIds[] = [
 	'none',
@@ -292,5 +294,6 @@ export const AllWeaponBaseEffectIds: WeaponBaseEffectIds[] = [
 	'nanyin-base',
 	'nola-base',
 	'roslyn-base',
-	'voidpiercer-base'
+	'voidpiercer-base',
+	'yanuo-base'
 ];
