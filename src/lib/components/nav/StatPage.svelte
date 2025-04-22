@@ -398,7 +398,13 @@
 										tabindex={10 + index}
 									>
 										{#if unadjusted_stats}
-											<input type="text" bind:value={unadjusted_stats[index]} style="width: 8ch;" />
+											<input
+												class="numeric"
+												inputmode="numeric"
+												pattern="[\d\.]*"
+												bind:value={unadjusted_stats[index]}
+												style="width: 10ch;"
+											/>
 										{:else}
 											{attribute.value}
 										{/if}

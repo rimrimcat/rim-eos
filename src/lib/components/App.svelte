@@ -423,6 +423,17 @@
 		margin-top: 3rem;
 	}
 
+	:global(input[type='number'].numeric) {
+		appearance: textfield;
+		-moz-appearance: textfield;
+		-webkit-appearance: none;
+	}
+	:global(input.numeric::-webkit-outer-spin-button),
+	:global(input.numeric::-webkit-inner-spin-button) {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+
 	/* for composing icons */
 
 	:global(.compose.below) {
