@@ -1,6 +1,6 @@
 {
 	"id": "voidpiercer-starfall",
-	"icon": "./stat_icon/phys.webp",
+	"icon": "./skill_icon/starfall.webp",
 	"effects": [
 		"voidpiercer-starfall-phys",
 		"voidpiercer-starfall-flame",
