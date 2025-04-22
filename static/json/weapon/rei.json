@@ -1,0 +1,8 @@
+{
+	"id": "rei",
+	"name": "Rei",
+	"base_stat": "crit-med",
+	"resonances": ["volt-frost", "atk"],
+	"effects": ["rei-a3", "rei-a6"],
+	"reso_effects": ["volt-reso", "frost-reso"]
+}

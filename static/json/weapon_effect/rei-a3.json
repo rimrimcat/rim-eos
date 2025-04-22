@@ -1,0 +1,8 @@
+{
+	"id": "rei-a3",
+	"stats": {
+		"volt_dmg_percent": 10,
+		"frost_dmg_percent": 10
+	},
+	"require_adv": 3
+}

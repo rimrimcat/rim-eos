@@ -1,0 +1,8 @@
+{
+	"id": "yanmiao-a3",
+	"stats": {
+		"phys_res_ignore_percent": 15,
+		"flame_res_ignore_percent": 15
+	},
+	"require_adv": 3
+}

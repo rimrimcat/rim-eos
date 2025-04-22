@@ -40,6 +40,9 @@ export const AllWeaponEffectIds: WeaponEffectsIds[] = [
 	'grayfox-a3-debuff',
 	'grayfox-a6',
 	'grayfox-skill',
+	'jiyu-a3',
+	'jiyu-a6-discharge',
+	'jiyu-discharge',
 	'merylx-a5',
 	'merylx-discharge',
 	'merylx-skill-fort',
@@ -49,6 +52,8 @@ export const AllWeaponEffectIds: WeaponEffectsIds[] = [
 	'nola-a3',
 	'nola-a6',
 	'nola-frost-skill',
+	'rei-a3',
+	'rei-a6',
 	'roslyn-a6',
 	'voidpiercer-a3',
 	'voidpiercer-a6',
@@ -56,6 +61,9 @@ export const AllWeaponEffectIds: WeaponEffectsIds[] = [
 	'voidpiercer-starfall-frost',
 	'voidpiercer-starfall-phys',
 	'voidpiercer-starfall-volt',
+	'yanmiao-a3',
+	'yanmiao-a6-skill',
+	'yanmiao-skill',
 	'yanuo-a1',
 	'yanuo-a6-skill',
 	'yanuo-skill'
@@ -229,11 +237,14 @@ export const AllWeaponIds: WeaponsIds[] = [
 	'brevey',
 	'claudiax',
 	'grayfox',
+	'jiyu',
 	'merylx',
 	'nanyin',
 	'nola',
+	'rei',
 	'roslyn',
 	'voidpiercer',
+	'yanmiao',
 	'yanuo'
 ];
 export const AllRelicIds: RelicsIds[] = [
@@ -290,10 +301,13 @@ export const AllWeaponBaseEffectIds: WeaponBaseEffectIds[] = [
 	'brevey-base',
 	'claudiax-base',
 	'grayfox-base',
+	'jiyu-base',
 	'merylx-base',
 	'nanyin-base',
 	'nola-base',
+	'rei-base',
 	'roslyn-base',
 	'voidpiercer-base',
+	'yanmiao-base',
 	'yanuo-base'
 ];
