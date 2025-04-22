@@ -108,6 +108,13 @@
 			actual_stuff = stuff;
 		});
 	});
+
+	$effect(() => {
+		if (!open) {
+			// reset search query after close
+			search_query = '';
+		}
+	});
 </script>
 
 {#snippet matrix4p(matrix_id: MatrixIds)}
