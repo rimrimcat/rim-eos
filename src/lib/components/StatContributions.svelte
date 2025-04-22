@@ -47,15 +47,29 @@
 	} = $props();
 
 	let all_effects_ = $state([] as AllEffectArray);
+	let allow_update = $state(true);
 
 	$effect(() => {
 		all_effects;
-		console.log('updating all effects');
 		setTimeout(() => {
-			console.log('set!');
-			all_effects_ = all_effects;
-		}, 100);
+			doUpdate();
+		}, 1);
 	});
+
+	function doUpdate() {
+		if (!allow_update) return;
+		allow_update = false;
+
+		console.log('updating');
+		all_effects_ = all_effects;
+	}
+
+	function enableUpdate() {
+		if (allow_update) return;
+
+		console.log('enablaing upd');
+		allow_update = true;
+	}
 
 	function groupBySource(eff: TaggedEffect) {
 		if (eff.is_weapon) return 'Weapon';
@@ -311,6 +325,11 @@
 			}, 1);
 			reset_graph = false;
 		}
+	});
+
+	$effect(() => {
+		data;
+		enableUpdate();
 	});
 </script>
 

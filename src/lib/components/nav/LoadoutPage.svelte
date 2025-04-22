@@ -819,8 +819,8 @@
 			</div>
 		</div>
 
-		<!-- {#if chart_width > 350} -->
-		{#if chart_width > 10050}
+		{#if chart_width > 350}
+			<!-- {#if chart_width > 10050} -->
 			<StatContributions
 				bind:all_effects
 				bind:chart_width
