@@ -907,6 +907,61 @@ export function getWeaponTotal() {
 	return stat_col;
 }
 
+export function getAllEffects(
+	selected_loadout: Loadout,
+	equipped_gear_views: GearView[],
+	weapon_views: WeaponView[],
+	matrix_views: MatrixView[],
+	reso_effects: ResoEffect[],
+	relic_views: RelicView[],
+	trait_view: TraitView | null
+) {
+	const stat_adj = selected_loadout.stat_adj;
+
+	const unacc_eff = {
+		id: 'unaccounted',
+		stats: stat_adj?.unaccounted ?? {}
+	};
+
+	const supercompute_eff = {
+		id: 'supercompute',
+		stats: {
+			atk_percent: stat_adj?.supercompute ?? 0
+		}
+	};
+
+	const blade_shot_eff = {
+		id: 'enhanced-blade-shot',
+		stats: {
+			atk_percent: stat_adj?.use_blade_shot ? 3.5 : 0
+		}
+	};
+
+	return [
+		...(stat_adj?.unaccounted ? [unacc_eff] : []), // unaccounted
+		...(stat_adj?.supercompute ? [supercompute_eff] : []), // supercompute
+		...(stat_adj?.use_blade_shot ? [blade_shot_eff] : []), // blade shot
+		...weapon_views.flatMap((weapon) => weapon.effects), // weapon effects
+		...dedupeMatEffs(matrix_views.flatMap((matrix) => matrix.effects)), // matrix effects
+		...reso_effects, // reso effects
+		...equipped_gear_views.flatMap((gear) => turnGearToEffect(gear)), // gear
+		...relic_views.flatMap((relic) => relic.effects), // relics
+		...(trait_view?.effects ?? []) // trait
+	];
+}
+
+export function getAllEffectsFromStore() {
+	return getAllEffects(
+		get(user_loadouts)[get(current_loadout)],
+		get(equipped_gear_views),
+		get(weapon_views),
+		get(matrix_views),
+		get(reso_effects),
+		get(relic_views),
+		get(trait_view)
+	);
+}
+
 export function getAllStats(
 	selected_loadout: Loadout,
 	equipped_gear_views: GearView[],
