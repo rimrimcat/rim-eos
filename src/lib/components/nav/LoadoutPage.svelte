@@ -310,30 +310,41 @@
 
 	function onSwitchMatrix(id: MatrixIds) {
 		user_matrices[switch_index] = { id };
+		$stat_autoupdate = false;
 		saveLoadout();
-		updateWeaponMatrixRelicTraitFromStore();
-		reset_graph = true;
+		updateWeaponMatrixRelicTraitFromStore().then(() => {
+			$stat_autoupdate = true;
+			reset_graph = true;
+		});
 	}
 
 	function onSwitchWeapon(id: WeaponsIds) {
 		user_weapons[switch_index] = { id };
+		$stat_autoupdate = false;
 		saveLoadout();
-		updateWeaponMatrixRelicTraitFromStore();
-		reset_graph = true;
+		updateWeaponMatrixRelicTraitFromStore().then(() => {
+			$stat_autoupdate = true;
+			reset_graph = true;
+		});
 	}
 
 	function onSwitchRelic(id: MatrixIds) {
 		user_relics[switch_index] = { id };
+		$stat_autoupdate = false;
 		saveLoadout();
-		updateWeaponMatrixRelicTraitFromStore();
-		reset_graph = true;
+		updateWeaponMatrixRelicTraitFromStore().then(() => {
+			$stat_autoupdate = true;
+			reset_graph = true;
+		});
 	}
 
 	function onSwitchTrait(id: TraitsIds) {
 		user_trait = id;
 		saveLoadout();
-		updateWeaponMatrixRelicTraitFromStore();
-		reset_graph = true;
+		updateWeaponMatrixRelicTraitFromStore().then(() => {
+			$stat_autoupdate = true;
+			reset_graph = true;
+		});
 	}
 
 	function onWeaponSettingChange(
@@ -372,9 +383,12 @@
 			user_weapons[index].setting = $base_weapons[index].settings.map((setting) => setting.default);
 		}
 		user_weapons[index].setting[settingIndex] = currKey;
+		$stat_autoupdate = false;
 		saveLoadout();
 		// nola can change elements and reso
-		updateWeaponMatrixRelicTraitFromStore();
+		updateWeaponMatrixRelicTraitFromStore().then(() => {
+			$stat_autoupdate = true;
+		});
 	}
 
 	const ACTIONS = [
@@ -456,8 +470,12 @@
 								} else {
 									user_matrices[index].advancement = advSetValue;
 								}
+
+								$stat_autoupdate = false;
 								saveLoadout();
-								updateSingleMatrixView(index);
+								updateSingleMatrixView(index).then(() => {
+									$stat_autoupdate = true;
+								});
 							}}
 						>
 							<div class="compose above" style="top: 4.5rem; left:{1.5 + advIndex}rem">
@@ -505,8 +523,11 @@
 										} else {
 											user_relics[index].advancement = advSetValue;
 										}
+										$stat_autoupdate = false;
 										saveLoadout();
-										updateSingleRelicView(index);
+										updateSingleRelicView(index).then(() => {
+											$stat_autoupdate = true;
+										});
 									}}
 								>
 									<div class="compose above" style="top: 4.5rem; left:{0.5 + advIndex}rem">
@@ -632,8 +653,11 @@
 											} else {
 												user_weapons[index].advancement = advSetValue;
 											}
+											$stat_autoupdate = false;
 											saveLoadout();
-											updateSingleWeaponView(index);
+											updateSingleWeaponView(index).then(() => {
+												$stat_autoupdate = true;
+											});
 										}}
 									>
 										<div class="compose above" style="top: 6.5rem; left:{1 + advIndex}rem">
