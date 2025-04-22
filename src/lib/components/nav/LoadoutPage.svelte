@@ -340,6 +340,7 @@
 
 	function onSwitchTrait(id: TraitsIds) {
 		user_trait = id;
+		$stat_autoupdate = false;
 		saveLoadout();
 		updateWeaponMatrixRelicTraitFromStore().then(() => {
 			$stat_autoupdate = true;
