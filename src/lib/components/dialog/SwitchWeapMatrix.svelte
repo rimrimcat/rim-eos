@@ -167,7 +167,7 @@
 			style="width: 90%; padding: 0.5rem;"
 		/>
 	</div>
-	<FlexGrid min_cols={3} max_cols={3} horizontal_gap="1rem" vertical_gap="1rem">
+	<FlexGrid min_cols={2} max_cols={3} horizontal_gap="1rem" vertical_gap="1rem">
 		{#await stuffToDisplayNormally()}
 			<p>Loading...</p>
 		{:then array_of_stuff}
