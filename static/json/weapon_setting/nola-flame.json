@@ -1,6 +1,6 @@
 {
 	"id": "nola-flame",
 	"icon": "./stat_icon/flame.webp",
-	"resonances": ["flame", "none", "volt", "armor-dissolve"],
+	"resonances": ["flame-phys", "none"],
 	"reso_effects": ["flame-reso", "phys-reso"]
 }

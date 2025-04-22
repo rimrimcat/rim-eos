@@ -1,7 +1,7 @@
 {
 	"id": "nola-frost",
 	"icon": "./stat_icon/frost.webp",
-	"resonances": ["frost", "none", "volt", "force-impact"],
+	"resonances": ["frost-volt", "none"],
 	"effects": ["nola-frost-skill"],
 	"reso_effects": ["frost-reso", "volt-reso"]
 }

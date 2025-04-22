@@ -2,7 +2,7 @@
 	"id": "brevey",
 	"name": "Brevey",
 	"base_stat": "crit-low",
-	"resonances": ["volt", "bene", "frost", "force-impact"],
+	"resonances": ["volt-frost", "bene"],
 	"effects": ["brevey-a3-nonbene", "brevey-a6", "brevey-skill", "brevey-link", "brevey-a6-link"],
 	"reso_effects": ["volt-reso", "frost-reso"]
 }

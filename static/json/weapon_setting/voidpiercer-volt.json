@@ -1,5 +1,5 @@
 {
 	"id": "voidpiercer-volt",
 	"icon": "./stat_icon/volt.webp",
-	"resonances": ["volt", "none", "frost"]
+	"resonances": ["volt-frost", "none"]
 }

@@ -21,9 +21,7 @@
         }
       ],
       "minItems": 2,
-      "additionalItems": {
-        "$ref": "#/definitions/ResoTriggers"
-      }
+      "maxItems": 2
     },
     "onfieldness": {
       "type": "number"
@@ -147,10 +145,14 @@
       "enum": [
         "alt",
         "flame",
+        "flame-phys",
         "frost",
+        "frost-volt",
         "none",
         "phys",
-        "volt"
+        "phys-flame",
+        "volt",
+        "volt-frost"
       ],
       "type": "string"
     },
@@ -160,22 +162,6 @@
         "bene",
         "fort",
         "none"
-      ],
-      "type": "string"
-    },
-    "ResoTriggers": {
-      "enum": [
-        "alt",
-        "armor-dissolve",
-        "atk",
-        "bene",
-        "flame",
-        "force-impact",
-        "fort",
-        "frost",
-        "none",
-        "phys",
-        "volt"
       ],
       "type": "string"
     },

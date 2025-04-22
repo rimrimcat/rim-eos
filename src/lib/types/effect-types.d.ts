@@ -9,11 +9,12 @@ import type {
 import type { ValidGearPart } from './gear-types';
 import type { Elements, StatData, StatKey } from './stat-types';
 
-export type ResoElement = Elements | 'none';
+export type CompoundElements = 'phys-flame' | 'flame-phys' | 'frost-volt' | 'volt-frost';
+export type ResoElement = Elements | CompoundElements | 'none';
 export type ResoRole = 'atk' | 'fort' | 'bene' | 'none';
 export type ResoExtra = 'armor-dissolve' | 'force-impact';
 export type ResoTriggers = ResoElement | ResoRole | ResoExtra;
-export type OrderedResoTriggers = [ResoElement, ResoRole, ...ResoTriggers[]];
+export type OrderedResoTriggers = [ResoElement, ResoRole];
 
 export type Target = 'self' | 'ally' | 'team' | 'enemy';
 export type ResoTriggerCounts = { [key in ResoTriggers]?: number };

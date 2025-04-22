@@ -471,6 +471,7 @@ export async function obtainBaseWeapons(equipped_weapons: UserWeapon[]) {
 	return await Promise.all(equipped_weapons.map((weapon) => getWeapon(weapon.id)));
 }
 
+/** Get count of reso triggers */
 export async function obtainResoCounts(equipped_weapons: UserWeapon[], base_weapons: Weapon[]) {
 	return base_weapons.reduce((counts, weapon, index) => {
 		weapon.resonances.forEach((resonance) => {
@@ -496,6 +497,37 @@ export async function obtainResoCounts(equipped_weapons: UserWeapon[], base_weap
 
 		return counts;
 	}, {} as ResoTriggerCounts);
+}
+/** Expand compound reso triggers to add additional reso
+ *  e.g. phys-flame -> phys + flame + armor-dissolve
+ */
+export async function expandResoCounts(reso_counts: ResoTriggerCounts) {
+	Object.entries(reso_counts).forEach(([key, value]) => {
+		switch (key) {
+			case 'phys-flame':
+				reso_counts['phys'] = (reso_counts['phys'] ?? 0) + value;
+				reso_counts['flame'] = (reso_counts['flame'] ?? 0) + value;
+				reso_counts['armor-dissolve'] = (reso_counts['armor-dissolve'] ?? 0) + value;
+				break;
+			case 'flame-phys':
+				reso_counts['phys'] = (reso_counts['phys'] ?? 0) + value;
+				reso_counts['flame'] = (reso_counts['flame'] ?? 0) + value;
+				reso_counts['armor-dissolve'] = (reso_counts['armor-dissolve'] ?? 0) + value;
+				break;
+			case 'frost-volt':
+				reso_counts['frost'] = (reso_counts['frost'] ?? 0) + value;
+				reso_counts['volt'] = (reso_counts['volt'] ?? 0) + value;
+				reso_counts['force-impact'] = (reso_counts['force-impact'] ?? 0) + value;
+				break;
+			case 'volt-frost':
+				reso_counts['frost'] = (reso_counts['frost'] ?? 0) + value;
+				reso_counts['volt'] = (reso_counts['volt'] ?? 0) + value;
+				reso_counts['force-impact'] = (reso_counts['force-impact'] ?? 0) + value;
+				break;
+		}
+	});
+
+	return reso_counts;
 }
 
 export async function obtainResoEffects(
@@ -743,6 +775,8 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 	const base_weapons_ = await obtainBaseWeapons(equipped_weapons_);
 	base_weapons.set(base_weapons_);
 
+	const reso_counts_ = await obtainResoCounts(equipped_weapons_, base_weapons_);
+
 	// if voidpiercer is present, assign voidpiercer element
 	const voidpiercer_index = base_weapons_.findIndex((weapon) => weapon.id === 'voidpiercer');
 	if (voidpiercer_index !== -1) {
@@ -750,7 +784,8 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 		// TODO
 	}
 
-	const reso_counts_ = await obtainResoCounts(equipped_weapons_, base_weapons_);
+	await expandResoCounts(reso_counts_);
+	console.log('Final reso counts', reso_counts_);
 	reso_counts.set(reso_counts_);
 
 	const reso_effects_ = await obtainResoEffects(equipped_weapons_, reso_counts_, base_weapons_);

@@ -27,12 +27,16 @@
         "atk",
         "bene",
         "flame",
+        "flame-phys",
         "force-impact",
         "fort",
         "frost",
+        "frost-volt",
         "none",
         "phys",
-        "volt"
+        "phys-flame",
+        "volt",
+        "volt-frost"
       ],
       "type": "string"
     },
@@ -43,12 +47,16 @@
         "atk",
         "bene",
         "flame",
+        "flame-phys",
         "force-impact",
         "fort",
         "frost",
+        "frost-volt",
         "none",
         "phys",
-        "volt"
+        "phys-flame",
+        "volt",
+        "volt-frost"
       ],
       "type": "string"
     },
