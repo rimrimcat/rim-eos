@@ -5,7 +5,13 @@
 	import { loadStatIcons } from '$lib/scripts/loader';
 	import { stat_adjustment_dialog_open, stat_page_loaded, stat_view } from '$lib/scripts/stores';
 	import type { BaseStats16, StatGearFinal } from '$lib/types/index';
-	import { ChartNoAxesColumnIcon, Grid2X2XIcon, ImagePlusIcon, SwordsIcon } from '@lucide/svelte';
+	import {
+		ChartNoAxesColumnIcon,
+		Grid2X2XIcon,
+		ImagePlusIcon,
+		PencilIcon,
+		SwordsIcon
+	} from '@lucide/svelte';
 	import type * as OpenCV from '@techstark/opencv-js';
 	import cv from '@techstark/opencv-js';
 	import { onDestroy } from 'svelte';
@@ -317,8 +323,8 @@
 	{:then}
 		{#if unadjusted_stats && unadjusted_stats.length > 0}
 			<p>
-				Unadjusted stats are shown in the table below. Uploaded stats won't be effective until
-				adjustment is done.
+				Unadjusted stats are shown in the table below. Edit the stats as needed then proceed to stat
+				adjustment. Shown stats won't be effective until adjustment is done.
 			</p>
 		{/if}
 		<div class="horizontal" style="margin-bottom: 1.5rem;">
@@ -339,6 +345,18 @@
 				>
 					<ImagePlusIcon />
 					<label class="in-button" for="upload-stats">Upload Stats</label>
+				</button>
+
+				<button
+					class="image border"
+					id="edit-stats"
+					onclick={() => {
+						// @ts-expect-error
+						unadjusted_stats = $stat_view.map((stat) => stat.value);
+					}}
+				>
+					<PencilIcon />
+					<label class="in-button" for="edit-stats">Edit Stats</label>
 				</button>
 			{/if}
 			<button
