@@ -47,14 +47,14 @@
 		if (!allow_update) return;
 		allow_update = false;
 
-		console.log('updating');
+		// console.log('updating');
 		all_effects_ = $all_effects;
 	}
 
 	function enableUpdate() {
 		if (allow_update) return;
 
-		console.log('enablaing upd');
+		// console.log('enablaing upd');
 		allow_update = true;
 	}
 
