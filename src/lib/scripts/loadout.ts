@@ -743,6 +743,13 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 	const base_weapons_ = await obtainBaseWeapons(equipped_weapons_);
 	base_weapons.set(base_weapons_);
 
+	// if voidpiercer is present, assign voidpiercer element
+	const voidpiercer_index = base_weapons_.findIndex((weapon) => weapon.id === 'voidpiercer');
+	if (voidpiercer_index !== -1) {
+		console.log('voidpiercer exists');
+		// TODO
+	}
+
 	const reso_counts_ = await obtainResoCounts(equipped_weapons_, base_weapons_);
 	reso_counts.set(reso_counts_);
 
