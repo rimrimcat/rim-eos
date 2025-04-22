@@ -115,6 +115,13 @@ export type FinalizedTraitEffect = BaseEffect & {
 	stats: StatData;
 };
 
+export type WeaponBaseEffectIds = `${WeaponsIds}-base`;
+
+export type WeaponBaseEffect = BaseEffect & {
+	id: WeaponBaseEffectIds;
+	stats: StatData;
+};
+
 export type OtherEffectIds = 'unaccounted' | 'supercompute' | 'enhanced-blade-shot';
 
 export type OtherEffect = BaseEffect & {
@@ -125,6 +132,7 @@ export type OtherEffect = BaseEffect & {
 export type AllEffectTypes =
 	| ResoEffect
 	| WeaponEffect
+	| WeaponBaseEffect
 	| FinalizedMatrixEffect
 	| GearEffect
 	| RelicEffect
@@ -134,6 +142,7 @@ export type AllEffectTypes =
 export type AllEffectIds =
 	| ResoEffectsIds
 	| WeaponEffectsIds
+	| WeaponBaseEffectIds
 	| MatrixEffectsIds
 	| ValidGearEffectIds
 	| RelicEffectsIds
