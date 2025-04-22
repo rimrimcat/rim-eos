@@ -2,7 +2,7 @@
 	"id": "voidpiercer",
 	"name": "Voidpiercer",
 	"base_stat": "crit-med",
-	"resonances": ["none", "none"],
+	"resonances": ["none", "atk"],
 	"effects": [],
 	"reso_effects": [],
 	"settings": [
