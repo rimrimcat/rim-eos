@@ -90,6 +90,12 @@
     "require_combat": {
       "type": "boolean"
     },
+    "require_hp_less_than": {
+      "type": "number"
+    },
+    "require_hp_greater_than": {
+      "type": "number"
+    },
     "notes": {
       "type": "string"
     },
@@ -151,7 +157,8 @@
         "voidpiercer-starfall-flame",
         "voidpiercer-starfall-frost",
         "voidpiercer-starfall-phys",
-        "voidpiercer-starfall-volt"
+        "voidpiercer-starfall-volt",
+        "yanuo-skill"
       ],
       "type": "string"
     },
@@ -336,9 +343,6 @@
           "type": "number"
         },
         "shield_dmg_reduction_ignore_percent": {
-          "type": "number"
-        },
-        "base_atk_improvement_percent": {
           "type": "number"
         },
         "base_phys_atk_improvement_percent": {

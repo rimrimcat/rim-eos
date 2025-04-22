@@ -1,0 +1,9 @@
+{
+	"id": "yanuo-skill",
+	"stats": {
+		"frost_dmg_percent": 9,
+		"volt_dmg_percent": 9,
+		"frost_res_ignore_percent": 15,
+		"volt_res_ignore_percent": 15
+	}
+}

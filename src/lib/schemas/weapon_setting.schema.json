@@ -123,7 +123,8 @@
         "voidpiercer-starfall-flame",
         "voidpiercer-starfall-frost",
         "voidpiercer-starfall-phys",
-        "voidpiercer-starfall-volt"
+        "voidpiercer-starfall-volt",
+        "yanuo-skill"
       ],
       "type": "string"
     },

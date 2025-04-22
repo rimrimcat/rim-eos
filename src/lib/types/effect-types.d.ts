@@ -57,6 +57,9 @@ export type BaseEffect = {
 
 	require_combat?: boolean; // effects that only activate when in combat (using skill, after dealing damage...)
 
+	require_hp_less_than?: number; // effects that only activate when enemy hp is less than a certain percentage
+	require_hp_greater_than?: number; // effects that only activate when enemy hp is greater than a certain percentage
+
 	notes?: string;
 };
 
