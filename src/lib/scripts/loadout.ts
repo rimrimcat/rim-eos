@@ -818,16 +818,20 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 
 	// if voidpiercer is present, assign voidpiercer element
 	if (voidpiercer_index !== -1) {
+		if (!equipped_weapons_[voidpiercer_index].setting) {
+			equipped_weapons_[voidpiercer_index].setting = ['voidpiercer-alt', 'voidpiercer-starfall'];
+		}
+
 		if ((reso_counts_['frost'] ?? 0) + (reso_counts_['frost-volt'] ?? 0) >= 2) {
-			equipped_weapons_[voidpiercer_index].setting = ['voidpiercer-frost'];
+			equipped_weapons_[voidpiercer_index].setting[0] = 'voidpiercer-frost';
 		} else if ((reso_counts_['volt'] ?? 0) + (reso_counts_['volt-frost'] ?? 0) >= 2) {
-			equipped_weapons_[voidpiercer_index].setting = ['voidpiercer-volt'];
+			equipped_weapons_[voidpiercer_index].setting[0] = 'voidpiercer-volt';
 		} else if ((reso_counts_['phys'] ?? 0) + (reso_counts_['phys-flame'] ?? 0) >= 2) {
-			equipped_weapons_[voidpiercer_index].setting = ['voidpiercer-phys'];
+			equipped_weapons_[voidpiercer_index].setting[0] = 'voidpiercer-phys';
 		} else if ((reso_counts_['flame'] ?? 0) + (reso_counts_['flame-phys'] ?? 0) >= 2) {
-			equipped_weapons_[voidpiercer_index].setting = ['voidpiercer-flame'];
+			equipped_weapons_[voidpiercer_index].setting[0] = 'voidpiercer-flame';
 		} else {
-			equipped_weapons_[voidpiercer_index].setting = ['voidpiercer-alt'];
+			equipped_weapons_[voidpiercer_index].setting[0] = 'voidpiercer-alt';
 		}
 		// update store
 		user_loadouts.update((loadouts) => {
@@ -841,6 +845,8 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 			reso_counts_
 		);
 	}
+
+	console.log('equipped_weapons', equipped_weapons_);
 
 	await expandResoCounts(reso_counts_);
 	reso_counts.set(reso_counts_);
