@@ -559,7 +559,7 @@ export async function obtainResoEffects(
 		})
 	);
 	// add default reso effects
-	const reso_types: ResoEffectsIds[] = [
+	const default_reso_effects: ResoEffectsIds[] = [
 		'atk-reso',
 		'atk-reso-teamplay',
 		'bene-reso',
@@ -570,7 +570,7 @@ export async function obtainResoEffects(
 		'force-impact-teamplay'
 	];
 	await Promise.all(
-		reso_types.map(async (reso) => {
+		default_reso_effects.map(async (reso) => {
 			_reso_effects_list.push(await getResoEffects(reso));
 		})
 	);
