@@ -1,6 +1,7 @@
 import { eval as evil, parse } from '@casbin/expression-eval';
 import { get } from 'svelte/store';
 import type {
+	AllEffectTypes,
 	BaseEffect,
 	BaseStats16,
 	EquippedGear,
@@ -13,6 +14,7 @@ import type {
 	MatrixEffect,
 	MatrixEffectsIds,
 	MatrixView,
+	OtherEffect,
 	RelicEffect,
 	RelicEffectsIds,
 	RelicView,
@@ -915,27 +917,27 @@ export function getAllEffects(
 	reso_effects: ResoEffect[],
 	relic_views: RelicView[],
 	trait_view: TraitView | null
-) {
+): AllEffectTypes[] {
 	const stat_adj = selected_loadout.stat_adj;
 
 	const unacc_eff = {
 		id: 'unaccounted',
 		stats: stat_adj?.unaccounted ?? {}
-	};
+	} as OtherEffect;
 
 	const supercompute_eff = {
 		id: 'supercompute',
 		stats: {
 			atk_percent: stat_adj?.supercompute ?? 0
 		}
-	};
+	} as OtherEffect;
 
 	const blade_shot_eff = {
 		id: 'enhanced-blade-shot',
 		stats: {
 			atk_percent: stat_adj?.use_blade_shot ? 3.5 : 0
 		}
-	};
+	} as OtherEffect;
 
 	return [
 		...(stat_adj?.unaccounted ? [unacc_eff] : []), // unaccounted
