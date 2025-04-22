@@ -635,9 +635,9 @@
 				</button>
 			{:else}
 				<div class="horizontal">
-					<button class="border" id="add-gear" onclick={() => (screenshot_dialog_open = true)}>
+					<button class="border" id="upload-gear" onclick={() => (screenshot_dialog_open = true)}>
 						<ImagePlusIcon />
-						<label class="in-button" for="add-gear">Add Gear</label>
+						<label class="in-button" for="upload-gear">Upload Gear</label>
 					</button>
 					<button class="border" id="start-search" onclick={() => (search_dialog_open = true)}>
 						<SearchIcon />

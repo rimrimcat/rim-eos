@@ -58,7 +58,7 @@
 		{
 			// @ts-expect-error
 			snippet: upload_gear_example,
-			make_glow: ['add-gear']
+			make_glow: ['upload-gear']
 		},
 		{
 			text: "Don't forget to equip your gears. Click the shirt icon to equip it. If it is already equipped, it will become shirt/slash icon and clicking it will unequip it."
