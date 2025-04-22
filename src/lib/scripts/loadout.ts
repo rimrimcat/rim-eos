@@ -1137,7 +1137,6 @@ export function turnBaseStatToPercent(stat_col_: StatCollection, base_stats: Sta
 		stat_col.put('flame_atk', _atk_stat + stat_col.get('flame_atk'));
 		stat_col.put('frost_atk', _atk_stat + stat_col.get('frost_atk'));
 		stat_col.put('volt_atk', _atk_stat + stat_col.get('volt_atk'));
-		stat_col.put('alt_atk', _atk_stat + stat_col.get('alt_atk'));
 	}
 	const alt_max = Math.max(
 		base_stats.get('phys_atk'),
