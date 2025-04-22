@@ -87,11 +87,10 @@
 	let include_gears = $state(false);
 	let show_bar = $state(true);
 
-	// stuff
-	let key_filter = $state(
-		(key: StatKey) =>
-			!key.includes('_res_percent') && (include_gears ? true : !key.includes('base'))
-	);
+	function key_filter(key: StatKey) {
+		return !key.includes('_res_percent') && (include_gears ? true : !key.includes('base'));
+	}
+
 	let grouping_fcn: (eff: TaggedEffect) => string = $derived(
 		GROUPING_FUNCTIONS[grouping_fcn_index]
 	);
@@ -254,12 +253,12 @@
 	);
 
 	let data = $derived(createData(current_processed_effects, grouping_fcn));
-	let sortedKeys = $derived(
-		Object.entries(stat_col_totals.data)
-			.filter(([key, _]) => key_filter(key as StatKey))
-			.sort((a, b) => b[1] - a[1])
-			.map(([key, _]) => key)
-	);
+	// let sortedKeys = $derived(
+	// 	Object.entries(stat_col_totals.data)
+	// 		.filter(([key, _]) => key_filter(key as StatKey))
+	// 		.sort((a, b) => b[1] - a[1])
+	// 		.map(([key, _]) => key)
+	// );
 
 	// NOTE: REVERSE ORDER!!!!
 	let sortedKeyLabels = $derived(
