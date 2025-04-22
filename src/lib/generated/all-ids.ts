@@ -56,6 +56,7 @@ export const AllWeaponEffectIds: WeaponEffectsIds[] = [
 	'voidpiercer-starfall-frost',
 	'voidpiercer-starfall-phys',
 	'voidpiercer-starfall-volt',
+	'yanuo-a1',
 	'yanuo-skill'
 ];
 export const AllMatrixEffectIds: MatrixEffectsIds[] = [

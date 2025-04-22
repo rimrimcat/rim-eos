@@ -40,6 +40,7 @@ export type WeaponEffectsIds =
 	| 'voidpiercer-starfall-frost'
 	| 'voidpiercer-starfall-phys'
 	| 'voidpiercer-starfall-volt'
+	| 'yanuo-a1'
 	| 'yanuo-skill';
 export type MatrixEffectsIds =
 	| 'anka-2p'

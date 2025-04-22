@@ -206,6 +206,7 @@
         "voidpiercer-starfall-frost",
         "voidpiercer-starfall-phys",
         "voidpiercer-starfall-volt",
+        "yanuo-a1",
         "yanuo-skill"
       ],
       "type": "string"

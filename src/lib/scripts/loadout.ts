@@ -139,18 +139,7 @@ function checkValidEffect(
 		}
 		return false;
 	}
-	// check if required adv not is fulfilled
-	if (
-		'require_adv_not' in eff &&
-		eff.require_adv_not &&
-		(advancement ?? 0) === eff.require_adv_not
-	) {
-		if (debug) {
-			console.log('required adv not fulfilled:', eff.id);
-			console.log('Expected adv not:', eff.require_adv_not, 'Got:', advancement);
-		}
-		return false;
-	}
+
 	// check if required adv not gt is fulfilled
 	if (
 		'require_adv_not_gt' in eff &&
@@ -159,7 +148,7 @@ function checkValidEffect(
 	) {
 		if (debug) {
 			console.log('required adv not gt fulfilled:', eff.id);
-			console.log('Expected adv not >=:', eff.require_adv_not_gt, 'Got:', advancement);
+			console.log('Expected adv not >=', eff.require_adv_not_gt, 'Got:', advancement);
 		}
 		return false;
 	}

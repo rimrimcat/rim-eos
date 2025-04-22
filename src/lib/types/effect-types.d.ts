@@ -67,7 +67,7 @@ export type WeaponEffect = BaseEffect & {
 	id: WeaponEffectsIds;
 	stats: StatData;
 	require_adv?: number; // required advancement (esp. for weapons)
-	require_adv_not?: number; // for advancement that modifies original effects
+	require_adv_not_gt?: number; // for advancement that modifies original effects
 	require_offhand?: boolean; // effects that only activate when offhand
 };
 
