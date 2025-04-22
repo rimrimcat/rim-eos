@@ -605,7 +605,7 @@
 								</button>
 							</div>
 							{#if weapon.setting_view && weapon.setting_view.length > 0}
-								<div class="compose above" style="top: 0.5rem; left: 0.5rem;">
+								<div class="vertical compose above" style="top: 0.5rem; left: 0.5rem">
 									{#each weapon.setting_view as setting_view, settingIndex}
 										<button
 											class="image"
@@ -613,6 +613,7 @@
 												onWeaponSettingChange(weapon, index, setting_view, settingIndex);
 											}}
 											disabled={setting_view.assignment !== 'manual'}
+											style="margin-bottom: 0.2rem;"
 										>
 											<div class="vertical center">
 												<img
