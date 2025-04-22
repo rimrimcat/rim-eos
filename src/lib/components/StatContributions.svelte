@@ -9,20 +9,16 @@
 	} from '$lib/generated/all-ids';
 	import { STAT_LABELS, StatCollection } from '$lib/scripts/stats';
 	import type {
+		AllEffectIds,
+		AllEffectTypes,
 		BaseEffect,
-		FinalizedMatrixEffect,
-		FinalizedTraitEffect,
-		GearEffect,
 		MatrixEffectsIds,
-		RelicEffect,
 		RelicEffectsIds,
-		ResoEffect,
 		ResoEffectsIds,
 		StatData,
 		StatKey,
 		TraitEffectsIds,
 		ValidGearEffectIds,
-		WeaponEffect,
 		WeaponEffectsIds,
 		WeaponsIds
 	} from '$lib/types/index';
@@ -30,23 +26,14 @@
 	import '@carbon/charts-svelte/styles.css';
 	import { DiffIcon, GroupIcon, ShirtIcon, SlashIcon } from '@lucide/svelte';
 
-	type AllEffectArray = (
-		| ResoEffect
-		| WeaponEffect
-		| FinalizedMatrixEffect
-		| GearEffect
-		| RelicEffect
-		| FinalizedTraitEffect
-	)[];
-
 	let {
-		all_effects = $bindable([] as AllEffectArray),
+		all_effects = $bindable([] as AllEffectTypes[]),
 		chart_width = $bindable(500),
 		reset_graph = $bindable(false),
 		style = ''
 	} = $props();
 
-	let all_effects_ = $state([] as AllEffectArray);
+	let all_effects_ = $state([] as AllEffectTypes[]);
 	let allow_update = $state(true);
 
 	$effect(() => {
@@ -120,25 +107,11 @@
 
 	type TaggedEffect = BaseEffect &
 		ETags & {
-			id:
-				| ResoEffectsIds
-				| WeaponEffectsIds
-				| MatrixEffectsIds
-				| ValidGearEffectIds
-				| RelicEffectsIds
-				| TraitEffectsIds;
+			id: AllEffectIds;
 			stats: StatData;
 		};
 
-	function tagEffect(
-		eff:
-			| ResoEffect
-			| WeaponEffect
-			| FinalizedMatrixEffect
-			| GearEffect
-			| RelicEffect
-			| FinalizedTraitEffect
-	) {
+	function tagEffect(eff: AllEffectTypes) {
 		const tags: ETags = {};
 
 		if (AllWeaponEffectIds.includes(eff.id as WeaponEffectsIds)) {
@@ -206,13 +179,7 @@
 
 	function getDiff(prev_eff: TaggedEffect[], curr_eff: TaggedEffect[]): TaggedEffect[] {
 		type DiffIdMap = {
-			id:
-				| ResoEffectsIds
-				| WeaponEffectsIds
-				| MatrixEffectsIds
-				| ValidGearEffectIds
-				| RelicEffectsIds
-				| TraitEffectsIds;
+			id: AllEffectIds;
 			eff_in_prev?: TaggedEffect;
 			eff_in_curr?: TaggedEffect;
 		};

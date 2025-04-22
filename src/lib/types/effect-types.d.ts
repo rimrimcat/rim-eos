@@ -130,3 +130,12 @@ export type AllEffectTypes =
 	| RelicEffect
 	| FinalizedTraitEffect
 	| OtherEffect;
+
+export type AllEffectIds =
+	| ResoEffectsIds
+	| WeaponEffectsIds
+	| MatrixEffectsIds
+	| ValidGearEffectIds
+	| RelicEffectsIds
+	| TraitEffectsIds
+	| OtherEffectIds;
