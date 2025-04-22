@@ -77,7 +77,8 @@ function checkValidEffect(
 	eff: WeaponEffect,
 	reso_counts_: ResoTriggerCounts,
 	advancement: number,
-	user_weapons_?: UserWeapon[]
+	user_weapons_?: UserWeapon[],
+	debug?: boolean
 ): boolean;
 function checkValidEffect(
 	eff: MatrixEffect,
@@ -100,41 +101,65 @@ function checkValidEffect(
 	eff: RelicEffect | MatrixEffect | WeaponEffect | TraitEffect | BaseEffect,
 	reso_counts_: ResoTriggerCounts,
 	advancement?: number,
-	user_weapons_?: UserWeapon[]
+	user_weapons_?: UserWeapon[],
+	debug?: boolean
 ): boolean {
 	// check if required reso is fulfilled
 	if (eff.require_reso) {
 		const required_reso_count = eff.require_reso_count ?? 2;
-		if (reso_counts_[eff.require_reso] ?? 0 < required_reso_count) {
+		if ((reso_counts_[eff.require_reso] ?? 0) < required_reso_count) {
+			if (debug) {
+				console.log(
+					'required reso not fulfilled:',
+					eff.id,
+					'Expected ',
+					eff.require_reso,
+					':',
+					required_reso_count,
+					'Got:',
+					reso_counts_[eff.require_reso] ?? 0
+				);
+			}
 			return false;
 		}
 	}
 
 	// check if required adv is fulfilled
-	if (
-		advancement !== undefined &&
-		'require_adv' in eff &&
-		eff.require_adv &&
-		advancement < eff.require_adv
-	) {
+	if ('require_adv' in eff && eff.require_adv && (advancement ?? 0) < eff.require_adv) {
+		if (debug) {
+			console.log(
+				'required adv not fulfilled:',
+				eff.id,
+				'Expected adv >=',
+				eff.require_adv,
+				'Got:',
+				advancement ?? 0
+			);
+		}
 		return false;
 	}
 	// check if required adv not is fulfilled
 	if (
-		advancement !== undefined &&
 		'require_adv_not' in eff &&
 		eff.require_adv_not &&
-		advancement === eff.require_adv_not
+		(advancement ?? 0) === eff.require_adv_not
 	) {
+		if (debug) {
+			console.log('required adv not fulfilled:', eff.id);
+			console.log('Expected adv not:', eff.require_adv_not, 'Got:', advancement);
+		}
 		return false;
 	}
 	// check if required adv not gt is fulfilled
 	if (
-		advancement !== undefined &&
 		'require_adv_not_gt' in eff &&
 		eff.require_adv_not_gt &&
-		advancement >= eff.require_adv_not_gt
+		(advancement ?? 0) >= eff.require_adv_not_gt
 	) {
+		if (debug) {
+			console.log('required adv not gt fulfilled:', eff.id);
+			console.log('Expected adv not >=:', eff.require_adv_not_gt, 'Got:', advancement);
+		}
 		return false;
 	}
 
@@ -143,19 +168,25 @@ function checkValidEffect(
 		eff.require_weapon &&
 		!(user_weapons_ ?? []).some((weapon) => weapon.id === eff.require_weapon)
 	) {
+		if (debug) {
+			console.log('required weapon for', eff.id, 'not present:', eff.require_weapon);
+		}
 		return false;
 	}
 
 	// TEMPORARILY DISABLE ONFIELD EFFECTS
 	if (eff.duration !== undefined && eff.duration === 0) {
+		if (debug) console.log('onfield effect disabled:', eff.id);
 		return false;
 	}
 	if ('require_onfield' in eff && eff.require_onfield) {
+		if (debug) console.log('onfield effect disabled:', eff.id);
 		return false;
 	}
 
 	// TEMPORARILY DISABLE TEAMPLAY EFFECTS
 	if (eff.require_teamplay) {
+		if (debug) console.log('teamplay effect disabled:', eff.id);
 		return false;
 	}
 
@@ -187,10 +218,9 @@ export async function pushAllValidWeaponEffects(
 ) {
 	await Promise.all(
 		effs.map(async (eff_) => {
-			const effResult = getWeaponEffect(eff_);
-			const eff = effResult instanceof Promise ? await effResult : effResult;
+			const eff = await getWeaponEffect(eff_);
 
-			if (!checkValidEffect(eff, reso_counts_, advancement)) {
+			if (!checkValidEffect(eff, reso_counts_, advancement, undefined, true)) {
 				return;
 			}
 
@@ -686,6 +716,9 @@ export async function obtainWeaponViews(
 					})
 				);
 			}
+
+			console.log('post-push effects', effects);
+
 			const stat = stat_[0];
 
 			return {
