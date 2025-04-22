@@ -1,0 +1,5 @@
+{
+	"id": "fiona-hydro",
+	"icon": "./skill_icon/hydro.webp",
+	"effects": ["fiona-skill-hydro"]
+}

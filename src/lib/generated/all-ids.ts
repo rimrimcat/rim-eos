@@ -39,6 +39,10 @@ export const AllWeaponEffectIds: WeaponEffectsIds[] = [
 	'fiona-a1',
 	'fiona-a6',
 	'fiona-discharge-atk',
+	'fiona-skill-hydro',
+	'fiona-skill-maelstrom',
+	'fiona-skill-shackle',
+	'fiona-skill-wellspring',
 	'grayfox-a3-buff',
 	'grayfox-a3-debuff',
 	'grayfox-a6',
@@ -195,6 +199,12 @@ export const AllTraitEffectIds: TraitEffectsIds[] = [
 	'roslyn-trait'
 ];
 export const AllWeaponSettingsIds: WeaponSettingsIds[] = [
+	'fiona-hydro',
+	'fiona-maelstrom',
+	'fiona-shackle',
+	'fiona-torrent',
+	'fiona-vortex',
+	'fiona-wellspring',
 	'nola-alt',
 	'nola-flame',
 	'nola-frost',

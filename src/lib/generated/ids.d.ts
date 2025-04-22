@@ -23,6 +23,10 @@ export type WeaponEffectsIds =
 	| 'fiona-a1'
 	| 'fiona-a6'
 	| 'fiona-discharge-atk'
+	| 'fiona-skill-hydro'
+	| 'fiona-skill-maelstrom'
+	| 'fiona-skill-shackle'
+	| 'fiona-skill-wellspring'
 	| 'grayfox-a3-buff'
 	| 'grayfox-a3-debuff'
 	| 'grayfox-a6'
@@ -174,6 +178,12 @@ export type TraitEffectsIds =
 	| 'nola-trait'
 	| 'roslyn-trait';
 export type WeaponSettingsIds =
+	| 'fiona-hydro'
+	| 'fiona-maelstrom'
+	| 'fiona-shackle'
+	| 'fiona-torrent'
+	| 'fiona-vortex'
+	| 'fiona-wellspring'
 	| 'nola-alt'
 	| 'nola-flame'
 	| 'nola-frost'

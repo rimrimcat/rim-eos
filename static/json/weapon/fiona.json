@@ -4,5 +4,33 @@
 	"base_stat": "crit-med",
 	"resonances": ["alt", "atk"],
 	"effects": ["fiona-a1", "fiona-a6", "fiona-discharge-atk"],
-	"reso_effects": ["fiona-reso"]
+	"reso_effects": ["fiona-reso"],
+	"settings": [
+		{
+			"type": "skill",
+			"choices": [
+				"fiona-hydro",
+				"fiona-vortex",
+				"fiona-torrent",
+				"fiona-maelstrom",
+				"fiona-shackle",
+				"fiona-wellspring"
+			],
+			"default": "fiona-torrent",
+			"assignment": "manual"
+		},
+		{
+			"type": "skill",
+			"choices": [
+				"fiona-hydro",
+				"fiona-vortex",
+				"fiona-torrent",
+				"fiona-maelstrom",
+				"fiona-shackle",
+				"fiona-wellspring"
+			],
+			"default": "fiona-wellspring",
+			"assignment": "manual"
+		}
+	]
 }

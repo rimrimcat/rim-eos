@@ -1,0 +1,7 @@
+{
+	"id": "fiona-skill-wellspring",
+	"stats": {
+		"ele_dmg_percent": 16
+	},
+	"notes": "assumes hp > 1.6 M"
+}
