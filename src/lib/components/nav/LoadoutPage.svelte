@@ -687,6 +687,8 @@
 
 		{#if $inner_width < 620}
 			{@render showRelics()}
+
+			{@render showTrait()}
 		{/if}
 	</div>
 	<div class="vertical relic-trait-col" style="margin-left: 1rem;">
