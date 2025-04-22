@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { Elements, StatGearFinal, StatGearUser } from '$lib/types/index';
+	import type { CompoundElements, Elements, StatGearFinal, StatGearUser } from '$lib/types/index';
 
-	type StatOrElement = StatGearUser | StatGearFinal | Elements;
+	type StatOrElement = StatGearUser | StatGearFinal | Elements | CompoundElements;
 
 	let { stat = 'atk' as StatOrElement, size = '100%', style = '' } = $props();
 
@@ -10,7 +10,10 @@
 	let unit = $state('none');
 	let atk_kind = $state('');
 
-	function getImage() {
+	function getImage(stat: string) {
+		// yet to create images for compound elements, so just get the primary one
+		stat = stat.split('-')[0];
+
 		if (stat.includes('atk')) {
 			atk_kind = 'atk';
 		} else if (stat.includes('dmg')) {
@@ -64,9 +67,11 @@
 		}
 	}
 
+	$inspect('STAT', stat);
+
 	$effect(() => {
 		if (stat !== previous_stat) {
-			getImage();
+			getImage(stat);
 			previous_stat = stat;
 		}
 	});
