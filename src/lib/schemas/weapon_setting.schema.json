@@ -53,6 +53,8 @@
         "voidpiercer-flame",
         "voidpiercer-frost",
         "voidpiercer-phys",
+        "voidpiercer-pursuit",
+        "voidpiercer-starfall",
         "voidpiercer-volt"
       ],
       "type": "string"
@@ -115,7 +117,13 @@
         "nola-a3",
         "nola-a6",
         "nola-frost-skill",
-        "roslyn-a6"
+        "roslyn-a6",
+        "voidpiercer-a3",
+        "voidpiercer-a6",
+        "voidpiercer-starfall-flame",
+        "voidpiercer-starfall-frost",
+        "voidpiercer-starfall-phys",
+        "voidpiercer-starfall-volt"
       ],
       "type": "string"
     },

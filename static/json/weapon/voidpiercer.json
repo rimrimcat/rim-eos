@@ -3,7 +3,7 @@
 	"name": "Voidpiercer",
 	"base_stat": "crit-med",
 	"resonances": ["none", "atk"],
-	"effects": [],
+	"effects": ["voidpiercer-a3", "voidpiercer-a6"],
 	"reso_effects": [],
 	"settings": [
 		{
@@ -17,6 +17,12 @@
 			],
 			"default": "voidpiercer-alt",
 			"assignment": "voidpiercer"
+		},
+		{
+			"type": "skill",
+			"choices": ["voidpiercer-starfall", "voidpiercer-pursuit"],
+			"default": "voidpiercer-starfall",
+			"assignment": "manual"
 		}
 	]
 }

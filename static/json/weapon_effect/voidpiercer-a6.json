@@ -1,0 +1,8 @@
+{
+	"id": "voidpiercer-a6",
+	"stats": {
+		"final_dmg_percent": 16,
+		"ele_dmg_percent": 16
+	},
+	"require_adv": 6
+}

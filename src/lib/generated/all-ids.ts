@@ -46,7 +46,13 @@ export const AllWeaponEffectIds: WeaponEffectsIds[] = [
 	'nola-a3',
 	'nola-a6',
 	'nola-frost-skill',
-	'roslyn-a6'
+	'roslyn-a6',
+	'voidpiercer-a3',
+	'voidpiercer-a6',
+	'voidpiercer-starfall-flame',
+	'voidpiercer-starfall-frost',
+	'voidpiercer-starfall-phys',
+	'voidpiercer-starfall-volt'
 ];
 export const AllMatrixEffectIds: MatrixEffectsIds[] = [
 	'anka-2p',
@@ -181,6 +187,8 @@ export const AllWeaponSettingsIds: WeaponSettingsIds[] = [
 	'voidpiercer-flame',
 	'voidpiercer-frost',
 	'voidpiercer-phys',
+	'voidpiercer-pursuit',
+	'voidpiercer-starfall',
 	'voidpiercer-volt'
 ];
 

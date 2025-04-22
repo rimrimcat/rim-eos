@@ -818,8 +818,6 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 
 	// if voidpiercer is present, assign voidpiercer element
 	if (voidpiercer_index !== -1) {
-		console.log('voidpiercer exists');
-
 		if ((reso_counts_['frost'] ?? 0) + (reso_counts_['frost-volt'] ?? 0) >= 2) {
 			equipped_weapons_[voidpiercer_index].setting = ['voidpiercer-frost'];
 		} else if ((reso_counts_['volt'] ?? 0) + (reso_counts_['volt-frost'] ?? 0) >= 2) {
@@ -845,7 +843,6 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 	}
 
 	await expandResoCounts(reso_counts_);
-	console.log('Final reso counts', reso_counts_);
 	reso_counts.set(reso_counts_);
 
 	const reso_effects_ = await obtainResoEffects(equipped_weapons_, reso_counts_, base_weapons_);

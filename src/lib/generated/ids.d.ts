@@ -33,7 +33,13 @@ export type WeaponEffectsIds =
 	| 'nola-a3'
 	| 'nola-a6'
 	| 'nola-frost-skill'
-	| 'roslyn-a6';
+	| 'roslyn-a6'
+	| 'voidpiercer-a3'
+	| 'voidpiercer-a6'
+	| 'voidpiercer-starfall-flame'
+	| 'voidpiercer-starfall-frost'
+	| 'voidpiercer-starfall-phys'
+	| 'voidpiercer-starfall-volt';
 export type MatrixEffectsIds =
 	| 'anka-2p'
 	| 'anka-4p-weap'
@@ -163,6 +169,8 @@ export type WeaponSettingsIds =
 	| 'voidpiercer-flame'
 	| 'voidpiercer-frost'
 	| 'voidpiercer-phys'
+	| 'voidpiercer-pursuit'
+	| 'voidpiercer-starfall'
 	| 'voidpiercer-volt';
 
 export type WeaponsIds =
