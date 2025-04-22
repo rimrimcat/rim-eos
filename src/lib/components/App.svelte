@@ -21,6 +21,7 @@
 		guide_title,
 		inner_width,
 		is_mobile,
+		loadout_element,
 		scroll_y,
 		stat_autoupdate,
 		stat_view,
@@ -98,7 +99,10 @@
 	$effect(() => {
 		if (!$stat_autoupdate) return;
 		console.log('Stat Autoupdate');
-		$equipped_gear_views = getEquippedGearViews($user_loadouts[$current_loadout].equipped_gears);
+
+		const selected_loadout = $user_loadouts[$current_loadout];
+		$equipped_gear_views = getEquippedGearViews(selected_loadout.equipped_gears);
+		$loadout_element = selected_loadout.element;
 		$all_effects = getAllEffectsFromStore();
 		$all_stats = getAllStatsFromStore();
 		$stat_view = createStatViewFromStore();
