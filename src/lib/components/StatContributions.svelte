@@ -88,8 +88,9 @@
 	let show_bar = $state(true);
 
 	// stuff
-	let key_filter = $state((key: StatKey) =>
-		!key.includes('_res_percent') && include_gears ? true : !key.includes('base')
+	let key_filter = $state(
+		(key: StatKey) =>
+			!key.includes('_res_percent') && (include_gears ? true : !key.includes('base'))
 	);
 	let grouping_fcn: (eff: TaggedEffect) => string = $derived(
 		GROUPING_FUNCTIONS[grouping_fcn_index]
