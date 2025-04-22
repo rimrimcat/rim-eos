@@ -10,10 +10,10 @@
 	import { STAT_LABELS, StatCollection } from '$lib/scripts/stats';
 	import type {
 		BaseEffect,
+		FinalizedMatrixEffect,
 		FinalizedTraitEffect,
 		GearEffect,
 		MatrixEffectsIds,
-		MatrixFinalEffect,
 		RelicEffect,
 		RelicEffectsIds,
 		ResoEffect,
@@ -33,7 +33,7 @@
 	type AllEffectArray = (
 		| ResoEffect
 		| WeaponEffect
-		| MatrixFinalEffect
+		| FinalizedMatrixEffect
 		| GearEffect
 		| RelicEffect
 		| FinalizedTraitEffect
@@ -134,7 +134,7 @@
 		eff:
 			| ResoEffect
 			| WeaponEffect
-			| MatrixFinalEffect
+			| FinalizedMatrixEffect
 			| GearEffect
 			| RelicEffect
 			| FinalizedTraitEffect

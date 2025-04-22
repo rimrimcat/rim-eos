@@ -77,7 +77,7 @@ export type MatrixEffect = BaseEffect & {
 	stats: MatrixStatData | MatrixExprData;
 };
 
-export type MatrixFinalEffect = BaseEffect & {
+export type FinalizedMatrixEffect = BaseEffect & {
 	id: MatrixEffectsIds;
 	stats: StatData;
 	advancement: number;
@@ -125,7 +125,7 @@ export type OtherEffect = BaseEffect & {
 export type AllEffectTypes =
 	| ResoEffect
 	| WeaponEffect
-	| MatrixFinalEffect
+	| FinalizedMatrixEffect
 	| GearEffect
 	| RelicEffect
 	| FinalizedTraitEffect

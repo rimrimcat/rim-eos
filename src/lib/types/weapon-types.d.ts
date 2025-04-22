@@ -12,8 +12,8 @@ import type {
 } from '../generated/ids';
 import type { StatCollection } from '../scripts/stats';
 import type {
+	FinalizedMatrixEffect,
 	FinalizedTraitEffect,
-	MatrixFinalEffect,
 	OrderedResoTriggers,
 	RelicEffect,
 	WeaponEffect
@@ -113,7 +113,7 @@ export type MatrixView = {
 	id: MatrixIds;
 	name: string;
 
-	effects: MatrixFinalEffect[];
+	effects: FinalizedMatrixEffect[];
 	stat: StatCollection;
 
 	advancement: number;

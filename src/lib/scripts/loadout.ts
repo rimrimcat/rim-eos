@@ -4,6 +4,7 @@ import type {
 	BaseEffect,
 	BaseStats16,
 	EquippedGear,
+	FinalizedMatrixEffect,
 	FinalizedTraitEffect,
 	GearEffect,
 	GearView,
@@ -11,7 +12,6 @@ import type {
 	Loadout,
 	MatrixEffect,
 	MatrixEffectsIds,
-	MatrixFinalEffect,
 	MatrixView,
 	RelicEffect,
 	RelicEffectsIds,
@@ -203,7 +203,7 @@ export async function pushAllValidMatrixEffects(
 	effs: MatrixEffectsIds[],
 	advancement: number,
 	reso_counts_: ResoTriggerCounts,
-	effects_: MatrixFinalEffect[],
+	effects_: FinalizedMatrixEffect[],
 	stat_: StatCollection[],
 	user_weapons_: UserWeapon[]
 ) {
@@ -303,7 +303,7 @@ export async function pushAllValidTraitEffects(
 	);
 }
 
-export function dedupeMatEffs(effects: MatrixFinalEffect[]) {
+export function dedupeMatEffs(effects: FinalizedMatrixEffect[]) {
 	return effects.reduce((acc, effect) => {
 		const existing_eff = acc.find((eff) => eff.id === effect.id);
 
@@ -315,7 +315,7 @@ export function dedupeMatEffs(effects: MatrixFinalEffect[]) {
 		}
 
 		return acc;
-	}, [] as MatrixFinalEffect[]);
+	}, [] as FinalizedMatrixEffect[]);
 }
 
 export async function updateSingleWeaponView(index: number) {
@@ -417,7 +417,7 @@ export async function updateSingleMatrixView(index: number) {
 	const matrix = user_matrices[index];
 	const advancement = matrix.advancement ?? 0;
 
-	const effects: MatrixFinalEffect[] = [];
+	const effects: FinalizedMatrixEffect[] = [];
 	const stat_ = [new StatCollection()];
 	const matrix_ = await getMatrix(matrix.id);
 
@@ -711,7 +711,7 @@ export async function obtainMatrixViews(
 		equipped_matrices.map(async (matrix) => {
 			const advancement = matrix.advancement ?? 0;
 
-			const effects: MatrixFinalEffect[] = [];
+			const effects: FinalizedMatrixEffect[] = [];
 			const stat_ = [new StatCollection()];
 			const matrix_ = await getMatrix(matrix.id);
 
