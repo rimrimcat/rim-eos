@@ -558,15 +558,22 @@ export async function obtainResoEffects(
 			}
 		})
 	);
-	// add default reso
-	_reso_effects_list.push(await getResoEffects('atk-reso'));
-	_reso_effects_list.push(await getResoEffects('atk-reso-teamplay'));
-	_reso_effects_list.push(await getResoEffects('bene-reso'));
-	_reso_effects_list.push(await getResoEffects('bene-reso-teamplay'));
-	_reso_effects_list.push(await getResoEffects('armor-dissolve'));
-	_reso_effects_list.push(await getResoEffects('armor-dissolve-teamplay'));
-	_reso_effects_list.push(await getResoEffects('force-impact'));
-	_reso_effects_list.push(await getResoEffects('force-impact-teamplay'));
+	// add default reso effects
+	const reso_types: ResoEffectsIds[] = [
+		'atk-reso',
+		'atk-reso-teamplay',
+		'bene-reso',
+		'bene-reso-teamplay',
+		'armor-dissolve',
+		'armor-dissolve-teamplay',
+		'force-impact',
+		'force-impact-teamplay'
+	];
+	await Promise.all(
+		reso_types.map(async (reso) => {
+			_reso_effects_list.push(await getResoEffects(reso));
+		})
+	);
 
 	let loadout_resonance_stat = new StatCollection();
 	const _reso_effects: ResoEffect[] = [];
