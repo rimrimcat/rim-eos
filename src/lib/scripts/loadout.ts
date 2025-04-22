@@ -220,7 +220,7 @@ export async function pushAllValidWeaponEffects(
 		effs.map(async (eff_) => {
 			const eff = await getWeaponEffect(eff_);
 
-			if (!checkValidEffect(eff, reso_counts_, advancement, undefined, true)) {
+			if (!checkValidEffect(eff, reso_counts_, advancement)) {
 				return;
 			}
 
@@ -716,8 +716,6 @@ export async function obtainWeaponViews(
 					})
 				);
 			}
-
-			console.log('post-push effects', effects);
 
 			const stat = stat_[0];
 
