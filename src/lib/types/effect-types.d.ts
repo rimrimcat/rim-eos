@@ -114,3 +114,10 @@ export type FinalizedTraitEffect = BaseEffect & {
 	id: TraitEffectsIds;
 	stats: StatData;
 };
+
+export type OtherEffectIds = 'supercompute' | 'enhanced-blade-shot';
+
+export type OtherEffect = BaseEffect & {
+	id: OtherEffectIds;
+	stats: StatData;
+};
