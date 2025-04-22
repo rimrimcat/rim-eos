@@ -67,8 +67,6 @@
 		}
 	}
 
-	$inspect('STAT', stat);
-
 	$effect(() => {
 		if (stat !== previous_stat) {
 			getImage(stat);
