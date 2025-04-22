@@ -684,6 +684,7 @@ export async function obtainWeaponViews(
 					? await Promise.all(
 							setting.map(async (setting_, index) => {
 								return {
+									// @ts-expect-error: check already performed with weapon.settings !== undefined
 									...weapon.settings[index],
 									choice: setting_
 								};
