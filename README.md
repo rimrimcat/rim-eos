@@ -37,6 +37,7 @@ also still thinking of a better name later on
 - [ ] Export: add way to fix gear to specific loadout when exporting
 - [ ] Optimization: include onfield calculations
 - [ ] Optimization: include team calculations
+- [ ] Optimization: include combat length calculations
 - [ ] Gear: add titan stats
 - [ ] Gear: add ID on top of gear instead of separate column in grid
 - [ ] Matrix: add base matrix stat
