@@ -3,5 +3,6 @@
 	"stats": {
 		"final_dmg_percent": [10, 10, 10, 10]
 	},
-	"require_weapon": "brevey"
+	"require_weapon": "brevey",
+	"require_combat": true
 }

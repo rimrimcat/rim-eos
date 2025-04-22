@@ -1,0 +1,176 @@
+{
+  "type": "object",
+  "properties": {
+    "id": {
+      "$ref": "#/definitions/WeaponSettingsIds"
+    },
+    "icon": {
+      "type": "string"
+    },
+    "resonances": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/ResoElement"
+        },
+        {
+          "$ref": "#/definitions/ResoRole"
+        }
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "effects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/WeaponEffectsIds"
+      }
+    },
+    "reso_effects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/ResoEffectsIds"
+      }
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "required": [
+    "icon",
+    "id"
+  ],
+  "definitions": {
+    "WeaponSettingsIds": {
+      "enum": [
+        "fiona-hydro",
+        "fiona-maelstrom",
+        "fiona-shackle",
+        "fiona-torrent",
+        "fiona-vortex",
+        "fiona-wellspring",
+        "nola-alt",
+        "nola-flame",
+        "nola-frost",
+        "nola-phys",
+        "nola-volt",
+        "voidpiercer-alt",
+        "voidpiercer-flame",
+        "voidpiercer-frost",
+        "voidpiercer-phys",
+        "voidpiercer-pursuit",
+        "voidpiercer-starfall",
+        "voidpiercer-volt"
+      ],
+      "type": "string"
+    },
+    "ResoElement": {
+      "enum": [
+        "alt",
+        "flame",
+        "flame-phys",
+        "frost",
+        "frost-volt",
+        "none",
+        "phys",
+        "phys-flame",
+        "volt",
+        "volt-frost"
+      ],
+      "type": "string"
+    },
+    "ResoRole": {
+      "enum": [
+        "atk",
+        "bene",
+        "fort",
+        "none"
+      ],
+      "type": "string"
+    },
+    "WeaponEffectsIds": {
+      "enum": [
+        "anka-a3",
+        "anka-a6-skill",
+        "anka-skill",
+        "antoria-a3",
+        "antoria-a6-skill",
+        "antoria-skill",
+        "asuka-a6",
+        "asuka-a6-fort",
+        "asuka-skill",
+        "asurada-a6-skill",
+        "asurada-skill",
+        "brevey-a3-nonbene",
+        "brevey-a6",
+        "brevey-a6-link",
+        "brevey-link",
+        "brevey-skill",
+        "brevey-skill-offhand",
+        "claudiax-a6-skill",
+        "claudiax-skill",
+        "fiona-a1",
+        "fiona-a6",
+        "fiona-discharge-atk",
+        "fiona-skill-hydro",
+        "fiona-skill-maelstrom",
+        "fiona-skill-shackle",
+        "fiona-skill-wellspring",
+        "grayfox-a3-buff",
+        "grayfox-a3-debuff",
+        "grayfox-a6",
+        "grayfox-skill",
+        "jiyu-a3",
+        "jiyu-a6-discharge",
+        "jiyu-discharge",
+        "merylx-a5",
+        "merylx-discharge",
+        "merylx-skill-fort",
+        "nanyin-a5",
+        "nanyin-a6",
+        "nanyin-inhabit",
+        "nola-a3",
+        "nola-a6",
+        "nola-frost-skill",
+        "rei-a3",
+        "rei-a6",
+        "roslyn-a6",
+        "voidpiercer-a3",
+        "voidpiercer-a6",
+        "voidpiercer-starfall-flame",
+        "voidpiercer-starfall-frost",
+        "voidpiercer-starfall-phys",
+        "voidpiercer-starfall-volt",
+        "yanmiao-a3",
+        "yanmiao-a6-skill",
+        "yanmiao-skill",
+        "yanuo-a1",
+        "yanuo-a6-skill",
+        "yanuo-skill"
+      ],
+      "type": "string"
+    },
+    "ResoEffectsIds": {
+      "enum": [
+        "armor-dissolve",
+        "armor-dissolve-teamplay",
+        "atk-reso",
+        "atk-reso-teamplay",
+        "bene-reso",
+        "bene-reso-teamplay",
+        "fiona-reso",
+        "flame-reso",
+        "force-impact",
+        "force-impact-teamplay",
+        "fort-reso",
+        "frost-reso",
+        "nanyin-reso",
+        "phys-reso",
+        "volt-reso"
+      ],
+      "type": "string"
+    }
+  },
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

@@ -1,0 +1,7 @@
+{
+	"id": "yanmiao-2p",
+	"stats": {
+		"phys_atk_percent": [19, 21, 23, 25],
+		"flame_atk_percent": [19, 21, 23, 25]
+	}
+}

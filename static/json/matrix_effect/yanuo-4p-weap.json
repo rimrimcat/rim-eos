@@ -1,0 +1,8 @@
+{
+	"id": "yanuo-4p-weap",
+	"stats": {
+		"final_dmg_percent": [8, 8, 8, 8]
+	},
+	"require_weapon": "yanuo",
+	"require_combat": true
+}

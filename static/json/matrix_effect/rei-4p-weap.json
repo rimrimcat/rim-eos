@@ -1,0 +1,9 @@
+{
+	"id": "rei-4p-weap",
+	"stats": {
+		"volt_atk_percent": [12, 12, 12, 12],
+		"frost_atk_percent": [12, 12, 12, 12]
+	},
+	"require_weapon": "rei",
+	"require_combat": true
+}

@@ -1,0 +1,9 @@
+{
+	"id": "fiona-4p-nonbene",
+	"stats": {
+		"final_dmg_percent": [17, 19, 21, 23]
+	},
+	"require_reso_not": "bene",
+	"require_weapon": "fiona",
+	"require_combat": true
+}

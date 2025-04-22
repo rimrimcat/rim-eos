@@ -1,0 +1,7 @@
+{
+	"id": "fiona-2p",
+	"stats": {
+		"atk_percent": [16, 18, 20, 22]
+	},
+	"require_combat": true
+}

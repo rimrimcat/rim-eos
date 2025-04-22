@@ -2,7 +2,7 @@
 	"id": "merylx",
 	"name": "Meryl X",
 	"base_stat": "crit-med",
-	"resonances": ["volt", "fort", "frost", "force-impact"],
+	"resonances": ["volt-frost", "fort"],
 	"effects": ["merylx-a5", "merylx-discharge", "merylx-skill-fort"],
 	"reso_effects": ["volt-reso", "frost-reso"]
 }

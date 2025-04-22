@@ -1,0 +1,7 @@
+{
+	"id": "yanmiao-4p-weap",
+	"stats": {
+		"ele_dmg_percent": [9, 9, 9, 9]
+	},
+	"require_weapon": "yanmiao"
+}

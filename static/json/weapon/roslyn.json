@@ -2,7 +2,7 @@
 	"id": "roslyn",
 	"name": "Roslyn",
 	"base_stat": "crit-med",
-	"resonances": ["frost", "atk", "volt", "force-impact"],
+	"resonances": ["frost-volt", "atk"],
 	"effects": ["roslyn-a6"],
 	"reso_effects": ["frost-reso", "volt-reso"]
 }

@@ -1,0 +1,5 @@
+{
+	"id": "fiona-maelstrom",
+	"icon": "./skill_icon/maelstrom.webp",
+	"effects": ["fiona-skill-maelstrom"]
+}

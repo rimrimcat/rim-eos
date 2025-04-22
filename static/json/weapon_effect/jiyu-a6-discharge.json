@@ -1,0 +1,8 @@
+{
+	"id": "jiyu-a6-discharge",
+	"stats": {
+		"flame_dmg_percent": 20
+	},
+	"require_adv": 6,
+	"require_combat": true
+}

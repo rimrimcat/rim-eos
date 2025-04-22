@@ -1,0 +1,7 @@
+{
+	"id": "fiona-skill-shackle",
+	"stats": {
+		"res_reduction_percent": 8
+	},
+	"target": "enemy"
+}

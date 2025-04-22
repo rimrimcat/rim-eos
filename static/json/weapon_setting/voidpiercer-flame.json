@@ -1,0 +1,5 @@
+{
+	"id": "voidpiercer-flame",
+	"icon": "./stat_icon/flame.webp",
+	"resonances": ["flame-phys", "none"]
+}

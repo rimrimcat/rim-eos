@@ -1,0 +1,10 @@
+{
+	"id": "voidpiercer-starfall",
+	"icon": "./skill_icon/starfall.webp",
+	"effects": [
+		"voidpiercer-starfall-phys",
+		"voidpiercer-starfall-flame",
+		"voidpiercer-starfall-frost",
+		"voidpiercer-starfall-volt"
+	]
+}

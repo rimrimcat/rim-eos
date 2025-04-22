@@ -27,12 +27,16 @@
         "atk",
         "bene",
         "flame",
+        "flame-phys",
         "force-impact",
         "fort",
         "frost",
+        "frost-volt",
         "none",
         "phys",
-        "volt"
+        "phys-flame",
+        "volt",
+        "volt-frost"
       ],
       "type": "string"
     },
@@ -43,12 +47,16 @@
         "atk",
         "bene",
         "flame",
+        "flame-phys",
         "force-impact",
         "fort",
         "frost",
+        "frost-volt",
         "none",
         "phys",
-        "volt"
+        "phys-flame",
+        "volt",
+        "volt-frost"
       ],
       "type": "string"
     },
@@ -66,18 +74,32 @@
         "asurada",
         "brevey",
         "claudiax",
+        "fiona",
         "grayfox",
+        "jiyu",
         "merylx",
         "nanyin",
         "nola",
         "none",
+        "rei",
         "roslyn",
-        "voidpiercer"
+        "voidpiercer",
+        "yanmiao",
+        "yanuo"
       ],
       "type": "string"
     },
     "require_boss": {
       "type": "boolean"
+    },
+    "require_combat": {
+      "type": "boolean"
+    },
+    "require_hp_less_than": {
+      "type": "number"
+    },
+    "require_hp_greater_than": {
+      "type": "number"
     },
     "notes": {
       "type": "string"
@@ -120,11 +142,20 @@
         "claudiax-2p",
         "claudiax-4p",
         "claudiax-4p-weap",
+        "cocoritter-2p",
+        "cocoritter-4p",
+        "fiona-2p",
+        "fiona-4p-bene",
+        "fiona-4p-bene-bonus",
+        "fiona-4p-nonbene",
         "grayfox-2p",
         "grayfox-2p-bene",
         "grayfox-4p",
         "grayfox-4p-bene",
         "grayfox-4p-nonbene",
+        "jiyu-2p",
+        "jiyu-4p",
+        "jiyu-4p-weap",
         "merylx-2p",
         "merylx-2p-static",
         "merylx-4p",
@@ -135,12 +166,23 @@
         "nola-2p",
         "nola-4p",
         "nola-4p-skill",
+        "rei-2p",
+        "rei-2p-weap",
+        "rei-4p",
+        "rei-4p-weap",
         "roslyn-2p",
         "roslyn-4p",
         "roslyn-4p-extra",
         "voidpiercer-2p",
         "voidpiercer-4p",
-        "voidpiercer-4p-weap"
+        "voidpiercer-4p-weap",
+        "yanmiao-2p",
+        "yanmiao-4p",
+        "yanmiao-4p-weap",
+        "yanuo-2p",
+        "yanuo-4p",
+        "yanuo-4p-weap",
+        "zero-4p"
       ],
       "type": "string"
     },
@@ -964,6 +1006,25 @@
           "minItems": 4,
           "maxItems": 4
         },
+        "coco_base_atk_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
         "res_ignore_percent": {
           "type": "array",
           "items": [
@@ -1250,25 +1311,6 @@
           "maxItems": 4
         },
         "shield_dmg_reduction_ignore_percent": {
-          "type": "array",
-          "items": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
-        "base_atk_improvement_percent": {
           "type": "array",
           "items": [
             {
@@ -2205,6 +2247,25 @@
           "minItems": 4,
           "maxItems": 4
         },
+        "coco_base_atk_percent": {
+          "type": "array",
+          "items": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            },
+            {
+              "type": "string"
+            }
+          ],
+          "minItems": 4,
+          "maxItems": 4
+        },
         "res_ignore_percent": {
           "type": "array",
           "items": [
@@ -2491,25 +2552,6 @@
           "maxItems": 4
         },
         "shield_dmg_reduction_ignore_percent": {
-          "type": "array",
-          "items": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
-        "base_atk_improvement_percent": {
           "type": "array",
           "items": [
             {

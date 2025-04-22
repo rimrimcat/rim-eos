@@ -60,7 +60,8 @@ export type StatBuffs =
 	| 'crit_dmg_percent'
 	| 'healing_percent'
 	| `relic_${Elements}_dmg_percent`
-	| 'shatter';
+	| 'shatter'
+	| 'coco_base_atk_percent';
 
 /**
  * Debuffs
@@ -85,9 +86,7 @@ export type StatDebuffs =
 /**
  * Allows for quantification of base atk stats as percent
  */
-export type StatAtkImprovement =
-	| 'base_atk_improvement_percent'
-	| `base_${Elements}_atk_improvement_percent`;
+export type StatAtkImprovement = `base_${Elements}_atk_improvement_percent`;
 
 export type StatKey = StatGearUser | StatBuffs | StatDebuffs | StatAtkImprovement;
 

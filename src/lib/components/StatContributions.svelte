@@ -2,27 +2,28 @@
 	import {
 		AllGearEffectIds,
 		AllMatrixEffectIds,
+		AllOtherEffectIds,
 		AllRelicEffectIds,
 		AllResoEffectIds,
 		AllTraitEffectIds,
+		AllWeaponBaseEffectIds,
 		AllWeaponEffectIds
 	} from '$lib/generated/all-ids';
 	import { STAT_LABELS, StatCollection } from '$lib/scripts/stats';
+	import { all_effects } from '$lib/scripts/stores';
 	import type {
+		AllEffectIds,
+		AllEffectTypes,
 		BaseEffect,
-		FinalizedTraitEffect,
-		GearEffect,
+		GearEffectsIds,
 		MatrixEffectsIds,
-		MatrixFinalEffect,
-		RelicEffect,
+		OtherEffectIds,
 		RelicEffectsIds,
-		ResoEffect,
 		ResoEffectsIds,
 		StatData,
 		StatKey,
 		TraitEffectsIds,
-		ValidGearEffectIds,
-		WeaponEffect,
+		WeaponBaseEffectIds,
 		WeaponEffectsIds,
 		WeaponsIds
 	} from '$lib/types/index';
@@ -30,21 +31,32 @@
 	import '@carbon/charts-svelte/styles.css';
 	import { DiffIcon, GroupIcon, ShirtIcon, SlashIcon } from '@lucide/svelte';
 
-	let {
-		all_effects = $bindable(
-			[] as (
-				| ResoEffect
-				| WeaponEffect
-				| MatrixFinalEffect
-				| GearEffect
-				| RelicEffect
-				| FinalizedTraitEffect
-			)[]
-		),
-		chart_width = $bindable(500),
-		reset_graph = $bindable(false),
-		style = ''
-	} = $props();
+	let { chart_width = $bindable(500), reset_graph = $bindable(false), style = '' } = $props();
+
+	let all_effects_ = $state([] as AllEffectTypes[]);
+	let allow_update = $state(true);
+
+	$effect(() => {
+		$all_effects;
+		setTimeout(() => {
+			doUpdate();
+		}, 1);
+	});
+
+	function doUpdate() {
+		if (!allow_update) return;
+		allow_update = false;
+
+		// console.log('updating');
+		all_effects_ = $all_effects;
+	}
+
+	function enableUpdate() {
+		if (allow_update) return;
+
+		// console.log('enablaing upd');
+		allow_update = true;
+	}
 
 	function groupBySource(eff: TaggedEffect) {
 		if (eff.is_weapon) return 'Weapon';
@@ -75,10 +87,10 @@
 	let include_gears = $state(false);
 	let show_bar = $state(true);
 
-	// stuff
-	let key_filter = $state((key: StatKey) =>
-		!key.includes('_res_percent') && include_gears ? true : !key.includes('base')
-	);
+	function key_filter(key: StatKey) {
+		return !key.includes('_res_percent') && (include_gears ? true : !key.includes('base'));
+	}
+
 	let grouping_fcn: (eff: TaggedEffect) => string = $derived(
 		GROUPING_FUNCTIONS[grouping_fcn_index]
 	);
@@ -95,25 +107,11 @@
 
 	type TaggedEffect = BaseEffect &
 		ETags & {
-			id:
-				| ResoEffectsIds
-				| WeaponEffectsIds
-				| MatrixEffectsIds
-				| ValidGearEffectIds
-				| RelicEffectsIds
-				| TraitEffectsIds;
+			id: AllEffectIds;
 			stats: StatData;
 		};
 
-	function tagEffect(
-		eff:
-			| ResoEffect
-			| WeaponEffect
-			| MatrixFinalEffect
-			| GearEffect
-			| RelicEffect
-			| FinalizedTraitEffect
-	) {
+	function tagEffect(eff: AllEffectTypes) {
 		const tags: ETags = {};
 
 		if (AllWeaponEffectIds.includes(eff.id as WeaponEffectsIds)) {
@@ -124,13 +122,17 @@
 			tags.character = eff.id.split('-')[0] as WeaponsIds;
 		} else if (AllResoEffectIds.includes(eff.id as ResoEffectsIds)) {
 			tags.is_reso = true;
-		} else if (AllGearEffectIds.includes(eff.id as ValidGearEffectIds)) {
+		} else if (AllGearEffectIds.includes(eff.id as GearEffectsIds)) {
 			tags.is_gear = true;
 		} else if (AllRelicEffectIds.includes(eff.id as RelicEffectsIds)) {
 			tags.is_relic = true;
 		} else if (AllTraitEffectIds.includes(eff.id as TraitEffectsIds)) {
 			tags.is_trait = true;
 			tags.character = eff.id.split('-')[0] as WeaponsIds;
+		} else if (AllWeaponBaseEffectIds.includes(eff.id as WeaponBaseEffectIds)) {
+			tags.is_weapon = true;
+			tags.character = eff.id.split('-')[0] as WeaponsIds;
+		} else if (AllOtherEffectIds.includes(eff.id as OtherEffectIds)) {
 		} else {
 			console.log('FAILED TO TAG!');
 		}
@@ -181,13 +183,7 @@
 
 	function getDiff(prev_eff: TaggedEffect[], curr_eff: TaggedEffect[]): TaggedEffect[] {
 		type DiffIdMap = {
-			id:
-				| ResoEffectsIds
-				| WeaponEffectsIds
-				| MatrixEffectsIds
-				| ValidGearEffectIds
-				| RelicEffectsIds
-				| TraitEffectsIds;
+			id: AllEffectIds;
 			eff_in_prev?: TaggedEffect;
 			eff_in_curr?: TaggedEffect;
 		};
@@ -236,7 +232,7 @@
 	}
 
 	let tagged_effects = $derived(
-		all_effects.map((eff) => {
+		all_effects_.map((eff) => {
 			const tagged_eff: TaggedEffect = {
 				...eff,
 				...tagEffect(eff)
@@ -257,12 +253,12 @@
 	);
 
 	let data = $derived(createData(current_processed_effects, grouping_fcn));
-	let sortedKeys = $derived(
-		Object.entries(stat_col_totals.data)
-			.filter(([key, _]) => key_filter(key as StatKey))
-			.sort((a, b) => b[1] - a[1])
-			.map(([key, _]) => key)
-	);
+	// let sortedKeys = $derived(
+	// 	Object.entries(stat_col_totals.data)
+	// 		.filter(([key, _]) => key_filter(key as StatKey))
+	// 		.sort((a, b) => b[1] - a[1])
+	// 		.map(([key, _]) => key)
+	// );
 
 	// NOTE: REVERSE ORDER!!!!
 	let sortedKeyLabels = $derived(
@@ -272,6 +268,7 @@
 			.map(([key, _]) => STAT_LABELS[key as StatKey])
 	);
 
+	// TODO: find option to make the graph not slow down webapp too much...
 	let options: BarChartOptions = $derived({
 		theme: 'g90',
 		title: 'Stat Contributions',
@@ -299,6 +296,11 @@
 			}, 1);
 			reset_graph = false;
 		}
+	});
+
+	$effect(() => {
+		data;
+		enableUpdate();
 	});
 </script>
 

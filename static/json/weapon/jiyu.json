@@ -1,0 +1,8 @@
+{
+	"id": "jiyu",
+	"name": "Jiyu",
+	"base_stat": "crit-med",
+	"resonances": ["flame-phys", "atk"],
+	"effects": ["jiyu-a3", "jiyu-discharge", "jiyu-a6-discharge"],
+	"reso_effects": ["flame-reso", "phys-reso"]
+}

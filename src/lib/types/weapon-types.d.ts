@@ -7,15 +7,15 @@ import type {
 	TraitEffectsIds,
 	TraitsIds,
 	WeaponEffectsIds,
+	WeaponSettingsIds,
 	WeaponsIds
 } from '../generated/ids';
 import type { StatCollection } from '../scripts/stats';
 import type {
+	FinalizedMatrixEffect,
 	FinalizedTraitEffect,
-	MatrixFinalEffect,
 	OrderedResoTriggers,
 	RelicEffect,
-	ResoTriggers,
 	WeaponEffect
 } from './effect-types';
 import type { StatBuffs, StatGearUser } from './stat-types';
@@ -37,21 +37,33 @@ export type BaseStatValue = {
 	[key in StatGearUser | StatBuffs]?: [number, number];
 };
 
-export type WeaponSettingStuff = {
-	id: string;
+export type WeaponSetting = {
+	id: WeaponSettingsIds;
 	icon: string;
-	resonances?: ResoTriggers[];
+	resonances?: OrderedResoTriggers;
 	effects?: WeaponEffectsIds[];
 	reso_effects?: ResoEffectsIds[]; // would merge with weapon
 	notes?: string;
 };
 
-export type WeaponSetting = {
-	choices: {
-		[key: string]: WeaponSettingStuff;
-	};
-	default: string[];
-	type: 'element' | 'skill';
+export type SettingAssignment = 'manual' | 'voidpiercer';
+
+export type SettingSkill = {
+	choices: WeaponSettingsIds[];
+	default: WeaponSettingsIds;
+	assignment: SettingAssignment;
+	type: 'skill';
+};
+
+export type SettingElement = {
+	choices: WeaponSettingsIds[];
+	default: WeaponSettingsIds;
+	assignment: SettingAssignment;
+	type: 'element';
+};
+
+export type SettingView = (SettingElement | SettingSkill) & {
+	choice: WeaponSetting;
 };
 
 export type Weapon = {
@@ -63,13 +75,13 @@ export type Weapon = {
 	effects: WeaponEffectsIds[];
 	reso_effects?: ResoEffectsIds[];
 
-	setting?: WeaponSetting;
+	settings?: (SettingElement | SettingSkill)[];
 };
 
 export type UserWeapon = {
 	id: WeaponsIds;
 	advancement?: number;
-	setting?: string[]; // must refer to ids
+	setting?: WeaponSettingsIds[]; // must refer to ids
 };
 
 export type WeaponView = {
@@ -77,7 +89,7 @@ export type WeaponView = {
 	name: string;
 	resonances: OrderedResoTriggers;
 	onfieldness?: number;
-	setting: WeaponSettingStuff[];
+	setting_view: SettingView[];
 
 	base_stat: StatCollection;
 	effects: WeaponEffect[];
@@ -101,7 +113,7 @@ export type MatrixView = {
 	id: MatrixIds;
 	name: string;
 
-	effects: MatrixFinalEffect[];
+	effects: FinalizedMatrixEffect[];
 	stat: StatCollection;
 
 	advancement: number;

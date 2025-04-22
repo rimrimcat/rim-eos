@@ -1,0 +1,6 @@
+{
+	"id": "nola-volt",
+	"icon": "./stat_icon/volt.webp",
+	"resonances": ["volt-frost", "none"],
+	"reso_effects": ["volt-reso", "frost-reso"]
+}

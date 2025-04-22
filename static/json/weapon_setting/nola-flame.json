@@ -1,0 +1,6 @@
+{
+	"id": "nola-flame",
+	"icon": "./stat_icon/flame.webp",
+	"resonances": ["flame-phys", "none"],
+	"reso_effects": ["flame-reso", "phys-reso"]
+}

@@ -1,0 +1,8 @@
+{
+	"id": "yanuo-a1",
+	"stats": {
+		"final_dmg_percent": 12
+	},
+	"require_adv": 1,
+	"require_hp_less_than": 80
+}

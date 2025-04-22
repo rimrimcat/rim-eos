@@ -27,12 +27,16 @@
         "atk",
         "bene",
         "flame",
+        "flame-phys",
         "force-impact",
         "fort",
         "frost",
+        "frost-volt",
         "none",
         "phys",
-        "volt"
+        "phys-flame",
+        "volt",
+        "volt-frost"
       ],
       "type": "string"
     },
@@ -43,12 +47,16 @@
         "atk",
         "bene",
         "flame",
+        "flame-phys",
         "force-impact",
         "fort",
         "frost",
+        "frost-volt",
         "none",
         "phys",
-        "volt"
+        "phys-flame",
+        "volt",
+        "volt-frost"
       ],
       "type": "string"
     },
@@ -66,18 +74,32 @@
         "asurada",
         "brevey",
         "claudiax",
+        "fiona",
         "grayfox",
+        "jiyu",
         "merylx",
         "nanyin",
         "nola",
         "none",
+        "rei",
         "roslyn",
-        "voidpiercer"
+        "voidpiercer",
+        "yanmiao",
+        "yanuo"
       ],
       "type": "string"
     },
     "require_boss": {
       "type": "boolean"
+    },
+    "require_combat": {
+      "type": "boolean"
+    },
+    "require_hp_less_than": {
+      "type": "number"
+    },
+    "require_hp_greater_than": {
+      "type": "number"
     },
     "notes": {
       "type": "string"
@@ -88,7 +110,7 @@
     "require_adv": {
       "type": "number"
     },
-    "require_adv_not": {
+    "require_adv_not_gt": {
       "type": "number"
     },
     "require_offhand": {
@@ -121,10 +143,20 @@
         "brevey-skill-offhand",
         "claudiax-a6-skill",
         "claudiax-skill",
+        "fiona-a1",
+        "fiona-a6",
+        "fiona-discharge-atk",
+        "fiona-skill-hydro",
+        "fiona-skill-maelstrom",
+        "fiona-skill-shackle",
+        "fiona-skill-wellspring",
         "grayfox-a3-buff",
         "grayfox-a3-debuff",
         "grayfox-a6",
         "grayfox-skill",
+        "jiyu-a3",
+        "jiyu-a6-discharge",
+        "jiyu-discharge",
         "merylx-a5",
         "merylx-discharge",
         "merylx-skill-fort",
@@ -134,7 +166,21 @@
         "nola-a3",
         "nola-a6",
         "nola-frost-skill",
-        "roslyn-a6"
+        "rei-a3",
+        "rei-a6",
+        "roslyn-a6",
+        "voidpiercer-a3",
+        "voidpiercer-a6",
+        "voidpiercer-starfall-flame",
+        "voidpiercer-starfall-frost",
+        "voidpiercer-starfall-phys",
+        "voidpiercer-starfall-volt",
+        "yanmiao-a3",
+        "yanmiao-a6-skill",
+        "yanmiao-skill",
+        "yanuo-a1",
+        "yanuo-a6-skill",
+        "yanuo-skill"
       ],
       "type": "string"
     },
@@ -270,6 +316,9 @@
         "shatter": {
           "type": "number"
         },
+        "coco_base_atk_percent": {
+          "type": "number"
+        },
         "res_ignore_percent": {
           "type": "number"
         },
@@ -316,9 +365,6 @@
           "type": "number"
         },
         "shield_dmg_reduction_ignore_percent": {
-          "type": "number"
-        },
-        "base_atk_improvement_percent": {
           "type": "number"
         },
         "base_phys_atk_improvement_percent": {

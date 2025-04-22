@@ -35,6 +35,10 @@
 		{
 			"fileMatch": ["**/trait/*.json"],
 			"url": "./src/lib/schemas/trait.schema.json"
+		},
+		{
+			"fileMatch": ["**/weapon_setting/*.json"],
+			"url": "./src/lib/schemas/weapon_setting.schema.json"
 		}
 	]
 }

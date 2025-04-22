@@ -1,0 +1,8 @@
+{
+	"id": "voidpiercer-starfall-frost",
+	"stats": {
+		"final_dmg_percent": 55
+	},
+	"require_reso": "frost-volt",
+	"duration": 0
+}

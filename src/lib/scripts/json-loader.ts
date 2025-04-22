@@ -18,6 +18,8 @@ import type {
 	Weapon,
 	WeaponEffect,
 	WeaponEffectsIds,
+	WeaponSetting,
+	WeaponSettingsIds,
 	WeaponsIds
 } from '../types/index';
 
@@ -56,6 +58,7 @@ const WEAPON_EFFECTS: { [key in WeaponEffectsIds]?: WeaponEffect } = {};
 const MATRIX_EFFECTS: { [key in MatrixEffectsIds]?: MatrixEffect } = {};
 const RELIC_EFFECTS: { [key in RelicEffectsIds]?: RelicEffect } = {};
 const TRAIT_EFFECTS: { [key in TraitEffectsIds]?: TraitEffect } = {};
+const WEAPON_SETTINGS: { [key in WeaponSettingsIds]?: WeaponSetting } = {};
 const WEAPONS: { [key in WeaponsIds]?: Weapon } = {};
 const MATRIX: { [key in MatrixIds]?: Matrix } = {};
 const RELIC: { [key in RelicsIds]?: Relic } = {};
@@ -157,6 +160,26 @@ export async function getTraitEffect(effect: TraitEffectsIds): Promise<TraitEffe
 		return TRAIT_EFFECTS[effect];
 	} catch (error) {
 		console.error(`Error loading effect ${effect}:`, error);
+		throw error;
+	}
+}
+
+export async function getWeaponSetting(setting: WeaponSettingsIds): Promise<WeaponSetting> {
+	if (WEAPON_SETTINGS[setting]) {
+		return WEAPON_SETTINGS[setting];
+	}
+
+	try {
+		const response = await fetch(`./json/weapon_setting/${setting}.json`);
+		if (!response.ok) {
+			throw new Error(`Failed to load setting ${setting}: ${response.statusText}`);
+		}
+
+		const data = await response.json();
+		WEAPON_SETTINGS[setting] = data as WeaponSetting;
+		return WEAPON_SETTINGS[setting];
+	} catch (error) {
+		console.error(`Error loading setting ${setting}:`, error);
 		throw error;
 	}
 }

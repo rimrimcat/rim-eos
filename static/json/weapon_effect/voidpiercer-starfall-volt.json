@@ -1,0 +1,7 @@
+{
+	"id": "voidpiercer-starfall-volt",
+	"stats": {
+		"volt_dmg_percent": 6
+	},
+	"require_reso": "volt-frost"
+}

@@ -5,11 +5,13 @@
 	import {
 		applyExtraGearViewStats,
 		createStatViewFromStore,
+		getAllEffectsFromStore,
 		getAllStatsFromStore,
 		getEquippedGearViews,
 		updateWeaponMatrixRelicTraitFromStore
 	} from '$lib/scripts/loadout';
 	import {
+		all_effects,
 		all_stats,
 		current_loadout,
 		equipped_gear_views,
@@ -19,6 +21,7 @@
 		guide_title,
 		inner_width,
 		is_mobile,
+		loadout_element,
 		scroll_y,
 		stat_autoupdate,
 		stat_view,
@@ -95,7 +98,12 @@
 	// auto update for stats and gear views
 	$effect(() => {
 		if (!$stat_autoupdate) return;
-		$equipped_gear_views = getEquippedGearViews($user_loadouts[$current_loadout].equipped_gears);
+		console.log('Stat Autoupdate');
+
+		const selected_loadout = $user_loadouts[$current_loadout];
+		$equipped_gear_views = getEquippedGearViews(selected_loadout.equipped_gears);
+		$loadout_element = selected_loadout.element;
+		$all_effects = getAllEffectsFromStore();
 		$all_stats = getAllStatsFromStore();
 		$stat_view = createStatViewFromStore();
 		applyExtraGearViewStats();

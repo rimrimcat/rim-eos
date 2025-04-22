@@ -1,0 +1,7 @@
+{
+	"id": "voidpiercer-starfall-flame",
+	"stats": {
+		"flame_dmg_percent": 17
+	},
+	"require_reso": "flame-phys"
+}

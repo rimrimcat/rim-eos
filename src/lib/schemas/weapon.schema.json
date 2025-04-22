@@ -21,9 +21,7 @@
         }
       ],
       "minItems": 2,
-      "additionalItems": {
-        "$ref": "#/definitions/ResoTriggers"
-      }
+      "maxItems": 2
     },
     "onfieldness": {
       "type": "number"
@@ -40,69 +38,68 @@
         "$ref": "#/definitions/ResoEffectsIds"
       }
     },
-    "setting": {
-      "type": "object",
-      "properties": {
-        "choices": {
-          "type": "object",
-          "additionalProperties": {
+    "settings": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
             "type": "object",
             "properties": {
-              "id": {
-                "type": "string"
-              },
-              "icon": {
-                "type": "string"
-              },
-              "resonances": {
+              "choices": {
                 "type": "array",
                 "items": {
-                  "$ref": "#/definitions/ResoTriggers"
+                  "$ref": "#/definitions/WeaponSettingsIds"
                 }
               },
-              "effects": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/WeaponEffectsIds"
-                }
+              "default": {
+                "$ref": "#/definitions/WeaponSettingsIds"
               },
-              "reso_effects": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/definitions/ResoEffectsIds"
-                }
+              "assignment": {
+                "$ref": "#/definitions/SettingAssignment"
               },
-              "notes": {
-                "type": "string"
+              "type": {
+                "type": "string",
+                "const": "skill"
               }
             },
             "additionalProperties": false,
             "required": [
-              "icon",
-              "id"
+              "assignment",
+              "choices",
+              "default",
+              "type"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "choices": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/definitions/WeaponSettingsIds"
+                }
+              },
+              "default": {
+                "$ref": "#/definitions/WeaponSettingsIds"
+              },
+              "assignment": {
+                "$ref": "#/definitions/SettingAssignment"
+              },
+              "type": {
+                "type": "string",
+                "const": "element"
+              }
+            },
+            "additionalProperties": false,
+            "required": [
+              "assignment",
+              "choices",
+              "default",
+              "type"
             ]
           }
-        },
-        "default": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "type": {
-          "enum": [
-            "element",
-            "skill"
-          ],
-          "type": "string"
-        }
-      },
-      "additionalProperties": false,
-      "required": [
-        "choices",
-        "default",
-        "type"
-      ]
+        ]
+      }
     }
   },
   "additionalProperties": false,
@@ -122,13 +119,18 @@
         "asurada",
         "brevey",
         "claudiax",
+        "fiona",
         "grayfox",
+        "jiyu",
         "merylx",
         "nanyin",
         "nola",
         "none",
+        "rei",
         "roslyn",
-        "voidpiercer"
+        "voidpiercer",
+        "yanmiao",
+        "yanuo"
       ],
       "type": "string"
     },
@@ -148,10 +150,14 @@
       "enum": [
         "alt",
         "flame",
+        "flame-phys",
         "frost",
+        "frost-volt",
         "none",
         "phys",
-        "volt"
+        "phys-flame",
+        "volt",
+        "volt-frost"
       ],
       "type": "string"
     },
@@ -161,22 +167,6 @@
         "bene",
         "fort",
         "none"
-      ],
-      "type": "string"
-    },
-    "ResoTriggers": {
-      "enum": [
-        "alt",
-        "armor-dissolve",
-        "atk",
-        "bene",
-        "flame",
-        "force-impact",
-        "fort",
-        "frost",
-        "none",
-        "phys",
-        "volt"
       ],
       "type": "string"
     },
@@ -201,10 +191,20 @@
         "brevey-skill-offhand",
         "claudiax-a6-skill",
         "claudiax-skill",
+        "fiona-a1",
+        "fiona-a6",
+        "fiona-discharge-atk",
+        "fiona-skill-hydro",
+        "fiona-skill-maelstrom",
+        "fiona-skill-shackle",
+        "fiona-skill-wellspring",
         "grayfox-a3-buff",
         "grayfox-a3-debuff",
         "grayfox-a6",
         "grayfox-skill",
+        "jiyu-a3",
+        "jiyu-a6-discharge",
+        "jiyu-discharge",
         "merylx-a5",
         "merylx-discharge",
         "merylx-skill-fort",
@@ -214,7 +214,21 @@
         "nola-a3",
         "nola-a6",
         "nola-frost-skill",
-        "roslyn-a6"
+        "rei-a3",
+        "rei-a6",
+        "roslyn-a6",
+        "voidpiercer-a3",
+        "voidpiercer-a6",
+        "voidpiercer-starfall-flame",
+        "voidpiercer-starfall-frost",
+        "voidpiercer-starfall-phys",
+        "voidpiercer-starfall-volt",
+        "yanmiao-a3",
+        "yanmiao-a6-skill",
+        "yanmiao-skill",
+        "yanuo-a1",
+        "yanuo-a6-skill",
+        "yanuo-skill"
       ],
       "type": "string"
     },
@@ -235,6 +249,36 @@
         "nanyin-reso",
         "phys-reso",
         "volt-reso"
+      ],
+      "type": "string"
+    },
+    "WeaponSettingsIds": {
+      "enum": [
+        "fiona-hydro",
+        "fiona-maelstrom",
+        "fiona-shackle",
+        "fiona-torrent",
+        "fiona-vortex",
+        "fiona-wellspring",
+        "nola-alt",
+        "nola-flame",
+        "nola-frost",
+        "nola-phys",
+        "nola-volt",
+        "voidpiercer-alt",
+        "voidpiercer-flame",
+        "voidpiercer-frost",
+        "voidpiercer-phys",
+        "voidpiercer-pursuit",
+        "voidpiercer-starfall",
+        "voidpiercer-volt"
+      ],
+      "type": "string"
+    },
+    "SettingAssignment": {
+      "enum": [
+        "manual",
+        "voidpiercer"
       ],
       "type": "string"
     }

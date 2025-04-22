@@ -1,0 +1,8 @@
+{
+	"id": "yanuo",
+	"name": "Yanuo",
+	"base_stat": "crit-med",
+	"resonances": ["frost-volt", "atk"],
+	"effects": ["yanuo-a1", "yanuo-skill", "yanuo-a6-skill"],
+	"reso_effects": ["frost-reso", "volt-reso"]
+}

@@ -1,14 +1,18 @@
 // Auto-generated file
 
 import type {
+	GearEffectsIds,
 	MatrixEffectsIds,
 	MatrixIds,
+	OtherEffectIds,
 	RelicEffectsIds,
 	RelicsIds,
 	ResoEffectsIds,
 	TraitEffectsIds,
 	TraitsIds,
+	WeaponBaseEffectIds,
 	WeaponEffectsIds,
+	WeaponSettingsIds,
 	WeaponsIds
 } from './ids';
 
@@ -32,10 +36,20 @@ export const AllWeaponEffectIds: WeaponEffectsIds[] = [
 	'brevey-skill',
 	'claudiax-a6-skill',
 	'claudiax-skill',
+	'fiona-a1',
+	'fiona-a6',
+	'fiona-discharge-atk',
+	'fiona-skill-hydro',
+	'fiona-skill-maelstrom',
+	'fiona-skill-shackle',
+	'fiona-skill-wellspring',
 	'grayfox-a3-buff',
 	'grayfox-a3-debuff',
 	'grayfox-a6',
 	'grayfox-skill',
+	'jiyu-a3',
+	'jiyu-a6-discharge',
+	'jiyu-discharge',
 	'merylx-a5',
 	'merylx-discharge',
 	'merylx-skill-fort',
@@ -45,7 +59,21 @@ export const AllWeaponEffectIds: WeaponEffectsIds[] = [
 	'nola-a3',
 	'nola-a6',
 	'nola-frost-skill',
-	'roslyn-a6'
+	'rei-a3',
+	'rei-a6',
+	'roslyn-a6',
+	'voidpiercer-a3',
+	'voidpiercer-a6',
+	'voidpiercer-starfall-flame',
+	'voidpiercer-starfall-frost',
+	'voidpiercer-starfall-phys',
+	'voidpiercer-starfall-volt',
+	'yanmiao-a3',
+	'yanmiao-a6-skill',
+	'yanmiao-skill',
+	'yanuo-a1',
+	'yanuo-a6-skill',
+	'yanuo-skill'
 ];
 export const AllMatrixEffectIds: MatrixEffectsIds[] = [
 	'anka-2p',
@@ -68,11 +96,20 @@ export const AllMatrixEffectIds: MatrixEffectsIds[] = [
 	'claudiax-2p',
 	'claudiax-4p-weap',
 	'claudiax-4p',
+	'cocoritter-2p',
+	'cocoritter-4p',
+	'fiona-2p',
+	'fiona-4p-bene-bonus',
+	'fiona-4p-bene',
+	'fiona-4p-nonbene',
 	'grayfox-2p-bene',
 	'grayfox-2p',
 	'grayfox-4p-bene',
 	'grayfox-4p-nonbene',
 	'grayfox-4p',
+	'jiyu-2p',
+	'jiyu-4p-weap',
+	'jiyu-4p',
 	'merylx-2p-static',
 	'merylx-2p',
 	'merylx-4p-fort-debuff',
@@ -83,12 +120,23 @@ export const AllMatrixEffectIds: MatrixEffectsIds[] = [
 	'nola-2p',
 	'nola-4p-skill',
 	'nola-4p',
+	'rei-2p-weap',
+	'rei-2p',
+	'rei-4p-weap',
+	'rei-4p',
 	'roslyn-2p',
 	'roslyn-4p-extra',
 	'roslyn-4p',
 	'voidpiercer-2p',
 	'voidpiercer-4p-weap',
-	'voidpiercer-4p'
+	'voidpiercer-4p',
+	'yanmiao-2p',
+	'yanmiao-4p-weap',
+	'yanmiao-4p',
+	'yanuo-2p',
+	'yanuo-4p-weap',
+	'yanuo-4p',
+	'zero-4p'
 ];
 export const AllResoEffectIds: ResoEffectsIds[] = [
 	'armor-dissolve-teamplay',
@@ -150,6 +198,26 @@ export const AllTraitEffectIds: TraitEffectsIds[] = [
 	'nola-trait',
 	'roslyn-trait'
 ];
+export const AllWeaponSettingsIds: WeaponSettingsIds[] = [
+	'fiona-hydro',
+	'fiona-maelstrom',
+	'fiona-shackle',
+	'fiona-torrent',
+	'fiona-vortex',
+	'fiona-wellspring',
+	'nola-alt',
+	'nola-flame',
+	'nola-frost',
+	'nola-phys',
+	'nola-volt',
+	'voidpiercer-alt',
+	'voidpiercer-flame',
+	'voidpiercer-frost',
+	'voidpiercer-phys',
+	'voidpiercer-pursuit',
+	'voidpiercer-starfall',
+	'voidpiercer-volt'
+];
 
 export const AllMatrixIds: MatrixIds[] = [
 	'none',
@@ -159,11 +227,19 @@ export const AllMatrixIds: MatrixIds[] = [
 	'asurada-4p',
 	'brevey-4p',
 	'claudiax-4p',
+	'cocoritter-4p',
+	'fiona-4p',
 	'grayfox-4p',
+	'jiyu-4p',
 	'merylx-4p',
 	'nanyin-4p',
 	'nola-4p',
-	'roslyn-4p'
+	'rei-4p',
+	'roslyn-4p',
+	'voidpiercer-4p',
+	'yanmiao-4p',
+	'yanuo-4p',
+	'zero-4p'
 ];
 export const AllWeaponIds: WeaponsIds[] = [
 	'none',
@@ -173,12 +249,17 @@ export const AllWeaponIds: WeaponsIds[] = [
 	'asurada',
 	'brevey',
 	'claudiax',
+	'fiona',
 	'grayfox',
+	'jiyu',
 	'merylx',
 	'nanyin',
 	'nola',
+	'rei',
 	'roslyn',
-	'voidpiercer'
+	'voidpiercer',
+	'yanmiao',
+	'yanuo'
 ];
 export const AllRelicIds: RelicsIds[] = [
 	'none',
@@ -192,7 +273,21 @@ export const AllRelicIds: RelicsIds[] = [
 	'shield',
 	'thalassic'
 ];
-export const AllGearEffectIds = [
+export const AllTraitIds: TraitsIds[] = [
+	'none',
+	'anka',
+	'asuka',
+	'asurada',
+	'brevey',
+	'claudiax',
+	'grayfox',
+	'merylx',
+	'nanyin',
+	'nola',
+	'roslyn'
+];
+
+export const AllGearEffectIds: GearEffectsIds[] = [
 	'gear-A',
 	'gear-B',
 	'gear-C',
@@ -206,16 +301,28 @@ export const AllGearEffectIds = [
 	'gear-R',
 	'gear-G'
 ];
-export const AllTraitIds: TraitsIds[] = [
-	'none',
-	'anka',
-	'asuka',
-	'asurada',
-	'brevey',
-	'claudiax',
-	'grayfox',
-	'merylx',
-	'nanyin',
-	'nola',
-	'roslyn'
+export const AllOtherEffectIds: OtherEffectIds[] = [
+	'unaccounted',
+	'supercompute',
+	'enhanced-blade-shot'
+];
+export const AllWeaponBaseEffectIds: WeaponBaseEffectIds[] = [
+	'none-base',
+	'anka-base',
+	'antoria-base',
+	'asuka-base',
+	'asurada-base',
+	'brevey-base',
+	'claudiax-base',
+	'fiona-base',
+	'grayfox-base',
+	'jiyu-base',
+	'merylx-base',
+	'nanyin-base',
+	'nola-base',
+	'rei-base',
+	'roslyn-base',
+	'voidpiercer-base',
+	'yanmiao-base',
+	'yanuo-base'
 ];

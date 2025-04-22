@@ -1,7 +1,9 @@
 import { writable } from 'svelte/store';
 import type {
+	AllEffectTypes,
 	AllLoadouts,
 	CharacterStat,
+	Elements,
 	GearView,
 	GuideItem,
 	MatrixView,
@@ -52,6 +54,7 @@ export const gear_views = writable<GearView[]>([]);
 export const equipped_gear_views = writable<GearView[]>([]);
 
 // loadout
+export const loadout_element = writable<Elements>('phys');
 export const base_weapons = writable<Weapon[]>([]);
 export const reso_counts = writable<ResoTriggerCounts>({});
 export const reso_effects = writable<ResoEffect[]>([]);
@@ -61,6 +64,7 @@ export const relic_views = writable<RelicView[]>([]);
 export const trait_view = writable<TraitView | null>(null);
 
 // overall
+export const all_effects = writable<AllEffectTypes[]>([]);
 export const all_stats = writable<StatCollection>(new StatCollection());
 
 // overall stat

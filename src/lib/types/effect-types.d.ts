@@ -1,19 +1,22 @@
 import type {
+	GearEffectsIds,
 	MatrixEffectsIds,
+	OtherEffectIds,
 	RelicEffectsIds,
 	ResoEffectsIds,
 	TraitEffectsIds,
+	WeaponBaseEffectIds,
 	WeaponEffectsIds,
 	WeaponsIds
 } from '../generated/ids';
-import type { ValidGearPart } from './gear-types';
 import type { Elements, StatData, StatKey } from './stat-types';
 
-export type ResoElement = Elements | 'none';
+export type CompoundElements = 'phys-flame' | 'flame-phys' | 'frost-volt' | 'volt-frost';
+export type ResoElement = Elements | CompoundElements | 'none';
 export type ResoRole = 'atk' | 'fort' | 'bene' | 'none';
 export type ResoExtra = 'armor-dissolve' | 'force-impact';
 export type ResoTriggers = ResoElement | ResoRole | ResoExtra;
-export type OrderedResoTriggers = [ResoElement, ResoRole, ...ResoTriggers[]];
+export type OrderedResoTriggers = [ResoElement, ResoRole];
 
 export type Target = 'self' | 'ally' | 'team' | 'enemy';
 export type ResoTriggerCounts = { [key in ResoTriggers]?: number };
@@ -52,6 +55,11 @@ export type BaseEffect = {
 
 	require_boss?: boolean; // effects that only activate against bosses
 
+	require_combat?: boolean; // effects that only activate when in combat (using skill, after dealing damage...)
+
+	require_hp_less_than?: number; // effects that only activate when enemy hp is less than a certain percentage
+	require_hp_greater_than?: number; // effects that only activate when enemy hp is greater than a certain percentage
+
 	notes?: string;
 };
 
@@ -59,7 +67,7 @@ export type WeaponEffect = BaseEffect & {
 	id: WeaponEffectsIds;
 	stats: StatData;
 	require_adv?: number; // required advancement (esp. for weapons)
-	require_adv_not?: number; // for advancement that modifies original effects
+	require_adv_not_gt?: number; // for advancement that modifies original effects
 	require_offhand?: boolean; // effects that only activate when offhand
 };
 
@@ -74,15 +82,14 @@ export type MatrixEffect = BaseEffect & {
 	stats: MatrixStatData | MatrixExprData;
 };
 
-export type MatrixFinalEffect = BaseEffect & {
+export type FinalizedMatrixEffect = BaseEffect & {
 	id: MatrixEffectsIds;
 	stats: StatData;
 	advancement: number;
 };
 
-export type ValidGearEffectIds = `gear-${ValidGearPart}`;
 export type GearEffect = BaseEffect & {
-	id: ValidGearEffectIds;
+	id: GearEffectsIds;
 	stats: StatData;
 };
 
@@ -111,3 +118,33 @@ export type FinalizedTraitEffect = BaseEffect & {
 	id: TraitEffectsIds;
 	stats: StatData;
 };
+
+export type WeaponBaseEffect = BaseEffect & {
+	id: WeaponBaseEffectIds;
+	stats: StatData;
+};
+
+export type OtherEffect = BaseEffect & {
+	id: OtherEffectIds;
+	stats: StatData;
+};
+
+export type AllEffectTypes =
+	| ResoEffect
+	| WeaponEffect
+	| WeaponBaseEffect
+	| FinalizedMatrixEffect
+	| GearEffect
+	| RelicEffect
+	| FinalizedTraitEffect
+	| OtherEffect;
+
+export type AllEffectIds =
+	| ResoEffectsIds
+	| WeaponEffectsIds
+	| WeaponBaseEffectIds
+	| MatrixEffectsIds
+	| GearEffectsIds
+	| RelicEffectsIds
+	| TraitEffectsIds
+	| OtherEffectIds;

@@ -17,8 +17,6 @@
 		saveObject
 	} from '$lib/scripts/loader';
 	import {
-		dedupeMatEffs,
-		turnGearToEffect,
 		updateSingleMatrixView,
 		updateSingleRelicView,
 		updateSingleWeaponView,
@@ -28,7 +26,6 @@
 	import {
 		base_weapons,
 		current_loadout,
-		equipped_gear_views,
 		font_size,
 		gear_views,
 		inner_width,
@@ -37,7 +34,6 @@
 		loadout_page_loaded,
 		matrix_views,
 		relic_views,
-		reso_effects,
 		stat_autoupdate,
 		trait_view,
 		user_gears,
@@ -49,12 +45,12 @@
 		LoadoutType,
 		MatrixIds,
 		MatrixView,
+		SettingView,
 		StatGearUser,
 		TraitsIds,
 		UserMatrix,
 		UserRelic,
 		UserWeapon,
-		WeaponSettingStuff,
 		WeaponsIds,
 		WeaponView
 	} from '$lib/types/index';
@@ -86,15 +82,6 @@
 	let loadout_weapmat_combined: [WeaponView, MatrixView][] = $derived(
 		$weapon_views.map((weapon, i) => [weapon, $matrix_views[i]])
 	);
-
-	let all_effects = $derived([
-		...$weapon_views.flatMap((weapon) => weapon.effects),
-		...dedupeMatEffs($matrix_views.flatMap((matrix) => matrix.effects)),
-		...$reso_effects,
-		...$equipped_gear_views.flatMap((gear) => turnGearToEffect(gear)),
-		...$relic_views.flatMap((relic) => relic.effects),
-		...($trait_view?.effects ?? [])
-	]);
 
 	let is_editing = $state(false);
 
@@ -323,56 +310,68 @@
 
 	function onSwitchMatrix(id: MatrixIds) {
 		user_matrices[switch_index] = { id };
+		$stat_autoupdate = false;
 		saveLoadout();
-		updateWeaponMatrixRelicTraitFromStore();
-		reset_graph = true;
+		updateWeaponMatrixRelicTraitFromStore().then(() => {
+			$stat_autoupdate = true;
+			reset_graph = true;
+		});
 	}
 
 	function onSwitchWeapon(id: WeaponsIds) {
 		user_weapons[switch_index] = { id };
+		$stat_autoupdate = false;
 		saveLoadout();
-		updateWeaponMatrixRelicTraitFromStore();
-		reset_graph = true;
+		updateWeaponMatrixRelicTraitFromStore().then(() => {
+			$stat_autoupdate = true;
+			reset_graph = true;
+		});
 	}
 
 	function onSwitchRelic(id: MatrixIds) {
 		user_relics[switch_index] = { id };
+		$stat_autoupdate = false;
 		saveLoadout();
-		updateWeaponMatrixRelicTraitFromStore();
-		reset_graph = true;
+		updateWeaponMatrixRelicTraitFromStore().then(() => {
+			$stat_autoupdate = true;
+			reset_graph = true;
+		});
 	}
 
 	function onSwitchTrait(id: TraitsIds) {
 		user_trait = id;
+		$stat_autoupdate = false;
 		saveLoadout();
-		updateWeaponMatrixRelicTraitFromStore();
-		reset_graph = true;
+		updateWeaponMatrixRelicTraitFromStore().then(() => {
+			$stat_autoupdate = true;
+			reset_graph = true;
+		});
 	}
 
 	function onWeaponSettingChange(
 		weapon: WeaponView,
 		index: number,
-		setting: WeaponSettingStuff,
+		setting_view: SettingView,
 		settingIndex: number
 	) {
 		// get keys in settings
-		if (!$base_weapons[index].setting) {
+		if (!$base_weapons[index].settings) {
 			return;
 		}
-		if (!weapon.setting) {
+		if (!weapon.setting_view) {
 			return;
 		}
 
-		const selected_keys = weapon.setting.map((setting) => setting.id);
-		const keys = Object.keys($base_weapons[index].setting.choices);
+		const all_selected_keys = weapon.setting_view.map((setting_) => setting_.choice.id);
+		const valid_keys = weapon.setting_view[settingIndex].choices;
 
-		let currKey = setting.id;
-		let currInd = keys.indexOf(currKey);
+		let currKey = setting_view.choice.id;
+		let currInd = valid_keys.indexOf(currKey);
 		const initialCurrInd = currInd;
 
-		while (selected_keys.indexOf(currKey) !== -1) {
-			currInd = (currInd + 1) % keys.length;
-			currKey = keys[currInd];
+		while (all_selected_keys.indexOf(currKey) !== -1) {
+			currInd = (currInd + 1) % valid_keys.length;
+			currKey = valid_keys[currInd];
 
 			if (currInd === initialCurrInd) {
 				// avoid catastrophe
@@ -382,12 +381,15 @@
 		}
 
 		if (!user_weapons[index].setting) {
-			user_weapons[index].setting = $base_weapons[index].setting.default;
+			user_weapons[index].setting = $base_weapons[index].settings.map((setting) => setting.default);
 		}
 		user_weapons[index].setting[settingIndex] = currKey;
+		$stat_autoupdate = false;
 		saveLoadout();
 		// nola can change elements and reso
-		updateWeaponMatrixRelicTraitFromStore();
+		updateWeaponMatrixRelicTraitFromStore().then(() => {
+			$stat_autoupdate = true;
+		});
 	}
 
 	const ACTIONS = [
@@ -469,8 +471,12 @@
 								} else {
 									user_matrices[index].advancement = advSetValue;
 								}
+
+								$stat_autoupdate = false;
 								saveLoadout();
-								updateSingleMatrixView(index);
+								updateSingleMatrixView(index).then(() => {
+									$stat_autoupdate = true;
+								});
 							}}
 						>
 							<div class="compose above" style="top: 4.5rem; left:{1.5 + advIndex}rem">
@@ -518,8 +524,11 @@
 										} else {
 											user_relics[index].advancement = advSetValue;
 										}
+										$stat_autoupdate = false;
 										saveLoadout();
-										updateSingleRelicView(index);
+										updateSingleRelicView(index).then(() => {
+											$stat_autoupdate = true;
+										});
 									}}
 								>
 									<div class="compose above" style="top: 4.5rem; left:{0.5 + advIndex}rem">
@@ -604,19 +613,21 @@
 									{/if}
 								</button>
 							</div>
-							{#if weapon.setting && weapon.setting.length > 0}
-								<div class="compose above" style="top: 0.5rem; left: 0.5rem;">
-									{#each weapon.setting as setting, settingIndex}
+							{#if weapon.setting_view && weapon.setting_view.length > 0}
+								<div class="vertical compose above" style="top: 0.5rem; left: 0.5rem">
+									{#each weapon.setting_view as setting_view, settingIndex}
 										<button
 											class="image"
 											onclick={() => {
-												onWeaponSettingChange(weapon, index, setting, settingIndex);
+												onWeaponSettingChange(weapon, index, setting_view, settingIndex);
 											}}
+											disabled={setting_view.assignment !== 'manual'}
+											style="margin-bottom: 0.2rem;"
 										>
 											<div class="vertical center">
 												<img
-													src={setting.icon}
-													alt={setting.icon}
+													src={setting_view.choice.icon}
+													alt={setting_view.choice.icon}
 													style="height: 1.5rem; width: 1.5rem; background-color: var(--button-bg); border-radius: 50%;"
 												/>
 											</div>
@@ -643,8 +654,11 @@
 											} else {
 												user_weapons[index].advancement = advSetValue;
 											}
+											$stat_autoupdate = false;
 											saveLoadout();
-											updateSingleWeaponView(index);
+											updateSingleWeaponView(index).then(() => {
+												$stat_autoupdate = true;
+											});
 										}}
 									>
 										<div class="compose above" style="top: 6.5rem; left:{1 + advIndex}rem">
@@ -818,12 +832,8 @@
 		</div>
 
 		{#if chart_width > 350}
-			<StatContributions
-				bind:all_effects
-				bind:chart_width
-				style="margin-top: 1.5rem;"
-				bind:reset_graph
-			/>
+			<!-- {#if chart_width > 10050} -->
+			<StatContributions bind:chart_width style="margin-top: 1.5rem;" bind:reset_graph />
 		{/if}
 	{/await}
 </div>

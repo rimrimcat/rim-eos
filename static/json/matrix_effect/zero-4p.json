@@ -1,0 +1,8 @@
+{
+	"id": "zero-4p",
+	"stats": {
+		"final_dmg_percent": [16, 20, 24, 28]
+	},
+	"target": "team",
+	"duration": 0
+}

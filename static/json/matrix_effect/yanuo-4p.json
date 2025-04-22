@@ -1,0 +1,8 @@
+{
+	"id": "yanuo-4p",
+	"stats": {
+		"ele_dmg_percent": [22, 24, 26, 28]
+	},
+	"require_reso": "frost",
+	"require_reso_count": 1
+}

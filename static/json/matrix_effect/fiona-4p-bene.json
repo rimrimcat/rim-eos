@@ -1,0 +1,9 @@
+{
+	"id": "fiona-4p-bene",
+	"stats": {
+		"final_dmg_percent": [8.5, 9.5, 10.5, 11.5]
+	},
+	"require_reso": "bene",
+	"require_weapon": "fiona",
+	"target": "team"
+}

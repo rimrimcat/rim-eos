@@ -1,0 +1,8 @@
+{
+	"id": "fiona-skill-maelstrom",
+	"stats": {
+		"final_dmg_percent": 13
+	},
+	"duration": 0,
+	"notes": "temporary value, assuming onfield for ~10s"
+}

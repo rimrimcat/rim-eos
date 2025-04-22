@@ -35,23 +35,19 @@
 	function getValidIds(switching_: SwitchType): IdType {
 		switch (switching_) {
 			case 'trait': {
-				console.log('IDS TAKEN FROM TRAIT');
 				return AllTraitIds.filter((id) => id !== 'none' && !($trait_view?.id === id));
 			}
 			case 'matrix': {
-				console.log('IDS TAKEN FROM MATRIX');
 				return AllMatrixIds.filter(
 					(id) => id !== 'none' && !$matrix_views.some((matrix) => matrix.id === id)
 				);
 			}
 			case 'weapon': {
-				console.log('IDS TAKEN FROM WEAPON');
 				return AllWeaponIds.filter(
 					(id) => id !== 'none' && !$weapon_views.some((weapon) => weapon.id === id)
 				);
 			}
 			case 'relic': {
-				console.log('IDS TAKEN FROM RELIC');
 				return AllRelicIds.filter(
 					(id) => id !== 'none' && !$relic_views.some((relic) => relic.id === id)
 				);
@@ -111,6 +107,13 @@
 		Promise.all(valid_stuff.map((id) => gettedGetter(id))).then((stuff) => {
 			actual_stuff = stuff;
 		});
+	});
+
+	$effect(() => {
+		if (!open) {
+			// reset search query after close
+			search_query = '';
+		}
 	});
 </script>
 

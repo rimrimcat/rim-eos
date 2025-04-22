@@ -1,0 +1,5 @@
+{
+	"id": "fiona-4p",
+	"name": "Fiona 4P",
+	"effects": ["fiona-2p", "fiona-4p-bene", "fiona-4p-bene-bonus", "fiona-4p-nonbene"]
+}

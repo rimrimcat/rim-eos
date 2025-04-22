@@ -1,0 +1,5 @@
+{
+	"id": "fiona-shackle",
+	"icon": "./skill_icon/shackle.webp",
+	"effects": ["fiona-skill-shackle"]
+}

@@ -1,0 +1,8 @@
+{
+	"id": "fiona-a1",
+	"stats": {
+		"final_dmg_percent": 7,
+		"healing_percent": 9
+	},
+	"require_adv": 1
+}
