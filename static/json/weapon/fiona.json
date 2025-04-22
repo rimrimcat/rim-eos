@@ -1,0 +1,8 @@
+{
+	"id": "fiona",
+	"name": "Fiona",
+	"base_stat": "crit-med",
+	"resonances": ["alt", "atk"],
+	"effects": ["fiona-a1", "fiona-a6", "fiona-discharge-atk"],
+	"reso_effects": ["fiona-reso"]
+}
