@@ -498,6 +498,32 @@ export async function obtainResoCounts(equipped_weapons: UserWeapon[], base_weap
 		return counts;
 	}, {} as ResoTriggerCounts);
 }
+
+/** Appends values to initial reso counts */
+export async function appendResoCounts(
+	equipped_weapon: UserWeapon,
+	base_weapon: Weapon,
+	reso_counts: ResoTriggerCounts
+) {
+	base_weapon.resonances.forEach((resonance) => {
+		reso_counts[resonance] = (reso_counts[resonance] ?? 0) + 1;
+	});
+	if (base_weapon.settings) {
+		const selected_settings =
+			equipped_weapon.setting ?? base_weapon.settings.map((setting) => setting.default) ?? [];
+		selected_settings.forEach(async (setting) => {
+			const setting_data = await getWeaponSetting(setting);
+			if (setting_data.resonances) {
+				setting_data.resonances.forEach((resonance) => {
+					reso_counts[resonance] = (reso_counts[resonance] ?? 0) + 1;
+				});
+			}
+		});
+	}
+
+	return reso_counts;
+}
+
 /** Expand compound reso triggers to add additional reso
  *  e.g. phys-flame -> phys + flame + armor-dissolve
  */
@@ -782,13 +808,40 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 	const base_weapons_ = await obtainBaseWeapons(equipped_weapons_);
 	base_weapons.set(base_weapons_);
 
-	const reso_counts_ = await obtainResoCounts(equipped_weapons_, base_weapons_);
+	const voidpiercer_index = base_weapons_.findIndex((weapon) => weapon.id === 'voidpiercer');
+
+	// exempt voidpiercer
+	const reso_counts_ = await obtainResoCounts(
+		equipped_weapons_.filter((_, index) => index !== voidpiercer_index),
+		base_weapons_.filter((_, index) => index !== voidpiercer_index)
+	);
 
 	// if voidpiercer is present, assign voidpiercer element
-	const voidpiercer_index = base_weapons_.findIndex((weapon) => weapon.id === 'voidpiercer');
 	if (voidpiercer_index !== -1) {
 		console.log('voidpiercer exists');
-		// TODO
+
+		if ((reso_counts_['frost'] ?? 0) + (reso_counts_['frost-volt'] ?? 0) >= 2) {
+			equipped_weapons_[voidpiercer_index].setting = ['voidpiercer-frost'];
+		} else if ((reso_counts_['volt'] ?? 0) + (reso_counts_['volt-frost'] ?? 0) >= 2) {
+			equipped_weapons_[voidpiercer_index].setting = ['voidpiercer-volt'];
+		} else if ((reso_counts_['phys'] ?? 0) + (reso_counts_['phys-flame'] ?? 0) >= 2) {
+			equipped_weapons_[voidpiercer_index].setting = ['voidpiercer-phys'];
+		} else if ((reso_counts_['flame'] ?? 0) + (reso_counts_['flame-phys'] ?? 0) >= 2) {
+			equipped_weapons_[voidpiercer_index].setting = ['voidpiercer-flame'];
+		} else {
+			equipped_weapons_[voidpiercer_index].setting = ['voidpiercer-alt'];
+		}
+		// update store
+		user_loadouts.update((loadouts) => {
+			loadouts[get(current_loadout)].equipped_weapons = equipped_weapons_;
+			return loadouts;
+		});
+		// append reso count
+		await appendResoCounts(
+			equipped_weapons_[voidpiercer_index],
+			base_weapons_[voidpiercer_index],
+			reso_counts_
+		);
 	}
 
 	await expandResoCounts(reso_counts_);
