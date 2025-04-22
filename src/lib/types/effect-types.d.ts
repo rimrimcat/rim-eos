@@ -121,3 +121,12 @@ export type OtherEffect = BaseEffect & {
 	id: OtherEffectIds;
 	stats: StatData;
 };
+
+export type AllEffectTypes =
+	| ResoEffect
+	| WeaponEffect
+	| MatrixFinalEffect
+	| GearEffect
+	| RelicEffect
+	| FinalizedTraitEffect
+	| OtherEffect;
