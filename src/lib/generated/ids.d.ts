@@ -231,3 +231,32 @@ export type TraitsIds =
 	| 'nanyin'
 	| 'nola'
 	| 'roslyn';
+
+export type GearEffectsIds =
+	| 'gear-A'
+	| 'gear-B'
+	| 'gear-C'
+	| 'gear-H'
+	| 'gear-L'
+	| 'gear-S'
+	| 'gear-T'
+	| 'gear-V'
+	| 'gear-X'
+	| 'gear-N'
+	| 'gear-R'
+	| 'gear-G';
+export type OtherEffectIds = 'unaccounted' | 'supercompute' | 'enhanced-blade-shot';
+export type WeaponBaseEffectIds =
+	| 'none-base'
+	| 'anka-base'
+	| 'antoria-base'
+	| 'asuka-base'
+	| 'asurada-base'
+	| 'brevey-base'
+	| 'claudiax-base'
+	| 'grayfox-base'
+	| 'merylx-base'
+	| 'nanyin-base'
+	| 'nola-base'
+	| 'roslyn-base'
+	| 'voidpiercer-base';

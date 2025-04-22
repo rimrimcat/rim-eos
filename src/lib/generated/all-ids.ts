@@ -1,13 +1,16 @@
 // Auto-generated file
 
 import type {
+	GearEffectsIds,
 	MatrixEffectsIds,
 	MatrixIds,
+	OtherEffectIds,
 	RelicEffectsIds,
 	RelicsIds,
 	ResoEffectsIds,
 	TraitEffectsIds,
 	TraitsIds,
+	WeaponBaseEffectIds,
 	WeaponEffectsIds,
 	WeaponSettingsIds,
 	WeaponsIds
@@ -241,7 +244,21 @@ export const AllRelicIds: RelicsIds[] = [
 	'shield',
 	'thalassic'
 ];
-export const AllGearEffectIds = [
+export const AllTraitIds: TraitsIds[] = [
+	'none',
+	'anka',
+	'asuka',
+	'asurada',
+	'brevey',
+	'claudiax',
+	'grayfox',
+	'merylx',
+	'nanyin',
+	'nola',
+	'roslyn'
+];
+
+export const AllGearEffectIds: GearEffectsIds[] = [
 	'gear-A',
 	'gear-B',
 	'gear-C',
@@ -255,16 +272,23 @@ export const AllGearEffectIds = [
 	'gear-R',
 	'gear-G'
 ];
-export const AllTraitIds: TraitsIds[] = [
-	'none',
-	'anka',
-	'asuka',
-	'asurada',
-	'brevey',
-	'claudiax',
-	'grayfox',
-	'merylx',
-	'nanyin',
-	'nola',
-	'roslyn'
+export const AllOtherEffectIds: OtherEffectIds[] = [
+	'unaccounted',
+	'supercompute',
+	'enhanced-blade-shot'
+];
+export const AllWeaponBaseEffectIds: WeaponBaseEffectIds[] = [
+	'none-base',
+	'anka-base',
+	'antoria-base',
+	'asuka-base',
+	'asurada-base',
+	'brevey-base',
+	'claudiax-base',
+	'grayfox-base',
+	'merylx-base',
+	'nanyin-base',
+	'nola-base',
+	'roslyn-base',
+	'voidpiercer-base'
 ];

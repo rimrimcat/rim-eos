@@ -1,12 +1,14 @@
 import type {
+	GearEffectsIds,
 	MatrixEffectsIds,
+	OtherEffectIds,
 	RelicEffectsIds,
 	ResoEffectsIds,
 	TraitEffectsIds,
+	WeaponBaseEffectIds,
 	WeaponEffectsIds,
 	WeaponsIds
 } from '../generated/ids';
-import type { ValidGearPart } from './gear-types';
 import type { Elements, StatData, StatKey } from './stat-types';
 
 export type CompoundElements = 'phys-flame' | 'flame-phys' | 'frost-volt' | 'volt-frost';
@@ -83,9 +85,8 @@ export type FinalizedMatrixEffect = BaseEffect & {
 	advancement: number;
 };
 
-export type ValidGearEffectIds = `gear-${ValidGearPart}`;
 export type GearEffect = BaseEffect & {
-	id: ValidGearEffectIds;
+	id: GearEffectsIds;
 	stats: StatData;
 };
 
@@ -115,14 +116,10 @@ export type FinalizedTraitEffect = BaseEffect & {
 	stats: StatData;
 };
 
-export type WeaponBaseEffectIds = `${WeaponsIds}-base`;
-
 export type WeaponBaseEffect = BaseEffect & {
 	id: WeaponBaseEffectIds;
 	stats: StatData;
 };
-
-export type OtherEffectIds = 'unaccounted' | 'supercompute' | 'enhanced-blade-shot';
 
 export type OtherEffect = BaseEffect & {
 	id: OtherEffectIds;
@@ -144,7 +141,7 @@ export type AllEffectIds =
 	| WeaponEffectsIds
 	| WeaponBaseEffectIds
 	| MatrixEffectsIds
-	| ValidGearEffectIds
+	| GearEffectsIds
 	| RelicEffectsIds
 	| TraitEffectsIds
 	| OtherEffectIds;
