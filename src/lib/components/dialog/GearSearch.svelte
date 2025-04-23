@@ -1,5 +1,10 @@
 <script lang="ts">
-	import { ALLOWED_REGEX_OPS, ALLOWED_REGEX_VARS, GearPart } from '$lib/scripts/gears.ts';
+	import {
+		ALLOWED_REGEX_OPS,
+		ALLOWED_REGEX_VARS,
+		GEAR_LABELS,
+		GearPart
+	} from '$lib/scripts/gears.ts';
 	import { is_mobile } from '$lib/scripts/stores';
 	import { SvelteSet } from 'svelte/reactivity';
 	import Dialog from '../Dialog.svelte';
@@ -15,28 +20,13 @@
 
 	let query = $derived(getQuery(selectedElement, selectedStat, selectedOthers, selectedSlot));
 
-	const ELEMENTS = ['Flame', 'Frost', 'Volt', 'Phys', 'Alt'] as const;
-	const STATS = ['ATK', 'TOTAL ATK', 'DMG', 'RES', 'CRIT', 'MULTIPLIER'] as const;
-	const OTHERS = ['Titan', 'Percent', 'Rainbow', 'Equipped'] as const;
-	const PARTS = [
-		'Helmet',
-		'Spaulders',
-		'Armor',
-		'Bracers',
-		'Belt',
-		'Legguards',
-		'Gloves',
-		'Boots',
-		'Visor',
-		'Engine',
-		'Exoskeleton',
-		'Reactor'
-	] as const;
-	const PART_GROUPS: Record<string, string[]> = {
-		'Group 1': ['Helmet', 'Spaulders', 'Armor', 'Bracers', 'Belt', 'Legguards'],
-		'Group 2': ['Gloves', 'Boots'],
-		'Group 3': ['Visor', 'Engine', 'Exoskeleton', 'Reactor']
-	};
+	const ELEMENTS = ['Flame', 'Frost', 'Volt', 'Phys', 'Alt'];
+	const STATS = ['ATK', 'TOTAL ATK', 'DMG', 'RES', 'CRIT', 'MULTIPLIER'];
+	const OTHERS = ['Titan', 'Percent', 'Rainbow', 'Equipped'];
+	const PARTS = Object.values(GEAR_LABELS);
+	const GROUP_1 = ['Helmet', 'Spaulders', 'Armor', 'Bracers', 'Belt', 'Legguards'];
+	const GROUP_2 = ['Gloves', 'Boots'];
+	const GROUP_3 = ['Visor', 'Engine', 'Exoskeleton', 'Reactor'];
 
 	function getQuery(
 		_selectedElement: string | null,
@@ -61,15 +51,6 @@
 		} else {
 			return rainbow + gear + equipped + '( ' + titan + element + 'atk' + ' + ' + titan + 'atk )';
 		}
-	}
-
-	function getSlotGroup(slot: string): string | null {
-		for (const [group, slots] of Object.entries(PART_GROUPS)) {
-			if (slots.includes(slot)) {
-				return group;
-			}
-		}
-		return null;
 	}
 
 	function selectElement(element: (typeof ELEMENTS)[number]) {
@@ -183,9 +164,9 @@
 				{#each PARTS as slot}
 					<button
 						class:selected={isSelected('slot', slot)}
-						class:group1={getSlotGroup(slot) === 'Group 1'}
-						class:group2={getSlotGroup(slot) === 'Group 2'}
-						class:group3={getSlotGroup(slot) === 'Group 3'}
+						class:group1={GROUP_1.includes(slot)}
+						class:group2={GROUP_2.includes(slot)}
+						class:group3={GROUP_3.includes(slot)}
 						onclick={() => selectSlot(slot)}
 						title={slot}
 					>
