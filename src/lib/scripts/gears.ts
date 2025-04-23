@@ -36,6 +36,21 @@ export enum GearPart {
 	UNKNOWN = 'U'
 }
 
+export const GEAR_LABELS = [
+	'Helmet',
+	'Spaulders',
+	'Armor',
+	'Bracers',
+	'Belt',
+	'Legguards',
+	'Gloves',
+	'Boots',
+	'Visor',
+	'Engine',
+	'Exoskeleton',
+	'Reactor'
+] as const;
+
 export type ValidGearPart =
 	| 'H'
 	| 'S'
