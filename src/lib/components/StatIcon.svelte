@@ -69,13 +69,15 @@
 	let imageWidth = $state(0);
 	let imageHeight = $state(0);
 
-	let maxIconWidth = $derived((atk_kind === 'dmg' ? 34 : 0) + (unit === 'percent' ? 13 : 0));
+	let maxIconWidth = $derived((atk_kind === 'dmg' ? 35 : 0) + (unit === 'percent' ? 13 : 0));
 	const maxIconHeight = 13;
 
 	let iconHeight = $derived(
-		Math.min(Math.floor((imageWidth / maxIconWidth) * maxIconHeight), maxIconHeight)
+		Math.min(Math.floor(maxIconHeight * (imageWidth / maxIconWidth)), maxIconHeight)
 	);
-	let iconWidth = $derived(Math.min(iconHeight * (maxIconWidth / maxIconHeight), maxIconWidth));
+	let iconWidth = $derived(
+		Math.min(Math.floor(iconHeight * (maxIconWidth / maxIconHeight)), maxIconWidth)
+	);
 
 	$effect(() => {
 		if (stat !== previous_stat) {
