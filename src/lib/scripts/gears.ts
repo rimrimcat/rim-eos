@@ -93,17 +93,17 @@ export const VALID_GEAR_PARTS: ValidGearPart[] = [
 
 export const GEAR_AUGMENT_LABELS: Record<GearAugment, string> = {
 	delay: 'Delay',
-	increased_healing: 'Increased Healing',
+	increased_healing: 'Healing',
 	lifesteal: 'Lifesteal',
-	hp_recovery: 'HP Recovery',
+	hp_recovery: 'Recovery',
 	block: 'Block',
-	dmg_reduction: 'Damage Reduction',
-	dmg_boost: 'Damage Boost',
-	weakpoint_dmg_boost: 'Weakpoint Damage Boost',
-	normal_atk_dmg_boost: 'Normal Attack Damage Boost',
-	dodge_atk_dmg_boost: 'Dodge Attack Damage Boost',
-	skill_dmg_boost: 'Skill Damage Boost',
-	discharge_dmg_boost: 'Discharge Damage Boost'
+	dmg_reduction: 'Dmg Reduction',
+	dmg_boost: 'Dmg Boost',
+	weakpoint_dmg_boost: 'Weakpoint',
+	normal_atk_dmg_boost: 'Normal Atk',
+	dodge_atk_dmg_boost: 'Dodge Atk',
+	skill_dmg_boost: 'Skill',
+	discharge_dmg_boost: 'Discharge'
 };
 
 // normal stats
