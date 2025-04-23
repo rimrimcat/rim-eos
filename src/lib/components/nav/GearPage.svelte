@@ -37,6 +37,7 @@
 		DiamondIcon,
 		ImagePlusIcon,
 		LayoutGridIcon,
+		PlusIcon,
 		SearchIcon,
 		SearchXIcon,
 		ShirtIcon,
@@ -48,6 +49,7 @@
 	} from '@lucide/svelte';
 	import { onDestroy } from 'svelte';
 	import { createWorker } from 'tesseract.js';
+	import GearAdd from '../dialog/GearAdd.svelte';
 
 	let prev_search_query: string = $state('');
 	let search_views: GearSearchView[] = $state([]);
@@ -68,6 +70,9 @@
 	// Gear Info Dialog
 	let gear_info_dialog_open = $state(false);
 	let gear_info_index = $state(-1);
+
+	// Add Gear Dialog
+	let add_gear_dialog_open = $state(false);
 
 	let has_measured = $state(false); // for triggering flexGrid itemWidth update
 
@@ -109,7 +114,7 @@
 		block: 'block',
 		'damage reduction': 'dmg_reduction',
 		'damage boost': 'dmg_boost',
-		'weak point damage boost': 'weakpoint',
+		'weak point damage boost': 'weakpoint_dmg_boost',
 		'normal attack damage boost': 'normal_atk_dmg_boost',
 		'dodge attack damage boost': 'dodge_atk_dmg_boost',
 		'skill damage boost': 'skill_dmg_boost',
@@ -635,8 +640,12 @@
 				</button>
 			{:else}
 				<div class="horizontal">
-					<button class="border" id="add-gear" onclick={() => (screenshot_dialog_open = true)}>
+					<button class="border" id="upload-gear" onclick={() => (screenshot_dialog_open = true)}>
 						<ImagePlusIcon />
+						<label class="in-button" for="upload-gear">Upload Gear</label>
+					</button>
+					<button class="border" id="add-gear" onclick={() => (add_gear_dialog_open = true)}>
+						<PlusIcon />
 						<label class="in-button" for="add-gear">Add Gear</label>
 					</button>
 					<button class="border" id="start-search" onclick={() => (search_dialog_open = true)}>
@@ -783,6 +792,8 @@
 />
 
 <GearSearch bind:open={search_dialog_open} onConfirmSearch={onGearSearch} />
+
+<GearAdd bind:open={add_gear_dialog_open} {addNewGear} />
 
 <ActionToolbar actions={ACTIONS} bind:bound_objects />
 

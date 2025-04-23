@@ -234,14 +234,6 @@
 		cursor: pointer;
 	}
 
-	/* :global(div.column) {
-		display: grid;
-		flex-direction: column;
-		justify-content: center;
-		flex-wrap: wrap;
-		gap: 1rem;
-	} */
-
 	:global(input) {
 		background-color: var(--button-bg);
 		border: 1px solid var(--button-border);
@@ -297,6 +289,7 @@
 		display: flex;
 		flex-direction: column;
 		flex-grow: 1;
+		align-items: flex-start;
 	}
 
 	:global(div.item-flex) {
@@ -421,6 +414,17 @@
 
 	.content-container.mobile {
 		margin-top: 3rem;
+	}
+
+	:global(input[type='number'].numeric) {
+		appearance: textfield;
+		-moz-appearance: textfield;
+		-webkit-appearance: none;
+	}
+	:global(input.numeric::-webkit-outer-spin-button),
+	:global(input.numeric::-webkit-inner-spin-button) {
+		-webkit-appearance: none;
+		margin: 0;
 	}
 
 	/* for composing icons */

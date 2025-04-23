@@ -11,7 +11,7 @@
 		by_column = true,
 		has_measured = $bindable(false),
 		expand_width = true,
-		style = 'padding: 1rem;',
+		style = '',
 		children
 	} = $props();
 

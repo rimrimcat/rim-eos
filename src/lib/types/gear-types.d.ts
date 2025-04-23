@@ -12,7 +12,7 @@ export type GearAugment =
 	| 'block'
 	| 'dmg_reduction'
 	| 'dmg_boost'
-	| 'weakpoint'
+	| 'weakpoint_dmg_boost'
 	| 'normal_atk_dmg_boost'
 	| 'dodge_atk_dmg_boost'
 	| 'skill_dmg_boost'

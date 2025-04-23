@@ -33,6 +33,7 @@
 		open = $bindable(false),
 		primary = 'OK',
 		width = $bindable('70vw'),
+		relative_index = 0,
 		onButtonPress = doButtonPress,
 		onClickOutside = doClickOutside,
 		onkeydown = doKeydown,
@@ -51,7 +52,7 @@
 		{onpaste}
 		role="presentation"
 		tabindex="-1"
-		style="translate: 0 {$scroll_y - $toolbar_transform}px;"
+		style="translate: 0 {$scroll_y - $toolbar_transform}px; z-index: {1000 + relative_index};"
 	>
 		<div
 			class="dialog-container"
@@ -100,7 +101,6 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		z-index: 1000;
 		background-color: var(--overlay-bg);
 	}
 

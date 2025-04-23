@@ -3,11 +3,11 @@
 
 	type StatOrElement = StatGearUser | StatGearFinal | Elements | CompoundElements;
 
-	let { stat = 'atk' as StatOrElement, size = '100%', style = '' } = $props();
+	let { stat = 'atk' as StatOrElement, size = '100%', gray = false, style = '' } = $props();
 
-	let img = $state('phys');
+	let img = $state('gatk');
 	let previous_stat = $state('atk');
-	let unit = $state('none');
+	let unit = $state<string>('');
 	let atk_kind = $state('');
 
 	function getImage(stat: string) {
@@ -63,9 +63,21 @@
 		if (stat.includes('percent')) {
 			unit = 'percent';
 		} else {
-			unit = 'none';
+			unit = '';
 		}
 	}
+	let imageWidth = $state(0);
+	let imageHeight = $state(0);
+
+	let maxIconWidth = $derived((atk_kind === 'dmg' ? 35 : 0) + (unit === 'percent' ? 13 : 0));
+	const maxIconHeight = 13;
+
+	let iconHeight = $derived(
+		Math.min(Math.floor(maxIconHeight * (imageWidth / maxIconWidth)), maxIconHeight)
+	);
+	let iconWidth = $derived(
+		Math.min(Math.floor(iconHeight * (maxIconWidth / maxIconHeight)), maxIconWidth)
+	);
 
 	$effect(() => {
 		if (stat !== previous_stat) {
@@ -75,21 +87,41 @@
 	});
 </script>
 
-<div style="position: relative; display: inline-block;">
+<div
+	class="compose below"
+	style="display: inline-block; width: {size}; height: {size}; position: relative; line-height: 0;"
+>
 	<img
 		src="./stat_icon/{img}.webp"
 		alt="Stat Icon"
-		style="width: {size}; height: {size}; {style}"
+		style="width: 100%; height: 100%; filter: {gray
+			? 'grayscale(100%)'
+			: 'none'}; object-fit: cover; {style}"
+		bind:clientWidth={imageWidth}
+		bind:clientHeight={imageHeight}
 	/>
 
-	<!-- Symbol on top of the base -->
-	<div style="position: absolute; top: 50%; left: 25%;">
+	<!-- Symbols on top of the base -->
+	<div
+		class="horizontal compose above"
+		style="position: absolute; top: {imageHeight - iconHeight}px; left: {imageWidth -
+			iconWidth}px; gap: 0;"
+	>
 		{#if atk_kind == 'dmg'}
 			<img
 				src="./stat_icon/{atk_kind}.webp"
-				alt="Stat Icon"
-				style="width: {size}; height: {size}; "
+				alt={atk_kind}
+				style="height: {iconHeight}px; filter: {gray ? 'grayscale(100%)' : 'none'};"
+			/>
+		{/if}
+		{#if unit == 'percent'}
+			<img
+				src="./stat_icon/percent.webp"
+				alt="Percent"
+				style="height: {iconHeight}px; filter: {gray ? 'grayscale(100%)' : 'none'};"
 			/>
 		{/if}
 	</div>
+
+	<div class="compose above" style="position: absolute; top: 50%; left: 81%;"></div>
 </div>

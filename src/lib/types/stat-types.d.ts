@@ -1,7 +1,12 @@
 /**
- * Pretty self explanatory
+ * Elements except alt
  */
-export type Elements = 'phys' | 'flame' | 'frost' | 'volt' | 'alt';
+export type BasicElements = 'phys' | 'flame' | 'frost' | 'volt';
+
+/**
+ * Elements excluding alt
+ */
+export type Elements = BasicElements | 'alt';
 
 /**
  * Gear stats that can be added by the user
@@ -12,12 +17,11 @@ export type StatGearUser =
 	| 'atk'
 	| `${Elements}_atk`
 	| `${Elements}_atk_percent`
-	| `${Elements}_dmg_percent`
+	| `${BasicElements}_dmg_percent`
 	| 'crit'
 	| 'crit_percent'
 	| 'res'
 	| `${Elements}_res`
-	| 'res_percent'
 	| `${Elements}_res_percent`;
 
 /**

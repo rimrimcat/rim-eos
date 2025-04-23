@@ -25,23 +25,28 @@ also still thinking of a better name later on
 - [x] Loadout: add way to change weapons/matrices (2025-04-16)
 - [x] Stat: Show only offensive stats (2025-04-18)
 - [x] Main Page: add interactive tutorial (2025-04-19)
+- [x] Stats: add tutorial on how stat image should be uploaded (2025-04-19)
+- [x] Gear: add tutorial on how gear image should be uploaded (2025-04-19)
 - [x] Loadout: add relics (2025-04-20)
 - [x] Loadout: add traits (2025-04-20)
 - [x] Loadout: add search functionality for weapon and matrices (2025-04-20)
+- [x] Loadout: add some weapons and matrices (2025-04-22)
+- [x] Stat: add way to manually add stat (2025-04-22)
+- [x] Gear: add way to manually add gears (2025-04-23)
+- [ ] Export: add way to export gears and loadout
+- [ ] Export: add way to fix gear to specific loadout when exporting
+- [ ] Optimization: include onfield calculations
+- [ ] Optimization: include team calculations
+- [ ] Optimization: include combat length calculations
 - [ ] Gear: add titan stats
 - [ ] Gear: add ID on top of gear instead of separate column in grid
 - [ ] Matrix: add base matrix stat
-- [ ] Loadout: add some weapons and matrices
 - [ ] Stat: toggle to show attack percent or (base attack + attack percent)
 - [ ] Loading: add something to the loading screen
-- [ ] Gear: add way to manually add gears
 - [ ] Gear: make more accessible for mobile users
 - [ ] Gear: add more reponsive toasts for actions (?)
 - [ ] Gear: add gear icons based on best stats
-- [ ] Gear: add tutorial on how gear image should be uploaded
-- [ ] Gear: add side by side comparison (not sure if this will actually be useful since I'll be adding a value that helps you decide which gear is better)
 - [ ] Gear: add optimization option to show what gear combination is best
-- [ ] Stats: add tutorial on how stat image should be uploaded
 - [ ] Stats: implement another OCR method when uploading other people's stats instead of own stats
 - [ ] Design: make color slightly darker
 - [ ] Design: allow user to choose webpage style?
