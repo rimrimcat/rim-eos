@@ -106,40 +106,43 @@ export const GEAR_AUGMENT_LABELS: Record<GearAugment, string> = {
 	discharge_dmg_boost: 'Discharge'
 };
 
+const __ELE_ATK: StatGearUser[] = ['flame_atk', 'frost_atk', 'volt_atk', 'phys_atk'];
+const __ELE_ATK_PERCENT: StatGearUser[] = [
+	'flame_atk_percent',
+	'frost_atk_percent',
+	'volt_atk_percent',
+	'phys_atk_percent'
+];
+const __ELE_DMG_PERCENT: StatGearUser[] = [
+	'flame_dmg_percent',
+	'frost_dmg_percent',
+	'volt_dmg_percent',
+	'phys_dmg_percent'
+];
+const __ELE_RES: StatGearUser[] = ['flame_res', 'frost_res', 'volt_res', 'phys_res'];
+const __ELE_RES_PERCENT: StatGearUser[] = [
+	'flame_res_percent',
+	'frost_res_percent',
+	'volt_res_percent',
+	'phys_res_percent'
+];
+
 // normal stats
 const GEAR_STATS: StatGearUser[] = [
 	'hp',
 	'hp_percent',
 	'atk',
-	'flame_atk',
-	'frost_atk',
-	'volt_atk',
-	'phys_atk',
+	...__ELE_ATK,
 	'alt_atk',
-	'flame_atk_percent',
-	'frost_atk_percent',
-	'volt_atk_percent',
-	'phys_atk_percent',
+	...__ELE_ATK_PERCENT,
 	'alt_atk_percent',
-	'flame_dmg_percent',
-	'frost_dmg_percent',
-	'volt_dmg_percent',
-	'phys_dmg_percent',
-	'alt_dmg_percent',
+	...__ELE_DMG_PERCENT,
 	'crit',
 	'crit_percent',
 	'res',
-	'flame_res',
-	'frost_res',
-	'volt_res',
+	...__ELE_RES,
 	'alt_res',
-	'phys_res',
-	'res_percent',
-	'flame_res_percent',
-	'frost_res_percent',
-	'volt_res_percent',
-	'alt_res_percent',
-	'phys_res_percent'
+	...__ELE_RES_PERCENT
 ];
 // titan stats
 const GEAR_STATS_TITAN: StatGearTitan[] = [
@@ -160,7 +163,6 @@ const GEAR_STATS_TITAN: StatGearTitan[] = [
 	'titan_frost_dmg_percent',
 	'titan_volt_dmg_percent',
 	'titan_phys_dmg_percent',
-	'titan_alt_dmg_percent',
 	'titan_crit',
 	'titan_crit_percent',
 	'titan_res',
@@ -169,16 +171,142 @@ const GEAR_STATS_TITAN: StatGearTitan[] = [
 	'titan_volt_res',
 	'titan_alt_res',
 	'titan_phys_res',
-	'titan_res_percent',
 	'titan_flame_res_percent',
 	'titan_frost_res_percent',
 	'titan_volt_res_percent',
 	'titan_alt_res_percent',
 	'titan_phys_res_percent'
 ];
+
+const __COMMON: StatGearUser[] = ['hp', 'atk', ...__ELE_ATK, 'res', ...__ELE_RES];
+
+export const VALID_GEAR_RANDOM_STATS: Record<ValidGearPart, StatGearUser[]> = {
+	H: __COMMON,
+	S: __COMMON,
+	A: __COMMON,
+	C: __COMMON,
+	B: __COMMON,
+	L: __COMMON,
+	G: [...__COMMON, 'crit'],
+	T: [...__COMMON, 'crit'],
+	V: [
+		...__COMMON,
+		'crit_percent',
+		...__ELE_ATK_PERCENT,
+		'alt_atk',
+		'alt_atk_percent',
+		...__ELE_RES_PERCENT,
+		'alt_res',
+		'alt_res_percent'
+	],
+	N: [...__COMMON, ...__ELE_ATK_PERCENT, ...__ELE_DMG_PERCENT, ...__ELE_RES_PERCENT, 'hp_percent'],
+	X: [...__COMMON, ...__ELE_ATK_PERCENT, ...__ELE_DMG_PERCENT, ...__ELE_RES_PERCENT, 'hp_percent'],
+	R: [...__COMMON, ...__ELE_ATK_PERCENT, ...__ELE_DMG_PERCENT, ...__ELE_RES_PERCENT, 'hp_percent']
+};
+
+export const VALID_GEAR_AUGMENT_STATS: Record<ValidGearPart, GearAugment[]> = {
+	H: [
+		'delay',
+		'increased_healing',
+		'normal_atk_dmg_boost',
+		'weakpoint_dmg_boost',
+		'dodge_atk_dmg_boost',
+		'dmg_boost'
+	],
+	S: [
+		'delay',
+		'increased_healing',
+		'discharge_dmg_boost',
+		'weakpoint_dmg_boost',
+		'normal_atk_dmg_boost',
+		'dmg_boost'
+	],
+	A: [
+		'delay',
+		'increased_healing',
+		'discharge_dmg_boost',
+		'weakpoint_dmg_boost',
+		'dodge_atk_dmg_boost',
+		'dmg_boost'
+	],
+	G: [
+		'delay',
+		'increased_healing',
+		'normal_atk_dmg_boost',
+		'weakpoint_dmg_boost',
+		'skill_dmg_boost',
+		'dmg_boost'
+	],
+	C: [
+		'delay',
+		'increased_healing',
+		'discharge_dmg_boost',
+		'weakpoint_dmg_boost',
+		'skill_dmg_boost',
+		'dmg_boost'
+	],
+	B: [
+		'lifesteal',
+		'hp_recovery',
+		'block',
+		'dmg_reduction',
+		'dodge_atk_dmg_boost',
+		'skill_dmg_boost'
+	],
+	L: [
+		'lifesteal',
+		'hp_recovery',
+		'block',
+		'dmg_reduction',
+		'normal_atk_dmg_boost',
+		'dodge_atk_dmg_boost'
+	],
+	T: [
+		'lifesteal',
+		'hp_recovery',
+		'block',
+		'dmg_reduction',
+		'normal_atk_dmg_boost',
+		'skill_dmg_boost'
+	],
+	V: [
+		'lifesteal',
+		'hp_recovery',
+		'block',
+		'dmg_reduction',
+		'normal_atk_dmg_boost',
+		'discharge_dmg_boost'
+	],
+	N: [
+		'delay',
+		'increased_healing',
+		'dodge_atk_dmg_boost',
+		'weakpoint_dmg_boost',
+		'skill_dmg_boost',
+		'normal_atk_dmg_boost'
+	],
+	X: [
+		'lifesteal',
+		'hp_recovery',
+		'block',
+		'dmg_reduction',
+		'skill_dmg_boost',
+		'discharge_dmg_boost'
+	],
+	R: [
+		'lifesteal',
+		'hp_recovery',
+		'block',
+		'dmg_reduction',
+		'dodge_atk_dmg_boost',
+		'discharge_dmg_boost'
+	]
+};
+
 // extra stats
 const GEAR_STATS_EXTRA: StatGearExtra[] = ['multiplier', 'multiplier_percent'];
 // other literals, MUST NOT BE INCLUDED IN REGEX
+
 const GEAR_OTHER = ['gear', 'isEquipped'];
 
 const ALL_STATS_LIST = [...GEAR_STATS, ...GEAR_STATS_TITAN, ...GEAR_STATS_EXTRA];
