@@ -1,7 +1,13 @@
 <script lang="ts">
-	import { GEAR_LABELS, GearPart, getRollValue, type ValidGearPart } from '$lib/scripts/gears';
+	import {
+		GEAR_AUGMENT_LABELS,
+		GEAR_LABELS,
+		GearPart,
+		getRollValue,
+		type ValidGearPart
+	} from '$lib/scripts/gears';
 	import { STAT_CONSTANTS } from '$lib/scripts/json-loader';
-	import type { Elements, StatGearUser } from '$lib/types';
+	import type { Elements, GearAugment, StatGearUser } from '$lib/types';
 	import { PlusIcon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
 	import FlexGrid from '../FlexGrid.svelte';
@@ -83,6 +89,10 @@
 	let part_dialog_open = $state<boolean>(false);
 	let part = $state<ValidGearPart | GearPart.UNKNOWN>(GearPart.UNKNOWN);
 
+	// Gear Augment Dialog
+	let augment_dialog_open = $state<boolean>(false);
+	let augment = $state<GearAugment | null>(null);
+
 	// Stat Dialog
 	let stat_dialog_open = $state<boolean>(false);
 
@@ -123,6 +133,30 @@
 					/>
 				{/if}
 			</button>
+
+			{#if is_titan}
+				<button
+					class="image"
+					class:border={augment === null}
+					id="augment-stat"
+					onclick={() => (augment_dialog_open = true)}
+				>
+					{#if augment}
+						<div class="vertical center">
+							<img
+								class="slot-icon"
+								src="./augment_icon/{augment}.webp"
+								alt={GEAR_AUGMENT_LABELS[augment]}
+								width="30px"
+							/>
+							<label class="in-button" for="augment-stat">{GEAR_AUGMENT_LABELS[augment]}</label>
+						</div>
+					{:else}
+						<PlusIcon />
+						<label class="in-button" for="augment-stat">Augment</label>
+					{/if}
+				</button>
+			{/if}
 		</div>
 
 		<div class="vertical" style="gap: 1rem;">
@@ -183,6 +217,27 @@
 						height="30px"
 					/>
 					<span class="slot-label">{label}</span>
+				</div>
+			</button>
+		{/each}
+	</div>
+</Dialog>
+
+<Dialog title="Specify Augment" relative_index={1} bind:open={augment_dialog_open}>
+	<div class="slot-grid">
+		{#each Object.entries(GEAR_AUGMENT_LABELS) as [aug, label], indx}
+			<button
+				class:selected={augment === aug}
+				title={aug}
+				id={aug}
+				onclick={() => {
+					augment = aug as GearAugment;
+					augment_dialog_open = false;
+				}}
+			>
+				<div class="vertical center">
+					<img src={`./augment_icon/${aug}.webp`} alt={`${label}`} class="slot-icon" width="30px" />
+					<label class="slot-label" for={aug}>{label}</label>
 				</div>
 			</button>
 		{/each}
