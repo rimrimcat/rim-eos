@@ -1,41 +1,153 @@
 <script lang="ts">
 	import { GEAR_LABELS, GearPart, type ValidGearPart } from '$lib/scripts/gears';
-	import { is_mobile } from '$lib/scripts/stores';
+	import type { Elements, StatGearUser } from '$lib/types';
 	import { PlusIcon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
+	import FlexGrid from '../FlexGrid.svelte';
+	import StatIcon from '../StatIcon.svelte';
 
-	const PARTS = Object.values(GEAR_LABELS);
+	type StatValues = { stat: StatGearUser | null; value: string };
+	type StatArr = [StatValues, StatValues, StatValues, StatValues];
+	type AssignableStat = StatGearUser | 'dmg_percent' | 'atk_percent' | null;
+
+	const DEFAULT_STAT: StatArr = [
+		{ stat: null, value: '' },
+		{ stat: null, value: '' },
+		{ stat: null, value: '' },
+		{ stat: null, value: '' }
+	];
+
 	const GROUP_1 = ['Helmet', 'Spaulders', 'Armor', 'Bracers', 'Belt', 'Legguards'];
 	const GROUP_2 = ['Gloves', 'Boots'];
 	const GROUP_3 = ['Visor', 'Engine', 'Exoskeleton', 'Reactor'];
 
+	const ELEMENTS: Elements[] = ['flame', 'frost', 'volt', 'phys', 'alt'];
+	const STATS: AssignableStat[] = [
+		'hp',
+		'hp_percent',
+		'atk',
+		'atk_percent',
+		'res',
+		'res_percent',
+		'crit',
+		'crit_percent',
+		'dmg_percent'
+	];
+
+	function assignStat() {
+		let assignedStat;
+
+		// stuff that require element
+		if (
+			edited_stat_stat === 'atk_percent' ||
+			edited_stat_stat === 'dmg_percent' ||
+			edited_stat_stat === 'res_percent'
+		) {
+			if (!edited_stat_element) {
+				edited_stat_stat = null;
+				return;
+			}
+
+			assignedStat = edited_stat_stat;
+		}
+
+		// stuff that must not have element
+		if (edited_stat_stat?.includes('crit') || edited_stat_stat?.includes('hp')) {
+			assignedStat = edited_stat_stat;
+		} else {
+			// stuff that can have element
+			assignedStat = edited_stat_element
+				? `${edited_stat_element}_${edited_stat_stat}`
+				: edited_stat_stat;
+		}
+
+		if (!assignedStat) {
+			console.error('assigned stat is null???');
+			return;
+		}
+
+		// check if specific stat already exists
+		if (stats.some((stat) => stat.stat === assignedStat)) {
+			console.error('stat alr exist!');
+		} else {
+			stats[edited_stat_ind] = {
+				stat: assignedStat as StatGearUser,
+				value: ''
+			};
+		}
+
+		edited_stat_element = null;
+		edited_stat_stat = null;
+		stat_dialog_open = false;
+	}
+
 	let { open = $bindable(false) } = $props();
 
+	// Part Dialog
 	let part_dialog_open = $state<boolean>(false);
-
 	let part = $state<ValidGearPart | GearPart.UNKNOWN>(GearPart.UNKNOWN);
-	let stats = $state([]);
+
+	// Stat Dialog
+	let stat_dialog_open = $state<boolean>(false);
+
+	let edited_stat_ind = $state<number>(0);
+	let edited_stat_element = $state<Elements | null>(null);
+	let edited_stat_stat = $state<AssignableStat | null>(null);
+
+	let stats = $state<StatArr>(DEFAULT_STAT);
 </script>
 
 <Dialog title="Add Gear" bind:open>
 	<div class="vertical">
-		<div class="vertical-left">
-			<button class="border" id="specify-part" onclick={() => (part_dialog_open = true)}>
-				{#if part === GearPart.UNKNOWN}
-					<PlusIcon />
-					<label class="in-button" for="specify-part">Specify Part</label>
-				{:else}
-					<img src="./gear/{part}.png" alt="Gear Part" style="width: 30px;" />
-				{/if}
-			</button>
-		</div>
-		<div class="horizontal">
-			<h3>Gear Stats</h3>
+		<button
+			class={part === GearPart.UNKNOWN ? 'border' : 'image'}
+			id="specify-part"
+			onclick={() => (part_dialog_open = true)}
+		>
+			{#if part === GearPart.UNKNOWN}
+				<PlusIcon />
+				<label class="in-button" for="specify-part">Specify Part</label>
+			{:else}
+				<img src="./gear/{part}.png" alt="Gear Part" style="width: 40px;" />
+			{/if}
+		</button>
+
+		<div class="vertical" style="padding: 1rem; gap: 1rem;">
+			<h3>Gear Random Stats</h3>
+			{#each stats as stat, indx}
+				<div class="horizontal">
+					<button
+						class="image"
+						class:border={stat.stat === null}
+						onclick={() => {
+							stat_dialog_open = true;
+							edited_stat_ind = indx;
+						}}
+						style="margin: auto 0;"
+					>
+						{#if stat.stat === null}
+							<PlusIcon />
+							<label class="in-button" for="specify-part">Add Stat</label>
+						{:else}
+							<StatIcon stat={stat.stat} style="max-width: 40px;" />
+						{/if}
+					</button>
+					{#if stat.stat !== null}
+						<input
+							class="numeric"
+							inputmode="numeric"
+							pattern="[\d\.]*"
+							bind:value={stat.value}
+							style="width: 10ch; height: 2rem; margin: auto 0;"
+						/>
+					{/if}
+				</div>
+			{/each}
 		</div>
 	</div>
 </Dialog>
 
-<Dialog title="Specify Part" bind:open={part_dialog_open}>
+<Dialog title="Specify Part" relative_index={1} bind:open={part_dialog_open}>
 	<div class="slot-grid">
 		{#each Object.entries(GEAR_LABELS) as [id, label], indx}
 			<button
@@ -49,7 +161,7 @@
 				}}
 				title={label}
 			>
-				<div class="slot-button-content">
+				<div class="vertical center">
 					<img
 						src={`./gear_icon/${label.toLowerCase()}.png`}
 						alt={`${label} icon`}
@@ -57,19 +169,62 @@
 						width="30px"
 						height="30px"
 					/>
-					{#if !$is_mobile}
-						<span class="slot-label">{label}</span>
-					{/if}
+					<span class="slot-label">{label}</span>
 				</div>
 			</button>
 		{/each}
 	</div>
 </Dialog>
 
+<Dialog title="Specify Stat" relative_index={2} bind:open={stat_dialog_open}>
+	<div class="horizontal center">
+		<div
+			class="vertical center-hori"
+			style="border-right: 2px solid var(--border-color); padding-right: 1rem;"
+		>
+			<h4>Element</h4>
+			<FlexGrid min_cols={1} max_cols={1}>
+				{#each ELEMENTS as element}
+					<button
+						class:selected={edited_stat_element === element}
+						onclick={() => {
+							if (edited_stat_element === element) {
+								edited_stat_element = null;
+							} else {
+								edited_stat_element = element;
+							}
+						}}
+						style="max-width: 70px;"
+					>
+						<StatIcon stat={element as StatGearUser} />
+					</button>
+				{/each}
+			</FlexGrid>
+		</div>
+		<div class="vertical center-hori">
+			<h4>Stat</h4>
+			<FlexGrid min_cols={2} max_cols={2} by_column={false}>
+				{#each STATS as stat}
+					<button
+						class:selected={edited_stat_stat === stat}
+						onclick={() => {
+							edited_stat_stat = stat;
+							assignStat();
+						}}
+						style="max-width: 70px;"
+					>
+						<StatIcon stat={stat as StatGearUser} />
+					</button>
+				{/each}
+			</FlexGrid>
+		</div>
+	</div>
+</Dialog>
+
 <style>
 	.slot-grid {
 		display: grid;
-		grid-template-columns: repeat(4, 1fr);
+		grid-template-columns: repeat(3, 1fr);
 		gap: 0.5rem;
 		margin-bottom: 1rem;
 	}
@@ -104,5 +259,11 @@
 	.slot-grid button.selected.group3 {
 		border: 1px solid var(--border-color);
 		border-left: 3px solid #44cc44;
+	}
+
+	button.selected {
+		background-color: violet;
+		color: var(--button-primary-text);
+		border-color: var(--button-primary-border);
 	}
 </style>
