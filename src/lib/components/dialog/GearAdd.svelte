@@ -4,6 +4,8 @@
 		GEAR_LABELS,
 		GearPart,
 		getRollValue,
+		VALID_GEAR_AUGMENT_STATS,
+		VALID_GEAR_RANDOM_STATS,
 		type ValidGearPart
 	} from '$lib/scripts/gears';
 	import { STAT_CONSTANTS } from '$lib/scripts/json-loader';
@@ -15,7 +17,7 @@
 
 	type StatValues = { stat: StatGearUser | null; value: string };
 	type StatArr = [StatValues, StatValues, StatValues, StatValues];
-	type AssignableStat = StatGearUser | 'dmg_percent' | 'atk_percent' | null;
+	type AssignableStat = StatGearUser | 'dmg_percent' | 'atk_percent' | 'res_percent' | null;
 
 	const DEFAULT_STAT: StatArr = [
 		{ stat: null, value: '' },
@@ -71,6 +73,8 @@
 		// check if specific stat already exists
 		if (stats.some((stat) => stat.stat === assignedStat)) {
 			console.error('stat alr exist!');
+		} else if (!VALID_GEAR_RANDOM_STATS[part as ValidGearPart].includes(assignedStat)) {
+			console.error('invalid random stat for part!');
 		} else {
 			stats[edited_stat_ind] = {
 				stat: assignedStat,
@@ -225,7 +229,7 @@
 
 <Dialog title="Specify Augment" relative_index={1} bind:open={augment_dialog_open}>
 	<div class="slot-grid">
-		{#each Object.entries(GEAR_AUGMENT_LABELS) as [aug, label], indx}
+		{#each VALID_GEAR_AUGMENT_STATS[part as ValidGearPart] as aug, indx}
 			<button
 				class:selected={augment === aug}
 				title={aug}
@@ -236,8 +240,13 @@
 				}}
 			>
 				<div class="vertical center">
-					<img src={`./augment_icon/${aug}.webp`} alt={`${label}`} class="slot-icon" width="30px" />
-					<label class="slot-label" for={aug}>{label}</label>
+					<img
+						src={`./augment_icon/${aug}.webp`}
+						alt={`${GEAR_AUGMENT_LABELS[aug]}`}
+						class="slot-icon"
+						width="30px"
+					/>
+					<label class="in-button" for={aug}>{GEAR_AUGMENT_LABELS[aug]}</label>
 				</div>
 			</button>
 		{/each}
