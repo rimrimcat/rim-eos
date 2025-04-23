@@ -197,7 +197,8 @@ export const VALID_GEAR_RANDOM_STATS: Record<ValidGearPart, StatGearUser[]> = {
 		'alt_atk_percent',
 		...__ELE_RES_PERCENT,
 		'alt_res',
-		'alt_res_percent'
+		'alt_res_percent',
+		'hp_percent'
 	],
 	N: [...__COMMON, ...__ELE_ATK_PERCENT, ...__ELE_DMG_PERCENT, ...__ELE_RES_PERCENT, 'hp_percent'],
 	X: [...__COMMON, ...__ELE_ATK_PERCENT, ...__ELE_DMG_PERCENT, ...__ELE_RES_PERCENT, 'hp_percent'],
