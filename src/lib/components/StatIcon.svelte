@@ -62,7 +62,6 @@
 
 		if (stat.includes('percent')) {
 			unit = 'percent';
-			console.log('HAS PERCENT!');
 		} else {
 			unit = '';
 		}
@@ -70,13 +69,13 @@
 	let imageWidth = $state(0);
 	let imageHeight = $state(0);
 
-	let maxIconWidth = $derived((atk_kind === 'dmg' ? 34 : 0) + 13);
+	let maxIconWidth = $derived((atk_kind === 'dmg' ? 34 : 0) + (unit === 'percent' ? 13 : 0));
 	const maxIconHeight = 13;
 
-	let iconWidth = $derived(Math.min(maxIconWidth, imageWidth));
 	let iconHeight = $derived(
 		Math.min(Math.floor((imageWidth / maxIconWidth) * maxIconHeight), maxIconHeight)
 	);
+	let iconWidth = $derived(Math.min(iconHeight * (maxIconWidth / maxIconHeight), maxIconWidth));
 
 	$effect(() => {
 		if (stat !== previous_stat) {
@@ -86,20 +85,25 @@
 	});
 </script>
 
-<div class="compose below" style="display: inline-block;">
+<div
+	class="compose below"
+	style="display: inline-block; width: {size}; height: {size}; position: relative; line-height: 0;"
+>
 	<img
 		src="./stat_icon/{img}.webp"
 		alt="Stat Icon"
-		style="width: {size}; height: {size}; filter: {gray ? 'grayscale(100%)' : 'none'}; {style}"
+		style="width: 100%; height: 100%; filter: {gray
+			? 'grayscale(100%)'
+			: 'none'}; object-fit: cover; {style}"
 		bind:clientWidth={imageWidth}
 		bind:clientHeight={imageHeight}
 	/>
 
 	<!-- Symbols on top of the base -->
-
 	<div
 		class="horizontal compose above"
-		style="top: {imageHeight - iconHeight}px; left: {imageWidth - iconWidth}px; gap: 0;"
+		style="position: absolute; top: {imageHeight - iconHeight}px; left: {imageWidth -
+			iconWidth}px; gap: 0;"
 	>
 		{#if atk_kind == 'dmg'}
 			<img
@@ -117,5 +121,5 @@
 		{/if}
 	</div>
 
-	<div class="compose above" style="top: 50%; left: 81%;"></div>
+	<div class="compose above" style="position: absolute; top: 50%; left: 81%;"></div>
 </div>
