@@ -67,10 +67,12 @@
 			unit = '';
 		}
 	}
+	let imageWidth = $state(0);
+	let imageHeight = $state(0);
 
 	let maxIconWidth = $derived((atk_kind === 'dmg' ? 34 : 0) + 13);
 	const maxIconHeight = 13;
-	let imageWidth = $state(0);
+
 	let iconWidth = $derived(Math.min(maxIconWidth, imageWidth));
 	let iconHeight = $derived(
 		Math.min(Math.floor((imageWidth / maxIconWidth) * maxIconHeight), maxIconHeight)
@@ -84,6 +86,7 @@
 	});
 
 	$inspect('icon Width', iconWidth);
+	$inspect('icon Height', iconHeight);
 	$inspect('image Width', imageWidth);
 	$inspect('left align', imageWidth - iconWidth);
 </script>
@@ -94,11 +97,15 @@
 		alt="Stat Icon"
 		style="width: {size}; height: {size}; filter: {gray ? 'grayscale(100%)' : 'none'}; {style}"
 		bind:clientWidth={imageWidth}
+		bind:clientHeight={imageHeight}
 	/>
 
 	<!-- Symbols on top of the base -->
 
-	<div class="horizontal compose above" style="top: 70%; left: {imageWidth - iconWidth}px; gap: 0;">
+	<div
+		class="horizontal compose above"
+		style="top: {imageHeight - iconHeight}px; left: {imageWidth - iconWidth}px; gap: 0;"
+	>
 		{#if atk_kind == 'dmg'}
 			<img
 				src="./stat_icon/{atk_kind}.webp"
