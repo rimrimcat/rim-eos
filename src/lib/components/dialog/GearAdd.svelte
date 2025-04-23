@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { GEAR_LABELS, GearPart, type ValidGearPart } from '$lib/scripts/gears';
+	import { GEAR_LABELS, GearPart, getRollValue, type ValidGearPart } from '$lib/scripts/gears';
+	import { STAT_CONSTANTS } from '$lib/scripts/json-loader';
 	import type { Elements, StatGearUser } from '$lib/types';
 	import { PlusIcon } from '@lucide/svelte';
 	import Dialog from '../Dialog.svelte';
@@ -35,7 +36,7 @@
 	];
 
 	function assignStat() {
-		let assignedStat;
+		let assignedStat: StatGearUser;
 
 		// stuff that require element
 		if (
@@ -48,22 +49,17 @@
 				return;
 			}
 
-			assignedStat = edited_stat_stat;
+			assignedStat = edited_stat_stat as StatGearUser;
 		}
 
 		// stuff that must not have element
 		if (edited_stat_stat?.includes('crit') || edited_stat_stat?.includes('hp')) {
-			assignedStat = edited_stat_stat;
+			assignedStat = edited_stat_stat as StatGearUser;
 		} else {
 			// stuff that can have element
-			assignedStat = edited_stat_element
-				? `${edited_stat_element}_${edited_stat_stat}`
-				: edited_stat_stat;
-		}
-
-		if (!assignedStat) {
-			console.error('assigned stat is null???');
-			return;
+			assignedStat = (
+				edited_stat_element ? `${edited_stat_element}_${edited_stat_stat}` : edited_stat_stat
+			) as StatGearUser;
 		}
 
 		// check if specific stat already exists
@@ -71,8 +67,8 @@
 			console.error('stat alr exist!');
 		} else {
 			stats[edited_stat_ind] = {
-				stat: assignedStat as StatGearUser,
-				value: ''
+				stat: assignedStat,
+				value: STAT_CONSTANTS[assignedStat].base.toString()
 			};
 		}
 
@@ -95,24 +91,41 @@
 	let edited_stat_stat = $state<AssignableStat | null>(null);
 
 	let stats = $state<StatArr>(DEFAULT_STAT);
+	let total_roll_value = $derived(
+		stats.reduce(
+			(acc, stat) => acc + (stat.stat ? getRollValue(stat.stat, Number(stat.value)) : 0),
+			0
+		)
+	);
+	let is_titan = $derived(total_roll_value > 5);
+
+	$inspect('total roll value', total_roll_value);
 </script>
 
 <Dialog title="Add Gear" bind:open>
-	<div class="vertical">
-		<button
-			class={part === GearPart.UNKNOWN ? 'border' : 'image'}
-			id="specify-part"
-			onclick={() => (part_dialog_open = true)}
-		>
-			{#if part === GearPart.UNKNOWN}
-				<PlusIcon />
-				<label class="in-button" for="specify-part">Specify Part</label>
-			{:else}
-				<img src="./gear/{part}.png" alt="Gear Part" style="width: 40px;" />
-			{/if}
-		</button>
+	<div class="horizontal" style="align-items: flex-start; gap: 2rem;">
+		<div class="vertical" style="gap: 1rem;">
+			<h3>Gear Part</h3>
+			<button
+				class={part === GearPart.UNKNOWN ? 'border' : 'image'}
+				id="specify-part"
+				onclick={() => (part_dialog_open = true)}
+				style="margin: auto 0;"
+			>
+				{#if part === GearPart.UNKNOWN}
+					<PlusIcon />
+					<label class="in-button" for="specify-part">Assign</label>
+				{:else}
+					<img
+						src="./gear/{is_titan ? 'titan/' : ''}{part}.png"
+						alt="Gear Part"
+						style="width: 40px;"
+					/>
+				{/if}
+			</button>
+		</div>
 
-		<div class="vertical" style="padding: 1rem; gap: 1rem;">
+		<div class="vertical" style="gap: 1rem;">
 			<h3>Gear Random Stats</h3>
 			{#each stats as stat, indx}
 				<div class="horizontal">
@@ -138,7 +151,7 @@
 							inputmode="numeric"
 							pattern="[\d\.]*"
 							bind:value={stat.value}
-							style="width: 10ch; height: 2rem; margin: auto 0;"
+							style="width: 7ch; height: 2rem; margin: auto 0;"
 						/>
 					{/if}
 				</div>
