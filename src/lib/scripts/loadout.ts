@@ -372,55 +372,23 @@ export async function updateSingleMatrixView(index: number) {
 	];
 
 	const matrix = user_matrices[index];
-	const advancement = matrix.advancement ?? 0;
-
-	const effects: FinalizedMatrixEffect[] = [];
-	const stat_ = [new StatCollection()];
-	const matrix_ = await getMatrix(matrix.id);
-
-	await pushAllValidMatrixEffects(
-		matrix_.effects,
-		advancement,
-		get(reso_counts),
-		effects,
-		stat_,
-		equipped_weapons
-	);
-	const stat = stat_[0];
 
 	const loadout_matrix_views = get(matrix_views);
-	loadout_matrix_views[index] = {
-		id: matrix_.id,
-		name: matrix_.name,
-		advancement,
-		effects,
-		stat
-	} as MatrixView;
+	loadout_matrix_views[index] = await obtainSingleMatrixView(
+		equipped_weapons,
+		matrix,
+		get(reso_counts)
+	);
 	matrix_views.set(loadout_matrix_views);
 }
 
 export async function updateSingleRelicView(index: number) {
 	const selected_loadout = get(user_loadouts)[get(current_loadout)];
 	const equipped_relics = selected_loadout.equipped_relics ?? [{ id: 'none' }, { id: 'none' }];
-
 	const relic = equipped_relics[index];
-	const advancement = relic.advancement ?? 0;
-
-	const effects: RelicEffect[] = [];
-	const stat_ = [new StatCollection()];
-	const relic_ = await getRelic(relic.id);
-
-	await pushAllValidRelicEffects(relic_.effects, advancement, get(reso_counts), effects, stat_);
-	const stat = stat_[0];
 
 	const loadout_relic_views = get(relic_views);
-	loadout_relic_views[index] = {
-		id: relic_.id,
-		name: relic_.name,
-		advancement,
-		effects,
-		stat
-	} as RelicView;
+	loadout_relic_views[index] = await obtainSingleRelicView(relic, get(reso_counts));
 	relic_views.set(loadout_relic_views);
 }
 
@@ -668,6 +636,36 @@ export async function obtainWeaponViews(
 	);
 }
 
+async function obtainSingleMatrixView(
+	equipped_weapons: UserWeapon[],
+	matrix: UserMatrix,
+	reso_counts: ResoTriggerCounts
+) {
+	const advancement = matrix.advancement ?? 0;
+
+	const effects: FinalizedMatrixEffect[] = [];
+	const stat_ = [new StatCollection()];
+	const matrix_ = await getMatrix(matrix.id);
+
+	await pushAllValidMatrixEffects(
+		matrix_.effects,
+		advancement,
+		reso_counts,
+		effects,
+		stat_,
+		equipped_weapons
+	);
+	const stat = stat_[0];
+
+	return {
+		id: matrix_.id,
+		name: matrix_.name,
+		advancement,
+		effects,
+		stat
+	} as MatrixView;
+}
+
 export async function obtainMatrixViews(
 	equipped_weapons: UserWeapon[],
 	equipped_matrices: UserMatrix[],
@@ -675,31 +673,28 @@ export async function obtainMatrixViews(
 ) {
 	return await Promise.all(
 		equipped_matrices.map(async (matrix) => {
-			const advancement = matrix.advancement ?? 0;
-
-			const effects: FinalizedMatrixEffect[] = [];
-			const stat_ = [new StatCollection()];
-			const matrix_ = await getMatrix(matrix.id);
-
-			await pushAllValidMatrixEffects(
-				matrix_.effects,
-				advancement,
-				reso_counts,
-				effects,
-				stat_,
-				equipped_weapons
-			);
-			const stat = stat_[0];
-
-			return {
-				id: matrix_.id,
-				name: matrix_.name,
-				advancement,
-				effects,
-				stat
-			} as MatrixView;
+			return obtainSingleMatrixView(equipped_weapons, matrix, reso_counts);
 		})
 	);
+}
+
+async function obtainSingleRelicView(relic: UserRelic, reso_counts: ResoTriggerCounts) {
+	const advancement = relic.advancement ?? 0;
+
+	const effects: RelicEffect[] = [];
+	const stat_ = [new StatCollection()];
+	const relic_ = await getRelic(relic.id);
+
+	await pushAllValidRelicEffects(relic_.effects, advancement, reso_counts, effects, stat_);
+	const stat = stat_[0];
+
+	return {
+		id: relic_.id,
+		name: relic_.name,
+		advancement,
+		effects,
+		stat
+	} as RelicView;
 }
 
 export async function obtainRelicViews(
@@ -708,22 +703,7 @@ export async function obtainRelicViews(
 ) {
 	return await Promise.all(
 		equipped_relics.map(async (relic) => {
-			const advancement = relic.advancement ?? 0;
-
-			const effects: RelicEffect[] = [];
-			const stat_ = [new StatCollection()];
-			const relic_ = await getRelic(relic.id);
-
-			await pushAllValidRelicEffects(relic_.effects, advancement, reso_counts, effects, stat_);
-			const stat = stat_[0];
-
-			return {
-				id: relic_.id,
-				name: relic_.name,
-				advancement,
-				effects,
-				stat
-			} as RelicView;
+			return obtainSingleRelicView(relic, reso_counts);
 		})
 	);
 }
