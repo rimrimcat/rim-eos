@@ -197,7 +197,7 @@
 								width="30px"
 								height="30px"
 							/>
-							{#if !is_mobile}
+							{#if !$is_mobile}
 								<span class="slot-label">{slot}</span>
 							{/if}
 						</div>
