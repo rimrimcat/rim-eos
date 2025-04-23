@@ -114,7 +114,7 @@
 		block: 'block',
 		'damage reduction': 'dmg_reduction',
 		'damage boost': 'dmg_boost',
-		'weak point damage boost': 'weakpoint',
+		'weak point damage boost': 'weakpoint_dmg_boost',
 		'normal attack damage boost': 'normal_atk_dmg_boost',
 		'dodge attack damage boost': 'dodge_atk_dmg_boost',
 		'skill damage boost': 'skill_dmg_boost',
