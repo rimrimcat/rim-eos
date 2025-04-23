@@ -214,9 +214,6 @@
         "volt_dmg_percent": {
           "type": "number"
         },
-        "alt_dmg_percent": {
-          "type": "number"
-        },
         "crit": {
           "type": "number"
         },
@@ -239,9 +236,6 @@
           "type": "number"
         },
         "alt_res": {
-          "type": "number"
-        },
-        "res_percent": {
           "type": "number"
         },
         "phys_res_percent": {

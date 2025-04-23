@@ -4,5 +4,6 @@
 	"base_stat": "crit-med",
 	"resonances": ["volt-frost", "fort"],
 	"effects": ["merylx-a5", "merylx-discharge", "merylx-skill-fort"],
-	"reso_effects": ["volt-reso", "frost-reso"]
+	"reso_effects": ["volt-reso", "frost-reso"],
+	"onfield_atk_priority": 4.3
 }

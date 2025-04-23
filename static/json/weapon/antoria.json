@@ -4,5 +4,6 @@
 	"base_stat": "crit-med",
 	"resonances": ["volt-frost", "atk"],
 	"effects": ["antoria-a3", "antoria-skill", "antoria-a6-skill"],
-	"reso_effects": ["volt-reso", "frost-reso"]
+	"reso_effects": ["volt-reso", "frost-reso"],
+	"onfield_atk_priority": 4.7
 }

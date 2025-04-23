@@ -512,25 +512,6 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "alt_dmg_percent": {
-          "type": "array",
-          "items": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
         "crit": {
           "type": "array",
           "items": [
@@ -665,25 +646,6 @@
           "maxItems": 4
         },
         "alt_res": {
-          "type": "array",
-          "items": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
-        "res_percent": {
           "type": "array",
           "items": [
             {
@@ -1753,25 +1715,6 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "alt_dmg_percent": {
-          "type": "array",
-          "items": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
         "crit": {
           "type": "array",
           "items": [
@@ -1906,25 +1849,6 @@
           "maxItems": 4
         },
         "alt_res": {
-          "type": "array",
-          "items": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
-        "res_percent": {
           "type": "array",
           "items": [
             {

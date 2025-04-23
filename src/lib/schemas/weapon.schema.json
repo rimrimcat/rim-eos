@@ -23,9 +23,6 @@
       "minItems": 2,
       "maxItems": 2
     },
-    "onfieldness": {
-      "type": "number"
-    },
     "effects": {
       "type": "array",
       "items": {
@@ -100,6 +97,18 @@
           }
         ]
       }
+    },
+    "onfield_atk_priority": {
+      "description": "Priority for being main dps when on atk reso",
+      "type": "number"
+    },
+    "rotation_period": {
+      "description": "How often to switch to weapon to maximize the buffs (in seconds)\nThis is usually just equal to the skill cooldown or shortest buff duration",
+      "type": "number"
+    },
+    "short_rotation_duration": {
+      "description": "Time taken to proc all weapon buffs before switching out",
+      "type": "number"
     }
   },
   "additionalProperties": false,

@@ -214,9 +214,6 @@
         "volt_dmg_percent": {
           "type": "number"
         },
-        "alt_dmg_percent": {
-          "type": "number"
-        },
         "crit": {
           "type": "number"
         },
@@ -239,9 +236,6 @@
           "type": "number"
         },
         "alt_res": {
-          "type": "number"
-        },
-        "res_percent": {
           "type": "number"
         },
         "phys_res_percent": {
@@ -415,9 +409,6 @@
         "volt_dmg_percent": {
           "type": "string"
         },
-        "alt_dmg_percent": {
-          "type": "string"
-        },
         "crit": {
           "type": "string"
         },
@@ -440,9 +431,6 @@
           "type": "string"
         },
         "alt_res": {
-          "type": "string"
-        },
-        "res_percent": {
           "type": "string"
         },
         "phys_res_percent": {

@@ -4,5 +4,6 @@
 	"base_stat": "crit-med",
 	"resonances": ["phys-flame", "fort"],
 	"effects": ["asuka-a6", "asuka-a6-fort", "asuka-skill"],
-	"reso_effects": ["phys-reso", "flame-reso"]
+	"reso_effects": ["phys-reso", "flame-reso"],
+	"onfield_atk_priority": 3.7
 }

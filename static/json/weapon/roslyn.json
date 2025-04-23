@@ -4,5 +4,6 @@
 	"base_stat": "crit-med",
 	"resonances": ["frost-volt", "atk"],
 	"effects": ["roslyn-a6"],
-	"reso_effects": ["frost-reso", "volt-reso"]
+	"reso_effects": ["frost-reso", "volt-reso"],
+	"onfield_atk_priority": 4.0
 }

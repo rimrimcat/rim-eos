@@ -4,5 +4,6 @@
 	"base_stat": "crit-med",
 	"resonances": ["phys-flame", "atk"],
 	"effects": ["yanmiao-a3", "yanmiao-skill", "yanmiao-a6-skill"],
-	"reso_effects": ["phys-reso", "flame-reso"]
+	"reso_effects": ["phys-reso", "flame-reso"],
+	"onfield_atk_priority": 3.5
 }
