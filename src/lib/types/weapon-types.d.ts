@@ -44,6 +44,10 @@ export type WeaponSetting = {
 	effects?: WeaponEffectsIds[];
 	reso_effects?: ResoEffectsIds[]; // would merge with weapon
 	notes?: string;
+
+	rotation_period?: number;
+	short_rotation_duration?: number;
+	short_rotation_requires_discharge?: boolean;
 };
 
 export type SettingAssignment = 'manual' | 'voidpiercer';
@@ -79,7 +83,7 @@ export type Weapon = {
 	/** Priority for being main dps when on atk reso */
 	onfield_atk_priority?: number;
 
-	/** How often to switch to weapon to maximize the buffs (in seconds)
+	/** How often to switch to weapon to maximize the buffs (in seconds).
 	 *  This is usually just equal to the skill cooldown or shortest buff duration
 	 */
 	rotation_period?: number;
