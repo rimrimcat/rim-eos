@@ -62,6 +62,7 @@
 
 		if (stat.includes('percent')) {
 			unit = 'percent';
+			console.log('HAS PERCENT!');
 		} else {
 			unit = 'none';
 		}
@@ -75,20 +76,29 @@
 	});
 </script>
 
-<div style="position: relative; display: inline-block;">
+<div class="compose below" style="display: inline-block;">
 	<img
 		src="./stat_icon/{img}.webp"
 		alt="Stat Icon"
 		style="width: {size}; height: {size}; filter: {gray ? 'grayscale(100%)' : 'none'}; {style}"
 	/>
 
-	<!-- Symbol on top of the base -->
-	<div style="position: absolute; top: 50%; left: 25%;">
+	<!-- Symbols on top of the base -->
+	<!-- <div class="compose above" style="top: 0%; left: 20%;"></div> -->
+
+	<div class="compose above" style="top: 50%; left: 25%;">
 		{#if atk_kind == 'dmg'}
 			<img
 				src="./stat_icon/{atk_kind}.webp"
-				alt="Stat Icon"
-				style="width: 100%; height: 100%; filter: {gray ? 'grayscale(100%)' : 'none'};"
+				alt={atk_kind}
+				style="height: 13px; filter: {gray ? 'grayscale(100%)' : 'none'};"
+			/>
+		{/if}
+		{#if unit == 'percent'}
+			<img
+				src="./stat_icon/percent.webp"
+				alt="Percent"
+				style="height: 13px; filter: {gray ? 'grayscale(100%)' : 'none'};"
 			/>
 		{/if}
 	</div>
