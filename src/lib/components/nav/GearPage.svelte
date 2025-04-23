@@ -793,7 +793,7 @@
 
 <GearSearch bind:open={search_dialog_open} onConfirmSearch={onGearSearch} />
 
-<GearAdd bind:open={add_gear_dialog_open} />
+<GearAdd bind:open={add_gear_dialog_open} {addNewGear} />
 
 <ActionToolbar actions={ACTIONS} bind:bound_objects />
 
