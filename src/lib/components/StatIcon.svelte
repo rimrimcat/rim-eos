@@ -84,7 +84,6 @@
 	/>
 
 	<!-- Symbols on top of the base -->
-	<!-- <div class="compose above" style="top: 0%; left: 20%;"></div> -->
 
 	<div class="compose above" style="top: 50%; left: 25%;">
 		{#if atk_kind == 'dmg'}
@@ -94,6 +93,9 @@
 				style="height: 13px; filter: {gray ? 'grayscale(100%)' : 'none'};"
 			/>
 		{/if}
+	</div>
+
+	<div class="compose above" style="top: 50%; left: 81%;">
 		{#if unit == 'percent'}
 			<img
 				src="./stat_icon/percent.webp"
