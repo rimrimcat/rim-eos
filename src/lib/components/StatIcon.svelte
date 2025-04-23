@@ -5,7 +5,7 @@
 
 	let { stat = 'atk' as StatOrElement, size = '100%', gray = false, style = '' } = $props();
 
-	let img = $state('phys');
+	let img = $state('gatk');
 	let previous_stat = $state('atk');
 	let unit = $state<string>('');
 	let atk_kind = $state('');
@@ -84,11 +84,6 @@
 			previous_stat = stat;
 		}
 	});
-
-	$inspect('icon Width', iconWidth);
-	$inspect('icon Height', iconHeight);
-	$inspect('image Width', imageWidth);
-	$inspect('left align', imageWidth - iconWidth);
 </script>
 
 <div class="compose below" style="display: inline-block;">
