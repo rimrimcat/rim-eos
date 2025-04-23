@@ -71,11 +71,23 @@ export type Weapon = {
 	name: string;
 	base_stat: BaseStatType;
 	resonances: OrderedResoTriggers;
-	onfieldness?: number; // priority for onfielding, need to determine this later on
 	effects: WeaponEffectsIds[];
 	reso_effects?: ResoEffectsIds[];
 
 	settings?: (SettingElement | SettingSkill)[];
+
+	/** Priority for being main dps when on atk reso */
+	onfield_atk_priority?: number;
+
+	/** How often to switch to weapon to maximize the buffs (in seconds)
+	 *  This is usually just equal to the skill cooldown or shortest buff duration
+	 */
+	rotation_period?: number;
+
+	/**
+	 * Time taken to proc all weapon buffs before switching out
+	 */
+	short_rotation_duration?: number;
 };
 
 export type UserWeapon = {
@@ -88,7 +100,6 @@ export type WeaponView = {
 	id: WeaponsIds;
 	name: string;
 	resonances: OrderedResoTriggers;
-	onfieldness?: number;
 	setting_view: SettingView[];
 
 	base_stat: StatCollection;
@@ -96,6 +107,9 @@ export type WeaponView = {
 	stat: StatCollection;
 
 	advancement: number;
+	onfield_atk_priority?: number;
+	rotation_period?: number;
+	short_rotation_duration?: number;
 };
 
 export type Matrix = {
