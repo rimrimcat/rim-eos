@@ -229,7 +229,7 @@
 
 <Dialog title="Specify Augment" relative_index={1} bind:open={augment_dialog_open}>
 	<div class="slot-grid">
-		{#each VALID_GEAR_AUGMENT_STATS[part as ValidGearPart] as aug, indx}
+		{#each VALID_GEAR_AUGMENT_STATS[part as ValidGearPart] as aug}
 			<button
 				class:selected={augment === aug}
 				title={aug}
