@@ -36,20 +36,21 @@ export enum GearPart {
 	UNKNOWN = 'U'
 }
 
-export const GEAR_LABELS = [
-	'Helmet',
-	'Spaulders',
-	'Armor',
-	'Bracers',
-	'Belt',
-	'Legguards',
-	'Gloves',
-	'Boots',
-	'Visor',
-	'Engine',
-	'Exoskeleton',
-	'Reactor'
-] as const;
+export const GEAR_LABELS: Record<GearPart, string> = {
+	H: 'Helmet',
+	S: 'Spaulders',
+	A: 'Armor',
+	C: 'Bracers',
+	B: 'Belt',
+	L: 'Legguards',
+	G: 'Gloves',
+	T: 'Boots',
+	V: 'Visor',
+	N: 'Engine',
+	X: 'Exoskeleton',
+	R: 'Reactor',
+	U: 'Unknown'
+};
 
 export type ValidGearPart =
 	| 'H'
