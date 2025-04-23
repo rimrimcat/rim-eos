@@ -112,7 +112,7 @@
 	$inspect('total roll value', total_roll_value);
 </script>
 
-<Dialog title="Add Gear" bind:open>
+<Dialog title="Add Gear" buttons={['Add', 'Cancel']} primary="Add" bind:open>
 	<div class="horizontal" style="align-items: flex-start; gap: 2rem;">
 		<div class="vertical" style="gap: 1rem;">
 			<h3>Gear Part</h3>
