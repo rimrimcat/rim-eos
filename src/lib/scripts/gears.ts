@@ -36,7 +36,7 @@ export enum GearPart {
 	UNKNOWN = 'U'
 }
 
-export const GEAR_LABELS: Record<GearPart, string> = {
+export const GEAR_LABELS: { [key in GearPart]?: string } = {
 	H: 'Helmet',
 	S: 'Spaulders',
 	A: 'Armor',
@@ -48,8 +48,7 @@ export const GEAR_LABELS: Record<GearPart, string> = {
 	V: 'Visor',
 	N: 'Engine',
 	X: 'Exoskeleton',
-	R: 'Reactor',
-	U: 'Unknown'
+	R: 'Reactor'
 };
 
 export type ValidGearPart =
