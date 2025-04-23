@@ -7,7 +7,7 @@
 
 	let img = $state('phys');
 	let previous_stat = $state('atk');
-	let unit = $state('none');
+	let unit = $state<string>('');
 	let atk_kind = $state('');
 
 	function getImage(stat: string) {
@@ -64,9 +64,17 @@
 			unit = 'percent';
 			console.log('HAS PERCENT!');
 		} else {
-			unit = 'none';
+			unit = '';
 		}
 	}
+
+	let maxIconWidth = $derived((atk_kind === 'dmg' ? 34 : 0) + 13);
+	const maxIconHeight = 13;
+	let imageWidth = $state(0);
+	let iconWidth = $derived(Math.min(maxIconWidth, imageWidth));
+	let iconHeight = $derived(
+		Math.min(Math.floor((imageWidth / maxIconWidth) * maxIconHeight), maxIconHeight)
+	);
 
 	$effect(() => {
 		if (stat !== previous_stat) {
@@ -74,6 +82,10 @@
 			previous_stat = stat;
 		}
 	});
+
+	$inspect('icon Width', iconWidth);
+	$inspect('image Width', imageWidth);
+	$inspect('left align', imageWidth - iconWidth);
 </script>
 
 <div class="compose below" style="display: inline-block;">
@@ -81,23 +93,24 @@
 		src="./stat_icon/{img}.webp"
 		alt="Stat Icon"
 		style="width: {size}; height: {size}; filter: {gray ? 'grayscale(100%)' : 'none'}; {style}"
+		bind:clientWidth={imageWidth}
 	/>
 
 	<!-- Symbols on top of the base -->
 
-	<div class="horizontal compose above" style="top: 70%; left: 10%; gap: 0;">
+	<div class="horizontal compose above" style="top: 70%; left: {imageWidth - iconWidth}px; gap: 0;">
 		{#if atk_kind == 'dmg'}
 			<img
 				src="./stat_icon/{atk_kind}.webp"
 				alt={atk_kind}
-				style="height: 13px; filter: {gray ? 'grayscale(100%)' : 'none'};"
+				style="height: {iconHeight}px; filter: {gray ? 'grayscale(100%)' : 'none'};"
 			/>
 		{/if}
 		{#if unit == 'percent'}
 			<img
 				src="./stat_icon/percent.webp"
 				alt="Percent"
-				style="height: 13px; filter: {gray ? 'grayscale(100%)' : 'none'};"
+				style="height: {iconHeight}px; filter: {gray ? 'grayscale(100%)' : 'none'};"
 			/>
 		{/if}
 	</div>
