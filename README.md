@@ -32,7 +32,7 @@ also still thinking of a better name later on
 - [x] Loadout: add search functionality for weapon and matrices (2025-04-20)
 - [x] Loadout: add some weapons and matrices (2025-04-22)
 - [x] Stat: add way to manually add stat (2025-04-22)
-- [ ] Gear: add way to manually add gears
+- [x] Gear: add way to manually add gears (2025-04-23)
 - [ ] Export: add way to export gears and loadout
 - [ ] Export: add way to fix gear to specific loadout when exporting
 - [ ] Optimization: include onfield calculations
