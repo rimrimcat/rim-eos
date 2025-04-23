@@ -3,7 +3,7 @@
 
 	type StatOrElement = StatGearUser | StatGearFinal | Elements | CompoundElements;
 
-	let { stat = 'atk' as StatOrElement, size = '100%', style = '' } = $props();
+	let { stat = 'atk' as StatOrElement, size = '100%', gray = false, style = '' } = $props();
 
 	let img = $state('phys');
 	let previous_stat = $state('atk');
@@ -79,7 +79,7 @@
 	<img
 		src="./stat_icon/{img}.webp"
 		alt="Stat Icon"
-		style="width: {size}; height: {size}; {style}"
+		style="width: {size}; height: {size}; filter: {gray ? 'grayscale(100%)' : 'none'}; {style}"
 	/>
 
 	<!-- Symbol on top of the base -->
@@ -88,7 +88,7 @@
 			<img
 				src="./stat_icon/{atk_kind}.webp"
 				alt="Stat Icon"
-				style="width: {size}; height: {size}; "
+				style="width: {size}; height: {size}; filter: {gray ? 'grayscale(100%)' : 'none'};"
 			/>
 		{/if}
 	</div>
