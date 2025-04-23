@@ -348,78 +348,13 @@ export async function updateSingleWeaponView(index: number) {
 		{ id: 'none' }
 	];
 	const loadout_reso_counts = get(reso_counts);
-	const advancement = user_weapons[index].advancement ?? 0;
-
-	// get base stat of weapon
-	const _base_stat: { [key in StatKey]?: number } = {};
-	Object.entries(WEAPON_BASE_STATS[weapon.base_stat]).forEach(([stat, value]) => {
-		_base_stat[stat as StatKey] = value[0] + ((value[1] - value[0]) * advancement) / 6;
-	});
-	const base_stat = new StatCollection(_base_stat);
-
-	// active effects
-	const effects: WeaponEffect[] = [];
-	const stat_ = [new StatCollection()];
-
-	await pushAllValidWeaponEffects(
-		weapon.effects ?? [],
-		advancement,
-		loadout_reso_counts,
-		effects,
-		stat_
-	);
-
-	const setting_ids =
-		user_weapons[index].setting ?? weapon.settings?.map((setting) => setting.default) ?? [];
-	const setting: WeaponSetting[] = await Promise.all(
-		setting_ids.map(async (setting_) => {
-			return await getWeaponSetting(setting_);
-		})
-	);
-
-	const setting_view: SettingView[] =
-		weapon.settings !== undefined
-			? await Promise.all(
-					setting.map(async (setting_, index) => {
-						return {
-							// @ts-expect-error: already checked if undefined
-							...weapon.settings[index],
-							choice: setting_
-						};
-					})
-				)
-			: [];
-
-	if (weapon.settings) {
-		await Promise.all(
-			setting_view.map(async (setting_) => {
-				if (setting_.choice.effects) {
-					return await pushAllValidWeaponEffects(
-						setting_.choice.effects,
-						advancement,
-						loadout_reso_counts,
-						effects,
-						stat_
-					);
-				}
-			})
-		);
-	}
-	const stat = stat_[0];
 
 	const loadout_weapon_views = get(weapon_views);
-	loadout_weapon_views[index] = {
-		id: weapon.id,
-		name: weapon.name,
-		resonances: weapon.resonances,
-		onfieldness: weapon.onfieldness,
-		advancement,
-		setting_view,
-
-		base_stat,
-		effects,
-		stat
-	} as WeaponView;
+	loadout_weapon_views[index] = await obtainSingleWeaponView(
+		user_weapons[index],
+		weapon,
+		loadout_reso_counts
+	);
 	weapon_views.set(loadout_weapon_views);
 }
 
@@ -644,6 +579,83 @@ export async function obtainResoEffects(
 	return _reso_effects;
 }
 
+async function obtainSingleWeaponView(
+	equipped_weapon: UserWeapon,
+	base_weapon: Weapon,
+	reso_counts: ResoTriggerCounts
+) {
+	const advancement = equipped_weapon.advancement ?? 0;
+
+	// get base stat of weapon
+	const _base_stat: { [key in StatKey]?: number } = {};
+	Object.entries(WEAPON_BASE_STATS[base_weapon.base_stat]).forEach(([stat, value]) => {
+		_base_stat[stat as StatKey] = value[0] + ((value[1] - value[0]) * advancement) / 6;
+	});
+	const base_stat = new StatCollection(_base_stat);
+
+	// active effects
+	const effects: WeaponEffect[] = [];
+	const stat_ = [new StatCollection()];
+
+	await pushAllValidWeaponEffects(
+		base_weapon.effects ?? [],
+		advancement,
+		reso_counts,
+		effects,
+		stat_
+	);
+	const setting_ids =
+		equipped_weapon.setting ?? base_weapon.settings?.map((setting) => setting.default) ?? [];
+	const setting: WeaponSetting[] = await Promise.all(
+		setting_ids.map(async (setting_) => {
+			return await getWeaponSetting(setting_);
+		})
+	);
+
+	const setting_view: SettingView[] =
+		base_weapon.settings !== undefined
+			? await Promise.all(
+					setting.map(async (setting_, index) => {
+						if (!base_weapon.settings) throw new Error('base_weapon.settings is undefined');
+						return {
+							...base_weapon.settings[index],
+							choice: setting_
+						};
+					})
+				)
+			: [];
+
+	if (base_weapon.settings) {
+		await Promise.all(
+			setting_view.map(async (setting_) => {
+				if (setting_.choice.effects) {
+					return await pushAllValidWeaponEffects(
+						setting_.choice.effects,
+						advancement,
+						reso_counts,
+						effects,
+						stat_
+					);
+				}
+			})
+		);
+	}
+
+	const stat = stat_[0];
+
+	return {
+		id: base_weapon.id,
+		name: base_weapon.name,
+		resonances: base_weapon.resonances,
+		advancement,
+		setting_view,
+
+		base_stat,
+		effects,
+		stat
+	} as WeaponView;
+}
+
 export async function obtainWeaponViews(
 	equipped_weapons: UserWeapon[],
 	base_weapons: Weapon[],
@@ -651,77 +663,7 @@ export async function obtainWeaponViews(
 ) {
 	return await Promise.all(
 		base_weapons.map(async (weapon, index) => {
-			const advancement = equipped_weapons[index].advancement ?? 0;
-
-			// get base stat of weapon
-			const _base_stat: { [key in StatKey]?: number } = {};
-			Object.entries(WEAPON_BASE_STATS[weapon.base_stat]).forEach(([stat, value]) => {
-				_base_stat[stat as StatKey] = value[0] + ((value[1] - value[0]) * advancement) / 6;
-			});
-			const base_stat = new StatCollection(_base_stat);
-
-			// active effects
-			const effects: WeaponEffect[] = [];
-			const stat_ = [new StatCollection()];
-
-			await pushAllValidWeaponEffects(
-				weapon.effects ?? [],
-				advancement,
-				reso_counts,
-				effects,
-				stat_
-			);
-			const setting_ids =
-				equipped_weapons[index].setting ?? weapon.settings?.map((setting) => setting.default) ?? [];
-			const setting: WeaponSetting[] = await Promise.all(
-				setting_ids.map(async (setting_) => {
-					return await getWeaponSetting(setting_);
-				})
-			);
-
-			const setting_view: SettingView[] =
-				weapon.settings !== undefined
-					? await Promise.all(
-							setting.map(async (setting_, index) => {
-								return {
-									// @ts-expect-error: check already performed with weapon.settings !== undefined
-									...weapon.settings[index],
-									choice: setting_
-								};
-							})
-						)
-					: [];
-
-			if (weapon.settings) {
-				await Promise.all(
-					setting_view.map(async (setting_) => {
-						if (setting_.choice.effects) {
-							return await pushAllValidWeaponEffects(
-								setting_.choice.effects,
-								advancement,
-								reso_counts,
-								effects,
-								stat_
-							);
-						}
-					})
-				);
-			}
-
-			const stat = stat_[0];
-
-			return {
-				id: weapon.id,
-				name: weapon.name,
-				resonances: weapon.resonances,
-				onfieldness: weapon.onfieldness,
-				advancement,
-				setting_view,
-
-				base_stat,
-				effects,
-				stat
-			} as WeaponView;
+			return obtainSingleWeaponView(equipped_weapons[index], weapon, reso_counts);
 		})
 	);
 }
