@@ -88,7 +88,7 @@
 			<img
 				src="./stat_icon/{atk_kind}.webp"
 				alt="Stat Icon"
-				style="width: {size}; height: {size}; filter: {gray ? 'grayscale(100%)' : 'none'};"
+				style="width: 100%; height: 100%; filter: {gray ? 'grayscale(100%)' : 'none'};"
 			/>
 		{/if}
 	</div>
