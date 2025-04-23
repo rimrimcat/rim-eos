@@ -91,6 +91,21 @@ export const VALID_GEAR_PARTS: ValidGearPart[] = [
 	'R'
 ];
 
+export const GEAR_AUGMENTS: GearAugment[] = [
+	'delay',
+	'increased_healing',
+	'lifesteal',
+	'hp_recovery',
+	'block',
+	'dmg_reduction',
+	'dmg_boost',
+	'weakpoint_dmg_boost',
+	'normal_atk_dmg_boost',
+	'dodge_atk_dmg_boost',
+	'skill_dmg_boost',
+	'discharge_dmg_boost'
+];
+
 // normal stats
 const GEAR_STATS: StatGearUser[] = [
 	'hp',
