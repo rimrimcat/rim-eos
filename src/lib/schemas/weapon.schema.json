@@ -109,6 +109,10 @@
     "short_rotation_duration": {
       "description": "Time taken to proc all weapon buffs before switching out",
       "type": "number"
+    },
+    "short_rotation_requires_discharge": {
+      "description": "Whether the short rotation requires discharge",
+      "type": "boolean"
     }
   },
   "additionalProperties": false,

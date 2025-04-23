@@ -88,6 +88,11 @@ export type Weapon = {
 	 * Time taken to proc all weapon buffs before switching out
 	 */
 	short_rotation_duration?: number;
+
+	/**
+	 * Whether the short rotation requires discharge
+	 */
+	short_rotation_requires_discharge?: boolean;
 };
 
 export type UserWeapon = {
@@ -110,6 +115,7 @@ export type WeaponView = {
 	onfield_atk_priority?: number;
 	rotation_period?: number;
 	short_rotation_duration?: number;
+	short_rotation_requires_discharge?: boolean;
 };
 
 export type Matrix = {
