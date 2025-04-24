@@ -124,8 +124,14 @@ function finalizeEffect(
 		(advancement ?? 0) >= eff.require_adv_not_gt
 	) {
 		if (debug) {
-			console.log('required adv not gt fulfilled:', eff.id);
-			console.log('Expected adv not >=', eff.require_adv_not_gt, 'Got:', advancement);
+			console.log(
+				'required adv not gt fulfilled:',
+				eff.id,
+				'. Expected adv not >=',
+				eff.require_adv_not_gt,
+				'Got:',
+				advancement
+			);
 		}
 		return null;
 	}
@@ -141,11 +147,21 @@ function finalizeEffect(
 		return null;
 	}
 
-	// TEMPORARILY DISABLE ONFIELD EFFECTS
+	// TEMPORARILY DISABLE TEAMPLAY EFFECTS
+	if (eff.require_teamplay) {
+		if (debug) console.log('teamplay effect disabled:', eff.id);
+		return null;
+	}
+
 	if (
 		(eff.duration !== undefined && eff.duration === 0) ||
 		('require_onfield' in eff && eff.require_onfield)
 	) {
+		if (!rotation_view_) {
+			if (debug) console.log('onfield effect for', eff.id, 'missing rotation view');
+			return null;
+		}
+
 		if (weapon_index === undefined && eff.require_onfield_weapon && user_weapons_) {
 			weapon_index = user_weapons_.findIndex((weapon) => weapon.id === eff.require_onfield_weapon);
 
@@ -162,10 +178,12 @@ function finalizeEffect(
 		effectiveness *= rotation_view_.onfield_times[weapon_index] / rotation_view_.rotation_period;
 	}
 
-	// TEMPORARILY DISABLE TEAMPLAY EFFECTS
-	if (eff.require_teamplay) {
-		if (debug) console.log('teamplay effect disabled:', eff.id);
-		return null;
+	if (eff.require_hp_less_than) {
+		effectiveness *= eff.require_hp_less_than / 100;
+	}
+
+	if (eff.require_hp_greater_than) {
+		effectiveness *= (100 - eff.require_hp_greater_than) / 100;
 	}
 
 	const vals_: (
