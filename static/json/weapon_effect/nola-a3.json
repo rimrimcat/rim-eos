@@ -3,6 +3,5 @@
 	"stats": {
 		"res_ignore_percent": 15
 	},
-	"require_adv": 3,
-	"target": "enemy"
+	"require_adv": 3
 }

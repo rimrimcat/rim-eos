@@ -39,9 +39,19 @@ export type MatrixExprData = {
 	];
 };
 
+export type EffectSupportingAdvancement = {
+	/** For effects that require certain advancement (weapon, relics) */
+	require_adv?: number;
+	/** For advancements that modify original effects */
+	require_adv_not_gt?: number;
+};
+
 export type BaseEffect = {
 	id: string;
-	target?: Target; // defaults to self
+
+	/** Target of effect (defaults to self) */
+	target?: Target;
+
 	duration?: number; // cooldown and duration only matter if not 100% uptime or if onfield
 	cooldown?: number;
 
@@ -49,85 +59,73 @@ export type BaseEffect = {
 	require_reso_not?: ResoTriggers;
 	require_reso_count?: number; // defaults to 2
 
-	require_teamplay?: boolean; // defaults to false
+	/** For effects that only activate when onfield (matrices) */
+	require_onfield?: boolean;
+	/** For effects that only activate when specific weapon is onfield (relics) */
+	require_onfield_weapon?: WeaponsIds;
+	/** For effects that only activate when offhand (e.g. brevey buff) */
+	require_offhand?: boolean;
 
-	require_weapon?: WeaponsIds; // require weapon to be present to activated
+	/** If effect only triggers in teamplay */
+	require_teamplay?: boolean;
 
-	require_boss?: boolean; // effects that only activate against bosses
+	/** If effect only activates if certain weapon is present */
+	require_weapon?: WeaponsIds;
 
-	require_combat?: boolean; // effects that only activate when in combat (using skill, after dealing damage...)
+	/** If effect only activates against bosses */
+	require_boss?: boolean;
 
-	require_hp_less_than?: number; // effects that only activate when enemy hp is less than a certain percentage
-	require_hp_greater_than?: number; // effects that only activate when enemy hp is greater than a certain percentage
+	/** If effect only activates in combat (after using skill, after dealing damage) */
+	require_combat?: boolean;
+
+	/** For couant relic */
+	require_undamaged?: boolean;
+
+	/** For effects that work even when unequipped (for relics) */
+	works_unequipped?: boolean;
+
+	/** For effects that only activate when enemy hp is less than a certain percentage */
+	require_hp_less_than?: number;
+	/** For effects that only activate when enemy hp is greater than a certain percentage */
+	require_hp_greater_than?: number;
 
 	notes?: string;
 };
-
-export type WeaponEffect = BaseEffect & {
-	id: WeaponEffectsIds;
+export type IdAndStats<T> = {
+	id: T;
 	stats: StatData;
-	require_adv?: number; // required advancement (esp. for weapons)
-	require_adv_not_gt?: number; // for advancement that modifies original effects
-	require_offhand?: boolean; // effects that only activate when offhand
 };
 
-export type ResoEffect = BaseEffect & {
-	id: ResoEffectsIds;
-	stats: StatData;
-	require_reso: ResoTriggers;
-};
-
+export type WeaponEffect = BaseEffect & EffectSupportingAdvancement & IdAndStats<WeaponEffectsIds>;
+export type ResoEffect = BaseEffect & IdAndStats<ResoEffectsIds>;
 export type MatrixEffect = BaseEffect & {
 	id: MatrixEffectsIds;
 	stats: MatrixStatData | MatrixExprData;
 };
-
 export type FinalizedMatrixEffect = BaseEffect & {
 	id: MatrixEffectsIds;
 	stats: StatData;
 	advancement: number;
 };
-
-export type GearEffect = BaseEffect & {
-	id: GearEffectsIds;
-	stats: StatData;
-};
-
-export type RelicEffect = BaseEffect & {
-	id: RelicEffectsIds;
-	stats: StatData;
-
-	require_adv?: number; // required advancement (esp. for weapons)
-	require_adv_not_gt?: number; // for advancement that modifies original effects, only effective if adv < require_adv_not_gt
-
-	require_onfield?: boolean; // for effects that only activate when onfield
-
-	require_undamaged?: boolean; // for couant relic
-
-	works_unequipped?: boolean; // for effects that work even when unequipped
-};
-
+export type GearEffect = BaseEffect & IdAndStats<GearEffectsIds>;
+export type RelicEffect = BaseEffect & EffectSupportingAdvancement & IdAndStats<RelicEffectsIds>;
 export type TraitEffect = BaseEffect & {
 	id: TraitEffectsIds;
 	stats: StatData | ExprStatData;
-
-	require_onfield_weapon?: WeaponsIds; // for effects that only activate when specific weapon is onfield
 };
+export type FinalizedTraitEffect = BaseEffect & IdAndStats<TraitEffectsIds>;
+export type WeaponBaseEffect = BaseEffect & IdAndStats<WeaponBaseEffectIds>;
+export type OtherEffect = BaseEffect & IdAndStats<OtherEffectIds>;
 
-export type FinalizedTraitEffect = BaseEffect & {
-	id: TraitEffectsIds;
-	stats: StatData;
-};
-
-export type WeaponBaseEffect = BaseEffect & {
-	id: WeaponBaseEffectIds;
-	stats: StatData;
-};
-
-export type OtherEffect = BaseEffect & {
-	id: OtherEffectIds;
-	stats: StatData;
-};
+export type UnfinalEffectTypes =
+	| ResoEffect
+	| WeaponEffect
+	| WeaponBaseEffect
+	| MatrixEffect
+	| GearEffect
+	| RelicEffect
+	| TraitEffect
+	| OtherEffect;
 
 export type AllEffectTypes =
 	| ResoEffect
@@ -137,7 +135,8 @@ export type AllEffectTypes =
 	| GearEffect
 	| RelicEffect
 	| FinalizedTraitEffect
-	| OtherEffect;
+	| OtherEffect
+	| FinalizedEffect;
 
 export type AllEffectIds =
 	| ResoEffectsIds
@@ -148,3 +147,11 @@ export type AllEffectIds =
 	| RelicEffectsIds
 	| TraitEffectsIds
 	| OtherEffectIds;
+
+export type FinalizedEffect = BaseEffect &
+	EffectSupportingAdvancement & {
+		id: AllEffectIds;
+		stats: StatData;
+
+		advancement?: number;
+	};

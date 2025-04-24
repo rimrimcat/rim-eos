@@ -6,6 +6,7 @@
       "$ref": "#/definitions/MatrixEffectsIds"
     },
     "target": {
+      "description": "Target of effect (defaults to self)",
       "enum": [
         "ally",
         "enemy",
@@ -63,10 +64,44 @@
     "require_reso_count": {
       "type": "number"
     },
+    "require_onfield": {
+      "description": "For effects that only activate when onfield (matrices)",
+      "type": "boolean"
+    },
+    "require_onfield_weapon": {
+      "description": "For effects that only activate when specific weapon is onfield (relics)",
+      "enum": [
+        "anka",
+        "antoria",
+        "asuka",
+        "asurada",
+        "brevey",
+        "claudiax",
+        "fiona",
+        "grayfox",
+        "jiyu",
+        "merylx",
+        "nanyin",
+        "nola",
+        "none",
+        "rei",
+        "roslyn",
+        "voidpiercer",
+        "yanmiao",
+        "yanuo"
+      ],
+      "type": "string"
+    },
+    "require_offhand": {
+      "description": "For effects that only activate when offhand (e.g. brevey buff)",
+      "type": "boolean"
+    },
     "require_teamplay": {
+      "description": "If effect only triggers in teamplay",
       "type": "boolean"
     },
     "require_weapon": {
+      "description": "If effect only activates if certain weapon is present",
       "enum": [
         "anka",
         "antoria",
@@ -90,15 +125,27 @@
       "type": "string"
     },
     "require_boss": {
+      "description": "If effect only activates against bosses",
       "type": "boolean"
     },
     "require_combat": {
+      "description": "If effect only activates in combat (after using skill, after dealing damage)",
+      "type": "boolean"
+    },
+    "require_undamaged": {
+      "description": "For couant relic",
+      "type": "boolean"
+    },
+    "works_unequipped": {
+      "description": "For effects that work even when unequipped (for relics)",
       "type": "boolean"
     },
     "require_hp_less_than": {
+      "description": "For effects that only activate when enemy hp is less than a certain percentage",
       "type": "number"
     },
     "require_hp_greater_than": {
+      "description": "For effects that only activate when enemy hp is greater than a certain percentage",
       "type": "number"
     },
     "notes": {
@@ -512,25 +559,6 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "alt_dmg_percent": {
-          "type": "array",
-          "items": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
         "crit": {
           "type": "array",
           "items": [
@@ -665,25 +693,6 @@
           "maxItems": 4
         },
         "alt_res": {
-          "type": "array",
-          "items": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
-        "res_percent": {
           "type": "array",
           "items": [
             {
@@ -1753,25 +1762,6 @@
           "minItems": 4,
           "maxItems": 4
         },
-        "alt_dmg_percent": {
-          "type": "array",
-          "items": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
         "crit": {
           "type": "array",
           "items": [
@@ -1906,25 +1896,6 @@
           "maxItems": 4
         },
         "alt_res": {
-          "type": "array",
-          "items": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            },
-            {
-              "type": "string"
-            }
-          ],
-          "minItems": 4,
-          "maxItems": 4
-        },
-        "res_percent": {
           "type": "array",
           "items": [
             {

@@ -4,5 +4,6 @@
 	"base_stat": "crit-med",
 	"resonances": ["flame-phys", "atk"],
 	"effects": ["jiyu-a3", "jiyu-discharge", "jiyu-a6-discharge"],
-	"reso_effects": ["flame-reso", "phys-reso"]
+	"reso_effects": ["flame-reso", "phys-reso"],
+	"onfield_atk_priority": 3.8
 }

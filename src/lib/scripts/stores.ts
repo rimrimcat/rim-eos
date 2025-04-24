@@ -10,6 +10,7 @@ import type {
 	RelicView,
 	ResoEffect,
 	ResoTriggerCounts,
+	RotationView,
 	TraitView,
 	UserGear,
 	Weapon,
@@ -59,6 +60,11 @@ export const base_weapons = writable<Weapon[]>([]);
 export const reso_counts = writable<ResoTriggerCounts>({});
 export const reso_effects = writable<ResoEffect[]>([]);
 export const weapon_views = writable<WeaponView[]>([]);
+export const rotation_view = writable<RotationView>({
+	rotation_period: 30,
+	primary_weapon: 0,
+	onfield_times: [0, 0, 0]
+});
 export const matrix_views = writable<MatrixView[]>([]);
 export const relic_views = writable<RelicView[]>([]);
 export const trait_view = writable<TraitView | null>(null);

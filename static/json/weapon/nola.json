@@ -13,5 +13,6 @@
 			"default": "nola-phys",
 			"assignment": "manual"
 		}
-	]
+	],
+	"onfield_atk_priority": 4.2
 }

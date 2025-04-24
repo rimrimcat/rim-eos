@@ -24,5 +24,6 @@
 			"default": "voidpiercer-starfall",
 			"assignment": "manual"
 		}
-	]
+	],
+	"onfield_atk_priority": 4.6
 }

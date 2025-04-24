@@ -4,5 +4,6 @@
 	"base_stat": "crit-med",
 	"resonances": ["frost-volt", "atk"],
 	"effects": ["yanuo-a1", "yanuo-skill", "yanuo-a6-skill"],
-	"reso_effects": ["frost-reso", "volt-reso"]
+	"reso_effects": ["frost-reso", "volt-reso"],
+	"onfield_atk_priority": 3.6
 }

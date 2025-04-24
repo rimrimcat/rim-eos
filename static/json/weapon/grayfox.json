@@ -4,5 +4,9 @@
 	"base_stat": "crit-med",
 	"resonances": ["frost-volt", "bene"],
 	"effects": ["grayfox-skill", "grayfox-a3-buff", "grayfox-a3-debuff", "grayfox-a6"],
-	"reso_effects": ["frost-reso", "volt-reso"]
+	"reso_effects": ["frost-reso", "volt-reso"],
+	"onfield_atk_priority": 4.4,
+	"rotation_period": 30,
+	"short_rotation_duration": 3,
+	"short_rotation_requires_discharge": true
 }

@@ -12,11 +12,11 @@ import type {
 } from '../generated/ids';
 import type { StatCollection } from '../scripts/stats';
 import type {
+	FinalizedEffect,
 	FinalizedMatrixEffect,
 	FinalizedTraitEffect,
 	OrderedResoTriggers,
-	RelicEffect,
-	WeaponEffect
+	RelicEffect
 } from './effect-types';
 import type { StatBuffs, StatGearUser } from './stat-types';
 
@@ -44,6 +44,10 @@ export type WeaponSetting = {
 	effects?: WeaponEffectsIds[];
 	reso_effects?: ResoEffectsIds[]; // would merge with weapon
 	notes?: string;
+
+	rotation_period?: number;
+	short_rotation_duration?: number;
+	short_rotation_requires_discharge?: boolean;
 };
 
 export type SettingAssignment = 'manual' | 'voidpiercer';
@@ -71,11 +75,28 @@ export type Weapon = {
 	name: string;
 	base_stat: BaseStatType;
 	resonances: OrderedResoTriggers;
-	onfieldness?: number; // priority for onfielding, need to determine this later on
 	effects: WeaponEffectsIds[];
 	reso_effects?: ResoEffectsIds[];
 
 	settings?: (SettingElement | SettingSkill)[];
+
+	/** Priority for being main dps when on atk reso */
+	onfield_atk_priority?: number;
+
+	/** How often to switch to weapon to maximize the buffs (in seconds).
+	 *  This is usually just equal to the skill cooldown or shortest buff duration
+	 */
+	rotation_period?: number;
+
+	/**
+	 * Time taken to proc all weapon buffs before switching out
+	 */
+	short_rotation_duration?: number;
+
+	/**
+	 * Whether the short rotation requires discharge
+	 */
+	short_rotation_requires_discharge?: boolean;
 };
 
 export type UserWeapon = {
@@ -88,11 +109,10 @@ export type WeaponView = {
 	id: WeaponsIds;
 	name: string;
 	resonances: OrderedResoTriggers;
-	onfieldness?: number;
 	setting_view: SettingView[];
 
 	base_stat: StatCollection;
-	effects: WeaponEffect[];
+	effects: FinalizedEffect[];
 	stat: StatCollection;
 
 	advancement: number;
@@ -152,4 +172,10 @@ export type TraitView = {
 	name: string;
 	effects: FinalizedTraitEffect[];
 	stat: StatCollection;
+};
+
+export type RotationView = {
+	rotation_period: number;
+	primary_weapon: number;
+	onfield_times: number[];
 };

@@ -32,5 +32,6 @@
 			"default": "fiona-wellspring",
 			"assignment": "manual"
 		}
-	]
+	],
+	"onfield_atk_priority": 0
 }
