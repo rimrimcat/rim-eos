@@ -5,6 +5,7 @@ import type {
 	BaseEffect,
 	BaseStats16,
 	EquippedGear,
+	FinalizedEffect,
 	FinalizedMatrixEffect,
 	FinalizedTraitEffect,
 	GearEffect,
@@ -28,6 +29,7 @@ import type {
 	TraitEffect,
 	TraitEffectsIds,
 	TraitView,
+	UnfinalEffectTypes,
 	UserMatrix,
 	UserRelic,
 	UserTrait,
@@ -36,7 +38,6 @@ import type {
 	Weapon,
 	WeaponBaseEffect,
 	WeaponEffect,
-	WeaponEffectsIds,
 	WeaponSetting,
 	WeaponView
 } from '../types/index';
@@ -191,6 +192,164 @@ function checkValidEffect(
 	return true;
 }
 
+function finalizeEffect(
+	eff: UnfinalEffectTypes,
+	reso_counts_: ResoTriggerCounts,
+	rotation_view_?: RotationView,
+	advancement?: number,
+	user_weapons_?: UserWeapon[],
+	debug?: boolean
+): FinalizedEffect | null {
+	// check if required reso is fulfilled
+	if (eff.require_reso) {
+		const required_reso_count = eff.require_reso_count ?? 2;
+		if ((reso_counts_[eff.require_reso] ?? 0) < required_reso_count) {
+			if (debug) {
+				console.log(
+					'required reso not fulfilled:',
+					eff.id,
+					'Expected ',
+					eff.require_reso,
+					':',
+					required_reso_count,
+					'Got:',
+					reso_counts_[eff.require_reso] ?? 0
+				);
+			}
+			return null;
+		}
+	}
+
+	// check if required adv is fulfilled
+	if ('require_adv' in eff && eff.require_adv && (advancement ?? 0) < eff.require_adv) {
+		if (debug) {
+			console.log(
+				'required adv not fulfilled:',
+				eff.id,
+				'Expected adv >=',
+				eff.require_adv,
+				'Got:',
+				advancement ?? 0
+			);
+		}
+		return null;
+	}
+
+	// check if required adv not gt is fulfilled
+	if (
+		'require_adv_not_gt' in eff &&
+		eff.require_adv_not_gt &&
+		(advancement ?? 0) >= eff.require_adv_not_gt
+	) {
+		if (debug) {
+			console.log('required adv not gt fulfilled:', eff.id);
+			console.log('Expected adv not >=', eff.require_adv_not_gt, 'Got:', advancement);
+		}
+		return null;
+	}
+
+	// check if required weapon is present
+	if (
+		eff.require_weapon &&
+		!(user_weapons_ ?? []).some((weapon) => weapon.id === eff.require_weapon)
+	) {
+		if (debug) {
+			console.log('required weapon for', eff.id, 'not present:', eff.require_weapon);
+		}
+		return null;
+	}
+
+	// TEMPORARILY DISABLE ONFIELD EFFECTS
+	if (eff.duration !== undefined && eff.duration === 0) {
+		if (debug) console.log('onfield effect disabled:', eff.id);
+		return null;
+	}
+	if ('require_onfield' in eff && eff.require_onfield) {
+		if (debug) console.log('onfield effect disabled:', eff.id);
+		return null;
+	}
+
+	// TEMPORARILY DISABLE TEAMPLAY EFFECTS
+	if (eff.require_teamplay) {
+		if (debug) console.log('teamplay effect disabled:', eff.id);
+		return null;
+	}
+
+	const vals_: (
+		| number
+		| string
+		| [number, number, number, number]
+		| [string, string, string, string]
+	)[] = Object.values(eff.stats);
+
+	const keys = Object.keys(eff.stats);
+	const finalEffect = {
+		...eff,
+		stats: {},
+		advancement
+	};
+
+	if (typeof vals_[0] === 'object') {
+		// for matrix data
+		keys.forEach((key) => {
+			// @ts-expect-error: key is guaranteed to exist
+			const expr_or_number: string | number = eff.stats[key][advancement];
+
+			if (typeof expr_or_number === 'string') {
+				// @ts-expect-error: key is guaranteed to exist
+				finalEffect.stats[key] = evil(parse(expr_or_number), reso_counts_);
+			} else {
+				// @ts-expect-error: key is guaranteed to exist
+				finalEffect.stats[key] = expr_or_number;
+			}
+		});
+	} else {
+		keys.forEach((key) => {
+			// @ts-expect-error: key is guaranteed to exist
+			const expr_or_number: string | number = eff.stats[key];
+
+			if (typeof expr_or_number === 'string') {
+				// @ts-expect-error: key is guaranteed to exist
+				finalEffect.stats[key] = evil(parse(expr_or_number), reso_counts_);
+			} else {
+				// @ts-expect-error: key is guaranteed to exist
+				finalEffect.stats[key] = expr_or_number;
+			}
+		});
+	}
+
+	return finalEffect as FinalizedEffect;
+}
+
+export async function pushAllValidEffects(
+	effs: UnfinalEffectTypes[],
+	reso_counts_: ResoTriggerCounts,
+	effects_: FinalizedEffect[],
+	stat_: StatCollection[],
+	rotation_view_?: RotationView,
+	advancement?: number,
+	user_weapons_?: UserWeapon[]
+) {
+	await Promise.all(
+		effs.map(async (eff) => {
+			const final_eff = finalizeEffect(
+				eff,
+				reso_counts_,
+				rotation_view_,
+				advancement,
+				user_weapons_
+			);
+
+			if (!final_eff) {
+				return;
+			}
+
+			effects_.push(final_eff);
+			stat_[0] = stat_[0].add(new StatCollection(final_eff.stats));
+		})
+	);
+}
+
 // helper function for updateResoEffects
 export async function pushValidResoEffect(
 	effectIds: ResoEffectsIds[],
@@ -202,28 +361,6 @@ export async function pushValidResoEffect(
 			if (effect && effect.id && !reso_effects_.some((eff2) => eff2.id === effect.id)) {
 				reso_effects_.push(effect);
 			}
-		})
-	);
-}
-
-// helper function for weapon views
-export async function pushAllValidWeaponEffects(
-	effs: WeaponEffectsIds[],
-	advancement: number,
-	reso_counts_: ResoTriggerCounts,
-	effects_: WeaponEffect[],
-	stat_: StatCollection[]
-) {
-	await Promise.all(
-		effs.map(async (eff_) => {
-			const eff = await getWeaponEffect(eff_);
-
-			if (!checkValidEffect(eff, reso_counts_, advancement)) {
-				return;
-			}
-
-			effects_.push(eff);
-			stat_[0] = stat_[0].add(new StatCollection(eff.stats));
 		})
 	);
 }
@@ -364,7 +501,8 @@ export async function updateSingleWeaponView(index: number) {
 		user_weapons[index],
 		weapon,
 		loadout_reso_counts,
-		setting_view_
+		setting_view_,
+		get(rotation_view)
 	);
 	weapon_views.set(loadout_weapon_views);
 }
@@ -587,7 +725,8 @@ async function obtainSingleWeaponView(
 	equipped_weapon: UserWeapon,
 	base_weapon: Weapon,
 	reso_counts: ResoTriggerCounts,
-	setting_view: SettingView[]
+	setting_view: SettingView[],
+	rotation_view: RotationView
 ): Promise<WeaponView> {
 	const advancement = equipped_weapon.advancement ?? 0;
 
@@ -599,27 +738,29 @@ async function obtainSingleWeaponView(
 	const base_stat = new StatCollection(_base_stat);
 
 	// active effects
-	const effects: WeaponEffect[] = [];
+	const effects: FinalizedEffect[] = [];
 	const stat_ = [new StatCollection()];
 
-	await pushAllValidWeaponEffects(
-		base_weapon.effects ?? [],
-		advancement,
+	await pushAllValidEffects(
+		await Promise.all(base_weapon.effects.map((eff) => getWeaponEffect(eff))),
 		reso_counts,
 		effects,
-		stat_
+		stat_,
+		rotation_view,
+		advancement
 	);
 
 	if (base_weapon.settings) {
 		await Promise.all(
 			setting_view.map(async (setting_) => {
 				if (setting_.choice.effects) {
-					return await pushAllValidWeaponEffects(
-						setting_.choice.effects,
-						advancement,
+					return await pushAllValidEffects(
+						await Promise.all(setting_.choice.effects.map((eff) => getWeaponEffect(eff))),
 						reso_counts,
 						effects,
-						stat_
+						stat_,
+						rotation_view,
+						advancement
 					);
 				}
 			})
@@ -645,6 +786,7 @@ export async function obtainWeaponViews(
 	equipped_weapons: UserWeapon[],
 	base_weapons: Weapon[],
 	reso_counts: ResoTriggerCounts,
+	rotation_view: RotationView,
 	setting_views: SettingView[][]
 ): Promise<WeaponView[]> {
 	return await Promise.all(
@@ -653,7 +795,8 @@ export async function obtainWeaponViews(
 				equipped_weapons[index],
 				weapon,
 				reso_counts,
-				setting_views[index]
+				setting_views[index],
+				rotation_view
 			);
 		})
 	);
@@ -678,6 +821,15 @@ async function obtainSingleMatrixView(
 		stat_,
 		equipped_weapons
 	);
+
+	// await pushAllValidEffects(
+	// 	await Promise.all(matrix_.effects.map((eff) => getMatrixEffect(eff))),
+	// 	reso_counts,
+	// 	effects,
+	// 	stat_,
+	// 	advancement
+	// );
+
 	const stat = stat_[0];
 
 	return {
@@ -878,6 +1030,7 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 		equipped_weapons_,
 		base_weapons_,
 		reso_counts_,
+		rotation_view_,
 		setting_views_
 	);
 	weapon_views.set(weapon_views_);

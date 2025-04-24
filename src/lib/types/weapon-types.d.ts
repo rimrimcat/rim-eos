@@ -12,11 +12,11 @@ import type {
 } from '../generated/ids';
 import type { StatCollection } from '../scripts/stats';
 import type {
+	FinalizedEffect,
 	FinalizedMatrixEffect,
 	FinalizedTraitEffect,
 	OrderedResoTriggers,
-	RelicEffect,
-	WeaponEffect
+	RelicEffect
 } from './effect-types';
 import type { StatBuffs, StatGearUser } from './stat-types';
 
@@ -112,7 +112,7 @@ export type WeaponView = {
 	setting_view: SettingView[];
 
 	base_stat: StatCollection;
-	effects: WeaponEffect[];
+	effects: FinalizedEffect[];
 	stat: StatCollection;
 
 	advancement: number;

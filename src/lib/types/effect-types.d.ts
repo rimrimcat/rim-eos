@@ -117,6 +117,16 @@ export type FinalizedTraitEffect = BaseEffect & IdAndStats<TraitEffectsIds>;
 export type WeaponBaseEffect = BaseEffect & IdAndStats<WeaponBaseEffectIds>;
 export type OtherEffect = BaseEffect & IdAndStats<OtherEffectIds>;
 
+export type UnfinalEffectTypes =
+	| ResoEffect
+	| WeaponEffect
+	| WeaponBaseEffect
+	| MatrixEffect
+	| GearEffect
+	| RelicEffect
+	| TraitEffect
+	| OtherEffect;
+
 export type AllEffectTypes =
 	| ResoEffect
 	| WeaponEffect
@@ -125,7 +135,8 @@ export type AllEffectTypes =
 	| GearEffect
 	| RelicEffect
 	| FinalizedTraitEffect
-	| OtherEffect;
+	| OtherEffect
+	| FinalizedEffect;
 
 export type AllEffectIds =
 	| ResoEffectsIds
