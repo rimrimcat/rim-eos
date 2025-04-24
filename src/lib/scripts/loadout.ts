@@ -610,6 +610,19 @@ async function obtainSingleWeaponView(
 	}
 
 	const stat = stat_[0];
+	const onfield_atk_priority = base_weapon.onfield_atk_priority;
+	const rotation_period = Math.min(
+		base_weapon.rotation_period ?? 30,
+		...setting_view.map((setting_) => setting_.choice.rotation_period ?? 30)
+	);
+	const short_rotation_duration = Math.min(
+		base_weapon.short_rotation_duration ?? 5,
+		...setting_view.map((setting_) => setting_.choice.short_rotation_duration ?? 5)
+	);
+	const short_rotation_requires_discharge =
+		base_weapon.short_rotation_requires_discharge ??
+		setting_view.some((setting_) => setting_.choice.short_rotation_requires_discharge ?? false) ??
+		false;
 
 	return {
 		id: base_weapon.id,
@@ -620,7 +633,12 @@ async function obtainSingleWeaponView(
 
 		base_stat,
 		effects,
-		stat
+		stat,
+
+		onfield_atk_priority,
+		rotation_period,
+		short_rotation_duration,
+		short_rotation_requires_discharge
 	} as WeaponView;
 }
 
