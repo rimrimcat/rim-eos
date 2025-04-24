@@ -116,10 +116,10 @@ export type WeaponView = {
 	stat: StatCollection;
 
 	advancement: number;
-	onfield_atk_priority?: number;
-	rotation_period?: number;
-	short_rotation_duration?: number;
-	short_rotation_requires_discharge?: boolean;
+	onfield_atk_priority: number;
+	rotation_period: number;
+	short_rotation_duration: number;
+	short_rotation_requires_discharge: boolean;
 };
 
 export type Matrix = {
@@ -180,5 +180,6 @@ export type TraitView = {
 
 export type RotationView = {
 	rotation_period: number;
-	onfield_times: [number, number, number];
+	primary_weapon: number;
+	onfield_times: number[];
 };

@@ -21,6 +21,7 @@ import type {
 	ResoEffect,
 	ResoEffectsIds,
 	ResoTriggerCounts,
+	RotationView,
 	SettingView,
 	StatAtkImprovement,
 	StatKey,
@@ -646,7 +647,7 @@ export async function obtainWeaponViews(
 	equipped_weapons: UserWeapon[],
 	base_weapons: Weapon[],
 	reso_counts: ResoTriggerCounts
-) {
+): Promise<WeaponView[]> {
 	return await Promise.all(
 		base_weapons.map(async (weapon, index) => {
 			return obtainSingleWeaponView(equipped_weapons[index], weapon, reso_counts);
@@ -658,7 +659,7 @@ async function obtainSingleMatrixView(
 	equipped_weapons: UserWeapon[],
 	matrix: UserMatrix,
 	reso_counts: ResoTriggerCounts
-) {
+): Promise<MatrixView> {
 	const advancement = matrix.advancement ?? 0;
 
 	const effects: FinalizedMatrixEffect[] = [];
@@ -681,7 +682,31 @@ async function obtainSingleMatrixView(
 		advancement,
 		effects,
 		stat
-	} as MatrixView;
+	};
+}
+
+export async function obtainRotationView(weapon_views: WeaponView[]): Promise<RotationView> {
+	const rotation_period = Math.max(...weapon_views.map((weapon) => weapon.rotation_period ?? 30));
+
+	const highest_atk_priority = Math.max(
+		...weapon_views.map((weapon) => weapon.onfield_atk_priority)
+	);
+	const primary_weapon = weapon_views.findIndex(
+		(weapon) => weapon.onfield_atk_priority === highest_atk_priority
+	);
+
+	const onfield_times = weapon_views.map(
+		(weapon) => rotation_period * (weapon.short_rotation_duration / weapon.rotation_period)
+	);
+	onfield_times[primary_weapon] =
+		rotation_period -
+		onfield_times.filter((_, indx) => indx !== primary_weapon).reduce((a, b) => a + b, 0);
+
+	return {
+		rotation_period,
+		primary_weapon,
+		onfield_times
+	};
 }
 
 export async function obtainMatrixViews(
