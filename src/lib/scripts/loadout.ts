@@ -73,7 +73,8 @@ import { WEAPON_BASE_STATS } from './weapons';
 function finalizeEffect(
 	eff: UnfinalEffectTypes,
 	reso_counts_: ResoTriggerCounts,
-	rotation_view_?: RotationView,
+	rotation_view_: RotationView,
+	weapon_index?: number,
 	advancement?: number,
 	user_weapons_?: UserWeapon[],
 	debug?: boolean
@@ -204,7 +205,8 @@ export async function pushAllValidEffects(
 	reso_counts_: ResoTriggerCounts,
 	effects_: FinalizedEffect[],
 	stat_: StatCollection[],
-	rotation_view_?: RotationView,
+	rotation_view_: RotationView,
+	weapon_index?: number,
 	advancement?: number,
 	user_weapons_?: UserWeapon[]
 ) {
@@ -214,6 +216,7 @@ export async function pushAllValidEffects(
 				eff,
 				reso_counts_,
 				rotation_view_,
+				weapon_index,
 				advancement,
 				user_weapons_
 			);
@@ -275,7 +278,8 @@ export async function updateSingleWeaponView(index: number) {
 		weapon,
 		loadout_reso_counts,
 		setting_view_,
-		get(rotation_view)
+		get(rotation_view),
+		index
 	);
 	weapon_views.set(loadout_weapon_views);
 }
@@ -300,7 +304,8 @@ export async function updateSingleMatrixView(index: number) {
 		equipped_weapons,
 		matrix,
 		get(reso_counts),
-		get(rotation_view)
+		get(rotation_view),
+		index
 	);
 	matrix_views.set(loadout_matrix_views);
 }
@@ -504,7 +509,8 @@ async function obtainSingleWeaponView(
 	base_weapon: Weapon,
 	reso_counts: ResoTriggerCounts,
 	setting_view: SettingView[],
-	rotation_view: RotationView
+	rotation_view: RotationView,
+	weapon_index: number
 ): Promise<WeaponView> {
 	const advancement = equipped_weapon.advancement ?? 0;
 
@@ -525,6 +531,7 @@ async function obtainSingleWeaponView(
 		effects,
 		stat_,
 		rotation_view,
+		weapon_index,
 		advancement
 	);
 
@@ -538,6 +545,7 @@ async function obtainSingleWeaponView(
 						effects,
 						stat_,
 						rotation_view,
+						weapon_index,
 						advancement
 					);
 				}
@@ -574,7 +582,8 @@ export async function obtainWeaponViews(
 				weapon,
 				reso_counts,
 				setting_views[index],
-				rotation_view
+				rotation_view,
+				index
 			);
 		})
 	);
@@ -584,7 +593,8 @@ async function obtainSingleMatrixView(
 	equipped_weapons: UserWeapon[],
 	matrix: UserMatrix,
 	reso_counts: ResoTriggerCounts,
-	rotation_view: RotationView
+	rotation_view: RotationView,
+	matrix_index: number
 ): Promise<MatrixView> {
 	const advancement = matrix.advancement ?? 0;
 
@@ -598,6 +608,7 @@ async function obtainSingleMatrixView(
 		effects,
 		stat_,
 		rotation_view,
+		matrix_index,
 		advancement,
 		equipped_weapons
 	);
@@ -664,8 +675,8 @@ export async function obtainMatrixViews(
 	rotation_view: RotationView
 ) {
 	return await Promise.all(
-		equipped_matrices.map(async (matrix) => {
-			return obtainSingleMatrixView(equipped_weapons, matrix, reso_counts, rotation_view);
+		equipped_matrices.map(async (matrix, index) => {
+			return obtainSingleMatrixView(equipped_weapons, matrix, reso_counts, rotation_view, index);
 		})
 	);
 }
@@ -730,6 +741,7 @@ export async function obtainTraitView(
 		effects,
 		stat_,
 		rotation_view,
+		undefined,
 		undefined,
 		equipped_weapons
 	);
