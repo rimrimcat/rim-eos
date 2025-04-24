@@ -2,7 +2,6 @@ import { eval as evil, parse } from '@casbin/expression-eval';
 import { get } from 'svelte/store';
 import type {
 	AllEffectTypes,
-	BaseEffect,
 	BaseStats16,
 	EquippedGear,
 	FinalizedEffect,
@@ -12,12 +11,9 @@ import type {
 	GearView,
 	GearViewStatShort,
 	Loadout,
-	MatrixEffect,
-	MatrixEffectsIds,
 	MatrixView,
 	OtherEffect,
 	RelicEffect,
-	RelicEffectsIds,
 	RelicView,
 	ResoEffect,
 	ResoEffectsIds,
@@ -26,8 +22,6 @@ import type {
 	SettingView,
 	StatAtkImprovement,
 	StatKey,
-	TraitEffect,
-	TraitEffectsIds,
 	TraitView,
 	UnfinalEffectTypes,
 	UserMatrix,
@@ -37,7 +31,6 @@ import type {
 	ValidGearPart,
 	Weapon,
 	WeaponBaseEffect,
-	WeaponEffect,
 	WeaponSetting,
 	WeaponView
 } from '../types/index';
@@ -76,121 +69,6 @@ import {
 } from './stores';
 import { formatValue } from './validation';
 import { WEAPON_BASE_STATS } from './weapons';
-
-function checkValidEffect(
-	eff: WeaponEffect,
-	reso_counts_: ResoTriggerCounts,
-	advancement: number,
-	user_weapons_?: UserWeapon[],
-	rotation_view_?: RotationView,
-	debug?: boolean
-): boolean;
-function checkValidEffect(
-	eff: MatrixEffect,
-	reso_counts_: ResoTriggerCounts,
-	advancement: number,
-	user_weapons_: UserWeapon[],
-	rotation_view_?: RotationView,
-	debug?: boolean
-): boolean;
-function checkValidEffect(
-	eff: RelicEffect,
-	reso_counts_: ResoTriggerCounts,
-	advancement: number
-): boolean;
-function checkValidEffect(
-	eff: TraitEffect,
-	reso_counts_: ResoTriggerCounts,
-	advancement: number,
-	user_weapons_: UserWeapon[],
-	rotation_view_?: RotationView,
-	debug?: boolean
-): boolean;
-function checkValidEffect(
-	eff: RelicEffect | MatrixEffect | WeaponEffect | TraitEffect | BaseEffect,
-	reso_counts_: ResoTriggerCounts,
-	advancement?: number,
-	user_weapons_?: UserWeapon[],
-	rotation_view_?: RotationView,
-	debug?: boolean
-): boolean {
-	// check if required reso is fulfilled
-	if (eff.require_reso) {
-		const required_reso_count = eff.require_reso_count ?? 2;
-		if ((reso_counts_[eff.require_reso] ?? 0) < required_reso_count) {
-			if (debug) {
-				console.log(
-					'required reso not fulfilled:',
-					eff.id,
-					'Expected ',
-					eff.require_reso,
-					':',
-					required_reso_count,
-					'Got:',
-					reso_counts_[eff.require_reso] ?? 0
-				);
-			}
-			return false;
-		}
-	}
-
-	// check if required adv is fulfilled
-	if ('require_adv' in eff && eff.require_adv && (advancement ?? 0) < eff.require_adv) {
-		if (debug) {
-			console.log(
-				'required adv not fulfilled:',
-				eff.id,
-				'Expected adv >=',
-				eff.require_adv,
-				'Got:',
-				advancement ?? 0
-			);
-		}
-		return false;
-	}
-
-	// check if required adv not gt is fulfilled
-	if (
-		'require_adv_not_gt' in eff &&
-		eff.require_adv_not_gt &&
-		(advancement ?? 0) >= eff.require_adv_not_gt
-	) {
-		if (debug) {
-			console.log('required adv not gt fulfilled:', eff.id);
-			console.log('Expected adv not >=', eff.require_adv_not_gt, 'Got:', advancement);
-		}
-		return false;
-	}
-
-	// check if required weapon is present
-	if (
-		eff.require_weapon &&
-		!(user_weapons_ ?? []).some((weapon) => weapon.id === eff.require_weapon)
-	) {
-		if (debug) {
-			console.log('required weapon for', eff.id, 'not present:', eff.require_weapon);
-		}
-		return false;
-	}
-
-	// TEMPORARILY DISABLE ONFIELD EFFECTS
-	if (eff.duration !== undefined && eff.duration === 0) {
-		if (debug) console.log('onfield effect disabled:', eff.id);
-		return false;
-	}
-	if ('require_onfield' in eff && eff.require_onfield) {
-		if (debug) console.log('onfield effect disabled:', eff.id);
-		return false;
-	}
-
-	// TEMPORARILY DISABLE TEAMPLAY EFFECTS
-	if (eff.require_teamplay) {
-		if (debug) console.log('teamplay effect disabled:', eff.id);
-		return false;
-	}
-
-	return true;
-}
 
 function finalizeEffect(
 	eff: UnfinalEffectTypes,
@@ -365,111 +243,6 @@ export async function pushValidResoEffect(
 	);
 }
 
-// helper function for matrix views
-export async function pushAllValidMatrixEffects(
-	effs: MatrixEffectsIds[],
-	advancement: number,
-	reso_counts_: ResoTriggerCounts,
-	effects_: FinalizedMatrixEffect[],
-	stat_: StatCollection[],
-	user_weapons_: UserWeapon[]
-) {
-	await Promise.all(
-		effs.map(async (eff_) => {
-			const eff = await getMatrixEffect(eff_);
-
-			if (!checkValidEffect(eff, reso_counts_, advancement, user_weapons_ ?? [])) {
-				return;
-			}
-
-			const keys = Object.keys(eff.stats);
-			const finalEffect = {
-				...eff,
-				stats: {},
-				advancement
-			};
-			keys.forEach((key) => {
-				// @ts-expect-error: key is guaranteed to exist
-				const expr_or_number: string | number = eff.stats[key][advancement];
-
-				if (typeof expr_or_number === 'string') {
-					// @ts-expect-error: key is guaranteed to exist
-					finalEffect.stats[key] = evil(parse(expr_or_number), reso_counts_);
-				} else {
-					// @ts-expect-error: key is guaranteed to exist
-					finalEffect.stats[key] = expr_or_number;
-				}
-			});
-
-			effects_.push(finalEffect);
-			stat_[0] = stat_[0].add(new StatCollection(finalEffect.stats));
-		})
-	);
-}
-
-export async function pushAllValidRelicEffects(
-	effs: RelicEffectsIds[],
-	advancement: number,
-	reso_counts_: ResoTriggerCounts,
-	effects_: RelicEffect[],
-	stat_: StatCollection[]
-) {
-	await Promise.all(
-		effs.map(async (eff_) => {
-			const eff = await getRelicEffect(eff_);
-
-			if (!checkValidEffect(eff, reso_counts_, advancement)) {
-				return;
-			}
-
-			effects_.push(eff);
-			stat_[0] = stat_[0].add(new StatCollection(eff.stats));
-		})
-	);
-}
-
-export async function pushAllValidTraitEffects(
-	effs: TraitEffectsIds[],
-	advancement: number,
-	reso_counts_: ResoTriggerCounts,
-	effects_: TraitEffect[],
-	stat_: StatCollection[],
-	user_weapons_: UserWeapon[]
-) {
-	await Promise.all(
-		effs.map(async (eff_) => {
-			const eff = await getTraitEffect(eff_);
-
-			if (!checkValidEffect(eff, reso_counts_, advancement, user_weapons_)) {
-				return;
-			}
-
-			const keys = Object.keys(eff.stats);
-			const finalEffect = {
-				...eff,
-				stats: {},
-				advancement
-			} as FinalizedTraitEffect;
-
-			keys.forEach((key) => {
-				// @ts-expect-error: key is guaranteed to exist
-				const expr_or_number: string | number = eff.stats[key];
-
-				if (typeof expr_or_number === 'string') {
-					// @ts-expect-error: key is guaranteed to exist
-					finalEffect.stats[key] = evil(parse(expr_or_number), reso_counts_);
-				} else {
-					// @ts-expect-error: key is guaranteed to exist
-					finalEffect.stats[key] = expr_or_number;
-				}
-			});
-
-			effects_.push(finalEffect);
-			stat_[0] = stat_[0].add(new StatCollection(finalEffect.stats));
-		})
-	);
-}
-
 export function dedupeMatEffs(effects: FinalizedMatrixEffect[]) {
 	return effects.reduce((acc, effect) => {
 		const existing_eff = acc.find((eff) => eff.id === effect.id);
@@ -526,7 +299,8 @@ export async function updateSingleMatrixView(index: number) {
 	loadout_matrix_views[index] = await obtainSingleMatrixView(
 		equipped_weapons,
 		matrix,
-		get(reso_counts)
+		get(reso_counts),
+		get(rotation_view)
 	);
 	matrix_views.set(loadout_matrix_views);
 }
@@ -537,7 +311,11 @@ export async function updateSingleRelicView(index: number) {
 	const relic = equipped_relics[index];
 
 	const loadout_relic_views = get(relic_views);
-	loadout_relic_views[index] = await obtainSingleRelicView(relic, get(reso_counts));
+	loadout_relic_views[index] = await obtainSingleRelicView(
+		relic,
+		get(reso_counts),
+		get(rotation_view)
+	);
 	relic_views.set(loadout_relic_views);
 }
 
@@ -805,7 +583,8 @@ export async function obtainWeaponViews(
 async function obtainSingleMatrixView(
 	equipped_weapons: UserWeapon[],
 	matrix: UserMatrix,
-	reso_counts: ResoTriggerCounts
+	reso_counts: ResoTriggerCounts,
+	rotation_view: RotationView
 ): Promise<MatrixView> {
 	const advancement = matrix.advancement ?? 0;
 
@@ -813,22 +592,15 @@ async function obtainSingleMatrixView(
 	const stat_ = [new StatCollection()];
 	const matrix_ = await getMatrix(matrix.id);
 
-	await pushAllValidMatrixEffects(
-		matrix_.effects,
-		advancement,
+	await pushAllValidEffects(
+		await Promise.all(matrix_.effects.map((eff) => getMatrixEffect(eff))),
 		reso_counts,
 		effects,
 		stat_,
+		rotation_view,
+		advancement,
 		equipped_weapons
 	);
-
-	// await pushAllValidEffects(
-	// 	await Promise.all(matrix_.effects.map((eff) => getMatrixEffect(eff))),
-	// 	reso_counts,
-	// 	effects,
-	// 	stat_,
-	// 	advancement
-	// );
 
 	const stat = stat_[0];
 
@@ -888,23 +660,36 @@ export async function obtainRotationView(
 export async function obtainMatrixViews(
 	equipped_weapons: UserWeapon[],
 	equipped_matrices: UserMatrix[],
-	reso_counts: ResoTriggerCounts
+	reso_counts: ResoTriggerCounts,
+	rotation_view: RotationView
 ) {
 	return await Promise.all(
 		equipped_matrices.map(async (matrix) => {
-			return obtainSingleMatrixView(equipped_weapons, matrix, reso_counts);
+			return obtainSingleMatrixView(equipped_weapons, matrix, reso_counts, rotation_view);
 		})
 	);
 }
 
-async function obtainSingleRelicView(relic: UserRelic, reso_counts: ResoTriggerCounts) {
+async function obtainSingleRelicView(
+	relic: UserRelic,
+	reso_counts: ResoTriggerCounts,
+	rotation_view: RotationView
+) {
 	const advancement = relic.advancement ?? 0;
 
 	const effects: RelicEffect[] = [];
 	const stat_ = [new StatCollection()];
 	const relic_ = await getRelic(relic.id);
 
-	await pushAllValidRelicEffects(relic_.effects, advancement, reso_counts, effects, stat_);
+	await pushAllValidEffects(
+		await Promise.all(relic_.effects.map((eff) => getRelicEffect(eff))),
+		reso_counts,
+		effects,
+		stat_,
+		rotation_view,
+		advancement
+	);
+
 	const stat = stat_[0];
 
 	return {
@@ -918,11 +703,12 @@ async function obtainSingleRelicView(relic: UserRelic, reso_counts: ResoTriggerC
 
 export async function obtainRelicViews(
 	equipped_relics: UserRelic[],
-	reso_counts: ResoTriggerCounts
+	reso_counts: ResoTriggerCounts,
+	rotation_view: RotationView
 ) {
 	return await Promise.all(
 		equipped_relics.map(async (relic) => {
-			return obtainSingleRelicView(relic, reso_counts);
+			return obtainSingleRelicView(relic, reso_counts, rotation_view);
 		})
 	);
 }
@@ -930,14 +716,24 @@ export async function obtainRelicViews(
 export async function obtainTraitView(
 	equipped_weapons: UserWeapon[],
 	equipped_trait: UserTrait,
-	reso_counts: ResoTriggerCounts
+	reso_counts: ResoTriggerCounts,
+	rotation_view: RotationView
 ) {
-	const effects: TraitEffect[] = [];
+	const effects: FinalizedTraitEffect[] = [];
 	const stat_ = [new StatCollection()];
 
 	const trait_ = await getTrait(equipped_trait);
 
-	await pushAllValidTraitEffects(trait_.effects, 0, reso_counts, effects, stat_, equipped_weapons);
+	await pushAllValidEffects(
+		await Promise.all(trait_.effects.map((eff) => getTraitEffect(eff))),
+		reso_counts,
+		effects,
+		stat_,
+		rotation_view,
+		undefined,
+		equipped_weapons
+	);
+
 	const stat = stat_[0];
 
 	return {
@@ -1038,14 +834,20 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 	const matrix_views_ = await obtainMatrixViews(
 		equipped_weapons_,
 		equipped_matrices_,
-		reso_counts_
+		reso_counts_,
+		rotation_view_
 	);
 	matrix_views.set(matrix_views_);
 
-	const relic_views_ = await obtainRelicViews(equipped_relics_, reso_counts_);
+	const relic_views_ = await obtainRelicViews(equipped_relics_, reso_counts_, rotation_view_);
 	relic_views.set(relic_views_);
 
-	const trait_view_ = await obtainTraitView(equipped_weapons_, equipped_trait_, reso_counts_);
+	const trait_view_ = await obtainTraitView(
+		equipped_weapons_,
+		equipped_trait_,
+		reso_counts_,
+		rotation_view_
+	);
 	trait_view.set(trait_view_);
 }
 
