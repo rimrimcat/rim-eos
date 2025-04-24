@@ -351,11 +351,14 @@ export async function updateSingleWeaponView(index: number) {
 	];
 	const loadout_reso_counts = get(reso_counts);
 
+	const setting_view_ = await obtainSettingView(user_weapons[index], weapon);
+
 	const loadout_weapon_views = get(weapon_views);
 	loadout_weapon_views[index] = await obtainSingleWeaponView(
 		user_weapons[index],
 		weapon,
-		loadout_reso_counts
+		loadout_reso_counts,
+		setting_view_
 	);
 	weapon_views.set(loadout_weapon_views);
 }
@@ -549,10 +552,36 @@ export async function obtainResoEffects(
 	return _reso_effects;
 }
 
+async function obtainSettingView(
+	equipped_weapon: UserWeapon,
+	base_weapon: Weapon
+): Promise<SettingView[]> {
+	const setting_ids =
+		equipped_weapon.setting ?? base_weapon.settings?.map((setting) => setting.default) ?? [];
+	const setting: WeaponSetting[] = await Promise.all(
+		setting_ids.map(async (setting_) => {
+			return await getWeaponSetting(setting_);
+		})
+	);
+
+	return base_weapon.settings !== undefined
+		? await Promise.all(
+				setting.map(async (setting_, index) => {
+					if (!base_weapon.settings) throw new Error('base_weapon.settings is undefined');
+					return {
+						...base_weapon.settings[index],
+						choice: setting_
+					};
+				})
+			)
+		: [];
+}
+
 async function obtainSingleWeaponView(
 	equipped_weapon: UserWeapon,
 	base_weapon: Weapon,
-	reso_counts: ResoTriggerCounts
+	reso_counts: ResoTriggerCounts,
+	setting_view: SettingView[]
 ): Promise<WeaponView> {
 	const advancement = equipped_weapon.advancement ?? 0;
 
@@ -574,26 +603,6 @@ async function obtainSingleWeaponView(
 		effects,
 		stat_
 	);
-	const setting_ids =
-		equipped_weapon.setting ?? base_weapon.settings?.map((setting) => setting.default) ?? [];
-	const setting: WeaponSetting[] = await Promise.all(
-		setting_ids.map(async (setting_) => {
-			return await getWeaponSetting(setting_);
-		})
-	);
-
-	const setting_view: SettingView[] =
-		base_weapon.settings !== undefined
-			? await Promise.all(
-					setting.map(async (setting_, index) => {
-						if (!base_weapon.settings) throw new Error('base_weapon.settings is undefined');
-						return {
-							...base_weapon.settings[index],
-							choice: setting_
-						};
-					})
-				)
-			: [];
 
 	if (base_weapon.settings) {
 		await Promise.all(
@@ -629,11 +638,17 @@ async function obtainSingleWeaponView(
 export async function obtainWeaponViews(
 	equipped_weapons: UserWeapon[],
 	base_weapons: Weapon[],
-	reso_counts: ResoTriggerCounts
+	reso_counts: ResoTriggerCounts,
+	setting_views: SettingView[][]
 ): Promise<WeaponView[]> {
 	return await Promise.all(
 		base_weapons.map(async (weapon, index) => {
-			return obtainSingleWeaponView(equipped_weapons[index], weapon, reso_counts);
+			return obtainSingleWeaponView(
+				equipped_weapons[index],
+				weapon,
+				reso_counts,
+				setting_views[index]
+			);
 		})
 	);
 }
@@ -825,6 +840,12 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 		);
 	}
 
+	const setting_views_ = await Promise.all(
+		[0, 1, 2].map(async (index) => {
+			return obtainSettingView(equipped_weapons_[index], base_weapons_[index]);
+		})
+	);
+
 	const rotation_view_ = await obtainRotationView(base_weapons_);
 	rotation_view.set(rotation_view_);
 
@@ -834,7 +855,12 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 	const reso_effects_ = await obtainResoEffects(equipped_weapons_, reso_counts_, base_weapons_);
 	reso_effects.set(reso_effects_);
 
-	const weapon_views_ = await obtainWeaponViews(equipped_weapons_, base_weapons_, reso_counts_);
+	const weapon_views_ = await obtainWeaponViews(
+		equipped_weapons_,
+		base_weapons_,
+		reso_counts_,
+		setting_views_
+	);
 	weapon_views.set(weapon_views_);
 
 	const matrix_views_ = await obtainMatrixViews(
