@@ -177,3 +177,8 @@ export type TraitView = {
 	effects: FinalizedTraitEffect[];
 	stat: StatCollection;
 };
+
+export type RotationView = {
+	rotation_period: number;
+	onfield_times: [number, number, number];
+};
