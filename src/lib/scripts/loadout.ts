@@ -81,13 +81,16 @@ function checkValidEffect(
 	reso_counts_: ResoTriggerCounts,
 	advancement: number,
 	user_weapons_?: UserWeapon[],
+	rotation_view_?: RotationView,
 	debug?: boolean
 ): boolean;
 function checkValidEffect(
 	eff: MatrixEffect,
 	reso_counts_: ResoTriggerCounts,
 	advancement: number,
-	user_weapons_: UserWeapon[]
+	user_weapons_: UserWeapon[],
+	rotation_view_?: RotationView,
+	debug?: boolean
 ): boolean;
 function checkValidEffect(
 	eff: RelicEffect,
@@ -98,13 +101,16 @@ function checkValidEffect(
 	eff: TraitEffect,
 	reso_counts_: ResoTriggerCounts,
 	advancement: number,
-	user_weapons_: UserWeapon[]
+	user_weapons_: UserWeapon[],
+	rotation_view_?: RotationView,
+	debug?: boolean
 ): boolean;
 function checkValidEffect(
 	eff: RelicEffect | MatrixEffect | WeaponEffect | TraitEffect | BaseEffect,
 	reso_counts_: ResoTriggerCounts,
 	advancement?: number,
 	user_weapons_?: UserWeapon[],
+	rotation_view_?: RotationView,
 	debug?: boolean
 ): boolean {
 	// check if required reso is fulfilled
@@ -854,17 +860,16 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 		);
 	}
 
+	await expandResoCounts(reso_counts_);
+	reso_counts.set(reso_counts_);
+
 	const setting_views_ = await Promise.all(
 		[0, 1, 2].map(async (index) => {
 			return obtainSettingView(equipped_weapons_[index], base_weapons_[index]);
 		})
 	);
-
 	const rotation_view_ = await obtainRotationView(base_weapons_, setting_views_);
 	rotation_view.set(rotation_view_);
-
-	await expandResoCounts(reso_counts_);
-	reso_counts.set(reso_counts_);
 
 	const reso_effects_ = await obtainResoEffects(equipped_weapons_, reso_counts_, base_weapons_);
 	reso_effects.set(reso_effects_);
