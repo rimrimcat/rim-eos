@@ -683,20 +683,34 @@ async function obtainSingleMatrixView(
 	};
 }
 
-export async function obtainRotationView(base_weapons: Weapon[]): Promise<RotationView> {
-	const base_rotation_periods = base_weapons.map((weapon) => weapon.rotation_period ?? 30);
-	const base_atk_priorities = base_weapons.map((weapon) => weapon.onfield_atk_priority ?? 0);
-	const base_short_rotation_durations = base_weapons.map(
-		(weapon) => weapon.short_rotation_duration ?? 5
-	);
-
+export async function obtainRotationView(
+	base_weapons: Weapon[],
+	setting_views: SettingView[][]
+): Promise<RotationView> {
+	const base_rotation_periods = [0, 1, 2].map((index) => {
+		return (
+			[
+				base_weapons[index].rotation_period,
+				...setting_views[index].map((setting) => setting.choice.rotation_period)
+			].reduce((a, b) => a ?? b, undefined) ?? 30
+		);
+	});
 	const rotation_period = Math.max(...base_rotation_periods);
-	// const rotation_period = Math.max(...weapon_views.map((weapon) => weapon.rotation_period ?? 30));
 
+	const base_atk_priorities = base_weapons.map((weapon) => weapon.onfield_atk_priority ?? 0);
 	const highest_atk_priority = Math.max(...base_atk_priorities);
 	const primary_weapon = base_atk_priorities.findIndex(
 		(atk_priority) => atk_priority === highest_atk_priority
 	);
+
+	const base_short_rotation_durations = [0, 1, 2].map((index) => {
+		return (
+			[
+				base_weapons[index].short_rotation_duration,
+				...setting_views[index].map((setting) => setting.choice.short_rotation_duration)
+			].reduce((a, b) => a ?? b, undefined) ?? 5
+		);
+	});
 
 	const onfield_times = [0, 1, 2].map((index) => {
 		return rotation_period * (base_short_rotation_durations[index] / base_rotation_periods[index]);
@@ -846,7 +860,7 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 		})
 	);
 
-	const rotation_view_ = await obtainRotationView(base_weapons_);
+	const rotation_view_ = await obtainRotationView(base_weapons_, setting_views_);
 	rotation_view.set(rotation_view_);
 
 	await expandResoCounts(reso_counts_);
