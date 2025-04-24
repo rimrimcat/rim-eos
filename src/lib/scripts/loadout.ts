@@ -68,6 +68,7 @@ import {
 	relic_views,
 	reso_counts,
 	reso_effects,
+	rotation_view,
 	trait_view,
 	user_loadouts,
 	weapon_views
@@ -398,7 +399,10 @@ export async function obtainBaseWeapons(equipped_weapons: UserWeapon[]) {
 }
 
 /** Get count of reso triggers */
-export async function obtainResoCounts(equipped_weapons: UserWeapon[], base_weapons: Weapon[]) {
+export async function obtainResoCounts(
+	equipped_weapons: UserWeapon[],
+	base_weapons: Weapon[]
+): Promise<ResoTriggerCounts> {
 	return base_weapons.reduce((counts, weapon, index) => {
 		weapon.resonances.forEach((resonance) => {
 			counts[resonance] = (counts[resonance] ?? 0) + 1;
@@ -407,9 +411,6 @@ export async function obtainResoCounts(equipped_weapons: UserWeapon[], base_weap
 		if (weapon.settings) {
 			const selected_settings =
 				equipped_weapons[index].setting ?? weapon.settings.map((setting) => setting.default) ?? [];
-
-			console.log('weapon settings', weapon.settings);
-			console.log('selected settings', selected_settings);
 
 			selected_settings.forEach(async (setting) => {
 				const setting_data = await getWeaponSetting(setting);
@@ -486,7 +487,7 @@ export async function obtainResoEffects(
 	equipped_weapons: UserWeapon[],
 	reso_counts: ResoTriggerCounts,
 	base_weapons: Weapon[]
-) {
+): Promise<ResoEffect[]> {
 	const _reso_effects_list: ResoEffect[] = [];
 
 	await Promise.all(
@@ -552,7 +553,7 @@ async function obtainSingleWeaponView(
 	equipped_weapon: UserWeapon,
 	base_weapon: Weapon,
 	reso_counts: ResoTriggerCounts
-) {
+): Promise<WeaponView> {
 	const advancement = equipped_weapon.advancement ?? 0;
 
 	// get base stat of weapon
@@ -611,19 +612,6 @@ async function obtainSingleWeaponView(
 	}
 
 	const stat = stat_[0];
-	const onfield_atk_priority = base_weapon.onfield_atk_priority;
-	const rotation_period = Math.min(
-		base_weapon.rotation_period ?? 30,
-		...setting_view.map((setting_) => setting_.choice.rotation_period ?? 30)
-	);
-	const short_rotation_duration = Math.min(
-		base_weapon.short_rotation_duration ?? 5,
-		...setting_view.map((setting_) => setting_.choice.short_rotation_duration ?? 5)
-	);
-	const short_rotation_requires_discharge =
-		base_weapon.short_rotation_requires_discharge ??
-		setting_view.some((setting_) => setting_.choice.short_rotation_requires_discharge ?? false) ??
-		false;
 
 	return {
 		id: base_weapon.id,
@@ -634,13 +622,8 @@ async function obtainSingleWeaponView(
 
 		base_stat,
 		effects,
-		stat,
-
-		onfield_atk_priority,
-		rotation_period,
-		short_rotation_duration,
-		short_rotation_requires_discharge
-	} as WeaponView;
+		stat
+	};
 }
 
 export async function obtainWeaponViews(
@@ -685,19 +668,25 @@ async function obtainSingleMatrixView(
 	};
 }
 
-export async function obtainRotationView(weapon_views: WeaponView[]): Promise<RotationView> {
-	const rotation_period = Math.max(...weapon_views.map((weapon) => weapon.rotation_period ?? 30));
-
-	const highest_atk_priority = Math.max(
-		...weapon_views.map((weapon) => weapon.onfield_atk_priority)
-	);
-	const primary_weapon = weapon_views.findIndex(
-		(weapon) => weapon.onfield_atk_priority === highest_atk_priority
+export async function obtainRotationView(base_weapons: Weapon[]): Promise<RotationView> {
+	const base_rotation_periods = base_weapons.map((weapon) => weapon.rotation_period ?? 30);
+	const base_atk_priorities = base_weapons.map((weapon) => weapon.onfield_atk_priority ?? 0);
+	const base_short_rotation_durations = base_weapons.map(
+		(weapon) => weapon.short_rotation_duration ?? 5
 	);
 
-	const onfield_times = weapon_views.map(
-		(weapon) => rotation_period * (weapon.short_rotation_duration / weapon.rotation_period)
+	const rotation_period = Math.max(...base_rotation_periods);
+	// const rotation_period = Math.max(...weapon_views.map((weapon) => weapon.rotation_period ?? 30));
+
+	const highest_atk_priority = Math.max(...base_atk_priorities);
+	const primary_weapon = base_atk_priorities.findIndex(
+		(atk_priority) => atk_priority === highest_atk_priority
 	);
+
+	const onfield_times = [0, 1, 2].map((index) => {
+		return rotation_period * (base_short_rotation_durations[index] / base_rotation_periods[index]);
+	});
+
 	onfield_times[primary_weapon] =
 		rotation_period -
 		onfield_times.filter((_, indx) => indx !== primary_weapon).reduce((a, b) => a + b, 0);
@@ -836,7 +825,8 @@ export async function updateWeaponMatrixRelicTraitFromStore() {
 		);
 	}
 
-	console.log('equipped_weapons', equipped_weapons_);
+	const rotation_view_ = await obtainRotationView(base_weapons_);
+	rotation_view.set(rotation_view_);
 
 	await expandResoCounts(reso_counts_);
 	reso_counts.set(reso_counts_);
