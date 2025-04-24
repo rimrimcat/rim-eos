@@ -5,5 +5,8 @@
 	"resonances": ["alt", "atk"],
 	"effects": ["nanyin-inhabit", "nanyin-a5", "nanyin-a6"],
 	"reso_effects": ["nanyin-reso"],
-	"onfield_atk_priority": 3.4
+	"onfield_atk_priority": 3.4,
+	"rotation_period": 60,
+	"short_rotation_duration": 3,
+	"short_rotation_requires_discharge": false
 }

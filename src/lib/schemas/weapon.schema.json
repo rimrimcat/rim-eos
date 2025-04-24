@@ -103,7 +103,7 @@
       "type": "number"
     },
     "rotation_period": {
-      "description": "How often to switch to weapon to maximize the buffs (in seconds)\nThis is usually just equal to the skill cooldown or shortest buff duration",
+      "description": "How often to switch to weapon to maximize the buffs (in seconds).\nThis is usually just equal to the skill cooldown or shortest buff duration",
       "type": "number"
     },
     "short_rotation_duration": {
