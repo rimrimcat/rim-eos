@@ -79,6 +79,9 @@ function finalizeEffect(
 	user_weapons_?: UserWeapon[],
 	debug?: boolean
 ): FinalizedEffect | null {
+	// factor to multiply stats by (onfield/hp)
+	let effectiveness = 1;
+
 	// check if required reso is fulfilled
 	if (eff.require_reso) {
 		const required_reso_count = eff.require_reso_count ?? 2;
@@ -139,13 +142,24 @@ function finalizeEffect(
 	}
 
 	// TEMPORARILY DISABLE ONFIELD EFFECTS
-	if (eff.duration !== undefined && eff.duration === 0) {
-		if (debug) console.log('onfield effect disabled:', eff.id);
-		return null;
-	}
-	if ('require_onfield' in eff && eff.require_onfield) {
-		if (debug) console.log('onfield effect disabled:', eff.id);
-		return null;
+	if (
+		(eff.duration !== undefined && eff.duration === 0) ||
+		('require_onfield' in eff && eff.require_onfield)
+	) {
+		if (weapon_index === undefined && eff.require_onfield_weapon && user_weapons_) {
+			weapon_index = user_weapons_.findIndex((weapon) => weapon.id === eff.require_onfield_weapon);
+
+			if (weapon_index === -1) {
+				if (debug)
+					console.log('onfield effect for', eff.id, 'missing weapon:', eff.require_onfield_weapon);
+				return null;
+			}
+		} else {
+			// assume onfield is primary weapon
+			weapon_index = rotation_view_.primary_weapon;
+		}
+
+		effectiveness *= rotation_view_.onfield_times[weapon_index] / rotation_view_.rotation_period;
 	}
 
 	// TEMPORARILY DISABLE TEAMPLAY EFFECTS
@@ -176,10 +190,10 @@ function finalizeEffect(
 
 			if (typeof expr_or_number === 'string') {
 				// @ts-expect-error: key is guaranteed to exist
-				finalEffect.stats[key] = evil(parse(expr_or_number), reso_counts_);
+				finalEffect.stats[key] = evil(parse(expr_or_number), reso_counts_) * effectiveness;
 			} else {
 				// @ts-expect-error: key is guaranteed to exist
-				finalEffect.stats[key] = expr_or_number;
+				finalEffect.stats[key] = expr_or_number * effectiveness;
 			}
 		});
 	} else {
@@ -189,10 +203,10 @@ function finalizeEffect(
 
 			if (typeof expr_or_number === 'string') {
 				// @ts-expect-error: key is guaranteed to exist
-				finalEffect.stats[key] = evil(parse(expr_or_number), reso_counts_);
+				finalEffect.stats[key] = evil(parse(expr_or_number), reso_counts_) * effectiveness;
 			} else {
 				// @ts-expect-error: key is guaranteed to exist
-				finalEffect.stats[key] = expr_or_number;
+				finalEffect.stats[key] = expr_or_number * effectiveness;
 			}
 		});
 	}
@@ -698,6 +712,7 @@ async function obtainSingleRelicView(
 		effects,
 		stat_,
 		rotation_view,
+		undefined,
 		advancement
 	);
 
